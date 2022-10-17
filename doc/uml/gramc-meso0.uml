@@ -1,0 +1,161 @@
+@startuml
+
+title =Les principales entités de gramc-meso0\nLe code se trouve dans src/Entity
+
+package Classes <<Frame>> {
+    class Projet {
+        - int typeProjet
+        - int etatProjet
+        - string idProjet
+        - string idProjet
+        - Version versionActive
+        - Version versionDerniere
+        + string getIdProjet()
+    }
+    
+    class Version <<traçabilité>> {
+        - string idVersion
+        ...
+        - int etatVersion
+        - date datActif
+        ...
+        - string prjTitre
+        - string prjExpose
+        - string prjJustifRenouv
+        - string prjFinancement
+        
+        - string codeNom
+        - string codeLicence
+        - string codeDependances
+
+        - demForm0
+        - ...
+        - demForm9
+        ...
+        - int demHeuresUft
+        - int attrHeuresUft
+        - int consoHeuresUft
+    
+        - int demHeuresCriann
+        - int attrHeuresCriann
+        - int consoHeuresCriann
+    
+        - int demHeuresUrca
+        - int attrHeuresUrca
+        - int consoHeuresUrca
+
+        + string getIdVersion()
+    }
+    
+    class Individu <<Compte sur <b>gramc</b> >>{
+        - int id
+        - string nom
+        - string prenom
+        - string mail
+        - string statut
+        - string labo
+        - string etablissement
+        
+        - bool admin
+        - bool valid
+        - bool obs
+        - bool sysadmin
+        
+        + getNom()
+        + {method} ...
+    
+        + getRoles()
+    }
+    
+    class CollaborateurVersion <<Collaborateur>>{
+        - string labo
+        - string statut
+        - string etablissement
+        - bool login
+        - bool clogin
+    }
+    
+    class Expertise <<Décisions des valideurs>> {
+        - string commentaireExterne
+        - string commentaireInterne
+        
+        - int nbHeuresAttUft
+        - int nbHeuresAttCriann
+        - int nbHeuresAttRomeo
+        
+        - bool validation
+        - bool definitif
+        + getValidation()
+    }
+    
+    together {
+        class Statut
+        class Laboratoire
+        class Etablissement
+    }
+    Projet  "1" o-- "0..n" Version
+    Individu "1" o-- "0..n" CollaborateurVersion
+    Individu "1" o-- "0..n" Sso
+    Individu "1" o-- "0..n" Laboratoire
+    Individu "1" o-- "0..n" Statut
+    Individu "1" o-- "0..n" Etablissement
+    Version "1" o-- "0..n" CollaborateurVersion
+    Version "0..n" o-- Thématique
+    Version "0..n" o-- "0..n" Publication
+    Expertise "1" o-- "1" Individu
+    Expertise "1" o-- "1" Version
+    
+    User "0..3" o-- "1" CollaborateurVersion
+    User "0..3" o-- "1" Individu
+    
+    note "Un compte par individu ?" as N2
+    User .. N2
+    N2 .. Individu
+    
+    note "Un compte par individu et par projet ?" as N3
+    User .. N3
+    N3 .. CollaborateurVersion
+    
+    class User <<Comptes sur un serveur>> {
+        - string serveur
+        - string loginname
+        
+        - string password
+        - date passexpir
+    
+        - string pubkey
+        + getLoginName()
+    }
+    
+    class Compta <<Données de conso>>{
+        - date date;
+        - string ressource
+        - int conso
+        - int quota
+        + int getConso()
+    }
+
+    ' Supprimé pour alléger la figure
+    'class Invitation <<Avoir la bonne @ mail>> {
+    '   - string clef
+    '   - string creationStamp
+    '   + string getClef()
+    '}
+
+    ' interface UserInterface
+    ' Individu --|> UserInterface
+    ' Individu "2" o-- "1" Invitation
+    ' class Sso <<Fede Identité>>{
+    '     - string eppn
+    ' }
+    
+}
+
+package Rôles <<Frame>> {
+ROLE_OBS --> ROLE_DEMANDEUR
+ROLE_ADMIN --> ROLE_OBS
+ROLE_SYSADMIN --> ROLE_OBS
+ROLE_VALID --> ROLE_DEMANDEUR
+class ROLE_CALC
+}
+@enduml
