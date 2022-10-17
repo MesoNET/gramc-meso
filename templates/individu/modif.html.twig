@@ -1,0 +1,86 @@
+{% extends 'default/base.html.twig' %}
+
+{% form_theme formInd with ['form_table_layout.html.twig', _self] %}
+
+{# ################################################################################################### #}
+
+{% block text_widget %}
+<input type="text" {{ block('widget_attributes') }} size="38" value="{{ value }}" >
+{% endblock %}
+
+{% block email_widget %}
+<input type="email" {{ block('widget_attributes') }} size="38" value="{{ value }}" >
+{% endblock %}
+
+{% block _appbundle_individu_mail_label %}
+<label for="mail">Courriel <span class="attention">institutionnel:</span> </label>
+{% endblock %}
+
+{% block _appbundle_individu_submit_widget %}
+{{ block('submit_widget') }}
+<button type="reset" id="individu_reset" style="width:10em">Effacer</button>
+{% endblock %}
+
+{% block _appbundle_individu_labo_widget %}
+{{ block('choice_widget') }}
+{% endblock  %}
+
+{# ################################################################################################### #}
+
+{% block body %}
+
+    {% if formEppn==null %}
+        {% set ajout=true %}
+    {% else %}
+        {% set ajout=false %}
+    {% endif %}
+    
+    <h2>{% if ajout %}Ajouter {% else %} Modifier {% endif %} un utilisateur</h2>
+    <p class="centrage"><em>Veuillez s'il vous plait renseigner tous les champs</em></p>
+
+    <div id="profil">
+    {{ form_start(formInd) }}
+    <fieldset>{{ form_widget(formInd) }}</fieldset>
+    {{ form_end(formInd) }}
+    </div>
+
+    {% if ajout %}
+    <p class="centrage"><em>Un courriel d'invitation sera envoyé à l'adresse de l'utilisateur que vous venez d'ajouter</em></p>
+    {% endif %}
+    
+    {% if formEppn != null %}
+        <div id="s_eppn">
+            {% if (individu.eppn | length != 0) %}
+        
+                {% if formEppn != null %}
+                <h2>Supprimer un eppn</h2>
+                <p class="centrage"><em>Décochez les identifiants que vous souhaitez supprimer</em></p>
+                
+                {% form_theme formEppn 'foundation_5_layout.html.twig' %}
+                {{ form_start(formEppn) }}
+                <fieldset>{{ form_widget(formEppn) }}</fieldset>
+                {{ form_end(formEppn) }}
+                {% endif %}
+            {% else %}
+                <p class="centrage"><em>Cet utilisateur n'a pas d'eppn, il ne peut pas se connecter à gramc</em></p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if formSso != null %}
+    <h2>Ajouter un eppn</h2>
+
+    <div id="a_eppn">
+        {% form_theme formEppn 'foundation_5_layout.html.twig' %}
+        {{ form_start(formSso) }}
+        <fieldset>{{ form_widget(formSso)}}</fieldset>
+        {{ form_end(formSso) }}
+    </div>
+
+    <h2>...ou envoyer une invitation</h2>
+
+    <a class="lien_actif" href="{{ path('invitation', { 'id': individu.id }) }}"
+    title="Envoyer une invitation à {{individu.prenom}} {{individu.nom}}">Inviter {{individu.prenom}} {{individu.nom}}</a>
+    
+    {% endif %}
+{% endblock %}

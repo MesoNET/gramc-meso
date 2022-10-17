@@ -1,0 +1,21 @@
+{# ################################################################################## #}
+
+<div id="tab3" class="onglet"><br><br>
+    <h2>Description technique du projet</h2>
+
+    <div class="inputs">
+
+        <div class="input">
+            {{ form_label(form.codeNom, "Le nom du principal logiciel que vous allez utiliser :")}}
+            {{ form_widget(form.codeNom) }}
+        </div>
+
+    </div>
+
+    <div class="textarea">
+        <div>
+            <h4>{{ form_label(form.codeLicence, "Licence de ce logiciel (libre, commercial, autre, je ne sais pas) :" ) }}</h4>
+        </div>
+        {{ form_widget(form.codeLicence, { 'attr': { 'rows' : 12, 'cols' : 70 } }) }}
+    </div>
+</div>

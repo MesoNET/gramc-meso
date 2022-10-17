@@ -1,0 +1,29 @@
+{# TODO - houlala et les deux autres types de projet alors ??? #}
+{% extends 'projet/consulter_projet_sess.html.twig' %}
+
+
+{% block header %}
+{% endblock header %}
+
+{% block stylesheets %}
+    <link href="{{ absolute_url(asset('css/colors.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{{ absolute_url(asset('css/gramc3.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{{ absolute_url(asset('css/pdf.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
+{% endblock stylesheets %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block myjavascripts %}
+{% endblock %}
+
+{% block datatables %}
+{% endblock %}
+
+{% block menu %}
+<img id="banniere" src="{{  absolute_url(asset('icones/banniere.png') ) }}" alt="logo" />
+{% endblock menu %}
+
+{% block footer %}
+{% endblock footer %}
+

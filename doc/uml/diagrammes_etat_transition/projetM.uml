@@ -1,0 +1,13 @@
+@startuml
+
+title Etats d'un projet de type M\ngramc-meso0
+
+RENOUVELABLE: Id 41
+TERMINE: Id 9
+
+note left of RENOUVELABLE: Le projet peut être renouvelé lorsque le temps sera écoulé
+
+[*]              --> RENOUVELABLE
+RENOUVELABLE     --> TERMINE: CLK_VAL_EXP_KO(12)\nCLK_FERM (31)
+TERMINE           --> [*]
+@enduml

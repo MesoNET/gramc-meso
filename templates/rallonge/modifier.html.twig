@@ -1,0 +1,84 @@
+{% extends 'default/base.html.twig' %}
+
+{% block myjavascripts %}
+
+{{ parent() }}
+
+<script   src="{{ asset('js/compteur_caracteres.js') }}" ></script>
+
+{% endblock myjavascripts %}
+
+{% import "default/macros_panneau_enregistrer.html.twig" as panneau_enregistrer %}
+
+{% block body %}
+
+<section id="section_modifierProjet">
+
+    <h1>Demande de rallonge pour le projet {{ projet }} (session {{ session }})</h1>
+
+    <div class="information">
+        <h2>A savoir...</h2>
+            <p>La demande de rallonge est soumise à <strong>expertise</strong> par le Comité d'Attribution et
+            <strong>validation</strong> par le Président du Comité d'Attribution. Cette demande doit être dûment explicitée et argumentée.</p>
+
+            <p>Par ailleurs: <ol>
+            <li>Les heures sont comptées en heures monoprocesseur.</li>
+            <li>Elles viennent en <strong>supplément</strong> des heures qui vous ont déjà été attribuées</li></ol></p>
+    </div>
+
+    <div class="information attention">
+        <strong>Attention</strong> N'oubliez pas de demander au responsable du projet d'envoyer la demande en expertise
+    </div>
+
+    <form method="post" id="form_projet">
+
+    {% if not erreurs == null %}
+        <div class="information attention">
+            <h2>ATTENTION</h2>
+            <p>Vous devez corriger les erreurs avant d'envoyer en expertise</p>
+            {% for erreur in erreurs %}
+            <p><strong>ERREUR</strong>: {{ erreur }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {{ form_start(edit_form) }}
+
+    <div class="inputs">
+        <div class="input">
+        {{ form_label( edit_form.demHeures, "Nombre d'heures demandées") }}
+        {{ form_widget( edit_form.demHeures) }}
+        </div>
+
+        <div class="textarea">
+                <h4 id="prj_justif_rallonge">Justification scientifique (environ 2000 caractères)<br>
+                    <span id="form_prjJustifRallonge_cpt" class="petit"></span>
+                </h4>
+            {{ form_widget(edit_form.prjJustifRallonge,
+            { 'attr': { 'class': 'compteur', 'rows' : 6, 'cols' : 70 } }) }}
+        </div>
+
+        {# Les boutons pour enregistrer / fermer #}
+        {{ panneau_enregistrer.panneau_enregistrer(edit_form,false) }}
+
+    </div>
+
+    {{ form_end(edit_form) }}
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+{% endblock %}

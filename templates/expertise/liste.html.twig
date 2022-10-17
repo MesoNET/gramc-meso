@@ -1,0 +1,221 @@
+{% extends 'default/base.html.twig' %}
+
+{% import "default/icone.html.twig" as icones %}
+
+{% block body %}
+
+<section id="section_expert">
+
+{% if rallonges | length > 0 %}
+    <section class="rallonge" style="stroke:black" >
+    <h2>Demandes de rallonges (session en cours)</h2>
+    <table id="RALLONGE" class="projet">
+        <thead>
+            <tr>
+                <th>Projet</th>
+                <th>&nbsp;</th>
+                <th>Titre</th>
+                <th>Demande</th>
+                <th>Attribution</th>
+                <th>Conso</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for rallonge in rallonges %}
+        <tr class="gras">
+            <td>{{ rallonge.projet }}</td>
+            <td>
+                <a href="{{ path('consulter_projet', { 'id' : rallonge.projet.idProjet } ) }}">
+                    {{ icones.details}}
+                </a>
+            </td>
+            <td rowspan="{{ rallonge.rallonges|length + 1 }}">{{ rallonge.version.prjTitre }}</td>
+            <td>{{ rallonge.version.demHeures }}</td>
+            <td>{{ rallonge.version.attrHeures }}</td>
+            <td rowspan>{{ rallonge.consocalcul }}</td>
+            <td rowspan="{{ rallonge.rallonges|length + 1 }}">{{ rallonge.version.responsable }}</td>
+        </tr>
+        {% for item in rallonge.rallonges %}
+        <tr>
+            <td>{{ item.idRallonge }}</td>
+            <td><a href="{{ path('expertiser_rallonge', { 'id' : item.idRallonge } ) }}" title="Expertiser la demande">
+                {{icones.modifier}}
+                </a>
+            </td>
+            <td>&nbsp;</td>
+            <td>{{ item.demHeures }}</td>
+            <td>{{ item.attrHeures }}</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    </section>
+{% endif %}
+
+{# ################################################################### #}
+
+{% for expertises_thematique in expertises_by_thematique %}
+    <section class="liste_projets">
+        {% if expertises_thematique.expertises | length > 0 %}
+        <h2>Thématique {{ expertises_thematique.thematique }}</h2>
+            <table id="THEM" class="projet">
+                <thead>
+                     <tr>
+                        <th>Projet</th>
+                        <th>&nbsp;</th>
+                        <th>Thématique</th>
+                        <th>Titre</th>
+                        <th>Demande</th>
+                        <th>Responsable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for expertise in expertises_thematique.expertises %}
+                {% if (expertise.expert == true) %}
+                    <tr class="gras" >
+                {% else %}
+                    <tr class="leger" >
+                {% endif %}
+                        <td>{{ expertise.projetId }}</td>
+                        <td>
+                            {% if( expertise.expert == true) %}
+                                <a href="{{ path('expertise_modifier', { 'id' : expertise.expertise.id } ) }}" title="Expertiser le projet">
+                                {{icones.modifier}}
+                                </a>
+                            {% else %}
+                                <a href="{{ path('consulter_projet', { 'id' : expertise.projetId } ) }}" title="Lire le projet">
+                                {{icones.details}}
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>{{ expertise.thematique }}</td>
+                        <td>{{ expertise.titre }}</td>
+                        <td>{{ expertise.demHeures }}</td>
+                        <td>{{ expertise.responsable }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+{% endfor %}
+
+{# ################################################################### #}
+
+{% if( not ( expertises_hors_thematique == null ) ) %}
+<section style="stroke:black">
+    <h2>Autres thématiques</h2>
+    <table id="HORS_THEM" class="projet">
+    <thead>
+            <tr>
+                <th>Projet</th>
+                <th>&nbsp;</th>
+                <th>Thématique</th>
+                <th>Titre</th>
+                <th>Demande</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for expertise in expertises_hors_thematique %}
+                {% if( expertise.expert == true) %}
+                    <tr class="gras" >
+                {% else %}
+                    <tr class="leger" >
+                {% endif %}
+                        <td>{{ expertise.projetId }}</td>
+                        <td>
+                            {% if( expertise.expert == true) %}
+                                <a href="{{ path('expertise_modifier', { 'id' : expertise.expertise.id } ) }}">
+                                    {{ icones.modifier }}
+                                </a>
+                            {% else %}
+                                <a href="{{ path('consulter_projet', { 'id' : expertise.projetId } ) }}">
+                                    {{ icones.details }}
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>{{ expertise.thematique }}</td>
+                        <td>{{ expertise.titre }}</td>
+                        <td>{{ expertise.demHeures }}</td>
+                        <td>{{ expertise.responsable }}</td>
+                    </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+</section>
+{% endif %}
+
+{% if mes_commentaires_flag == true %}
+    <h2>Commentaires généraux</h2>
+    <section class="commentaires">
+    <div class="commentaire_annee">
+    {% if mes_commentaires_maj != null %}
+        <a href="{{ path('cree_ou_modif', { 'annee' : mes_commentaires_maj }) }}">Créer ou modifier</a> <p>le commentaire de l'année <strong>{{mes_commentaires_maj}}</strong></p>
+    {% endif %}
+    </div>
+
+    <div class="commentaire_tous">
+    {% if mes_commentaires != null %}
+        {% for comm in mes_commentaires %}
+        <h3>{{comm.annee}}</h3>
+        <p><em>Dernière mise à jour le {{comm.majstamp|date('Y-m-d H:i:s')}}</em></p>
+        <p class="commentaire">{{comm.commentaire| e | nl2br}}</p>
+        {% endfor %}
+    {% else %}
+        <p><em>Vous n'avez entré aucun commentaire</em></p>
+    {% endif %}
+    </div>
+    </section>
+{% endif %}
+
+<h2>Anciennes expertises</h2>
+<section class="anciennes_expertises">
+{% if( not ( old_expertises == null ) ) %}
+    <table id="old_expertises" class="anciennes_expertises">
+    <thead>
+        <tr>
+            <th>Projet</th>
+            <th>Session</th>
+            <th>&nbsp;</th>
+            <th>Thématique</th>
+            <th>Titre</th>
+            <th>Demande</th>
+            <th>Attribution</th>
+            <th>Responsable</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for expertise in old_expertises %}
+        <tr>
+            <td>{{ expertise.projetId }}</td>
+            <td>{{ expertise.sessionId }}</td>
+            <td>
+                {#<a href="{{ path('consulter_version', { 'id' : expertise.projetId, 'version' : expertise.versionId } ) }}">#}
+                <a href="{{ path('consulter_expertise', { 'id' : expertise.id } ) }}" title="Lire le projet">
+                    {{icones.details}}
+                </a>
+            </td>
+            <td>{{ expertise.thematique }}</td>
+            <td>{{ expertise.titre }}</td>
+            <td>{{ expertise.demHeures }}</td>
+            <td>{{ expertise.attrHeures }}</td>
+            <td>{{ expertise.responsable }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <hr>
+{% else %}
+<p><em>Vous n'avez pas d'anciennes expertises</em></p>
+</section>
+{% endif %}
+
+</section>
+
+{% endblock %}

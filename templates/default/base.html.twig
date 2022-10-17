@@ -1,0 +1,240 @@
+{# app/Resources/views/default/base.html.twig #}
+
+{% import "default/macros.html.twig" as gramcmacros %}
+
+{% import "default/icone.html.twig" as icones %}
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Plateforme d'attribution de ressources de {{mesoc}}</title>
+        <link rel="icon" href="{{ absolute_url(asset('icones/favicon.ico')) }}"  />
+
+{% block stylesheets %}
+        <link href="{{ absolute_url(asset('js/jquery-ui/jquery-ui.css')) }}" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{ absolute_url(asset('js/jquery-upload-file-master/css/uploadfile.css') ) }}" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{ absolute_url(asset('js/DataTables-1.11.5/css/jquery.dataTables.min.css') ) }}" rel="stylesheet" type="text/css" media="screen" />
+
+        <link href="{{ absolute_url(asset('css/colors.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{ absolute_url(asset('css/gramc3.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
+{% endblock stylesheets %}
+
+{% block mystyles %}
+{% endblock mystyles %}
+
+{% block javascripts %}
+        <script   src="{{ absolute_url(asset('js/jquery-3.6.0.min.js') ) }}" ></script>
+        <script   src="{{ absolute_url(asset('js/jquery-ui/jquery-ui.js') ) }}" ></script>
+        <script   src="{{ absolute_url(asset('js/header_fixe.js') ) }}" ></script>
+        <script   src="{{ absolute_url(asset('js/base.js') ) }}" ></script>
+{% endblock javascripts %}
+
+{% block myjavascripts %}
+{% endblock myjavascripts %}
+
+{% block datatables %}
+        <script   src="{{ absolute_url(asset('js/DataTables-1.11.5/js/jquery.dataTables.min.js') )  }}" ></script>
+        <script   src="{{ absolute_url(asset('js/datatable.js') ) }}" ></script>
+{% endblock datatables %}
+
+    </head>
+
+    <body>
+
+        {% block header %}
+        {% if not app.request.xmlhttprequest %}
+        <header class="header">
+
+            {#{{app.request.attributes.get('_route')}}#}
+            <a class="lien_accueil" href="{{ path('accueil') }}"><img src="{{ asset('icones/banniere.png') }}" alt="logo" /></a>
+        
+            <nav class="nav">
+                {% if (app.request.attributes.get('_route') == 'accueil') or (app.request.attributes.get('_route') == 'connexion') or (app.request.attributes.get('_route') == 'connexion_dbg') %}
+                    <a class="lien_nav actif" href="{{ path('accueil') }}" title="Accéder à l'accueil">Accueil</a> 
+                {% else %}
+                    <a class="lien_nav" href="{{ path('accueil') }}" title="Accéder à l'accueil">Accueil</a> 
+                {% endif %}
+
+                {% if is_granted('ROLE_DEMANDEUR') %}
+                    {% if (app.request.attributes.get('_route') == 'projet_accueil') or (app.request.attributes.get('_route') == 'consulter_projet') %}
+                        <a class="lien_nav actif" href="{{ path('projet_accueil') }}" title="Accéder à l'espace demandeur">Demandeur</a> 
+                    {% else %}
+                        <a class="lien_nav" href="{{ path('projet_accueil') }}" title="Accéder à l'espace demandeur">Demandeur</a> 
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted('ROLE_EXPERT') %}
+                    {% if app.request.attributes.get('_route') == 'expertise_liste' %}
+                        <a class="lien_nav actif" href="{{ path('expertise_liste') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                    {% else %}
+                        <a class="lien_nav" href="{{ path('expertise_liste') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted('ROLE_OBS') %}
+                    {% if app.request.attributes.get('_route') == 'admin_accueil' %}
+                        <a class="lien_nav actif" href="{{ path('admin_accueil') }}" title="Accéder à l'espace Administrateur">Administrateur</a> 
+                    {% else %}
+                        <a class="lien_nav" href="{{ path('admin_accueil') }}"  title="Accéder à l'espace Administrateur">Administrateur</a> 
+                    {% endif %}
+                {% endif %}
+
+                {# SUPPRESSION DU ROLE PRESIDENT
+                {% if is_granted('ROLE_PRESIDENT') %}
+                    {% if app.request.attributes.get('_route') == 'president_accueil' %}
+                        <a class="lien_nav actif" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
+                    {% else %}
+                        <a class="lien_nav" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
+                    {% endif %}
+                {% endif %}
+                #}
+
+                {% if app.request.attributes.get('_route') == 'aide' %}
+                    <a class="aide_nav actif" href="{{ path('aide') }}">?</a>
+                {% else %}
+                    <a class="aide_nav" href="{{ path('aide') }}">?</a>
+                {% endif %}
+            </nav>
+            <img src="{{ asset('icones/header.png') }}" alt="élément graphique" class="elm_graphique"/>
+
+        </header>
+
+        <div class="sous_header">
+            {% if is_granted('ROLE_OBS')  %}
+                {% include "default/etat_sessions.html.twig" %}
+            {% else %}
+                <p>&nbsp;</p>
+            {% endif %}
+            {% include "default/flash.html.twig" %}
+            <div class="profil">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <div>
+                    {% if is_granted('IS_IMPERSONATOR') %}
+                        <p> SUDO par {{ app.token.originalToken.user }}</p>
+                    {% endif %}
+                    {% if app.debug %}
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a></p>
+                    {% else %}
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a></p>
+                    {% endif %}
+                    </div>
+                    <a href=" {{ path('deconnexion') }}" class="deconnexion_profil">Déconnexion</a>
+                {% else %}
+                    <p><a href=" {{ path('connexion') }}" class="connexion_profil">connexion</a>
+                    {% if app.debug %}
+                    <p><a href=" {{ path('connexion_dbg') }}" class="connexion_profil">connexion (DBG)</a>
+                    {% endif %}
+                {% endif %}
+
+            </div>
+        </div>
+
+        {% set scrollTop = "fleche" %}
+
+        <div id="scrollTop">
+            <a class="fleche">
+                {{ icones.scrollTop }}
+            </a>
+        </div>
+
+        
+        {% if is_granted('ROLE_ADMIN')  %}
+            <div {% if app.session.get('admin_red') %}
+                    class="role_admin_reduit" data-href="{{ path('admin_exp') }}" 
+                 {% else %}
+                    class="role_admin" data-href="{{ path('admin_red') }}"
+                 {% endif %}
+                 title="Vous êtes administrateur">
+                <span></span>
+                <p>ADMINISTRATEUR</p>
+            </div>
+        {% endif %}
+
+        {% endif %} {# si ajax on saute tout ça #}
+        {% endblock header %}
+    
+    {# ###################################################################### #}
+
+    {% block menu %}
+    {% endblock menu %}
+
+    {% block before_body %}
+    {% endblock before_body %}
+
+    {% block body %}
+    {% endblock body  %}
+
+    {% block after_body %}
+    {% endblock after_body %}
+
+
+    <br><br>
+
+    {# ###################################################################### #}
+
+
+    {% block footer %}
+        {# footer #}
+        <footer class="footer">
+            <div>
+                {{ infos.gramc_date('Y-m-d') }}
+
+                {# SUPPRIME CAR PAS DE SESSION}
+                {% block message %}
+                    
+                    {% if  infos.getLibelleEtatSessionCourante == 'CREE_ATTENTE' %}
+                        La prochaine session d'attribution sera ouverte le <strong>{{ infos.prochaine_session }}</strong>
+
+                    {% elseif  infos.getLibelleEtatSessionCourante == 'EDITION_DEMANDE'%}
+
+                        {% if infos.cette_session()['jours'] == 0 %}
+                        Vous avez encore <strong>JUSQU'A CE SOIR</strong> pour envoyer votre projet pour expertise
+
+                        {% elseif infos.cette_session()['jours'] > 0 %}
+                            Vous avez jusqu'au <strong>{{ infos.cette_session()['fin_sess'] }}  </strong> pour envoyer votre projet pour expertise
+
+                        {% else %}
+                        ATTENTION, la date de fin de session est dépassée
+                            {% if infos.cette_session()['jours'] == -1 %}
+                                <strong>d'un jour</strong>
+                        {% else %}
+                                <strong>de {{ - infos.cette_session()['jours'] }} jours</strong>
+                            {% endif %}
+
+                        {% endif %}
+
+                    {% else %}
+                    Prochaine session d'attribution: <strong>
+                        {%  if infos.prochaine_session_saison.type == 'P' %}
+                        Printemps {{  infos.prochaine_session_saison.annee }}
+                        {% else %}
+                        Automne {{  infos.prochaine_session_saison.annee }}
+                        {% endif %}
+                    </strong>
+                    {% endif %}
+
+                {% endblock message %}
+                #}
+            </div>
+
+            <div class="liens_importants_footer">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <span>gramc-meso0 {{ infos.VERSION }} - design <a href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8" target='_blank'>Ugo Mariotto</a> - <a href="mailto:{{ mailadmin }}" class="lien_footer">{{ mailadmin }}</a></span>
+                {% else %}
+                    <span>gramc-meso0 {{ infos.VERSION }} - design <a href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8" target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
+                {% endif %}
+                &nbsp;-&nbsp;<a href="{{ path('mentions_legales') }}" class="lien_footer" title="Lire les mentions légales">Mentions légales</a>&nbsp;-&nbsp;
+                {% if mesoc_cgu != null %}
+                <a href="{{ mesoc_cgu }}" class="lien_footer" title="Lire les cgu du calculateur">cgu</a>
+                {% endif %}
+            </div>
+
+        </footer>
+
+    {% endblock footer %}
+
+    </body>
+
+</html>
+

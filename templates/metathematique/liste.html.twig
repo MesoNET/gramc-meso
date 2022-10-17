@@ -1,0 +1,37 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/icone.html.twig" as icones %}
+
+
+{% block body %}
+<section style="stroke:black">
+    <h1>MetaThématiques utilisables par les projets gramc</h1>
+
+    {% import "default/macros.html.twig" as gramcmacros %}
+    {{ gramcmacros.menu(menu) }}
+
+    <table id="general" >
+    <thead>
+    <tr>{% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Libellé</th><th>Thématiques correspondantes</th></tr>
+    </thead>
+    <tbody>
+    {% for thema in metathematiques %}
+        <tr>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td>
+                <a class="suppression" href="{{ path('supprimer_metaThematique',{'id' : thema.idMetaThematique }) }}" title="Supprimer">
+                {{ icones.supprimer }}
+            </td>
+            <td>
+                <a class="modification" href="{{ path('modifier_metaThematique',{'id' : thema.idMetaThematique }) }}" title="Modifier le libellé">
+                {{ icones.modifier }}
+            </td>
+            {% endif %}
+            <td>{{ thema.libelle }}</td>
+            <td>{{thema.thematique | join(', ')}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</section>
+
+{% endblock body  %}

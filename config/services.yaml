@@ -1,0 +1,173 @@
+---
+
+# Learn more about services, parameters and containers at
+# https://symfony.com/doc/current/service_container.html
+# https://symfony.com/doc/current/service_container/import.html
+imports:
+        - { resource: parameters.yaml }
+
+services:
+    _defaults:
+        public: false
+        autowire: true
+        autoconfigure: true
+
+    #    service_name:
+    #        class: App\Directory\ClassName
+    #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+     
+    # Tous les controleurs sont des services, ils peuvent utiliser la dependency injection
+    altermeso_controllers:
+        namespace: App\Controller\
+        resource: '../altermeso/src/Controller/*'
+        tags: [controller.service_arguments]
+
+    app_controllers:
+        namespace: App\Controller\
+        #public: true
+        resource: '../src/Controller/*'
+        tags: [controller.service_arguments]
+
+    # La plupart des services gramc sont dans le répertoire GramcServices
+    App\GramcServices\:
+        resource: '../src/GramcServices/*'
+        exclude: '../src/GramcServices/Workflow/*'
+
+    # Workflows
+    # Seuls certains objets définis dans le répertoire Workflows sont des services
+    App\GramcServices\Workflow\:
+        resource: '../src/GramcServices/Workflow/*/*Workflow.php'
+
+    # Securité
+    App\Security\:
+        resource: '../src/Security/*'
+    
+    App\EventListener\ExceptionListener:
+        arguments: ["%kernel.debug%"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    # Evenements Doctrine lorsqu'on met à jour une version
+    App\EventListener\VersionStamp:
+        tags:
+            - # these are the options required to define the entity listener
+                name: 'doctrine.orm.entity_listener'
+                event: 'preUpdate'
+                entity: 'App\Entity\Version'
+
+    App\EventListener\ProjetDerniereVersion:
+        tags:
+            - # these are the options required to define the entity listener
+                name: 'doctrine.orm.entity_listener'
+                event: 'postPersist'
+                entity: 'App\Entity\Version'
+            -   name: 'doctrine.orm.entity_listener'
+                event: 'postRemove'
+                entity: 'App\Entity\Version'
+            -   name: 'doctrine.orm.entity_listener'
+                event: 'postUpdate'
+                entity: 'App\Entity\Version'
+
+    # SERVICES GRAMC
+    App\GramcServices\GramcDate:
+        arguments: ["%recup_printemps_d%","%recup_printemps_f%",
+                    "%recup_automne_d%",  "%recup_automne_f%"]
+
+    App\GramcServices\DonneesFacturation:
+        arguments: ['%dfct_directory%']
+
+    App\GramcServices\GramcGraf\Calcul:
+        arguments: ['ressources_conso_group','ressources_conso_user']
+     
+    App\GramcServices\GramcGraf\Stockage:
+        arguments: ['ressources_conso_group','ressources_conso_user']
+
+    App\GramcServices\GramcGraf\CalculTous:
+        arguments: ['ressources_conso_group','ressources_conso_user']
+     
+    App\GramcServices\ServiceSessions:
+        arguments: ['%recup_attrib_seuil%','%recup_conso_seuil%','%recup_attrib_quant%']
+
+    App\GramcServices\ServiceProjets:
+        arguments: ["%prj_prefix%",
+                    "%ressources_conso_group%",
+                    "%signature_directory%",
+                    "%rapport_directory%",
+                    "%fig_directory%",
+                    "%dfct_directory%"]
+
+    App\GramcServices\ServiceVersions:
+        arguments: ['%attrib_seuil_a%',
+                    "%prj_prefix%",
+                    "%rapport_directory%",
+                    "%fig_directory%",
+                    "%signature_directory%",
+                    "%coll_login%",
+                    "%nodata%",
+                    "%max_fig_width%",
+                    "%max_fig_height%",
+                    "%max_size_doc%",
+                    "%resp_peut_modif_collabs%" ]
+        
+    App\GramcServices\ServiceMenus:
+        arguments: [ "%max_rall%","%nodata%" ]
+        
+    App\GramcServices\ServiceNotifications:
+        arguments: [ "%mailfrom%","%noedition_expertise%" ]
+
+    App\GramcServices\ServiceExperts\ServiceExperts:
+        arguments: [ "%max_expertises_nb%" ]
+
+    App\GramcServices\ServiceExperts\ServiceExpertsRallonge:
+        arguments: [ "%max_expertises_nb%" ]
+
+    App\GramcServices\ServiceInvitations:
+        arguments: [ "%invit_duree%" ]
+
+    App\Controller\ExpertiseController:
+        arguments: [ '%max_expertises_nb%' ]
+
+    # Formulaires, validateurs, securité
+    App\Form\:
+        resource: '../src/Form/*'
+        tags: ["form.type"]
+
+    App\Form\IndividuFormType:
+        arguments: [ "%coll_login%", "%nodata%" ]
+
+    App\Validator\Constraints\PagesNumberValidator:
+        arguments: [ "%max_page_nb%" ]
+        tags: ["validator.constraint_validator" ]
+
+    App\Security\GramcAuthenticator:
+        arguments:
+            $knl_debug: '%kernel.debug%'
+    
+    # Commandes
+    app.gramc.sendamail:
+        class: App\Command\Sendamail
+        #arguments: ["@twig","@app.gramc.ServiceNotifications"]
+        arguments: ["%kernel.environment%"]
+        tags: ["console.command"]
+    App\Command\Sendamail: '@app.gramc.sendamail'
+
+    App\Command\Rgpd:
+        tags: ["console.command"]
+
+    App\Command\NettCompta:
+        tags: ["console.command"]
+
+    App\Command\AddCompta:
+        arguments: ["%kernel.debug%"]
+        tags: ["console.command"]
+
+    App\Command\Brouillage:
+        arguments: ["%kernel.debug%"]
+        tags: ["console.command"]
+
+    App\Command\KeepOnly:
+        arguments: ["%kernel.debug%"]
+        tags: ["console.command"]
+
+    App\Command\InitTypeVersion:
+        tags: ["console.command"]

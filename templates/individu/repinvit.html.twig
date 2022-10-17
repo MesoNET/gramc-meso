@@ -1,0 +1,29 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+
+{% block body %}
+<section id="section_repinvit">
+    
+    <h1>Réponse à une invitation</h1>
+
+    <div>
+    <p><em>{{invitation.invited}}</em> a été invité-e sur la plateforme d'attributions de ressources de {{mesoc}} par <em>{{ invitation.inviting}}</em></p>
+
+    <p>Vous êtes actuellement connecté en tant que <em>{{connected.prenom}} {{connected.nom}}</em> avec l'adresse de courriel <em>{{connected.mail }}</em></p>
+
+    <p>Or, l'invitation a été envoyée à <em>{{invitation.invited.mail}}</em></p>
+
+    <p><strong>Quelle adresse souhaitez-vous conserver ?</strong></p>
+    
+    <p><strong>Pour vous aider:</strong> Dans la mesure du possible, choisissez une adresse <strong>institutionnelle</strong>,
+    plutôt qu'une adresse personnelle !</p>
+
+    {% form_theme form 'foundation_5_layout.html.twig' %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+    </div>
+    
+</section>
+
+{% endblock %}

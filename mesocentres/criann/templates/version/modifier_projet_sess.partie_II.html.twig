@@ -1,0 +1,72 @@
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
+
+<div id="tab2" class="onglet"><br><br>
+    <h2>Description scientifique du projet de recherche</h2>
+
+     {% if fichier_attache == true %}
+        <div id="fichier_attache">
+
+            <h4>Description détaillée de votre projet :</h4>
+        
+            {% if version.typeSession == 'B' or version.anneeRapport == 0 %}
+            <div class="information ok"><em>Si vous le souhaitez</em>, vous pouvez téléverser une description scientifique détaillée de votre projet.
+            Le fichier doit être un pdf de moins de {{ max_page_nb }} pages.
+            </div>
+            {% else %}
+            <div class="information ok">Vous <strong>devez</strong> téléverser un rapport d'activité sur l'année écoulée. Si vous le souhaitez, vous pouvez ajouter
+            un paragraphe sur les perspectives pour l'année prochaine.
+            Le fichier est obligatoirement un pdf de moins de {{ max_page_nb }} pages de {{ max_size_doc }} Mo.
+            </div>
+            {% endif %}
+
+            {{ gramcdocmacros.upload_document(version, 'document.pdf') }}
+        </div>
+    {% endif %}
+
+
+    <h4>Références bibliographiques :</h4>
+    <p>Merci de nous signaler les publications pour lesquelles les moyens de calcul de {{mesoc}} ont été utilisés.<br>
+        <strong><a href="{{ path('gerer_publications', { 'id' : version.projet.idProjet }) }}"
+        target="_blank" title="Entrez maintenant les références bibliographiques correspondantes">Cliquez ici</a></strong>
+    </p>
+
+    <div class="textarea">
+        <div>
+            <h4>Résumé du projet en anglais (environ 2000 caractères) :<br><span id="form_prjResume_cpt" class="petit"></span></h4>
+        </div>
+        {{ form_widget(form.prjResume,
+                    { 'attr': { 'class': 'compteur', 'rows' : 12, 'cols' : 70 } }) }}
+    </div>
+
+    <div class="information attention">
+        <h2>Confidentialité des données</h2>
+        {{mesoc}} se réserve le droit de faire figurer sur son site web le résumé du projet,
+        ainsi que le nom du responsable du projet et de son laboratoire.
+        Merci de ne pas écrire ici de données confidentielles
+    </div>
+
+    <div class="textarea">
+        <div>
+            <h4>Exposé scientifique (environ 6000 caractères)<br><span id="form_prjExpose_cpt" class="petit"></span></h4>
+            <p><em>Exposer le problème scientifique, la situation de l'équipe par rapport au problème
+            (résultats ou expérience déjà acquise dans le domaine, ou projet nouveau).<br>
+            Mentionner les 3 publications les plus significatives en rapport avec le projet.</em>
+            </p>
+        </div>
+        {{ form_widget(form.prjExpose,
+            { 'attr': { 'class': 'compteur', 'rows' : 12, 'cols' : 70 } }) }}
+    </div>
+
+    {{ gramcdocmacros.upload_images(version, img_expose) }}
+
+    <hr class="retour">
+        
+
+    <div class="textarea">
+        <div>
+            <h4>Algorithmes ou méthodes numériques utilisées :</h4>
+        </div>
+        {{ form_widget(form.prjAlgorithme, { 'attr': { 'rows' : 8, 'cols' : 70 } }) }}
+    </div>
+</div>

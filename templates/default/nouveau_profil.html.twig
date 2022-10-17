@@ -1,0 +1,32 @@
+{# app/Resources/views/default/nouveau_profil.html.twig #}
+{% extends 'default/profil.html.twig' %}
+{% form_theme form with ['form_table_layout.html.twig', _self] %}
+
+
+{# ################################################################################################### #}
+
+ 
+
+{# ################################################################################################### #}
+
+{% block body %}
+
+<section>
+<h2>Vos accès à la plateforme d'attribution des ressources</h2>
+
+
+<div class="message info">
+
+    <h2>Votre profil</h2>
+
+    <p>Veuillez s'il vous plait compléter ou corriger votre profil.</p>
+    
+</div>
+
+{{ form_start(form) }}
+{{ form_widget(form) }} 
+{{ form_end(form) }}
+
+
+{% endblock body %}
+

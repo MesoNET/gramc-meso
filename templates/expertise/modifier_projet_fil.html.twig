@@ -1,0 +1,271 @@
+{% extends 'default/base.html.twig' %}
+
+{% block myjavascripts %}
+    <script type="text/javascript" src="{{asset('js/projet.js')}}" ></script>
+    <script type="text/javascript" src="{{asset('js/expertiser.js')}}" ></script>
+{% endblock myjavascripts %}
+
+{% form_theme edit_form _self %}
+
+{% import "default/icone.html.twig" as icones %}
+
+{# ############################################################################################################################ #}
+
+{% block body %}
+<section id="expertise">
+
+    <div class="top">
+        <h2>Saisie de l'expertise du projet {{ version.projet }}</h2>
+        <p>Projet de : <span>{{ version.responsable }} - {{version.acroLaboratoire }}</span></p>
+
+        <div class="titre">
+            <h3>{{ version.prjTitre }}</h3>
+            <p>({{ version.demHeures }} heures demandées)</p> {% if toomuch %}<span title="Demande trop forte, cf. règles d'attribution"> {{ icones.attention }}</span>{% endif %}
+        </div>
+    </div>
+
+    <div class="information ok">
+
+        {% if max_expertises_nb > 1 %}
+            {% if not is_granted('ROLE_PRESIDENT') %}
+                <p>Vous pouvez:
+                    <ul>
+                        <li>Entrer un commentaire à destination du comité d'attribution</li>
+                        <li>Proposer une attribution (en heures cpu normalisées)</li>
+                        <li>Cliquer sur le bouton <strong>Enregistrer</strong> ou <strong>Fermer</strong> pour enregistrer un brouillon de votre expertise</li>
+                        <li><strong>N'oubliez pas de Cliquer sur le bouton <strong>Envoyer</strong></strong> pour envoyer votre expertise au comité d'attribution</li>
+                    </ul>
+                </p>
+            {% else %}
+                <p>Merci de renseigner le formulaire ci-dessous <strong>en prenant en compte l'avis des autres experts</strong>. <br>
+                    {% if msg_explain %} {{msg_explain }}<br> {% endif %}
+                    {% if peut_envoyer %}<em><strong>Lorsque vous aurez terminé, n'oubliez pas de cliquer sur "Envoyer"</strong></em>{% endif %}
+                </p>
+            {% endif %}
+        {% else %}
+                <p>Vous pouvez:
+                    <ul>
+                        <li>Accepter ou refuser le projet</li>
+                        <li>Entrer un commentaire à destination du comité d'attribution</li>
+                        <li>Entrer un commentaire à destination du responsable du projet</li>
+                        <li>Proposer une attribution (en heures cpu normalisées)</li>
+                        <li>Cliquer sur le bouton <strong>Enregistrer</strong> ou <strong>Fermer</strong> pour enregistrer un brouillon de votre expertise</li>
+                        {% if peut_envoyer %}
+                        <li><strong>N'oubliez pas de Cliquer sur le bouton <strong>Envoyer</strong></strong> pour envoyer votre expertise au comité d'attribution</li>
+                        {% endif %}
+                    </ul>
+                </p>
+        {% endif %}
+        
+    </div>
+
+    {% if( expertise.definitif == true ) %}
+        <div class="information warning">
+            <h2>EXPERTISE DÉJÀ ENVOYEE</h2>
+                <p>Votre expertise a déjà été envoyée, vous ne pouvez plus la modifier.</p>
+        </div>
+    {% endif %}
+    
+    {% if not peut_envoyer %}
+        <div class="information attention">
+            <h2>EXPERTISE EN EDITION SEULEMENT</h2>
+                <p>Pour l'instant vous ne pouvez pas envoyer votre expertise.
+                Vous pouvez cependant l'éditer et la sauvegarder</p>
+        </div>
+    {% endif %}
+
+    <div id="menu_expertiser" class="center">
+            <a href="{{ path('consulter_projet', { 'id' : expertise.version.projet.idProjet } ) }}" title="Consulter le projet" target="_blank">
+                {{icones.details}}
+                <p>Projet</p>
+            </a>
+
+        {% if ( rapport != null ) %}
+            <a href="{{ path('rapport', { 'id' : version.idVersion }) }}" title="Rapport d'activité {{version.anneeRapport}}" target="_blank">
+                {{icones.pdf}}
+                <p>Rapport d'activité</p>
+            </a>
+        {%  endif %}
+
+        {% if document != null %}
+            <a href="{{ path('document', { 'id' : version.idVersion }) }}" title="Document attaché" target="_blank">
+                {{icones.pdf}}
+                <p>Doc attaché</p>
+            </a>
+        {% endif %}
+
+            <a href="{{ path('consulter_publications', { 'id' : version.projet }) }}" title="Publications associées au projet {{version.projet.idProjet}}" target="_blank" >
+                {{icones.pdf}}
+                <p>Publications</p>
+            </a>
+
+        {% if noconso==false %}
+            {% if not isNouvelle %}
+                    <a class="conso" title="consommation {{anneePrec}}" data-href="{{ absolute_url(path('projet_conso', { 'id': expertise.version.projet.idProjet, 'annee' : anneePrec })) }}">
+                        {{icones.consommation}}
+                        <p>Conso {{anneePrec}}</p>
+                    </a>
+                {% if version.session.libelleTypeSession == 'B' %}
+                        <a class="conso" title="Consommation {{anneeCour}}" data-href="{{ absolute_url(path('projet_conso', { 'id': expertise.version.projet.idProjet, 'annee' : anneeCour })) }}">
+                            {{icones.consommation}}
+                            <p>Conso {{anneeCour}}</p>
+                        </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        
+    </div>
+    <hr class="retour" />
+
+   {{ form_start(edit_form) }}
+
+    {% for expertise in autres_expertises %}
+        <h3>Expertise de {{ expertise.expert.prenom }} {{ expertise.expert.nom }}</h3>
+        
+        {% if expertise.definitif == false %}
+            <div class="information attention">
+                <p>Cette expertise n'est pas terminée</p>
+            </div>
+        {% else %}
+            <div class="textarea commentaire_externe">
+                <div>
+                    <h4>Commentaire :</h4>
+                    <small>Ce commentaire restera dans le comité</small></th>
+                </div>
+                <div class="texte">{{ expertise.commentaireInterne }}</div>
+            </div>
+            <div class="textarea commentaire_externe">
+                <div>
+                    <h4>Proposition :</h4>
+                </div>
+                <div class="texte">
+                    {{ expertise.nbheuresatt }}
+                    {% if expertise.nbheuresattete != 0 %}
+                        (dont {{ expertise.nbheuresattete }} pour l'été)
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {#
+    {% if erreur==1 %}
+        <div class="message erreur"><p>ERREUR: Vous n'avez pas rempli les deux champs de commentaire</p></div>
+    {% elseif erreur==3 %}
+        <div class="message erreur"><p>ERREUR: Vous ne pouvez pas attribuer plus d'heures pour l'été que pour la session</p></div>
+    {% endif %}
+    #}
+
+    {% if not erreurs == null %}
+    <div class="information error">
+    {% for erreur in erreurs %}
+    <p>ERREUR: {{ erreur }}</p>
+    {% endfor %}
+    </div>
+    {% endif %}
+
+        <h3>Votre expertise </h3>
+
+    {# bouton de validation et commentaire externe marchent ensemble #}
+
+
+    {% if commentaireExterne %}
+    <div class="input">
+        <div>
+            <h4>Validation :</h4>
+        </div>
+        <div class="validation">
+            {{ form_widget(edit_form.validation)  }}
+        </div>
+    </div>
+    {% endif %}
+
+        {% if commentaireExterne %}
+            <div class="textarea commentaire_externe">
+                <div>
+                    <h4>Commentaire :</h4>
+                    <small>Ce commentaire sera envoyé au responsable du projet</small></th>
+                </div>
+                {{ form_widget(edit_form.commentaireExterne,{ 'attr': { 'class': 'compteur', 'rows' : 10, 'cols' : 100 } }) }}
+            </div>
+        {% endif %}
+
+    <div class="textarea">
+        <div>
+            <h4>Commentaire pour le comité :</h4>
+            <small>Ce commentaire restera au sein du comité d'attribution</small>
+        </div>
+        {{ form_widget(edit_form.commentaireInterne,{ 'attr': { 'class': 'compteur', 'rows' : 10, 'cols' : 100 } }) }}
+    </div>
+
+    <div class="input">
+        <div>
+            <h4>Nombre d'heures attribuées :</h4>
+            {% if version.projettest %}
+                <small>pour cette année</small>
+            {% else %}
+                <small>pour cette session</small>
+            {% endif %}
+        </div>
+            {{ form_widget(edit_form.nbHeuresAtt) }}
+    </div>
+
+
+            {# Heures d'été seulement si le paramètre heures_ete vaut true, si projet session, et si session B #}
+            {% if heures_ete and session.typesession==true and version.projet.typeprojet == 1 %}
+    <div class="input">
+        <div>
+            <h4>Parmi ces heures, Nombre d'heures attribuées pour l'été</h4>
+            <small>Il s'agit d'allouer des heures qui doivent être utilisées avant la fin de l'été, faute de quoi elles pourront être récupérées</small>
+        </div>
+        {{ form_widget(edit_form.nbHeuresAttEte) }}
+    </div>
+            {% endif %}
+
+
+
+<div id="panneau_enregistrer">
+    <div class="panneau">
+        <div class="boutons">
+            {{ form_widget(edit_form.enregistrer, {'attr': {'title' : 'Enregistrer l\'expertise et continuer'}}) }}
+            {{ form_widget( edit_form.annuler,{ 'attr': { 'title' : 'Abandonner les modifications' } }) }}
+            {{ form_widget( edit_form.fermer, { 'attr': { 'title' : 'Enregistrer et fermer l\'expertise' } }) }}
+        </div>
+        
+        <div class="fleches">
+            {% if prev!=null %}
+                <a href="{{ path('expertise_modifier', { 'id' : prev.id } ) }}" class="fleche" title="Expertise précédente" alt="Expertise précédente">{{icones.fleche_gauche}}</a>
+            {% else %}
+                <a class="fleche disabled" title="Pas d'expertise précédente" alt="Pas d'expertise précédente">{{icones.fleche_gauche}}</a>
+            {% endif %}
+            {% if next!=null %}
+                <a href="{{ path('expertise_modifier', { 'id' : next.id } ) }}"class="fleche" title="Expertise suivante" alt="Expertise suivante">{{icones.fleche_droite}}</a>
+            {% else %}
+                <a class="fleche disabled" title="Pas d'expertise suivante" alt="Pas d'expertise suivante">{{icones.fleche_droite}}</a>
+            {% endif %}
+        </div>
+
+        {% if peut_envoyer %}
+            <div class="boutons envoyer">
+                {{ form_widget(edit_form.envoyer) }}
+            </div>
+        {% endif %}
+
+    </div>
+
+    <div class="menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+
+{{ form_end(edit_form) }}
+
+{% if noconso==false %}
+<div id="dialog-compta" class="graphique"></div>
+{% endif %}
+
+</section>
+{% endblock %}

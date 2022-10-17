@@ -1,0 +1,32 @@
+{{ form_start( form ) }}
+
+<table class="projet">
+    <tbody>
+        <tr>
+            <th>Référence bibliographique<br><span class="petit">(champ obligatoire)</span></th>
+            <td>{{ form_widget( form.refbib,
+                { 'attr': { 'size': '100', 'class' : 'refbib ui-autocomplete-input' , 'id' : 'refbib', 'data-autocomplete': path('publication_autocomplete')  } }
+                    ) }}
+            </td>
+        </tr>
+        <tr>
+            <th>Année de publication<br><span class="petit">(champ obligatoire)</span></th>
+             <td class="inputrond">{{ form_widget( form.annee ) }}{{ form_widget( form.idPubli , { 'attr': {  style : "display:NONE" } }   ) }}</td> 
+        </tr>
+        <tr>
+            <th>doi <small>(cf. <a href="http://www.doi.org/" target="_blank">www.doi.org</a>)</small><br><span class="petit">(champ optionnel)</span></th>
+            <td>{{ form_widget( form.doi,  { 'attr': { 'size': '60' }} ) }}</td>
+        </tr>
+        <tr>
+            <th>url pour accès ouvert<br><span class="petit">(champ optionnel)</span></th>
+            <td>{{ form_widget( form.openUrl,  { 'attr': { 'size': '60' }}) }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="formulaire inputrond submitdyn">
+    <input value="Enregistrer" type="submit"><input value="Annuler" type="reset">
+</div>
+    
+{{ form_end( form ) }}
+

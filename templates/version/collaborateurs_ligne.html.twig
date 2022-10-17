@@ -1,0 +1,18 @@
+{# {{ form_start(form) }} #}
+
+{% apply spaceless %}
+    <tr>
+    {% for item in form %}
+        <td class="collection-tbody-new">
+        {{ form_widget(item, { 'attr': { 'class': 'collection-tbody-new' }}) }} 
+        </td>
+    {% endfor %}
+    </tr>
+{% endapply %}
+
+{#  {{ form_end(form) }} #}
+
+
+
+
+

@@ -1,0 +1,131 @@
+{% extends 'version/collaborateurs.html.twig' %}
+
+{% block myjavascripts %}
+
+{{ parent() }}
+
+<script   src="{{ asset('js/compteur_caracteres.js') }}" ></script>
+<script   src="{{ asset('js/figures.js') }}" ></script>
+<script   src="{{ asset('js/jquery-upload-file-master/js/jquery.uploadfile.min.js') }}" ></script>
+<script   src="{{ asset('js/upload.js') }}" ></script>
+<script   src="{{ asset('js/formulaire_onglet.js') }}" ></script>
+
+<script>
+  $( function()
+    {
+    $( "#onglets" ).tabs( { classes: { "ui-tabs": "highlight" } });
+    });
+</script>
+
+{% endblock myjavascripts %}
+
+
+{# ####################################################################################################### #}
+{% form_theme form _self %}
+{% form_theme collaborateur_form _self %}
+
+{% block form_start %} {# pour ajouter enctype="multipart/form-data" pour upload #}
+ {% set method = method|upper %}
+    {%- if method in ["GET", "POST"] -%}
+        {% set form_method = method %}
+    {%- else -%}
+        {% set form_method = "POST" %}
+    {%- endif -%}
+    <form name="{{ name }}" method="{{ form_method|lower }}"{% if action != '' %} action="{{ action }}"{% endif %}{% for attrname, attrvalue in attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %} enctype="multipart/form-data">
+    {%- if form_method != method -%}
+        <input type="hidden" name="_method" value="{{ method }}" />
+    {%- endif -%}
+
+{% endblock form_start %}
+
+{# ####################################################################################################### #}
+
+{% import "default/macros_panneau_enregistrer.html.twig" as panneau_enregistrer %}
+
+
+{% block body %}
+
+<section id="section_modifierProjet">
+
+<h1>Demande de ressources - projet {{ version.projet }} (session {{ version.session }})</h1>
+
+{% if not todo is empty %}
+<div class="information attention">
+    <h2>Champs à compléter</h2>
+    Les champs ci-dessous <strong>doivent être complétés</strong> avant que vous puissiez envoyer votre projet en expertise.<br>
+
+    {% if 'prj_titre' in todo %}<a href="#form_prjTitre" class="gerer_onglets">titre du projet</a><br>{% endif %}
+    {% if 'dem_heures' in todo %}<a href="#form_demHeures" class="gerer_onglets">Nombre d'heures demandées</a><br>{% endif %}
+    {% if 'prj_id_thematique' in todo %}<a href="#form_prjThematique" class="gerer_onglets">Choix d'une thématique</a><br>{% endif %}
+    {% if 'prj_expose' in todo %}<a href="#form_prjExpose" class="gerer_onglets">Exposé scientifique</a><br>{% endif %}
+    {% if 'code_nom' in todo %}<a href="#form_codeNom" class="gerer_onglets">Nom du logiciel</a><br>{% endif %}
+    {% if 'code_licence' in todo %}<a href="#form_codeLicence" class="gerer_onglets">Licence du logiciel</a><br>{% endif %}
+    {% if 'genci' in todo %}<a href="#form_genci" class="gerer_onglets">Heures sur les centres nationaux</a><br>{% endif %}
+
+    {% if 'prj_justif_renouv' in todo %}<a href="#form_prjJustifRenouv" class="gerer_onglets">Justification du renouvellement</a><br>{% endif %}
+    {% if 'collabs' in todo %}
+        <a href="#liste_des_collaborateurs" class="gerer_onglets">Liste des collaborateurs</a><br>{% endif %}
+    {% if 'rapport_activite' in todo %}<a href="#rapport_activite" class="gerer_onglets">Téléverser le rapport d'activité de l'année précédente</a><br>{% endif %}
+</div>
+{% endif %} {# {% if not todo is empty %}  #}
+
+<em>Dernière modification par {{ version.majInd }} le {{ version.majStamp | date('d.m.Y H:i:s') }}</em>
+
+{{ form_start( form , { 'attr': { 'id': 'form_projet' } } )  }}
+
+<div id="onglets" >
+
+<nav id="menu_formulaire">
+  <ul id="ul_formulaire" >
+    <li >
+        <a href="#tab1">Présentation</a>
+    </li>
+    <li >
+        <a href="#tab2">La science</a>
+    </li>
+    <li>
+        <a href="#tab3">La technique</a>
+    </li>
+    {% if nodata == false %}
+    <li >
+        <a href="#tab4">Les données</a>
+    </li>
+    {% endif %}
+    <li >
+        <a href="#tab5">Formation</a>
+    </li>
+    <li>
+        <a href="#tab6">TURPAN</a>
+    </li>
+    <li>
+        <a href="#tab7">BOREAL</a>
+    </li>
+  </ul>
+</nav>
+
+{% include('version/modifier_projet_sess.partie_I.html.twig') %}
+{% include('version/modifier_projet_sess.partie_II.html.twig') %}
+{% include('version/modifier_projet_sess.partie_III.html.twig') %}
+{% if nodata == false %}
+{% include('version/modifier_projet_sess.partie_IV.html.twig') %}
+{% endif %}
+{% include('version/modifier_projet_sess.partie_V.html.twig') %}
+{% include('version/modifier_projet_sess.partie_VI.html.twig') %}
+{% include('version/modifier_projet_sess.partie_VII.html.twig') %}
+
+{# ################################################################################## #}
+
+</div>
+
+
+{# Les boutons pour enregistrer / fermer #}
+{{ panneau_enregistrer.panneau_enregistrer(form,false) }}
+
+{{ form_end(form) }}
+
+
+<div id="enregistrer_message" ></div>
+
+<p class="center"><small><strong>Protection de vos données personnelles: <a href="{{ path('mentions_legales') }}" title="Lire les mentions légales" target="_blank" >voir ici</a> notre charte de protection des données.</strong></small></p>
+</section>
+{% endblock %}
