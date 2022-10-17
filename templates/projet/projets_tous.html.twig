@@ -141,7 +141,7 @@
                         {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
                     </td>
                     <td>{{ item.count }}</td>
-                    <td>{% if( item.version != null) %}{{ item.version.session.idSession }}{% endif %}</td>
+                    <td>{% if( item.version != null) %}{{ item.version.session }}{% endif %}</td>
                     <td>{{ item.dem }}</td>
                     <td>{{ item.attr }}</td>{#
                     #}

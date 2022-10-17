@@ -105,7 +105,7 @@ class ProjetController extends AbstractController
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
-        private GramcDate $sd,
+        private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
@@ -223,7 +223,7 @@ class ProjetController extends AbstractController
      */
     public function tousCSVAction(): Response
     {
-        $sd = $this->sd;
+        $grdt = $this->grdt;
         $em = $this->em;
 
         $entetes =
@@ -242,7 +242,7 @@ class ProjetController extends AbstractController
                 "Heures attribuées cumulées",
                 ];
 
-        $sortie     =   "Projets enregistrés dans gramc à la date du " . $sd->format('d-m-Y') . "\n" . join("\t", $entetes) . "\n";
+        $sortie     =   "Projets enregistrés dans gramc à la date du " . $grdt->format('d-m-Y') . "\n" . join("\t", $entetes) . "\n";
 
         $projets = $em->getRepository(Projet::class)->findBy([], ['idProjet' => 'DESC' ]);
         foreach ($projets as $projet) {
@@ -704,13 +704,13 @@ class ProjetController extends AbstractController
 
     public function anneeAction(Request $request): Response
     {
-        $sd = $this->sd;
+        $grdt = $this->grdt;
         $ss = $this->ss;
         $data  = $ss->selectAnnee($request); // formulaire
         $annee = $data['annee'];
 
-        $isRecupPrintemps = $sd->isRecupPrintemps($annee);
-        $isRecupAutomne   = $sd->isRecupAutomne($annee);
+        $isRecupPrintemps = $grdt->isRecupPrintemps($annee);
+        $isRecupAutomne   = $grdt->isRecupAutomne($annee);
 
         $sp      = $this->sp;
         $paa     = $sp->projetsParAnnee($annee, $isRecupPrintemps, $isRecupAutomne);
@@ -1091,7 +1091,7 @@ class ProjetController extends AbstractController
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
-    public function avantNouveauAction(Request $request, $type): Response
+    public function avantNouveauAction(Request $request, int $type): Response
     {
         $sm = $this->sm;
         $sj = $this->sj;
@@ -1116,8 +1116,8 @@ class ProjetController extends AbstractController
             [
             'renouvelables' => $renouvelables,
             'type'          => $type,
-        'session'       => $session
-    ]
+            'session'       => $session
+            ]
         );
     }
 
@@ -1131,17 +1131,18 @@ class ProjetController extends AbstractController
      */
     public function nouveauAction(Request $request, $type): Response
     {
-        $sd = $this->sd;
+        $grdt = $this->grdt;
         $sm = $this->sm;
         $ss = $this->ss;
         $sp = $this->sp;
         $sv = $this->sv;
         $sj = $this->sj;
+        $grdt = $this->grdt;
         $token = $this->tok->getToken();
         $em = $this->em;
 
         // Si changement d'état de la session alors que je suis connecté !
-           // + contournement d'un problème lié à Doctrine
+        // + contournement d'un problème lié à Doctrine
         $request->getSession()->remove('SessionCourante'); // remove cache
 
         // NOTE - Pour ce controleur, on identifie les types par un chiffre (voir Entity/Projet.php)
@@ -1159,8 +1160,8 @@ class ProjetController extends AbstractController
         }
 
         // Création du projet
-        $annee    = $session->getAnneeSession();
-        $projet   = new Projet($type);
+        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
+        $projet = new Projet($type);
         $projet->setIdProjet($sp->NextProjetId($annee, $type));
         $projet->setNepasterminer(false);
         $projet->setEtatProjet(Etat::RENOUVELABLE);
@@ -1169,11 +1170,24 @@ class ProjetController extends AbstractController
         $em->persist($projet);
         $em->flush();
 
-        // Création de la première (et dernière) version
-        $version    =   new Version();
-        $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
+        // Création de la première version
+        $version = new Version();
+
+        // setProjet fixe aussi le type de la version (cf getVersionType())
+        // important car le type du projet peut changer !
         $version->setProjet($projet);
-        $version->setSession($session);
+        if ($type == Projet::PROJET_DYN)
+        {
+            $version->setNbVersion("01");
+            $version->setIdVersion("01" . $projet->getIdProjet());
+        }
+        else
+        {
+            $version->setSession($session);
+            $version->setNbVersion("01");
+            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
+        }
+        
         $sv->setLaboResponsable($version, $token->getUser());
 
         $version->setEtatVersion(Etat::EDITION_DEMANDE);

@@ -29,7 +29,7 @@
 
         <h2>
             Projet : {{ projet }}
-            (Année XX)
+            (version {{ version.nbversion }})
             <br>
             <small>
                 <em>{{ version.getMetaEtat }}</em>
@@ -126,13 +126,14 @@
 
 {% if pdf is defined %}
     <div id="I" class="details">
-        <h3>I - Présentation générale</h3>
+        <h3>Présentation générale</h3>
 {% else %}
     <details id="I">
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}I - Présentation générale</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Présentation générale</summary>
 {% endif %}
 
         <div class="chapitre">
+        {% if noconso == false %}
         {% if conso_gpu[0] > 0 %}
             <div class="information ok">
                 <p>Les heures gpu sont affichées en heures
@@ -140,14 +141,6 @@
                 </p>
             </div>
         {% endif %}
-
-        {% if warn_type==1 and session.etatsession != 2 %}
-            <div class="information attention">
-                <strong>ATTENTION</strong>
-                - Vous ne pouvez demander plus de {{prj_seuil_sess}}
-                heures actuellement. 
-                Vous pourrez demander à nouveau des heures (sans limitation) lors de la prochaine session d'attribution.
-            </div>
         {% endif %}
 
         <table class="table_vertical">
@@ -377,10 +370,10 @@
 
 {% if pdf is defined %}
     <div id="II" class="details">
-        <h3>II - Description scientifique du projet de recherche</h3>
+        <h3>Description scientifique du projet de recherche</h3>
 {% else %}
     <details id="II">
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}II - Description scientifique du projet de recherche</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Description scientifique du projet de recherche</summary>
 {% endif %}
 
     <div class="chapitre">
@@ -409,10 +402,10 @@
 
 {% if pdf is defined %}
     <div id="III" class="details">
-        <h3>III - Description technique du projet</h3>
+        <h3>Description technique du projet</h3>
 {% else %}
     <details id="III">
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}III - Description technique du projet</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Description technique du projet</summary>
 {% endif %}
 
     <div class="chapitre">
@@ -446,10 +439,10 @@
 
     {% if pdf is defined %}
     <div class="details">
-        <h3>IV - Les données</h3>
+        <h3>Les données</h3>
     {% else %}
     <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}IV - Les données</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Les données</summary>
     {% endif %}
 
         <div class="chapitre">
@@ -510,10 +503,10 @@
 
 {% if pdf is defined %}
     <div class="details">
-        <h3>V - Formation</h3>
+        <h3>Formation</h3>
 {% else %}
     <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}V - Formation</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Formation</summary>
 {% endif %}
     <div class="chapitre">
 
@@ -551,12 +544,119 @@
 {% else %}
     </details>
 {% endif %}
-    
+
+{% if pdf is defined %}
+    <div class="details">
+        <h3>Turpan</h3>
+{% else %}
+    <details>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Turpan</summary>
+{% endif %}
+    <div class="chapitre">
+        <table class="table_vertical">
+            <tbody>
+                <tr>
+                    <th>Heures demandées</th>
+                    <td>{{ (version.demHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Heures attribuées</th>
+                    <td>{{ (version.attrHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                {% if noconso == 0 %}
+                <tr>
+                    <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
+                    <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
+                </tr>
+        
+                <tr>
+                    <th>Nombre d'heures consommées<br>
+                        <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
+                    </th>
+                    <td>{# {{ version.conso }}
+                        {% if(version.getQuota > 0) %}
+                            ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
+                        {% endif %}
+                        <br> #}
+                        {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
+                        {% if(quota!=0) %} 
+                            ({{consop|number_format(1)}} %) 
+                        {% endif %}
+                        {% if conso_gpu[0] != 0 %}
+                            - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% if pdf is defined %}
+    <div class="details">
+        <h3>Boreal</h3>
+{% else %}
+    <details>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Boreal</summary>
+{% endif %}
+    <div class="chapitre">
+        <table class="table_vertical">
+            <tbody>
+                <tr>
+                    <th>Heures demandées</th>
+                    <td>{{ (version.demHeuresCriann)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Heures attribuées</th>
+                    <td>{{ (version.attrHeuresCriann)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                {% if noconso == 0 %}
+                <tr>
+                    <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
+                    <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
+                </tr>
+        
+                <tr>
+                    <th>Nombre d'heures consommées<br>
+                        <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
+                    </th>
+                    <td>{# {{ version.conso }}
+                        {% if(version.getQuota > 0) %}
+                            ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
+                        {% endif %}
+                        <br> #}
+                        {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
+                        {% if(quota!=0) %} 
+                            ({{consop|number_format(1)}} %) 
+                        {% endif %}
+                        {% if conso_gpu[0] != 0 %}
+                            - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
 {% if version.etat in [ 4, 5, 6, 9 ] %}
 
 {% if pdf is defined %}
     <div class="details">
-        <h3>VI - Commentaire des valideurs</h3>
+        <h3>Commentaire des valideurs</h3>
 {% else %}
     <details>
         <summary>{{icones.plus_summary}}{{icones.trait_summary}}VI - Commentaire des experts</summary>

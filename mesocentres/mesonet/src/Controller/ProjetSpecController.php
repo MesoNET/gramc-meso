@@ -144,8 +144,6 @@ class ProjetSpecController extends AbstractController
 
         $projets_term        = $projetRepository-> get_projets_etat($id_individu, 'TERMINE');
 
-        $session_actuelle    = $ss->getSessionCourante();
-
         // TODO - Faire en sorte pour que les erreurs soient proprement affichées dans l'API
         // En attendant ce qui suit permet de se dépanner mais c'est franchement dégueu
         //echo '<pre>'.strlen($_SERVER['CLE_DE_CHIFFREMENT'])."\n";
@@ -241,18 +239,8 @@ class ProjetSpecController extends AbstractController
                 ];
         }
 
-        /*
-         * SEPT 2021 - On n'utilise pas le ServiceMenu
-         *             car on a une version spécifique de ces méthodes
-         *             En effet chez CALMIP pas de projet fil de l'eau, on utilise le code dédié aux
-         *             projets fil de l'eau pour les projets tests
-         *             Du coup c'est un peu atypique
-         *             Pas super-propre mais en principe provisoire
-         * 
-         */
-        $menu[] = $this->menu_nouveau_projet_sess($individu);
-        $menu[] = $this->menu_nouveau_projet_test($individu);
-        
+        $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
+
         return $this->render(
             'projet/demandeur.html.twig',
             [
@@ -262,101 +250,6 @@ class ProjetSpecController extends AbstractController
                 'menu'            => $menu,
                 ]
         );
-    }
-
-    /*
-     * Création d'un projet de type PROJET_SESS:
-     *     - Peut être créé seulement lors des sessions d'attribution
-     *     - Renouvelable à chaque session
-     *     - Créé seulement par un permanent, qui devient responsable du projet
-     *
-     */
-    private function menu_nouveau_projet_sess(individu $user)
-    {
-        $menu = [];
-        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet actuellement";
-        $menu['name']   =   'avant_nouveau_projet';
-        $menu['params'] =   [ 'type' =>  Projet::PROJET_SESS ];
-        $menu['icone']   =   'nouveauProjet';
-        $menu['lien']   =   'Nouveau projet';
-        $menu['ok'] = false;
-
-        $session =  $this->ss->getSessionCourante();
-        if ($session == null) {
-            $menu['raison'] = "Il n'y a pas de session courante";
-            return $menu;
-        }
-
-        $etat_session   =   $session->getEtatSession();
-
-        if (! $user->peutCreerProjets()) {
-            $menu['raison'] = "Seuls les personnels permanents des laboratoires enregistrés peuvent créer un projet";
-        } elseif ($etat_session == Etat::EDITION_DEMANDE) {
-            $menu['raison'] = '';
-            $menu['commentaire'] = "Créez un nouveau projet, vous en serez le responsable";
-            $menu['ok'] = true;
-        } else {
-            $menu['raison'] = 'Nous ne sommes pas en période de demande, pas possible de créer un nouveau projet';
-            $menu['icone']   =   'nouveauProjet';
-        }
-
-        return $menu;
-    }
-
-    /*
-     * Création d'un projet de type PROJET_TEST
-     *     - techniquement c'est un PROJET_FIL:
-     *     - Peut être créé seulement si la dernière session est ACTIF
-     *
-     */
-    public function menu_nouveau_projet_test(Individu $user)
-    {
-        $menu   =   [];
-        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet test actuellement";
-        $menu['name']   =   'avant_nouveau_projet';
-        $menu['params'] =   [ 'type' =>  Projet::PROJET_FIL ];
-        $menu['icone']   =   'nouveauProjet';
-        $menu['lien']   =   'Nouveau projet TEST';
-        $menu['ok'] = false;
-
-        $session =  $this->ss->getSessionCourante();
-        if ($session == null)
-        {
-            $menu['raison'] = "Il n'y a pas de session courante";
-            return $menu;
-        }
-        if ($user == null)
-        {
-            $menu['raison'] = "Connection anonyme ?";
-            return $menu;
-        }
-
-        $etat_session   =   $session->getEtatSession();
-        //$this->sj-> debugMessage(__METHOD__ . ':' . __LINE__ . "countProjetsTestResponsable = " .
-        //     $this->em->getRepository(Projet::class)->countProjetsTestResponsable( getUser() ));
-
-        //if ($this->em->getRepository(Projet::class)->countProjetsTestResponsable($user) > 0) {
-        //    $menu['raison'] = "Vous êtes déjà responsable d'un projet test";
-        //    return $menu;
-        //}
-
-        // manu, 11 juin 2019: tout le monde peut créer un projet test. Vraiment ???
-        // manu, Octobre 2021: ben non si on autorise ici ça va coincer plus tard !
-        if( ! $user->peutCreerProjets() )
-        {
-            $menu['raison'] = "Vous n'avez pas le droit de créer un projet test, peut-être faut-il mettre à jour votre profil ?";
-            return $menu;
-        }
-
-        elseif ($etat_session != Etat::ACTIF)
-        {
-            $menu['raison'] = "Il n'est pas possible de créer un projet test en période d'attribution";
-            return $menu;
-        }
-
-        $menu['commentaire'] = "Créer un projet test: 5000h max, uniquement pour faire des essais et avoir une idée du nombre d'heures dont vous avez besoin.";
-        $menu['ok'] = true;
-        return $menu;
     }
 
     /**
@@ -415,16 +308,18 @@ class ProjetSpecController extends AbstractController
 
         // LA SUITE DEPEND DU TYPE DE PROJET !
         // Même affichage pour projets de type 2 et 3 (projets test => projets fil)
-        // Même affichage pour projets de type 1 et 4
+        // Affichage pour projets de type 1
+        // Affichege pour projets de type 4
         $type = $projet->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_SESS:
-            case Projet::PROJET_DYN:
                 return $this->consulterType1($projet, $version, $loginname, $request, $warn_type);
             case Projet::PROJET_TEST:
                 return $this->consulterType2($projet, $version, $loginname, $request, $warn_type);
             case Projet::PROJET_FIL:
                 return $this->consulterType3($projet, $version, $loginname, $request, $warn_type);
+            case Projet::PROJET_DYN:
+                return $this->consulterType4($projet, $version, $loginname, $request);
             default:
                 $sj->errorMessage(__METHOD__ . " Type de projet inconnu: $type");
         }
@@ -610,8 +505,8 @@ class ProjetSpecController extends AbstractController
         );
     }
 
-    // Consulter les projets de type 4 (projets dyn, c-a-d projets affranchis des sessions)
-    private function consulterType4(Projet $projet, Version $version, $loginname, Request $request, $warn_type)
+    // Consulter les projets de type 4
+    private function consulterType4(Projet $projet, Version $version, $loginname, Request $request)
     {
         $em = $this->em;
         $sm = $this->sm;
@@ -620,31 +515,41 @@ class ProjetSpecController extends AbstractController
         $sv = $this->sv;
         $sj = $this->sj;
         $ff = $this->ff;
+        $ss = $this->ss;
 
-        $session_form = Functions::createFormBuilder($ff, ['version' => $version ])
-        ->add(
-            'version',
-            EntityType::class,
-            [
-            'multiple' => false,
-            'class'    => Version::class,
-            'required' =>  true,
-            'label'    => '',
-            'choices'  =>  $projet->getVersion(),
-            'choice_label' => function ($version) {
-                return $version->getSession();
-            }
-            ]
-        )
-        ->add('submit', SubmitType::class, ['label' => 'Changer'])
-        ->getForm();
+        //$session_form = Functions::createFormBuilder($ff, ['version' => $version ])
+        //->add(
+            //'version',
+            //EntityType::class,
+            //[
+            //'multiple' => false,
+            //'class'    => Version::class,
+            //'required' =>  true,
+            //'label'    => '',
+            //'choices'  =>  $projet->getVersion(),
+            //'choice_label' => function ($version) {
+                //return $version->getSession();
+            //}
+            //]
+        //)
+        //->add('submit', SubmitType::class, ['label' => 'Changer'])
+        //->getForm();
         
-        $session_form->handleRequest($request);
+        //$session_form->handleRequest($request);
 
-        if ($session_form->isSubmitted() && $session_form->isValid()) {
-            $version = $session_form->getData()['version'];
-        }
+        //if ($session_form->isSubmitted() && $session_form->isValid()) {
+            //$version = $session_form->getData()['version'];
+        //}
 
+        //$session = null;
+        //if ($version != null) {
+            //$session = $version->getSession();
+        //} else {
+            //$sj->throwException(__METHOD__ . ':' . __LINE__ .' projet ' . $projet . ' sans version');
+        //}
+
+        $data = $ss->selectAnnee($request);
+        
         $menu = [];
         if ($ac->isGranted('ROLE_ADMIN')) {
             $menu[] = $sm->nouvelleRallonge($projet);
@@ -664,6 +569,11 @@ class ProjetSpecController extends AbstractController
         $menu[] = $sm->televerserFiche($version);
 
         $etat_version = $version->getEtatVersion();
+        if ($this->getParameter('rapport_dactivite')) {
+            if (($etat_version == Etat::ACTIF || $etat_version == Etat::TERMINE) && ! $sp->hasRapport($projet, $version->getAnneeSession())) {
+                $menu[] = $sm->telechargerModeleRapportDactivite($version,ServiceMenus::BPRIO);
+            }
+        }
         $img_expose = [
             $sv->imageProperties('img_expose_1', 'Figure 1', $version),
             $sv->imageProperties('img_expose_2', 'Figure 2', $version),
@@ -677,23 +587,38 @@ class ProjetSpecController extends AbstractController
             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)
         ];
         
+        //$toomuch = false;
+        //if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
+            //$version_prec = $version->versionPrecedente();
+            //if ($version_prec->getAnneeSession() == $version->getAnneeSession()) {
+                //$toomuch  = $sv -> is_demande_toomuch($version_prec->getAttrHeures(), $version->getDemHeures());
+            //}
+        //}
+        //$rapport_1 = $sp -> getRapport($projet, $version->getAnneeSession() - 1);
+        //$rapport   = $sp -> getRapport($projet, $version->getAnneeSession());
+
         $formation = $sv->buildFormations($version);
 
-        $tmpl = 'projet/consulter_projet_dyn.html.twig';
+        $tmpl = 'projet/consulter_projet_sess.html.twig';
+        
         return $this->render(
             $tmpl,
             [
-                'warn_type'          => $warn_type,
+                'warn_type'          => false,
                 'projet'             => $projet,
                 'loginname'          => $loginname,
-                'version_form'       => $session_form->createView(),
+                //'version_form'       => $session_form->createView(),
                 'version'            => $version,
+                'session'            => null,
                 'menu'               => $menu,
                 'img_expose'         => $img_expose,
                 'img_justif_renou'   => $img_justif_renou,
-                'conso_cpu'          => $sp->getConsoRessource($projet, 'cpu', $version->getAnneeSession()),
-                'conso_gpu'          => $sp->getConsoRessource($projet, 'gpu', $version->getAnneeSession()),
+               // 'conso_cpu'          => $sp->getConsoRessource($projet, 'cpu', $version->getAnneeSession()),
+               // 'conso_gpu'          => $sp->getConsoRessource($projet, 'gpu', $version->getAnneeSession()),
+                //'rapport_1'          => $rapport_1,
+                //'rapport'            => $rapport,
                 'document'           => $document,
+                'toomuch'            => false,
                 'formation'          => $formation
             ]
         );

@@ -47,7 +47,7 @@
 
 <section id="section_modifierProjet">
 
-<h1>Demande de ressources - projet {{ version.projet }} (session {{ version.session }})</h1>
+<h1>Demande de ressources - projet {{ version.projet }} {% if version.typeVersion != 4 %}(session {{ version.session }}){% endif %}</h1>
 
 {% if not todo is empty %}
 <div class="information attention">

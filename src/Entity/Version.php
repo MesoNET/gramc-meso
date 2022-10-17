@@ -48,7 +48,7 @@ class Version implements Demande
     /**
      * @var integer
      *
-     * @ORM\Column(name="type_version", type="integer", nullable=true)
+     * @ORM\Column(name="type_version", type="integer", nullable=true, options={"comment":"type du projet associé (le type du projet peut changer)"})
      */
     private $typeVersion;
 
@@ -332,6 +332,14 @@ class Version implements Demande
      * })
      */
     private $session;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nb_version", type="string", length=5, options={"comment":"Numéro de version (01,02,03,...)"})
+     * 
+     */
+    private $nbVersion;
 
     /**
      * @var \App\Entity\Projet
@@ -1322,6 +1330,30 @@ class Version implements Demande
     }
 
     /**
+     * Set CGU
+     *
+     * @param boolean $CGU
+     *
+     * @return Version
+     */
+    public function setCGU($CGU)
+    {
+        $this->CGU = $CGU;
+
+        return $this;
+    }
+
+    /**
+     * Get CGU
+     *
+     * @return boolean
+     */
+    public function getCGU()
+    {
+        return $this->CGU;
+    }
+
+    /**
      * Set prjThematique
      *
      * @param \App\Entity\Thematique $prjThematique
@@ -1391,6 +1423,30 @@ class Version implements Demande
     public function getSession()
     {
         return $this->session;
+    }
+
+    /**
+     * Set nbVersion
+     *
+     * @param string $idVersion
+     *
+     * @return Version
+     */
+    public function setNbVersion($nbVersion)
+    {
+        $this->nbVersion = $nbVersion;
+
+        return $this;
+    }
+
+    /**
+     * Get nbVersion
+     *
+     * @return string
+     */
+    public function getNbVersion()
+    {
+        return $this->nbVersion;
     }
 
     /**
@@ -1676,10 +1732,19 @@ class Version implements Demande
         return $attrHeures;
     }
 
+    ////////////////////////////////////////////////////////////////////
+    // TODO - un poil redondant !
+    // On ne passe pas par la session afin de gérer les projets dynamiques !
     public function getAnneeSession()
     {
-        return $this->getSession()->getAnneeSession() + 2000;
+        //return $this->getSession()->getAnneeSession() + 2000;
+        return $this->getFullAnnee();
     }
+    public function getFullAnnee()
+    {
+        return '20' . substr($this->getIdVersion(), 0, 2);
+    }
+    ////////////////////////////////////////////////////////////////////
 
     public function getLibelleEtat()
     {
@@ -1925,13 +1990,6 @@ class Version implements Demande
             //Functions::noticeMessage(__METHOD__ . " version " . $this . " n'a pas d'expertise !");
             return null;
         }
-    }
-
-    //////////////////////////////////////////////////
-
-    public function getFullAnnee()
-    {
-        return '20' . substr($this->getIdVersion(), 0, 2);
     }
 
     //////////////////////////////////////////////////

@@ -33,6 +33,7 @@ use App\Entity\RapportActivite;
 use App\Entity\Expertise;
 
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
@@ -111,6 +112,7 @@ class VersionController extends AbstractController
         private ServiceVersions $sv,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
+        private Projet4Workflow $p4w,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private TokenStorageInterface $tok,
@@ -755,7 +757,15 @@ class VersionController extends AbstractController
         $sj = $this->sj;
         $ff = $this->ff;
         $se = $this->se;
-        $projetWorkflow = $this->pw;
+
+        if ($version->getTypeVersion() === Projet::PROJET_DYN)
+        {
+            $projetWorkflow = $this->p4w;
+        }
+        else
+        {
+            $projetWorkflow = $this->pw;
+        }
 
         $em = $this->em;
 
@@ -785,7 +795,7 @@ class VersionController extends AbstractController
             $CGU = $form->getData()['CGU'];
             if ($form->get('annuler')->isClicked())
             {
-                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a toujours pas été envoyé en expertise");
+                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas été envoyé en expertise");
                 return $this->redirectToRoute('consulter_projet', [ 'id' => $projet->getIdProjet() ]);
             }
 

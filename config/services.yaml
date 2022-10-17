@@ -86,7 +86,10 @@ services:
         arguments: ['ressources_conso_group','ressources_conso_user']
      
     App\GramcServices\ServiceSessions:
-        arguments: ['%recup_attrib_seuil%','%recup_conso_seuil%','%recup_attrib_quant%']
+        arguments: ['%recup_attrib_seuil%',
+                    '%recup_conso_seuil%',
+                    '%recup_attrib_quant%',
+                    '%nosession%' ]
 
     App\GramcServices\ServiceProjets:
         arguments: ["%prj_prefix%",
@@ -110,7 +113,7 @@ services:
                     "%resp_peut_modif_collabs%" ]
         
     App\GramcServices\ServiceMenus:
-        arguments: [ "%max_rall%","%nodata%" ]
+        arguments: [ "%max_rall%","%nodata%","%nosession%" ]
         
     App\GramcServices\ServiceNotifications:
         arguments: [ "%mailfrom%","%noedition_expertise%" ]

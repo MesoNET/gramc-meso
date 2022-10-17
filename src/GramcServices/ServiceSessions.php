@@ -43,11 +43,13 @@ class ServiceSessions
     private $recup_conso_seuil = null;
     private $recup_attrib_quant =null;
     private $sessions_non_term = null;
+    private $nosession = false;
 
     public function __construct(
         $recup_attrib_seuil,
         $recup_conso_seuil,
         $recup_attrib_quant,
+        $nosession,
         private GramcDate $grdt,
         private FormFactoryInterface $ff,
         private EntityManagerInterface $em
@@ -85,6 +87,7 @@ class ServiceSessions
     ************************************************************/
     public function getSessionCourante(): ?Session
     {
+        if ($this->nosession) return null;
         if ($this->sessions_non_term==null) {
             $this->initSessionsNonTerm();
         }
@@ -112,6 +115,7 @@ class ServiceSessions
     *******************/
     public function selectSession(FormBuilder $formb, Request $request): array
     {
+        if ($this->nosession) return [];
         $form    = $formb
                     ->add(
                         'session',
@@ -203,6 +207,7 @@ class ServiceSessions
      *******************/
     public function selectSessLbl(Request $request, string $sess_lbl): array
     {
+        if ($this->nosession) return [null,''];
         if ($sess_lbl == '')
         {
             $sess_lbl = 'AB';
@@ -240,6 +245,7 @@ class ServiceSessions
      **/
     public function sessionsParAnnee($annee): array
     {
+        if ($this->nosession) return [];
         $annee -= 2000;
         $sessions = [];
 
@@ -325,6 +331,11 @@ class ServiceSessions
     {
         $grdt = $this->grdt;
         $em   = $this->em;
+
+        if ($this->nosession)
+        {
+            $this->sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - le paramètre nosession est sur true");
+        }
 
         $sess_info = $this->nextSessionInfo();
         $sess_id   = $sess_info['id'];

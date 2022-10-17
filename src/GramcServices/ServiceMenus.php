@@ -64,6 +64,7 @@ class ServiceMenus
     public function __construct(
         private $max_rall,
         private $nodata,
+        private $nosession,
         private ServiceVersions $sv,
         private ServiceProjets $sp,
         private ServiceJournal $sj,
@@ -420,7 +421,9 @@ class ServiceMenus
         case Projet::PROJET_TEST:
         return $this->nouveauProjetTest($priorite);
         break;
-    }
+        case Projet::PROJET_DYN:
+        return $this->nouveauProjetDyn($priorite);
+        }
     }
 
     /*
@@ -546,6 +549,37 @@ class ServiceMenus
         }
 
         $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
+    /*
+     * Création d'un projet de type PROJET_DYN:
+     *     - Peut être créé n'importe quand
+     *     - Renouvelable au bout de 11 mois
+     *     - En standby au bout de 12 mois
+     *     - Terminé 12 mois après le passage en standby si pas renouvelé entre temps
+     *     - Créé seulement par un permanent, qui devient responsable du projet
+     *
+     */
+    private function nouveauProjetDyn(int $priorite=self::HPRIO):array
+    {
+        $menu = [];
+
+        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet dynamique";
+        $menu['name']   =   'nouveau_projet';
+        $menu['params'] =   [ 'type' =>  Projet::PROJET_DYN ];
+        $menu['lien']   =   'Nouveau projet dynamique';
+        $menu['ok']     = false;
+
+        if (! $this->peutCreerProjets()) {
+            $menu['raison'] = "Seuls les personnels permanents des laboratoires enregistrés peuvent créer un projet";
+        } else {
+            $menu['raison'] = '';
+            $menu['commentaire'] = "Créez un nouveau projet, vous en serez le responsable";
+            $menu['ok'] = true;
+        }
+
+        //$this->__prio($menu, $priorite);
         return $menu;
     }
 
@@ -1187,13 +1221,16 @@ class ServiceMenus
         return $menu;
     }
 
-    //////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
 
     public function envoyerEnExpertise(Version $version, int $priorite=self::HPRIO):array
     {
         if ($version == null) {
             return [];
         }
+
+        // Projet/version de type 4 = envoi quand on veut en expertise pas besoin de session !
+        if ($version->getTypeVersion() == Projet::PROJET_DYN) return $this->envoyer4EnExpertise($version, $priorite);
 
         $projet = $version -> getProjet();
         $user   = $this->token->getUser();
@@ -1236,7 +1273,7 @@ class ServiceMenus
                 . " du projet " . $projet . " ne peut pas créer des projets");
         } elseif ($etatVersion ==  Etat::EDITION_EXPERTISE) {
         $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
-    } elseif ($isProjetTest == true) {
+        } elseif ($isProjetTest == true) {
         $menu['raison'] = "ATTENTION - PAS DE PROJETS TESTS ACTUELLEMENT - Adressez-vous au support";
         } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {
             $menu['raison'] = "Le projet test a été annulé !";
@@ -1253,6 +1290,45 @@ class ServiceMenus
             $menu['name']        = 'avant_modifier_version';
         }
 
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
+    // Envoyer en expertise pour un projet de type 4
+    public function envoyer4EnExpertise(Version $version, int $priorite=self::HPRIO):array
+    {
+        $projet = $version -> getProjet();
+        $user   = $this->token->getUser();
+
+        $menu['name']           =   'envoyer_en_expertise';
+        $menu['param']          =   $version->getIdVersion();
+        $menu['lien']           =   "Envoyer en expertise";
+        $menu['icone']           =   "envoyer";
+        $menu['commentaire']    =   "Vous ne pouvez pas envoyer ce projet en expertise";
+        $menu['ok']             =   false;
+        $menu['raison']         =   "";
+        $menu['incomplet']      =   false;
+
+        $etatVersion  = $version->getEtatVersion();
+
+        if ($version->isResponsable($user) == false)
+        {
+            $menu['raison'] = "Seul le responsable du projet peut envoyer ce projet en expertise";
+            $this->__prio($menu, $priorite);
+            return $menu;
+        }
+
+        if ($etatVersion !=  Etat::EDITION_DEMANDE)
+        {
+            $menu['raison'] = "Le projet n'est plus en édition !";
+            $this->__prio($menu, $priorite);
+            return $menu;
+        }
+
+        $menu['ok']          = true;
+        $menu['commentaire'] = "Envoyer votre demande pour expertise. ATTENTION, vous ne pourrez plus la modifier par la suite";
+        $menu['todo']        = "Envoyer le projet en <strong>expertise</strong>";
+        $menu['name']        = 'avant_modifier_version';
         $this->__prio($menu, $priorite);
         return $menu;
     }

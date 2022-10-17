@@ -45,7 +45,8 @@ class Signal
     public const CLK_FERM          = 22;
 
     public const DAT_STDBY         = 30;
-    public const FIN_EVENEMENTS    = 31;
+    public const DAT_SURSIS        = 31;
+    public const FIN_EVENEMENTS    = 32;
 
     // nouveaux signaux
     // const FERMER_RALLONGE       = 40;

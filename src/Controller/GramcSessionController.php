@@ -197,15 +197,19 @@ class GramcSessionController extends AbstractController
         $sm = $this->sm;
         $ss = $this->ss;
         $sid = $this->sid;
-        $session= $ss->getSessionCourante();
-
-        // Lors de l'installation, aucune session n'existe: redirection
-        // vers l'écran de création de session, le seul qui fonctionne !
-        if ($session == null) {
-            if ($this->ac->isGranted('ROLE_ADMIN')) {
-                return $this->redirectToRoute('gerer_sessions');
+        
+        $session = null;
+        if ($this->getParameter('nosession')==false)
+        {
+            // Lors de l'installation, aucune session n'existe: redirection
+            // vers l'écran de création de session, le seul qui fonctionne !
+            $session= $ss->getSessionCourante();
+            if ($session == null) {
+                if ($this->ac->isGranted('ROLE_ADMIN')) {
+                    return $this->redirectToRoute('gerer_sessions');
+                }
+                return $this->redirectToRoute('projet_accueil');
             }
-            return $this->redirectToRoute('projet_accueil');
         }
 
         // Si true, cet utilisateur n'est ni expert ni admin ni président !
