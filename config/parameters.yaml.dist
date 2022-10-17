@@ -80,6 +80,12 @@ parameters:
     # Si != 0, le mécanisme des invitations est désactivé
     noinvitation: 0
 
+    # Y a-t-il des sessions ?
+    nosession: true
+
+    # =====================================================
+    # SI nosession vaut true, ce qui suit est IGNORE
+    #
     # Suppression d'une étape dans le workflow des sessions
     # Cette étape est utile si on a un comité d'attribution constitué,
     # car elle vient APRES la réunion: on attend la réunion ET l'entrée du commentaire de session

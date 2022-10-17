@@ -127,17 +127,21 @@ class GramcSessionController extends AbstractController
         $menu1[] = $sm->gererIndividu();
         $menu1[] = $sm->gererInvitations();
 
-        // $menu2 = [];
-        // $menu2[] = $sm->gererSessions();
-        // $menu2[] = $sm->bilanSession();
+        $menu2 = [];
+        if ($this->getParameter('nosession')==false)
+        {
+            $menu2[] = $sm->gererSessions();
+            $menu2[] = $sm->bilanSession();
 
-        // $menu2[] = $sm->mailToResponsablesRallonge();
-        // $menu2[] = $sm->mailToResponsables();
-        // $menu2[] = $sm->mailToResponsablesFiche();
+            $menu2[] = $sm->mailToResponsablesRallonge();
+            $menu2[] = $sm->mailToResponsables();
+            $menu2[] = $sm->mailToResponsablesFiche();
 
-        // $menu3[] = $sm->projetsSession();
-        // $menu3[] = $sm->projetsAnnee();
+            $menu3[] = $sm->projetsSession();
+            $menu3[] = $sm->projetsAnnee();
+        }
         $menu3[] = $sm->projetsTous();
+
         if ($this->getParameter('nodata')==false) {
             $menu3[] = $sm->projet_donnees();
         }
