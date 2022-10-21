@@ -792,6 +792,46 @@ class IndividuController extends AbstractController
         return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
     }
 
+    /**
+     * Devenir valideur
+     *
+     * @Route("/{id}/devenir_valideur", name="devenir_valideur", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * Method("GET")
+     */
+    public function devenirValideurAction(Request $request, Individu $individu): Response
+    {
+        $individu->setValideur(true);
+        $em = $this->em;
+        $em->persist($individu);
+        $em->flush($individu);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+        } else {
+            return $this->redirectToRoute('individu_gerer');
+        }
+    }
+
+    /**
+     * Cesser d'être valideur
+     *
+     * @Route("/{id}/plus_valideur", name="plus_valideur", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * Method("GET")
+     */
+    public function plusValideurAction(Request $request, Individu $individu):Response
+    {
+        $em = $this->em;
+        $se = $this->se;
+
+        $individu->setValideur(false);
+        $em->persist($individu);
+
+        $em->flush();
+
+        return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+    }
 
     /**
     * Activer

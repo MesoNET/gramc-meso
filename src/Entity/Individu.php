@@ -126,6 +126,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var boolean
      *
+     * @ORM\Column(name="valideur", type="boolean", nullable=false)
+     */
+    private $valideur = false;
+
+    /**
+     * @var boolean
+     *
      * @ORM\Column(name="president", type="boolean", nullable=false)
      */
     private $president = false;
@@ -281,8 +288,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *     - ROLE_DEMANDEUR = Peut demander des ressoureces - Le minimum
      *     - ROLE_ADMIN     = Peut paramétrer l'application et intervenir dans les projets ou le workflow
      *     - ROLE_OBS       = Peut tout observer, mais ne peut agir
-     *     - ROLE_EXPERT    = Peut être affecté à un projet pour expertise
-     *     - ROLE_PRESIDENT = Peut affecter les experts à des projets
+     *     - ROLE_EXPERT    = Peut être affecté à un projet pour expertise (NON UTILISE)
+     *     - ROLE_PRESIDENT = Peut affecter les experts à des projets (NON UTILISE)
+     *     - ROLE_VALIDEUR  = Peut valider des projets dynamiques
      *     - ROLE_SYSADMIN  = Administrateur système, est observateur et reçoit certains mails
      *     - ROLE_ALLOWED_TO_SWITCH = Peut changer d'identité (actuellement kifkif admin)
      */
@@ -299,8 +307,14 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         if ($this->getPresident() == true) {
             $roles[] = 'ROLE_PRESIDENT';
             $roles[] = 'ROLE_EXPERT';
-        } elseif ($this->getExpert() == true) {
+        }
+
+        elseif ($this->getExpert() == true) {
             $roles[] = 'ROLE_EXPERT';
+        }
+
+        if ($this->getValideur() == true) {
+            $roles[] = 'ROLE_VALIDEUR';
         }
 
         if ($this->getObs() == true) {
@@ -525,6 +539,30 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getExpert()
     {
         return $this->expert;
+    }
+
+    /**
+     * Set valideur
+     *
+     * @param boolean $valideur
+     *
+     * @return Individu
+     */
+    public function setValideur($valideur)
+    {
+        $this->valideur = $valideur;
+
+        return $this;
+    }
+
+    /**
+     * Get valideur
+     *
+     * @return boolean
+     */
+    public function getValideur()
+    {
+        return $this->valideur;
     }
 
     /**
