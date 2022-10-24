@@ -1,0 +1,57 @@
+{% extends 'default/base.html.twig' %}
+
+{# ############################################################################################################################ #}
+
+{% block body %}
+
+<section>
+    <h1>Confirmation d'envoi de la validation</h1>
+
+    <div class="message info">Merci de vérifier votre validation avant envoi définitif</div>
+
+    <table class="projet">
+        <tbody>
+            <tr>
+                <th>Numéro de projet</th>
+                <td>{{ expertise.version.projet }}</td>
+            </tr>
+            <tr>
+                <th>Validation</th>
+                <td>
+                    <strong>
+                        {% if( expertise.validation == 0 ) %}
+                        REFUSER ET FERMER LE PROJET
+                        {% elseif( expertise.validation == 1 ) %}
+                        ACCEPTER
+                        {% endif %}
+                    </strong>
+                </td>
+            </tr>
+            <tr>
+                <th>Heures attribuées</th>
+                <td>{{ expertise.nbHeuresAtt}}</td>
+            </tr>
+            <tr>
+                <th>Commentaire interne</th>
+                <td>{{ expertise.commentaireInterne }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="information ok notifications">
+        <h2>Notifications</h2>
+{#        <p>Si le projet est <strong>accepté</strong>,
+        un courriel sera envoyé au responsable de projet avec votre commentaire<br>
+        <p>Si le projet est <strong>refusé</strong>, le président du comité d'attribution devra prendre contact avec l'utilisateur.</p>
+#}
+        <p>Un courriel sera envoyé au responsable de projet avec votre décision et votre commentaire</p>
+    </div>
+
+        <div class="information attention">
+            <strong>Confirmez-vous cette expertise ? </strong><br>
+            {{ form_start(edit_form)  }}
+            {{ form_widget(edit_form)  }}
+            {{ form_end(edit_form) }}
+        </div>
+    </section>
+{% endblock %}

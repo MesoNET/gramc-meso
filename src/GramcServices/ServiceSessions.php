@@ -88,12 +88,18 @@ class ServiceSessions
     public function getSessionCourante(): ?Session
     {
         if ($this->nosession) return null;
-        if ($this->sessions_non_term==null) {
+
+        if ($this->sessions_non_term==null)
+        {
             $this->initSessionsNonTerm();
         }
-        if ($this->sessions_non_term != null) {
+
+        if ($this->sessions_non_term != null)
+        {
             return $this->sessions_non_term[0];
-        } else {
+        }
+        else
+        {
             return null;
         }
     }

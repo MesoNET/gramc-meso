@@ -66,9 +66,17 @@
 
                 {% if is_granted('ROLE_EXPERT') %}
                     {% if app.request.attributes.get('_route') == 'expertise_liste' %}
-                        <a class="lien_nav actif" href="{{ path('expertise_liste') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                        <a class="lien_nav actif" href="{{ path('expertise_liste') }}" title="Accéder à l'espace expert">Expert</a> 
                     {% else %}
-                        <a class="lien_nav" href="{{ path('expertise_liste') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                        <a class="lien_nav" href="{{ path('expertise_liste') }}" title="Accéder à l'espace expert">Expert</a> 
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted('ROLE_VALIDEUR') %}
+                    {% if app.request.attributes.get('_route') == 'expertise_liste_dyn' %}
+                        <a class="lien_nav actif" href="{{ path('expertise_liste_dyn') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                    {% else %}
+                        <a class="lien_nav" href="{{ path('expertise_liste_dyn') }}" title="Accéder à l'espace valideur">Valideur</a> 
                     {% endif %}
                 {% endif %}
 
@@ -80,7 +88,6 @@
                     {% endif %}
                 {% endif %}
 
-                {# SUPPRESSION DU ROLE PRESIDENT
                 {% if is_granted('ROLE_PRESIDENT') %}
                     {% if app.request.attributes.get('_route') == 'president_accueil' %}
                         <a class="lien_nav actif" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
@@ -88,7 +95,6 @@
                         <a class="lien_nav" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
                     {% endif %}
                 {% endif %}
-                #}
 
                 {% if app.request.attributes.get('_route') == 'aide' %}
                     <a class="aide_nav actif" href="{{ path('aide') }}">?</a>

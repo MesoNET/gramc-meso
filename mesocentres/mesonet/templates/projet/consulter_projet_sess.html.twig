@@ -659,7 +659,7 @@
         <h3>Commentaire des valideurs</h3>
 {% else %}
     <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}VI - Commentaire des experts</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Commentaire des valideurs</summary>
 {% endif %}
 
     <div class="chapitre">
@@ -675,7 +675,7 @@
                     <th>Nombre d'heures attribuées</th>
                     <td>{{  expertise.nbHeuresAtt|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
-                {% if is_granted('ROLE_ADMIN') or version.isExpertDe(app.user) %}
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') or version.isExpertDe(app.user) %}
                     <tr>
                         <th>Commentaire pour le responsable</th>
                         <td>{{ expertise.commentaireExterne | e | nl2br}}</td>
@@ -684,6 +684,11 @@
                         <th>Commentaire pour le comité</th>
                         <td>{{ expertise.commentaireInterne | e | nl2br}}</td>
                     </tr>
+                     <tr>
+                        <th>Expertisé ou validé par</th>
+                        <td>{{ expertise.expert | e | nl2br}}</td>
+                    </tr>
+                    
                 {% else %}
                     <tr>
                         <th>Commentaire</th>

@@ -754,9 +754,9 @@ class VersionSpecController extends AbstractController
         if ($version->getPrjTitre() == null) {
             $todo[] = 'prj_titre';
         }
-        if ($version->getDemHeures() == null) {
+        /*if ($version->getDemHeures() == null) {
             $todo[] = 'dem_heures';
-        }
+        }*/
         if ($version->getPrjThematique() == null) {
             $todo[] = 'prj_id_thematique';
         }

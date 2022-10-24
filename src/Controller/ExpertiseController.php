@@ -49,6 +49,7 @@ use App\GramcServices\Signal;
 use App\AffectationExperts\AffectationExperts;
 
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\Workflow\Version\VersionWorkflow;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
@@ -93,10 +94,11 @@ class ExpertiseController extends AbstractController
         private ServiceProjets $sp,
         private ServiceSessions $ss,
         private ServiceMenus $sm,
-        private GramcDate $sd,
+        private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
+        private Projet4Workflow $p4w,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private TokenStorageInterface $tok,
@@ -104,82 +106,6 @@ class ExpertiseController extends AbstractController
         private EntityManagerInterface $em
     ) {
         $this->token = $tok->getToken();
-    }
-
-    /**
-     * Affectation des experts
-     *
-     * @Route("/affectation_test", name="affectation_test", methods={"GET","POST"})
-     * Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function affectationTestAction_SUPPR(Request $request)
-    {
-        $ss = $this->ss;
-        $sp = $this->sp;
-        $se = $this->se;
-        $em = $this->em;
-
-        $session  = $ss->getSessionCourante();
-        $annee    = $session->getAnneeSession();
-        $versions =  $em->getRepository(Version::class)->findAnneeTestVersions($annee);
-        $etatSession = $session->getEtatSession();
-
-        $affectationExperts = $se;
-        //new AffectationExperts($request, $versions, $this->get('form.factory'), $this->getDoctrine());
-        $affectationExperts->setDemandes($versions);
-
-        //
-        // 1ere etape = Traitement des formulaires qui viennent d'être soumis
-        //              On boucle sur les versions:
-        //                  - Une version non sélectionnée est ignorée
-        //                  - Pour chaque version sélectionnée on fait une action qui dépend du bouton qui a été cliqué
-        //              Puis on redirige sur la page
-        //
-        $form_buttons = $affectationExperts->getFormButtons();
-        $form_buttons->handleRequest($request);
-        if ($form_buttons->isSubmitted()) {
-            $affectationExperts->traitementFormulaires($request);
-            // doctrine cache les expertises précédentes du coup si on ne redirige pas
-            // l'affichage ne sera pas correctement actualisé !
-            // Essentiellement avec sub3 (ajout d'expertise)
-            return $this->redirectToRoute('affectation_test');
-        }
-
-        // 2nde étape = Création des formulaires pour affichage et génération des données de "stats"
-        $forms       = $affectationExperts->getExpertsForms();
-        $stats       = $affectationExperts->getStats();
-        $stats['nouveau'] = null;
-        $attHeures   = $affectationExperts->getAttHeures();
-
-        $versions_suppl = [];
-        foreach ($versions as $version) {
-            $id_version                  = $version->getIdVersion();
-            $projet                      = $version->getProjet();
-            $version_suppl               = [];
-            $version_suppl['metaetat']   = $sp->getMetaEtat($projet);
-            $version_suppl['consocalcul']= $sp->getConsoCalculVersion($version);
-            $version_suppl['isnouvelle'] = true;
-
-            $versions_suppl[$id_version] = $version_suppl;
-        }
-
-        $titre = "Affectation des experts aux projets tests de l'année 20$annee";
-        return $this->render(
-            'expertise/affectation.html.twig',
-            [
-            'titre'         => $titre,
-            'versions'      => $versions,
-            'versions_suppl'=> $versions_suppl,
-            'forms'         => $forms,
-            'sessionForm'   => null,
-            'thematiques'   => null,
-            'rattachements' => null,
-            'experts'       => null,
-            'stats'         => $stats,
-            'attHeures'     => $attHeures,
-            ]
-        );
     }
 
     ///////////////////////
@@ -329,7 +255,7 @@ class ExpertiseController extends AbstractController
      */
     public function listeAction(): Response
     {
-        $sd  = $this->sd;
+        $grdt= $this->grdt;
         $ss  = $this->ss;
         $sp  = $this->sp;
         $sj  = $this->sj;
@@ -484,8 +410,8 @@ class ExpertiseController extends AbstractController
         
         try
         {
-            $mois = $sd->format('m');
-            $annee= $sd->format('Y');
+            $mois = $grdt->format('m');
+            $annee= $grdt->format('Y');
 
             // si on est après mars 2022, on ouvre le commentaires pour 2022
             if ($mois >= $this->getParameter('commentaires_experts_d'))
@@ -519,6 +445,42 @@ class ExpertiseController extends AbstractController
             'session'                    => $session,
             ]
         );
+    }
+
+    /**
+     * Liste les expertises non finalisées de projets dynamiques
+     *
+     * @Route("/listedyn", name="expertise_liste_dyn", methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_VALIDEUR')")
+     */
+    public function ListeDynAction(): Response
+    {
+        $grdt = $this->grdt;
+        $ss  = $this->ss;
+        $sp  = $this->sp;
+        $sj  = $this->sj;
+        $token = $this->token;
+        $em  = $this->em;
+
+        $moi = $token->getUser();
+        if (is_string($moi)) {
+            $sj->throwException();
+        }
+
+        $mes_thematiques     = $moi->getThematique();
+        $expertiseRepository = $em->getRepository(Expertise::class);
+        $session             = $ss->getSessionCourante();
+
+        // Les expertises affectées à cet expert
+        // On regarde toutes les sessions (il peut y avoir des projets fil de l'eau qui trainent)
+        // mais seulement les expertises non terminées
+        $expertises = $expertiseRepository->findExpertisesDyn();
+
+        ///////////////////////
+
+        return $this->render('expertise/dyn.html.twig',
+                             [ 'expertises' => $expertises ]);
     }
 
     /**
@@ -606,12 +568,12 @@ class ExpertiseController extends AbstractController
      * Il entre son expertise et éventuellement l'envoie
      * La logique dépend de:
      *            - paramètre $max_expertises_nb (1 ou >1)
-     *            - Est-ce un PROJET_FIL ou un PROJET_SESS ?
-     *            - Si $max_expertises_nb > 1: Suis-je PRESIDENT ou PAS ?
+     *            - Est-ce un PROJET_FIL/PROJET_SESS/PROJET_DYN ?
+     *            - Si $max_expertises_nb > 1 et que c'est un PROJET_FIL ou PROJET_SESS: Suis-je PRESIDENT ou PAS ?
      *
      * @Route("/{id}/modifier", name="expertise_modifier", methods={"GET","POST"})
      * Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_EXPERT')")
+     * @Security("is_granted('ROLE_EXPERT') or is_granted('ROLE_VALIDEUR')")
      */
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
@@ -621,21 +583,40 @@ class ExpertiseController extends AbstractController
         $sp = $this->sp;
         $sj = $this->sj;
         $ac = $this->ac;
+        $grdt = $this->grdt;
         $sval = $this->vl;
         $token = $this->token;
         $em = $this->em;
 
-        // ACL
+        // ACL et autres controles
         $moi = $token->getUser();
-        if (is_string($moi)) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
-        } elseif ($expertise->getExpert() == null) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " aucun expert pour l'expertise " . $expertise);
-        } elseif (! $expertise->getExpert()->isEqualTo($moi)) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $moi .
-                " n'est pas un expert de l'expertise " . $expertise . ", c'est " . $expertise->getExpert());
+        $version = $expertise->getVersion();
+        if ($version == null) {
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $expertise . " n'a pas de version !");
         }
+        if (is_string($moi))
+        {
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
+        };
 
+        // Projets dynamiques = Une expertise n'a pas toujours un valideur car il n'y a pas de Président, donc pas d'affectation
+        // L'affectation est automatique, effectuée lorsque l'expertise est sauvegardée ou envoyée
+        
+        // Autres projets = On a obligatoirement un "expert" qui a été préalablement affecté à cette version
+        if ( $version->getTypeVersion() != Projet::PROJET_DYN )
+        {
+            if ($expertise->getExpert() == null)
+            {
+                $sj->throwException(__METHOD__ . ":" . __LINE__ . " aucun expert pour l'expertise " . $expertise);
+            }
+
+            if (! $expertise->getExpert()->isEqualTo($moi))
+            {
+                $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $moi .
+                    " n'est pas un expert de l'expertise " . $expertise . ", c'est " . $expertise->getExpert());
+            }
+        }
+        
         // Si expertise déjà faite on revient à la liste
         if ($expertise->getDefinitif()) {
             return $this->redirectToRoute('expertise_liste');
@@ -643,23 +624,28 @@ class ExpertiseController extends AbstractController
 
         $expertiseRepository = $em->getRepository(Expertise::class);
         $session    = $ss->getSessionCourante();
-        $commGlobal = $session->getcommGlobal();
-        $anneeCour  = 2000 +$session->getAnneeSession();
+
+        if ($session != null)
+        {
+            $commGlobal = $session->getcommGlobal();
+            $anneeCour  = 2000 +$session->getAnneeSession();
+            $session_type = $session->getTypeSession();
+        }
+        else
+        {
+            $commGlobal = null;
+            $anneeCour  = intval($grdt->format('Y'));
+            $session_type = false;  // Pas de session donc pas de session de type B
+        }
         $anneePrec  = $anneeCour - 1;
 
-        $version = $expertise->getVersion();
-        if ($version == null) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $expertise . " n'a pas de version !");
-        }
         // Le comportement diffère suivant le type de projet
-
         // Version est-elle nouvelle ?
         $isnouvelle = $sv->isNouvelle($version);
 
         $msg_explain = '';
         $projet      = $version -> getProjet();
         $projet_type = $projet  -> getTypeProjet();
-        $etat_session= $session -> getEtatSession();
 
         // Projets avec plusieurs expertises (si $max_expertises_nb > 1):
         //    Si je suis président, on va chercher ces expertises pour affichage
@@ -718,6 +704,11 @@ class ExpertiseController extends AbstractController
                     case Projet::PROJET_FIL:
                     $peut_envoyer = true;
                     break;
+
+                    // Pour un projet dynamique ENVOYER est toujours disponible
+                    case Projet::PROJET_DYN:
+                    $peut_envoyer = true;
+                    break;
                 }
             }
         }
@@ -728,18 +719,23 @@ class ExpertiseController extends AbstractController
 
         // S'il y a plusieurs expertises, le commentaire externe ET la validation sont réservés au président
         // On utilise un champ caché, de cette manière le formulaire sera valide
-        if ($max_expertises_nb === 1) {
+        if ($max_expertises_nb === 1)
+        {
             $commentaireExterne = true;
         }
-        else {
-            if ($ac->isGranted('ROLE_PRESIDENT')) {
+        else
+        {
+            if ($ac->isGranted('ROLE_PRESIDENT'))
+            {
                 $commentaireExterne = true;
-            } else {
+            } else
+            {
                 $commentaireExterne = false;
             }
         }
 
-        if ($commentaireExterne) {
+        if ($commentaireExterne)
+        {
             $editForm->add('commentaireExterne', TextAreaType::class, [ 'required' => false ])
                      ->add(
                             'validation',
@@ -750,28 +746,39 @@ class ExpertiseController extends AbstractController
                             ],
                             );
 
-        } else {
+        }
+        else
+        {
             $editForm->add('commentaireExterne', HiddenType::class, [ 'data' => 'Commentaire externe réservé au président' ])
                      ->add('validation', HiddenType::class, [ 'data' => 1 ]);
         }            
 
         // Par défaut on attribue les heures demandées
-        if ($expertise->getNbHeuresAtt() == 0) {
+        if ($expertise->getNbHeuresAtt() == 0)
+        {
             $editForm->add('nbHeuresAtt', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeures(), ]);
-        } else {
+        }
+        else
+        {
             $editForm->add('nbHeuresAtt', IntegerType::class, ['required'  =>  false, ]);
         }
 
         // En session B mais SEULEMENT POUR LES PROJETS DE SESSION, on propose une attribution spéciale pour heures d'été
-        if ($this->getParameter('heures_ete') && $session->getTypeSession() && $projet_type == Projet::PROJET_SESS) {
-            if ($session->getTypeSession()) {
-                $editForm -> add('nbHeuresAttEte');
+        if ( $session_type && $projet_type == Projet::PROJET_SESS)
+        {
+            if ($this->getParameter('heures_ete'))
+            {
+                if ($session_type)
+                {
+                    $editForm -> add('nbHeuresAttEte');
+                }
             }
         }
 
         // Les boutons d'enregistrement ou d'envoi
         $editForm = $editForm->add('enregistrer', SubmitType::class, ['label' =>  'Enregistrer' ]);
-        if ($peut_envoyer == true) {
+        if ($peut_envoyer == true)
+        {
             $editForm   =   $editForm->add('envoyer', SubmitType::class, ['label' =>  'Envoyer' ]);
         }
         $editForm->add('annuler', SubmitType::class, ['label' =>  'Annuler' ]);
@@ -781,24 +788,47 @@ class ExpertiseController extends AbstractController
 
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && ! $editForm->isValid()) {
+        if ($editForm->isSubmitted() && ! $editForm->isValid())
+        {
             $sj->warningMessage(__METHOD__ . " form error " .  Functions::show($editForm->getErrors()));
         }
 
+        // L'écran de liste d'expertise vers lequel on revient dépend du type de projet
+        if ($projet_type == Projet::PROJET_DYN)
+        {
+            $redirect_to_route = 'expertise_liste_dyn';
+        }
+        else
+        {
+            $redirect_to_route = 'expertise_liste';
+        }
+        
         // Bouton ANNULER
-        if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked()) {
-            return $this->redirectToRoute('expertise_liste');
+        if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked())
+        {
+            return $this->redirectToRoute($redirect_to_route);
         }
 
         // Boutons ENREGISTRER, FERMER ou ENVOYER
         $erreur  = 0;
         $erreurs = [];
-        if ($editForm->isSubmitted() /* && $editForm->isValid()*/) {
+        if ($editForm->isSubmitted() /* && $editForm->isValid()*/)
+        {
             $erreurs = Functions::dataError($sval, $expertise);
             $validation = $expertise->getValidation();
-            if ($validation == 0) {
+            if ($validation == 0)
+            {
                 $expertise->setNbHeuresAtt(0);
                 $expertise->setNbHeuresAttEte(0);
+            }
+
+            // Projet dynamique = Pas d'affectation de valideur
+            // Dès qu'on enregistre une expertise, on est enregistré comme valideur
+            // Peut-être allons-nous écraser le valideur précédent, c'est tant pis pour lui
+            // Si on a cliqué sur ENVOYER ça compte pour la postérité.
+            if ( $projet_type == Projet::PROJET_DYN)
+            {
+                $expertise->setExpert($moi);
             }
 
             $em->persist($expertise);
@@ -806,41 +836,57 @@ class ExpertiseController extends AbstractController
             //dd($expertise);
 
             // Bouton FERMER
-            if ($editForm->get('fermer')->isClicked()) {
-                return $this->redirectToRoute('expertise_liste');
+            if ($editForm->get('fermer')->isClicked())
+            {
+                return $this->redirectToRoute($redirect_to_route);
             }
 
             // Bouton ENVOYER --> Vérification des champs non renseignés puis demande de confirmation
-            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs == null) {
+            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs == null)
+            {
                 return $this->redirectToRoute('expertise_validation', [ 'id' => $expertise->getId() ]);
             }
         }
 
         $toomuch = false;
-        if ($session->getTypeSession() && ! $expertise->getVersion()->isProjetTest()) {
+        if ($session_type && ! $expertise->getVersion()->isProjetTest())
+        {
             $version_prec = $expertise->getVersion()->versionPrecedente();
             $attr_a       = ($version_prec==null) ? 0 : $version_prec->getAttrHeures();
             $dem_b        = $expertise->getVersion()->getDemHeures();
             $toomuch      = $sv->is_demande_toomuch($attr_a, $dem_b);
         }
 
-        // MEME TEMPLATE POUR PROJET_SESS ET PROJET_FIL
+        // MEME TEMPLATE POUR PROJET_SESS, PROJET_FIL
         $twig = '';
         switch ($projet_type) {
-        case Projet::PROJET_SESS:
-            $twig = 'expertise/modifier_projet_fil.html.twig';
-            break;
-        case Projet::PROJET_TEST:
-            $twig = 'expertise/modifier_projet_test.html.twig';
-            break;
-        case Projet::PROJET_FIL:
-            $twig = 'expertise/modifier_projet_fil.html.twig';
-            break;
+            case Projet::PROJET_SESS:
+            case Projet::PROJET_FIL:
+                $twig = 'expertise/modifier_projet_fil.html.twig';
+                break;
+
+            case Projet::PROJET_TEST:
+                $twig = 'expertise/modifier_projet_test.html.twig';
+                break;
+
+            case Projet::PROJET_DYN:
+                $twig = 'expertise/modifier_projet_dyn.html.twig';
+                break;
         }
 
-        // Dans le cas de projets tests, $expertises peut être vide même s'il y a un projet test dans la liste
+        // Dans le cas de projets tests ou projets fil, $expertises peut être vide même s'il y a un projet test dans la liste
         // (session B et projet test non expertisé en session A)
-        $expertises = $expertiseRepository->findExpertisesByExpert($moi, $session);
+
+        // TODO - Si on veut gérer des projets dynamiques ET des projets de session il faudra améliorer ça.
+        if ( $session == null)
+        {
+            $expertises = $expertiseRepository->findExpertisesDyn();
+        }
+        else
+        {
+            $expertises = $expertiseRepository->findExpertisesByExpert($moi, $session);
+
+        }
         uasort($expertises, "self::expprjfirst");
 
         if (count($expertises)!=0) {
@@ -870,24 +916,24 @@ class ExpertiseController extends AbstractController
         return $this->render(
             $twig,
             [
-            'isNouvelle'        => $isnouvelle,
-            'expertise'         => $expertise,
-            'autres_expertises' => $autres_expertises,
-            'msg_explain'       => $msg_explain,
-            'version'           => $expertise->getVersion(),
-            'edit_form'         => $editForm->createView(),
-            'anneePrec'         => $anneePrec,
-            'anneeCour'         => $anneeCour,
-            'session'           => $session,
-            'peut_envoyer'      => $peut_envoyer,
-            'commentaireExterne'=> $commentaireExterne,
-            'erreurs'           => $erreurs,
-            'toomuch'           => $toomuch,
-            'prev'              => $prev,
-            'next'              => $next,
-            'rapport'           => $rapport,
-            'document'          => $document
-    ]
+                'isNouvelle'        => $isnouvelle,
+                'expertise'         => $expertise,
+                'autres_expertises' => $autres_expertises,
+                'msg_explain'       => $msg_explain,
+                'version'           => $expertise->getVersion(),
+                'edit_form'         => $editForm->createView(),
+                'anneePrec'         => $anneePrec,
+                'anneeCour'         => $anneeCour,
+                'session'           => $session,
+                'peut_envoyer'      => $peut_envoyer,
+                'commentaireExterne'=> $commentaireExterne,
+                'erreurs'           => $erreurs,
+                'toomuch'           => $toomuch,
+                'prev'              => $prev,
+                'next'              => $next,
+                'rapport'           => $rapport,
+                'document'          => $document
+            ]
         );
     }
 
@@ -898,7 +944,7 @@ class ExpertiseController extends AbstractController
      *
      * @Route("/{id}/valider", name="expertise_validation", methods={"GET","POST"})
      * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_EXPERT')")
+     * @Security("is_granted('ROLE_EXPERT') or is_granted('ROLE_VALIDEUR')")
      */
     public function validationAction(Request $request, Expertise $expertise): Response
     {
@@ -906,8 +952,22 @@ class ExpertiseController extends AbstractController
         $sn = $this->sn;
         $sj = $this->sj;
         $ac = $this->ac;
+        $pw = $this->pw;
+        $p4w = $this->p4w;
         $em = $this->em;
         $token = $this->token;
+
+        // Workflow et redirection finale différents pour les projets dynamiques
+        if ( $expertise->getVersion()->getTypeVersion() == Projet::PROJET_DYN)
+        {
+            $workflow = $this->p4w;
+            $redirect_to_route = 'expertise_liste_dyn';
+        }
+        else
+        {
+            $workflow = $this->pw;
+            $redirect_to_route = 'expertise_liste';
+        }
 
         // ACL
         $moi = $token->getUser();
@@ -939,9 +999,11 @@ class ExpertiseController extends AbstractController
             // Dans tous les autres cas on envoie un signal CLK_VAL_EXP_XXX
             //$type_projet = $expertise->getVersion()->getProjet()->getTypeProjet();
             $max_expertises_nb = $this->getParameter('max_expertises_nb');
-            if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT')) {
+            if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT'))
+            {
                 $expertise->getVersion()->setAttrHeures($expertise->getNbHeuresAtt());
-                $expertise->getVersion()->setAttrHeuresEte($expertise->getNbHeuresAttEte());
+                // SUPPRIME DANS CETTE VERSION !
+                // $expertise->getVersion()->setAttrHeuresEte($expertise->getNbHeuresAttEte());
                 $expertise->getVersion()->setAttrAccept($expertise->getValidation());
 
                 $validation =  $expertise->getValidation();
@@ -956,7 +1018,6 @@ class ExpertiseController extends AbstractController
                     $signal = Signal::CLK_VAL_EXP_KO;
                 }
 
-                $workflow = $this->pw;
                 $rtn      = $workflow->execute($signal, $expertise->getVersion()->getProjet());
                 if ($rtn != true) {
                     $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
@@ -967,7 +1028,9 @@ class ExpertiseController extends AbstractController
 
                 $em->persist($expertise);
                 $em->flush();
-            } else {
+            }
+            else
+            {
                 $expertise->setDefinitif(true);
                 $em->persist($expertise);
                 $em->flush();
@@ -982,7 +1045,7 @@ class ExpertiseController extends AbstractController
                     $dest
                 );
             }
-            return $this->redirectToRoute('expertise_liste');
+            return $this->redirectToRoute($redirect_to_route);
         }
 
         // On n'a pas soumis le formulaire
@@ -1002,7 +1065,10 @@ class ExpertiseController extends AbstractController
             case Projet::PROJET_FIL:
                 $twig = 'expertise/valider_projet_fil.html.twig';
                 break;
-        }
+             case Projet::PROJET_DYN:
+                $twig = 'expertise/valider_projet_dyn.html.twig';
+                break;
+       }
 
         return $this->render(
             $twig,
@@ -1013,6 +1079,7 @@ class ExpertiseController extends AbstractController
             ]
         );
     }
+    
     /**
      * Deletes a expertise entity.
      *

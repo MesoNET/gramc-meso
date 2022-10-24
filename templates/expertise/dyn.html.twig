@@ -1,0 +1,49 @@
+{% extends 'default/base.html.twig' %}
+
+{% import "default/icone.html.twig" as icones %}
+
+{% block body %}
+
+<section id="section_expert" style="stroke:black">
+    {% if expertises|length > 0 %}
+    <h2>Projets dynamiques en attente de validation</h2>
+    <table id="HORS_THEM" class="projet">
+    <thead>
+            <tr>
+                <th>Projet</th>
+                <th>&nbsp;</th>
+                <th>Thématique</th>
+                <th>Titre</th>
+                <th title="Demandes d'heures sur Turpan">Turpan</th>
+                <th title="Demandes d'heures sur Boreal">Boreal</th>
+                <th>Responsable</th>
+                <th>Valideur</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for expertise in expertises %}
+            {% if( expertise.expert == true) %}
+                <tr class="gras" >
+            {% else %}
+                <tr class="leger" >
+            {% endif %}
+                    <td>{{ expertise.version.projet }}</td>
+                    <td><a href="{{ path('expertise_modifier', { 'id' : expertise.id } ) }}">
+                            {{ icones.modifier }}
+                        </a></td>
+                    <td>{{ expertise.version.prjthematique }}</td>
+                    <td>{{ expertise.version.prjtitre }}</td>
+                    <td>{{ expertise.version.demHeuresUft }}</td>
+                    <td>{{ expertise.version.demHeuresCriann }}</td>
+                    <td>{{ expertise.version.responsable }}</td>
+                    <td>{{ expertise.expert }}</td>
+                </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <em>aucun projet dynamique n'est en expertise actuellement</em>
+    {% endif %}
+</section>
+
+{% endblock %}

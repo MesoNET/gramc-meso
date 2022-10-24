@@ -113,6 +113,19 @@ class ExpertiseRepository extends \Doctrine\ORM\EntityRepository
          ->getResult();
     }
 
+    // Les expertises liées à un projet dynamique en état EDITION_EXPERTISE
+    public function findExpertisesDyn()
+    {
+        $dql = "SELECT e FROM App:Expertise e";
+        $dql .= " INNER JOIN App:Version v WITH e.version = v ";
+        $dql .= " WHERE v.etatVersion = :edition_expertise";
+         return $this->getEntityManager()
+         ->createQuery($dql)
+         ->setParameter('edition_expertise', Etat::EDITION_EXPERTISE)
+         ->getResult();
+       
+        
+    }
     // Renvoie toutes les expertises sur une version donnée, SAUF celle de $expert
     public function findExpertisesForVersion(Version $version, $expert)
     {

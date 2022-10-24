@@ -107,6 +107,7 @@ class ServiceProjets
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
+        $type_projet = $p->gettypeProjet();
 
         // Projet terminé
         if ($etat_projet == Etat::TERMINE) {
@@ -117,7 +118,7 @@ class ServiceProjets
         //    - Projet test   = toujours non renouvelable
         //    - Autres projets= sera bientôt terminé car expert a dit "refusé"
         //
-        if ($etat_projet == Etat::NON_RENOUVELABLE && $p->getTypeProjet() != Projet::PROJET_TEST) {
+        if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
             return 'REFUSE';
         }
 
@@ -141,14 +142,22 @@ class ServiceProjets
         } elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
             return 'EXPERTISE';
         } elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
-            // Permet d'afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
-            $session = $this->ss->getSessionCourante();
-            if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
-                return 'NONRENOUVELE';
-            } // Non renouvelé
-            else {
+            if ( $type_projet != Projet::PROJET_DYN )
+            {
+                // Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
+                $session = $this->ss->getSessionCourante();
+                if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
+                    return 'NONRENOUVELE';
+                } // Non renouvelé
+                else {
+                    return 'ACCEPTE';
+                } // Projet ou rallonge accepté par le comité d'attribution
+            }
+            else
+            {
+                // TODO - Remettre le signe particulier 30 jours avant le renouvellement
                 return 'ACCEPTE';
-            } // Projet ou rallonge accepté par le comité d'attribution
+            }
         } elseif ($etat_version == Etat::ACTIF_TEST) {
             return 'ACCEPTE';
         } // projet-test non renouvelable
@@ -1082,6 +1091,7 @@ class ServiceProjets
     /*
      * Le user connecté a-t-il accès à $projet ?
      * Si OBS (donc ADMIN) ou PRESIDENT = La réponse est Oui
+     * Si VALIDEUR et le projet est de type 4 (dynamique) = La réponse est OUI
      * Sinon c'est plus compliqué, on appelle userProjetACL...
      *
      * param:  $projet
@@ -1090,9 +1100,16 @@ class ServiceProjets
      *****/
     public function projetACL(Projet $projet): bool
     {
-        if ($this->sac->isGranted('ROLE_OBS') ||  $this->sac->isGranted('ROLE_PRESIDENT')) {
+        if ($this->sac->isGranted('ROLE_OBS') ||  $this->sac->isGranted('ROLE_PRESIDENT'))
+        {
             return true;
-        } else {
+        }
+        elseif ($projet->getTypeProjet() == Projet::PROJET_DYN)
+        {
+            return true;
+        }
+        else
+        {
             return $this->userProjetACL($projet);
         }
     }
@@ -1105,8 +1122,10 @@ class ServiceProjets
     private function userProjetACL(Projet $projet): bool
     {
         $user = $this->token->getUser();
-        foreach ($projet->getVersion() as $version) {
-            if ($this->userVersionACL($version, $user)==true) {
+        foreach ($projet->getVersion() as $version)
+        {
+            if ($this->userVersionACL($version, $user)==true)
+            {
                 return true;
             }
         }
@@ -1117,26 +1136,31 @@ class ServiceProjets
     public static function userVersionACL(Version $version, Individu $user): bool
     {
         // nous vérifions si $user est un collaborateur de cette version
-        if ($version->isCollaborateur($user)) {
+        if ($version->isCollaborateur($user))
+        {
             return true;
         }
 
         // nous vérifions si $user est un expert de cette version
-        if ($version->isExpertDe($user)) {
+        if ($version->isExpertDe($user))
+        {
             return true;
         }
 
         // nous vérifions si $user est un expert d'une rallonge
-        foreach ($version->getRallonge() as $rallonge) {
+        foreach ($version->getRallonge() as $rallonge)
+        {
             //$e = $rallonge->getExpert();
             //if ($e != null && $user->isEqualTo($rallonge->getExpert())) return true;
-            if ($rallonge->isExpertDe($user)) {
+            if ($rallonge->isExpertDe($user))
+            {
                 return true;
             }
         }
 
         // nous vérifions si $user est un expert de la thématique
-        if ($version->isExpertThematique($user)) {
+        if ($version->isExpertThematique($user))
+        {
             return true;
         }
 
