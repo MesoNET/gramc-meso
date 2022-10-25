@@ -163,17 +163,17 @@ class VersionSpecController extends AbstractController
 
         // ON A CLIQUE SUR ANNULER
         // version est sauvegardée autrement et je ne sais pas pourquoi
-        $form = $this->createFormBuilder(new Version())->add('annuler', SubmitType::class)->getForm();
+       /* $form = $this->createFormBuilder(new Version())->add('annuler', SubmitType::class)->getForm();
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->get('annuler')->isClicked()) {
+        if ($form->isSubmitted() && $form->get('annuler')->isClicked()) {dd('coucou');
             $sj->debugMessage(__METHOD__ .':'. __LINE__ . ' annuler clicked');
             return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
-        }
+        }*/
 
         // FORMULAIRE DES COLLABORATEURS
         $collaborateur_form = $sv->getCollaborateurForm($version);
         $collaborateur_form->handleRequest($request);
-        $data   =   $collaborateur_form->getData();
+        $data = $collaborateur_form->getData();
 
         $individu_forms = $collaborateur_form->getData()['individus'];
         $validated = $sv->validateIndividuForms($individu_forms);
@@ -256,17 +256,19 @@ class VersionSpecController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('annuler')->isClicked()) {
                 // on ne devrait jamais y arriver !
-                $sj->errorMessage(__METHOD__ . ' seconde annuler clicked !');
+                // si car j'ai supprimé le truc idiot du haut
+                // $sj->errorMessage(__METHOD__ . ' seconde annuler clicked !');
                 return $this->redirectToRoute('projet_accueil');
             }
 
             // Changement de type ou plafonnement de la demande en heures !
             // Supprimé pour mesonet
-            //$this->validDemHeures($version);
+            // $this->validDemHeures($version);
 
-            // on sauvegarde le projet
+            // on sauvegarde le projet (Enregistrer ou Fermer)
             $return = Functions::sauvegarder($version, $em, $this->lg);
 
+            // Si Enregistrer
             if ($request->isXmlHttpRequest()) {
                 $sj->debugMessage(__METHOD__ . ' isXmlHttpRequest clicked');
                 if ($return == true) {

@@ -232,19 +232,19 @@ class IndividuForm
     {
         if ($individu != null)
         {
-            if ($individu->getNom() != $this->getNom()) {
+            if (!empty($this->getNom()) && $individu->getNom() != $this->getNom()) {
                 $sj->warningMessage("Le nom de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
                                     $individu->getNom() . " vers " . $this->getNom());
                 $individu->setNom($this->getNom());
             }
 
-            if ($individu->getPrenom() != $this->getPrenom()) {
+            if (!empty($this->getPrenom()) && $individu->getPrenom() != $this->getPrenom()) {
                 $sj->warningMessage("Le prénom de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
                                     $individu->getPrenom() . " vers " . $this->getPrenom());
                 $individu->setPrenom($this->getPrenom());
             }
 
-            if ($onlyNom)
+            if (!$onlyNom)
             {
 
                 if ($individu->getLabo() != $this->getLaboratoire()) {
