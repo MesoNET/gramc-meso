@@ -17,10 +17,10 @@ services:
     #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
      
     # Tous les controleurs sont des services, ils peuvent utiliser la dependency injection
-    altermeso_controllers:
-        namespace: App\Controller\
-        resource: '../altermeso/src/Controller/*'
-        tags: [controller.service_arguments]
+    #altermeso_controllers:
+    #    namespace: App\Controller\
+    #    resource: '../altermeso/src/Controller/*'
+    #    tags: [controller.service_arguments]
 
     app_controllers:
         namespace: App\Controller\

@@ -1,6 +1,6 @@
 twig:
     paths:
-       'altermeso/templates': ~
+#       'altermeso/templates': ~
        'templates': ~
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
