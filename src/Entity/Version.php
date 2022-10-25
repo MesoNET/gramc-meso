@@ -1775,7 +1775,7 @@ class Version implements Demande
     }
 
     /*
-     * Nombred'heures attribuées, en comptant les rallonges et les pénalités
+     * Nombre d'heures attribuées, en comptant les rallonges et les pénalités
      */
     public function getAttrHeuresTotal()
     {

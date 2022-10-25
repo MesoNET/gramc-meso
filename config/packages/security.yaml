@@ -3,6 +3,9 @@ security:
     enable_authenticator_manager: true
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    # Pour générer le mot de passe hashé en bcrypt:
+    #
+    # php -r "echo password_hash('ThePassword', PASSWORD_BCRYPT, ['cost' => 13]) . PHP_EOL;"
     providers:
         in_memory:
             memory:
@@ -22,6 +25,7 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\User: plaintext
         App\Entity\Individu: plaintext
+        Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
     
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs

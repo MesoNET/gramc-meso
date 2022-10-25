@@ -28,6 +28,11 @@ services:
         resource: '../src/Controller/*'
         tags: [controller.service_arguments]
 
+    # Repositories:
+    #App\Repository\:
+    #    resource: '../src/Repository/*Repository.php'
+    #    tags: [doctrine.repository_service]
+
     # La plupart des services gramc sont dans le répertoire GramcServices
     App\GramcServices\:
         resource: '../src/GramcServices/*'

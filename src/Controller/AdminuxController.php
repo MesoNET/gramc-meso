@@ -52,6 +52,7 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceUsers;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -71,6 +72,7 @@ class AdminuxController extends AbstractController
         private ServiceSessions $ss,
         private GramcDate $sd,
         private ServiceVersions $sv,
+        private ServiceUsers $su,
         private EntityManagerInterface $em
     ) {}
 
@@ -313,7 +315,17 @@ class AdminuxController extends AbstractController
         $passexpir = $grdt->getNew()->add(new \DateInterval($pwd_duree));
 
         # Vérifie que ce loginname est connu
-        $cv = $em->getRepository(User::class)->existsLoginname($loginname);
+        try
+        {
+            $cv = $em->getRepository(User::class)->existsLoginname($loginname);
+        }
+        catch ( \Exception $e)
+        {
+            
+            $msg = "'$loginname' n'est pas de la forme alice@serveur";
+            $sj->errorMessage("AdminUxController::setpasswordAction - " . $msg);
+            return new Response(json_encode(['KO' => $msg ]));
+        }
         if ($cv==false) {
             $sj->errorMessage("AdminUxController::setpasswordAction - No user '$loginname' found in any projet");
             return new Response(json_encode(['KO' => "No user '$loginname' found in any projet" ]));
@@ -383,7 +395,16 @@ class AdminuxController extends AbstractController
         }
 
         # Vérifie que ce loginname est connu
-        $cv = $em->getRepository(User::class)->existsLoginname($loginname);
+        try
+        {
+            $cv = $em->getRepository(User::class)->existsLoginname($loginname);
+        }
+        catch ( \Exception $e)
+        {
+            $msg = "'$loginname' n'est pas de la forme alice@serveur";
+            $sj->errorMessage("AdminUxController::setpasswordAction - " . $msg);
+            return new Response(json_encode(['KO' => $msg ]));
+        }
         if ($cv==false) {
             $sj->errorMessage("AdminUxController::clearpasswordAction - No user '$loginname' found in any projet");
             return new Response(json_encode(['KO' => "No user '$loginname' found in any projet" ]));
@@ -493,44 +514,50 @@ class AdminuxController extends AbstractController
         $sp    = $this->sp;
         $em    = $this->em;
 
-        $annee = 2000 + $v->getSession()->getAnneeSession();
-        $attr  = $v->getAttrHeures() - $v->getPenalHeures();
-        foreach ($v->getRallonge() as $r) {
-            $attr += $r->getAttrHeures();
-        }
+        $attr  = $v->getAttrHeuresTotal();
 
-        // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
-        // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-        if ($v->getSession()->getTypeSession()) {
-            $id_va = $v->getAutreIdVersion();
-            $va = $em->getRepository(Version::class)->find($id_va);
-            if ($va != null) {
-                $attr += $va->getAttrHeures();
-                $attr -= $va->getPenalHeures();
-                foreach ($va->getRallonge() as $r) {
-                    $attr += $r->getAttrHeures();
+        $session = $v->getSession();
+        $id_session = '';
+        if ($session != null)
+        {
+            $id_session = $session -> getIdSession();
+            $annee = 2000 + $session->getAnneeSession();
+    
+            // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
+            // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
+            if ($session->getTypeSession()) {
+                $id_va = $v->getAutreIdVersion();
+                $va = $em->getRepository(Version::class)->find($id_va);
+                if ($va != null) {
+                    $attr += $va->getAttrHeures();
+                    $attr -= $va->getPenalHeures();
+                    foreach ($va->getRallonge() as $r) {
+                        $attr += $r->getAttrHeures();
+                    }
                 }
             }
         }
+
         $r = [];
         $r['idProjet']        = $v->getProjet()->getIdProjet();
-        $r['idSession']       = $v->getSession()->getIdSession();
+        $r['idSession']       = $id_session;
         $r['idVersion']       = $v->getIdVersion();
         $r['etatVersion']     = $v->getEtatVersion();
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
         $r['attrHeures']      = $attr;
-        $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
+        // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
         // Pour le déboguage
         // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
-	$r['quota']              = $sp->getConsoRessource($v->getProjet(), 'cpu', $annee)[1];
+        // supprime provisoirement $r['quota'] = $sp->getConsoRessource($v->getProjet(), 'cpu', $annee)[1];
         if ($long)
         {
             $r['titre']       = $v->getPrjTitre();
-            $r['resume']      = $v->getPrjResume();
+            //$r['resume']      = $v->getPrjResume();
+            $r['expose']      = $v->getPrjExpose();
             $r['labo']        = $v->getPrjLLabo();
-            $r['metadonnees'] = $v->getDataMetaDataFormat();
+            //$r['metadonnees'] = $v->getDataMetaDataFormat();
             $r['thematique']  = $v->getAcroMetaThematique();
         }
         return $r;
@@ -998,6 +1025,7 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $raw_content = $request->getContent();
         $sj = $this->sj;
+        $su = $this->su;
         
         if ($raw_content == '' || $raw_content == '{}') {
             $content = null;
@@ -1100,23 +1128,26 @@ class AdminuxController extends AbstractController
             }
 
             // $vs contient au moins une version
-            $i = 0; // i=0 -> version dernère, $i=1 -> version active
+            $i = 0; // i=0 -> version dernière, $i=1 -> version active
             foreach ($vs as $v) {
                 $collaborateurs = $v->getCollaborateurVersion();
-                foreach ($collaborateurs as $c) {
+                foreach ($collaborateurs as $c)
+                {
                     $m = $c -> getCollaborateur() -> getMail();
 
                     // si on a spécifié un mail, ne retenir que celui-la
-                    if ($mail != null && strtolower($mail) != strtolower($m)) {
+                    if ($mail != null && strtolower($mail) != strtolower($m))
+                    {
                         continue;
                     }
 
                     // Pas de login demandé ni de login enregistré
-                    if ($c->getLogin()==false && $c->getClogin()==false && $c->getLoginname()==null) {
-                        continue;
-                    }
+                    //if ($c->getLogin()==false && $c->getClogin()==false && $c->getLoginname()==null) {
+                    //    continue;
+                    //}
 
-                    if (!isset($users[$m])) {
+                    if (!isset($users[$m]))
+                    {
                         $users[$m] = [];
                         $users[$m]['nom']        = $c -> getCollaborateur() -> getNom();
                         $users[$m]['prenom']     = $c -> getCollaborateur() -> getPrenom();
@@ -1124,21 +1155,29 @@ class AdminuxController extends AbstractController
                         $users[$m]['projets']    = [];
                     }
 
-                    if ( isset($users[$m]['projets'][$id_projet])) {
+                    if ( isset($users[$m]['projets'][$id_projet]))
+                    {
                         $prj_info = $users[$m]['projets'][$id_projet];
-                    } else {
+                    }
+                    else
+                    {
                         $prj_info = [];
                     }
-                    
-                    if (!isset($prj_info['loginname'])) {
-                        $prj_info['loginname'] = $c->getLoginname();
+
+                    // Les loginnames au niveau version
+                    $loginnames = $su -> collaborateurVersion2LoginNames($c);
+
+                    // Au niveau projet = On prend si possible les loginnames de la dernière version
+                    if (!isset($prj_info['loginnames']))
+                    {
+                        $prj_info['loginnames'] = $loginnames;
                     }
                     
                     $v_info = [];
                     $v_info['version'] = $v->getIdVersion();
                     $v_info['login'] = $c->getLogin();
                     $v_info['clogin'] = $c->getClogin();
-                    $v_info['loginname'] = $c->getLoginname();
+                    $v_info['loginnames'] = $loginnames;
                     $v_info['deleted'] = $c->getDeleted();
                     
                     $prj_info[$vs_labels[$i]] = $v_info;
@@ -1151,7 +1190,7 @@ class AdminuxController extends AbstractController
         }
 
         // print_r est plus lisible pour le déboguage
-        //return new Response(print_r($users,true));
+        # return new Response(print_r($users,true));
         $sj -> infoMessage(__METHOD__ . " OK");
         return new Response(json_encode($users));
     }
@@ -1167,6 +1206,7 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
+        $su = $this->su;
         
         if ($this->getParameter('noconso')==true) {
             throw new AccessDeniedException("Accès interdit (paramètre noconso)");
@@ -1197,6 +1237,7 @@ class AdminuxController extends AbstractController
                         $mail       = $collaborateur->getMail();
                         $login      = $collaborateurVersion->getLogin();
                         $clogin     = $collaborateurVersion->getClogin();
+                        $loginnames = $su->collaborateurVersion2LoginNames($collaborateurVersion);
                         $output[] =   [
                                 'idIndividu' => $idIndividu,
                                 'idProjet' =>$idProjet,
@@ -1204,7 +1245,7 @@ class AdminuxController extends AbstractController
                                 'prenom' => $prenom,
                                 'nom' => $nom,
                                 'login' => $login,
-                                'loginname' => $loginname,
+                                'loginnames' => $loginnames,
                                 'clogin' => $clogin,
                                 ];
                     }
@@ -1268,12 +1309,13 @@ class AdminuxController extends AbstractController
      * @Route("/utilisateurs/checkpassword", name="check_password", methods={"GET"})
      *
      * curl --netrc -H "Content-Type: application/json" https://.../adminux/utilisateurs/checkpassword
-     *
+     *q
      */
     public function checkPasswordAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
         $sj = $this->sj;
+        $su = $this->su;
         
         if ($this->getParameter('noconso')==true) {
             throw new AccessDeniedException("Accès interdit (paramètre noconso)");
@@ -1307,8 +1349,7 @@ class AdminuxController extends AbstractController
                 
             }
 
-            $u["loginname"] = $user->getLoginname();
-            $u["cpassword"] = $user->getCpassword();
+            $u["loginname"] = $su->getLoginname($user);
             $u['expire'] = $user->getExpire();
             $rusers[] = $u;
         }

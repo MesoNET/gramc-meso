@@ -29,9 +29,9 @@ use Doctrine\ORM\Mapping as ORM;
  * User
  *
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",
- *                         columns={"loginname"})},
- *                         indexes={@ORM\Index(name="loginname", columns={"loginname"})})
- * @ORM\Entity(repositoryClass="App\Repository\CollaborateurVersionRepository")
+ *                         columns={"serveur","loginname"})},
+ *                         indexes={@ORM\Index(name="loginname", columns={"serveur","loginname"})})
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User
 {
@@ -40,16 +40,14 @@ class User
      *
      * @ORM\Column(name="id_user", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $iduser;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="loginname", type="string", nullable=true,length=20 )
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(name="loginname", type="string",length=20 )
      */
     private $loginname;
 
@@ -83,14 +81,14 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="pubkey", type="string", nullable=true,length=1000 )
+     * @ORM\Column(name="cpassword", type="string", nullable=true,length=200 )
      */
     private $cpassword;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="expire", type="boolean", nullable=false)
+     * @ORM\Column(name="expire", type="boolean", nullable=true)
      */
     private $expire;
 
@@ -100,6 +98,13 @@ class User
      * @ORM\Column(name="pass_expiration", type="datetime", nullable=true)
      */
     private $passexpir;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pubkey", type="string", nullable=true,length=1000 )
+     */
+    private $pubkey;
 
     public function __toString()
     {
@@ -221,27 +226,27 @@ class User
     }
 
     /**
-     * Set pubkey
+     * Set cpassword
      *
-     * @param string $pubkey
+     * @param string $cpassword
      *
      * @return User
      */
-    public function setPubkey($pubkey): User
+    public function setCpassword($cpassword)
     {
-        $this->pubkey = $pubkey;
+        $this->cpassword = $cpassword;
 
         return $this;
     }
 
     /**
-     * Get pubkey
+     * Get cpassword
      *
      * @return string
      */
-    public function getPubkey(): ?string
+    public function getCpassword()
     {
-        return $this->pubkey;
+        return $this->cpassword;
     }
 
     /**
@@ -290,5 +295,28 @@ class User
     public function getExpire()
     {
         return $this->expire;
+    }
+    /**
+     * Set pubkey
+     *
+     * @param string $pubkey
+     *
+     * @return User
+     */
+    public function setPubkey($pubkey): User
+    {
+        $this->pubkey = $pubkey;
+
+        return $this;
+    }
+
+    /**
+     * Get pubkey
+     *
+     * @return string
+     */
+    public function getPubkey(): ?string
+    {
+        return $this->pubkey;
     }
 }
