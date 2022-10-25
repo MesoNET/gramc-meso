@@ -36,6 +36,15 @@ use Doctrine\ORM\Mapping as ORM;
 class User
 {
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_user", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $iduser;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="loginname", type="string", nullable=true,length=20 )
@@ -43,6 +52,26 @@ class User
      * @ORM\GeneratedValue(strategy="NONE")
      */
     private $loginname;
+
+    /**
+     * @var \App\Entity\Serveur
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="serveur", referencedColumnName="nom")
+     * })
+     */
+    private $serveur;
+
+    /**
+     * @var \App\Entity\CollaborateurVersion
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\CollaborateurVersion")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="collaborateurVersion", referencedColumnName="id")
+     * })
+     */
+    private $collaborateurversion;
 
     /**
      * @var string
@@ -54,7 +83,7 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="cpassword", type="string", nullable=true,length=200 )
+     * @ORM\Column(name="pubkey", type="string", nullable=true,length=1000 )
      */
     private $cpassword;
 
@@ -86,6 +115,16 @@ class User
     }
 
     /**
+     * Get idUser
+     *
+     * @return integer
+     */
+    public function getIdUser(): int
+    {
+        return $this->iduser;
+    }
+
+    /**
      * Set loginname
      *
      * @param string $loginname
@@ -107,6 +146,54 @@ class User
     public function getLoginname()
     {
         return $this->loginname;
+    }
+
+    /**
+     * Set serveur
+     *
+     * @param \App\Entity\Serveur $serveur
+     *
+     * @return User
+     */
+    public function setServeur(\App\Entity\Serveur $serveur): User
+    {
+        $this->serveur = $serveur;
+
+        return $this;
+    }
+
+    /**
+     * Get serveur
+     *
+     * @return \App\Entity\Serveur
+     */
+    public function getServeur(): \App\Entity\Serveur
+    {
+        return $this->serveur;
+    }
+
+    /**
+     * Set collaborateurversion
+     *
+     * @param \App\Entity\CollaborateurVersion $collaborateurversion
+     *
+     * @return User
+     */
+    public function setCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurversion): User
+    {
+        $this->collaborateurversion = $collaborateurversion;
+
+        return $this;
+    }
+
+    /**
+     * Get collaborateurversion
+     *
+     * @return \App\Entity\CollaobateurVersion
+     */
+    public function getCollaborateurVersion(): \App\Entity\CollaborateurVersion
+    {
+        return $this->collaborateurversion;
     }
 
     /**
@@ -134,27 +221,27 @@ class User
     }
 
     /**
-     * Set cpassword
+     * Set pubkey
      *
-     * @param string $cpassword
+     * @param string $pubkey
      *
      * @return User
      */
-    public function setCpassword($cpassword)
+    public function setPubkey($pubkey): User
     {
-        $this->cpassword = $cpassword;
+        $this->pubkey = $pubkey;
 
         return $this;
     }
 
     /**
-     * Get cpassword
+     * Get pubkey
      *
      * @return string
      */
-    public function getCpassword()
+    public function getPubkey(): ?string
     {
-        return $this->cpassword;
+        return $this->pubkey;
     }
 
     /**

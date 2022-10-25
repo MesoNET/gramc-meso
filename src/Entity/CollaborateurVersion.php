@@ -76,7 +76,7 @@ class CollaborateurVersion
     private $loginname;
 
     /**
-     * @var \App\Entity\Projet
+     * @var \App\Entity\Statut
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Statut")
      * @ORM\JoinColumns({

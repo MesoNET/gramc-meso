@@ -93,6 +93,26 @@ package Classes <<Frame>> {
         class Laboratoire
         class Etablissement
     }
+    
+'    note "Un compte par individu et par projet !" as N3
+'    User .. N3
+'    N3 .. CollaborateurVersion
+
+    class Serveur {
+        - string nom
+        - string desc
+    }
+    
+    class User <<Comptes sur un serveur>> {
+        - string loginname
+        
+        - string password
+        - date passexpir
+    
+        - string pubkey
+        + getLoginName()
+    }
+    
     Projet  "1" o-- "0..n" Version
     Individu "1" o-- "0..n" CollaborateurVersion
     Individu "1" o-- "0..n" Sso
@@ -104,29 +124,9 @@ package Classes <<Frame>> {
     Version "0..n" o-- "0..n" Publication
     Expertise "1" o-- "1" Individu
     Expertise "1" o-- "1" Version
-    
-    User "0..3" o-- "1" CollaborateurVersion
-    User "0..3" o-- "1" Individu
-    
-    note "Un compte par individu ?" as N2
-    User .. N2
-    N2 .. Individu
-    
-    note "Un compte par individu et par projet ?" as N3
-    User .. N3
-    N3 .. CollaborateurVersion
-    
-    class User <<Comptes sur un serveur>> {
-        - string serveur
-        - string loginname
-        
-        - string password
-        - date passexpir
-    
-        - string pubkey
-        + getLoginName()
-    }
-    
+    CollaborateurVersion  -- "0..2" User
+    User "1" o-- "1" Serveur
+
     class Compta <<Données de conso>>{
         - date date;
         - string ressource
@@ -156,6 +156,9 @@ ROLE_OBS --> ROLE_DEMANDEUR
 ROLE_ADMIN --> ROLE_OBS
 ROLE_SYSADMIN --> ROLE_OBS
 ROLE_VALID --> ROLE_DEMANDEUR
-class ROLE_CALC
+ROLE_EXPERT --> ROLE_DEMANDEUR
+ROLE_PRESIDENT --> ROLE_EXPERT
+class ROLE_EXPERT <<Inutilisé>>
+class ROLE_PRESIDENT <<Inutilisé>>
 }
 @enduml
