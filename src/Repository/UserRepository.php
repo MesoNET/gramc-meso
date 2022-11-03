@@ -18,12 +18,13 @@
  *  along with GRAMC.  If not, see <http://www.gnu.org/licenses/>.
  *
  *  authors : Emmanuel Courcelle - C.N.R.S. - UMS 3667 - CALMIP
- * 			  Thierry Louge      - C.N.R.S. - UMS 3667 - CALMIP
+ *            Thierry Louge      - C.N.R.S. - UMS 3667 - CALMIP
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\GramcServices\ServiceUsers;
 use App\Utils\Functions;
 
@@ -59,6 +60,22 @@ class UserRepository extends \Doctrine\ORM\EntityRepository {
 
         $f = $this->findBy($l);
         return (count($f) > 0);
+    }
+
+    /*
+     * $loginname doit être de la forme de la forme alice@serveur
+     * Sinon une exception est lancée
+     *
+     * Renvoie THE user tel que loginname="alice", serveur="serveur" ou null
+     */
+    public function findOneByLoginname(string $loginname): ?User
+    {
+        //$su = this->su;
+
+        $l = $this->parseLoginname($loginname);
+
+        $u = $this->findOneBy($l);
+        return $u === null ? null : $u;
     }
 
     // PROVISOIRE - COPIER-COLLER depuis ServiceUser - A virer quand on en fera un service

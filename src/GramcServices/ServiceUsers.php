@@ -44,7 +44,8 @@ class ServiceUsers
     {
         $em = $this -> em;
         
-        $users = $em->getRepository(User::class)->findBy(['collaborateurversion' => $cv ]);
+        //$users = $em->getRepository(User::class)->findBy(['collaborateurversion' => $cv ]);
+        $users = $cv->getUser();
         $loginnames = [];
         foreach ( $users as $u)
         {

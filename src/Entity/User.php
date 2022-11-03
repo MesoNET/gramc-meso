@@ -35,6 +35,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
+
     /**
      * @var integer
      *
@@ -62,12 +63,17 @@ class User
     private $serveur;
 
     /**
-     * @var \App\Entity\CollaborateurVersion
+     * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\CollaborateurVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="collaborateurVersion", referencedColumnName="id")
-     * })
+     * @ORM\ManyToMany(targetEntity="App\Entity\CollaborateurVersion", inversedBy="user")
+     * @ORM\JoinTable(name="CollaborateurVersionUser",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id_user")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="id_collaborateurversion", referencedColumnName="id")
+     *   }
+     * )
      */
     private $collaborateurversion;
 
@@ -117,6 +123,7 @@ class User
     {
         $this->password  = null;
         $this->passexpir = null;
+        $this->collaborateurversion = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -175,30 +182,6 @@ class User
     public function getServeur(): \App\Entity\Serveur
     {
         return $this->serveur;
-    }
-
-    /**
-     * Set collaborateurversion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurversion
-     *
-     * @return User
-     */
-    public function setCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurversion): User
-    {
-        $this->collaborateurversion = $collaborateurversion;
-
-        return $this;
-    }
-
-    /**
-     * Get collaborateurversion
-     *
-     * @return \App\Entity\CollaobateurVersion
-     */
-    public function getCollaborateurVersion(): \App\Entity\CollaborateurVersion
-    {
-        return $this->collaborateurversion;
     }
 
     /**
@@ -318,5 +301,41 @@ class User
     public function getPubkey(): ?string
     {
         return $this->pubkey;
+    }
+
+    /**
+     * Add collaborateurversion
+     *
+     * @param \App\Entity\CollaborateurVersion $cv
+     *
+     * @return User
+     */
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): User
+    {
+        if (! $this->collaborateurversion->contains($cv)) {
+            $this->collaborateurversion[] = $cv;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove collaborateurversion
+     *
+     * @param \App\Entity\CollaborateurVersion $cv
+     */
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): void
+    {
+        $this->CollaborateurVersion->removeElement($cv);
+    }
+
+    /**
+     * Get collaborateurversion
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCollaborateurVersion(): \Doctrine\Common\Collections\Collection
+    {
+        return $this->collaborateurversion;
     }
 }

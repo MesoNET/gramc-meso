@@ -44,6 +44,7 @@ use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
+use App\Entity\Serveur;
 use App\Entity\Compta;
 
 use App\GramcServices\ServiceNotifications;
@@ -163,7 +164,6 @@ class AdminuxController extends AbstractController
     /**
      * set loginname
      *
-     * @Route("/users/setloginname", name="set_loginname", methods={"POST"})
      * @Route("/utilisateurs/setloginname", name="set_loginname", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
@@ -171,11 +171,12 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // exemple: curl --insecure --netrc -X POST -d '{ "loginname": "toto", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/users/setloginname
+    // exemple: curl --insecure --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
     public function setloginnameAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
         $sj = $this->sj;
+        $su = $this->su;
 
         if ($this->getParameter('noconso')==true) {
             throw new AccessDeniedException("Accès interdit (paramètre noconso)");
@@ -216,6 +217,13 @@ class AdminuxController extends AbstractController
             $error[]    =   'No idIndividu ' . $idIndividu;
         }
 
+        $loginname_p = $su -> parseLoginname($loginname);
+        $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
+        if ($serveur == null)
+        {
+           $error[] = 'No serveur ' . $loginname_p['serveur'];
+        }
+
         if ($error != []) {
             $sj->errorMessage("AdminUxController::setloginnameAction - " . print_r($error, true));
             return new Response(json_encode(['KO' => $error ]));
@@ -224,32 +232,39 @@ class AdminuxController extends AbstractController
         $versions = $projet->getVersion();
         $i=0;
         foreach ($versions as $version) {
-            //echo $version->getIdVersion()."\n";
+            // $version->getIdVersion()."\n";
             if ($version->getEtatVersion() == Etat::ACTIF             ||
                 $version->getEtatVersion() == Etat::ACTIF_TEST        ||
                 $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
                 $version->getEtatVersion() == Etat::EN_ATTENTE
-              ) {
-                foreach ($version->getCollaborateurVersion() as $collaborateurVersion) {
-                    $collaborateur  =  $collaborateurVersion->getCollaborateur() ;
-                    if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
-                        // Pas de pb pour écraser un loginname précédent
-                        // A moins qu'il ait déjà un mot de passe !
-                        if ($collaborateurVersion->getLoginname() != null) {
-                            $old_loginname = $collaborateurVersion->getLoginname();
-                            $user = $em->getRepository(User::class)->findBy([ 'loginname' => $old_loginname ]);
-                            if ($user != null) {
-                                $sj->errorMessage("AdminUxController::setloginnameAction - Commencez par appeler clearpassword");
-                                return new Response(json_encode(['KO' => 'Commencez par appeler clearpassword']));
-                            }
-                        }
-                        $collaborateurVersion->setLoginname($loginname);
-                        Functions::sauvegarder($collaborateurVersion, $em);
-                        $i += 1;
-//                        return new Response(json_encode($collaborateurVersion->getVersion() . ' OK'));
-                        break;
-                    }
-                }
+              )
+              {
+              foreach ($version->getCollaborateurVersion() as $cv)
+              {
+                  $collaborateur  =  $cv->getCollaborateur() ;
+                  if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
+                      $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
+                      if ($user != null)
+                      {
+                          $msg = "Commencez par appeler clearloginname";
+                          $sj->errorMessage("AdminUxController::setloginnameAction - $msg");
+                          return new Response(json_encode(['KO' => $msg]));
+                      }
+
+                      $user = new User();
+                      $user -> setLoginname($loginname_p['loginname']);
+                      $user -> setServeur($serveur);
+                      $user -> addCollaborateurVersion($cv);
+                      $cv -> addUser($user);
+                      if ( $serveur->getNom() == 'TURPAN' ) $cv->setLogint(true);
+                      if ( $serveur->getNom() == 'BOREAL' ) $cv->setLoginb(true);
+                      Functions::sauvegarder($user,$em,$lg);
+                      Functions::sauvegarder($cv,$em,$lg);
+                      
+                      $i += 1;
+                      break; // Sortir de la boucle sur les cv
+                  }
+               }
             }
         }
         if ($i > 0 ) {
@@ -267,7 +282,7 @@ class AdminuxController extends AbstractController
       * @Route("/utilisateurs/setpassword", name="set_password", methods={"POST"})
       * @Security("is_granted('ROLE_ADMIN')")
 
-      * Positionne le mot de passe du user demandé, à condition que ce user existe dans la table collaborateurVersion
+      * Positionne le mot de passe du user demandé, à condition que ce user existe dans la table user
       */
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
@@ -439,7 +454,7 @@ class AdminuxController extends AbstractController
       * Efface le loginname s'il existe, ne fait rien sinon
       */
 
-    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto", "projet":"P1234" }' https://.../adminux/utilisateurs/clearloginname
+    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto@SERVEUR", "projet":"P1234" }' https://.../adminux/utilisateurs/clearloginname
 
     public function clearloginnameAction(Request $request, LoggerInterface $lg): Response
     {
@@ -469,10 +484,10 @@ class AdminuxController extends AbstractController
         }
 
         # Vérifie que ce loginname est connu
-        $cvs = $em->getRepository(User::class)->findByLoginname($loginname);
-        $cnt = count($cvs);
+        $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
+        
         //return new Response(json_encode($cvs));
-        if ($cnt==0) {
+        if (!$user) {
             $sj->errorMessage("AdminUxController::clearloginAction - No user '$loginname' found in any active version");
             return new Response(json_encode(['KO' => "No user '$loginname' found in any active version" ]));
         }
@@ -481,9 +496,11 @@ class AdminuxController extends AbstractController
             # On supprime le username dans TOUTES les versions du projet demandé
             # Si le username existe dans d'autres projets, on le garde dans ces projets, on garde aussi le mot de passe !
             $keepPwd = false;
+            $cvs = $user -> getCollaborateurVersion();
             foreach ($cvs as $cv) {
                 if ($cv->getVersion()->getProjet()->getIdProjet() == $idProjet) {
-                    $cv->setLoginname(null);
+                    //$cv->setLoginname(null);
+                    $cv->removeUser($user);
                     $em->persist($cv);
                 }
                 else {
@@ -496,10 +513,7 @@ class AdminuxController extends AbstractController
             # ... SAUF si $keepPwd est true !
 
             if ($keepPwd == false) {
-                $user = $em->getRepository(User::class)->findOneBy(['loginname' => $loginname]);
-                if ($user!=null) {
-                    $em->remove($user);
-                }
+                $em->remove($user);
             }
                         
             $em->flush();
@@ -856,6 +870,10 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
+
+        /****** SUPPRIME CAR PAS DE QUOTAS DANS CETTE VERSION *****/
+        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
+
 
         // todo - Si ce paramètre n'existe pas ça va planter
         $ressources_conso_group = $this->getParameter('ressources_conso_group');
@@ -1223,31 +1241,25 @@ class AdminuxController extends AbstractController
 
         foreach ($versions as $version) {
             if ($version->getEtatVersion() == Etat::ACTIF) {
-                foreach ($version->getCollaborateurVersion() as $collaborateurVersion) {
-                    if ($collaborateurVersion->getLogin() == false) {
-                        continue;
-                    }
-
-                    $collaborateur  = $collaborateurVersion->getCollaborateur() ;
-                    if ($collaborateur != null) {
-                        $loginname  = $collaborateurVersion->getLoginname();
-                        $prenom     = $collaborateur->getPrenom();
-                        $nom        = $collaborateur->getNom();
-                        $idIndividu = $collaborateur->getIdIndividu();
-                        $mail       = $collaborateur->getMail();
-                        $login      = $collaborateurVersion->getLogin();
-                        $clogin     = $collaborateurVersion->getClogin();
-                        $loginnames = $su->collaborateurVersion2LoginNames($collaborateurVersion);
-                        $output[] =   [
-                                'idIndividu' => $idIndividu,
-                                'idProjet' =>$idProjet,
-                                'mail' => $mail,
-                                'prenom' => $prenom,
-                                'nom' => $nom,
-                                'login' => $login,
-                                'loginnames' => $loginnames,
-                                'clogin' => $clogin,
-                                ];
+                foreach ($version->getCollaborateurVersion() as $cv) {
+                    if ($cv->getLogint() || $cv->getLoginb())
+                    {
+                        $collaborateur  = $cv->getCollaborateur() ;
+                        if ($collaborateur != null) {
+                            $prenom     = $collaborateur->getPrenom();
+                            $nom        = $collaborateur->getNom();
+                            $idIndividu = $collaborateur->getIdIndividu();
+                            $mail       = $collaborateur->getMail();
+                            $loginnames = $su->collaborateurVersion2LoginNames($cv);
+                            $output[] =   [
+                                    'idIndividu' => $idIndividu,
+                                    'idProjet' =>$idProjet,
+                                    'mail' => $mail,
+                                    'prenom' => $prenom,
+                                    'nom' => $nom,
+                                    'loginnames' => $loginnames,
+                            ];
+                        }
                     }
                 }
             }
@@ -1256,7 +1268,6 @@ class AdminuxController extends AbstractController
         $sj -> infoMessage(__METHOD__ . " OK");
         return new Response(json_encode($output));
     }
-
 
     /**
      * Vérifie la base de données, et envoie un mail si l'attribution d'un projet est différente du quota
@@ -1270,32 +1281,43 @@ class AdminuxController extends AbstractController
         $sn = $this->sn;
         $sj = $this->sj;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
-        $annee_courante = $sd->showYear();
-        $sp      = $this->sp;
-        $projets = $sp->projetsParAnnee($annee_courante)[0];
-
-        // projets à problème
-        $msg = "";
-        foreach ($projets as $p) {
-            // On ne s'occupe pas des projets terminés ou annulés
-            // TODO - Tester sur l'état plutôt que sur le meta état,
-            //        le méta état est censé être fait SEULEMENT pour l'affichage !
-            if ( $p['metaetat'] == "TERMINE" ) continue;
-            if ($p['attrib'] != $p['q']) {
-                $msg .= $p['p']->getIdProjet() . "\t" . $p['attrib'] . "\t\t" . $p["q"] . "\n";
-            }
-        }
-
-        if ($msg != "") {
+        /****** SUPPRIME CAR PAS DE QUOTAS DANS CETTE VERSION *****/
+        if (true)
+        {
+            // Envoi d'un message d'erreur
             $dest = $sn->mailUsers([ 'S' ], null);
+            $msg = "\n ---->  FONCTIONNALITE NON IMPLEMENTEE !  <-----\n";
             $sn->sendMessage('notification/quota_check-sujet.html.twig', 'notification/quota_check-contenu.html.twig', [ 'MSG' => $msg ], $dest);
         }
-
-        $sj -> infoMessage(__METHOD__ . " OK");
+        else
+        {
+            if ($this->getParameter('noconso')==true) {
+                throw new AccessDeniedException("Accès interdit (paramètre noconso)");
+            }
+    
+            $annee_courante = $sd->showYear();
+            $sp      = $this->sp;
+            $projets = $sp->projetsParAnnee($annee_courante)[0];
+    
+            // projets à problème
+            $msg = "";
+            foreach ($projets as $p) {
+                // On ne s'occupe pas des projets terminés ou annulés
+                // TODO - Tester sur l'état plutôt que sur le meta état,
+                //        le méta état est censé être fait SEULEMENT pour l'affichage !
+                if ( $p['metaetat'] == "TERMINE" ) continue;
+                if ($p['attrib'] != $p['q']) {
+                    $msg .= $p['p']->getIdProjet() . "\t" . $p['attrib'] . "\t\t" . $p["q"] . "\n";
+                }
+            }
+    
+            if ($msg != "") {
+                $dest = $sn->mailUsers([ 'S' ], null);
+                $sn->sendMessage('notification/quota_check-sujet.html.twig', 'notification/quota_check-contenu.html.twig', [ 'MSG' => $msg ], $dest);
+            }
+    
+            $sj -> infoMessage(__METHOD__ . " OK");
+        }
         return $this->render('consommation/conso_update_batch.html.twig');
     }
 

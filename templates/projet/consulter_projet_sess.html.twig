@@ -9,6 +9,10 @@
 
 {% block body %}
 
+
+    {# PROVISOIRE !!!! #}
+    {% set noconso = true %}
+    
     <section id="consulter_projet" style="stroke:black">
 
         <div class="top_body">
@@ -86,7 +90,6 @@
                     </a>
                 {%  endif %}
             {% endif %}
-    
             {% if fichier_attache %}
                 {% if document != null %}
                     <a class="lien_supplementaire" target="_blank" href="{{ path('document', { 'id' : version.idVersion }) }}"> {{icones.pdf}}
