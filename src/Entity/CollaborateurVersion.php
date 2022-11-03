@@ -51,30 +51,30 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
-     * @ORM\Column(name="deleted", type="boolean", nullable=false)
+     * @ORM\Column(name="delt", type="boolean", nullable=false, options={"comment":"login Turpan à supprimer"})
      */
-    private $deleted = false;
+    private $delt = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="login", type="boolean", nullable=true)
+     * @ORM\Column(name="delb", type="boolean", nullable=false, options={"comment":"login Boreal à supprimer"})
      */
-    private $login = false;
+    private $delb = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="clogin", type="boolean", nullable=true)
+     * @ORM\Column(name="logint", type="boolean", nullable=false, options={"comment":"login sur Turpan"}))
      */
-    private $clogin = false;
+    private $logint = false;
 
     /**
-     * @var string
+     * @var boolean
      *
-     * @ORM\Column(name="loginname", type="string", nullable=true,length=100 )
+     * @ORM\Column(name="loginb", type="boolean", nullable=false, options={"comment":"login sur Boreal"}))
      */
-    private $loginname;
+    private $loginb = false;
 
     /**
      * @var \App\Entity\Statut
@@ -162,16 +162,19 @@ class CollaborateurVersion
 
     public function __construct(Individu $individu = null, Version $version = null)
     {
-        $this->login = false;
-        $this->clogin = false;
+        $this->logint = false;
+        $this->loginb = false;
+        $this->delt = false;
+        $this->delb = false;
+        
         $this->responsable = false;
         $this->user = new \Doctrine\Common\Collections\ArrayCollection();
 
         if ($individu != null) {
-            $this->statut           =   $individu->getStatut();
-            $this->labo             =   $individu->getLabo();
-            $this->etab             =   $individu->getEtab();
-            $this->collaborateur    =   $individu;
+            $this->statut = $individu->getStatut();
+            $this->labo = $individu->getLabo();
+            $this->etab = $individu->getEtab();
+            $this->collaborateur = $individu;
         }
 
         if ($version != null) {
@@ -204,99 +207,99 @@ class CollaborateurVersion
     }
 
     /**
-     * Set deleted
+     * Set delt
      *
-     * @param boolean $deleted
+     * @param boolean $delt
      *
      * @return CollaborateurVersion
      */
-    public function setDeleted($deleted)
+    public function setDelt($delt)
     {
-        $this->deleted = $deleted;
+        $this->delt = $delt;
 
         return $this;
     }
 
     /**
-     * Get deleted
+     * Get delt
      *
      * @return boolean
      */
-    public function getDeleted()
+    public function getDelt()
     {
-        return $this->deleted;
+        return $this->delt;
     }
 
     /**
-     * Set login
+     * Set delb
      *
-     * @param boolean $login
+     * @param boolean $delb
      *
      * @return CollaborateurVersion
      */
-    public function setLogin($login)
+    public function setDelb($delb)
     {
-        $this->login = $login;
+        $this->delb = $delb;
 
         return $this;
     }
 
     /**
-     * Get login
+     * Get delb
      *
      * @return boolean
      */
-    public function getLogin()
+    public function getDelb()
     {
-        return $this->login;
+        return $this->delb;
     }
 
     /**
-     * Set clogin
+     * Set logint
      *
-     * @param boolean $clogin
+     * @param boolean $logint
      *
      * @return CollaborateurVersion
      */
-    public function setClogin($clogin)
+    public function setLogint($logint)
     {
-        $this->clogin = $clogin;
+        $this->logint = $logint;
 
         return $this;
     }
 
     /**
-     * Get clogin
+     * Get logint
      *
      * @return boolean
      */
-    public function getClogin()
+    public function getLogint()
     {
-        return $this->clogin;
+        return $this->logint;
     }
 
     /**
-     * Set loginname
+     * Set loginb
      *
-     * @param string $loginname
+     * @param boolean $loginb
      *
      * @return CollaborateurVersion
      */
-    public function setLoginname($loginname)
+    public function setLoginb($loginb)
     {
-        $this->loginname = $loginname;
+        $this->loginb = $loginb;
 
         return $this;
     }
 
     /**
-     * Get loginname
+     * Get loginb
      *
-     * @return string
+     * @return boolean
      */
-    public function getLoginname()
+    public function getLoginb()
     {
-        return $this->loginname;
+        return $this->loginb;
     }
 
     /**

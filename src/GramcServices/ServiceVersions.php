@@ -580,7 +580,7 @@ class ServiceVersions
     /********************************************
      * Supprimer un collaborateur d'une version
      **********************************************************/
-    public function supprimerCollaborateur(Version $version, Individu $individu): void
+    private function supprimerCollaborateur(Version $version, Individu $individu): void
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -592,51 +592,43 @@ class ServiceVersions
     }
 
     /*********************************************************
-     * Synchroniser le flag Deleted d'un collaborateurVersion
+     * Synchroniser les flags Deleted d'un collaborateurVersion
      **********************************************************/
-    public function syncDeleted( Version $version, Individu $individu, bool $delete): void
+    private function syncDeleted( Version $version, Individu $individu, bool $delt, bool $delb): void
     {
         $em = $this->em;
         $sj = $this->sj;
         
         $cv = $this->TrouverCollaborateur($version, $individu);
-        if ($cv->getDeleted() != $delete) {
-            $sj->debugMessage("ServiceVersion:syncDeleted !$delete => $delete");
-            $cv -> setDeleted($delete);
+        if ($cv->getDelt() != $delt) {
+            $sj->debugMessage("ServiceVersion:syncDeleted \$delt => $delt");
+            $cv -> setDelt($delt);
+            $em->persist($cv);
+            $em->flush();
+        }
+        if ($cv->getDelb() != $delb) {
+            $sj->debugMessage("ServiceVersion:syncDeleted \$delb => $delb");
+            $cv -> setDelb($delb);
             $em->persist($cv);
             $em->flush();
         }
     }
 
-    // modifier le login d'un collaborateur d'une version
-    // Si le login passe à false, suppression du Loginname,
-    // et suppression de la ligne correspondante si elle existe (mot de passe) dans la table user
-    public function modifierLogin(Version $version, Individu $individu, $login=false, $clogin=false): void
+    /*********************************************************
+     * modifier le login d'un collaborateur d'une version
+     * Si le login passe à false, suppression du Loginname,
+     * et suppression de la ligne correspondante si elle existe (mot de passe) dans la table user
+     ***********************************************************/
+    private function modifierLogin(Version $version, Individu $individu, $logint=false, $loginb=false): void
     {
         $em = $this->em;
         $sj = $this->sj;
         
-        if ($clogin==null) $clogin=false;
-
         $cv = $this->TrouverCollaborateur($version, $individu);
-        $cv->setLogin($login);
-        $cv->setClogin($clogin);
+        $cv->setLogint($logint);
+        $cv->setLoginb($loginb);
         $this->em->persist($cv);
         $this->em->flush();
-
-        /*
-        if (! $login)
-        {
-            $loginname = $item->getLoginname();
-            if (! empty($loginname)) {
-                $item->setLoginname(null);
-                $user = $em->getRepository(User::class)->findOneBy(['loginname' => $loginname]);
-                if ($user != null) {
-                    $em->remove($user);
-                }
-            }
-        }*/
-        
     }
 
     /*******
@@ -897,10 +889,11 @@ class ServiceVersions
             else
             {
                 $individuForm = new IndividuForm($individu, $this->resp_peut_modif_collabs);
-                $individuForm->setLogin($cv->getLogin());
-                $individuForm->setClogin($cv->getClogin());
+                $individuForm->setLogint($cv->getLogint());
+                $individuForm->setLoginb($cv->getLoginb());
                 $individuForm->setResponsable($cv->getResponsable());
-                $individuForm->setDelete($cv->getDeleted());
+                $individuForm->setDelt($cv->getDelt());
+                $individuForm->setDelb($cv->getDelb());
 
                 if ($individuForm->getResponsable() == true) {
                     $dataR[] = $individuForm;
@@ -934,7 +927,7 @@ class ServiceVersions
             if ($individu_form->getDelete()) continue;
 
             // Tiens, un login !
-            if ($individu_form->getLogin()) {
+            if ($individu_form->getLogint() || $individu_form->getLoginb()) {
                 $one_login = true;
             }
 
@@ -1057,16 +1050,11 @@ class ServiceVersions
                         $sj->infoMessage(__METHOD__ . ':' . __LINE__ .' individu ' .
                             $individu . ' ajouté à la version ' .$version);
                         $collaborateurVersion   =   new CollaborateurVersion($individu);
-                        $collaborateurVersion->setDeleted(false);
                         $collaborateurVersion->setVersion($version);
                         if ($this->coll_login) {
-                            $collaborateurVersion->setLogin($individu_form->getLogin());
+                            $collaborateurVersion->setLogint($individu_form->getLogint());
+                            $collaborateurVersion->setLoginb($individu_form->getLoginb());
                         };
-                        if ($this->nodata == false) {
-                            $collaborateurVersion->setClogin($individu_form->getClogin());
-                        };
-                        $collaborateurVersion->setLogin($individu_form->getLogin());
-                        $collaborateurVersion->setClogin($individu_form->getClogin());
                         $em->persist($collaborateurVersion);
                     }
     
@@ -1076,15 +1064,15 @@ class ServiceVersions
                             $individu . ' confirmé pour la version '.$version);
     
                         // Modif éventuelle des cases de login
-                        $this->modifierLogin($version, $individu, $individu_form->getLogin(), $individu_form->getClogin());
+                        $this->modifierLogin($version, $individu, $individu_form->getLogint(), $individu_form->getLoginb());
     
                         // modification du labo du projet
                         if ($version->isResponsable($individu)) {
                             $this->setLaboResponsable($version, $individu);
                         }
     
-                        // modification éventuelle du flag deleted
-                        $this->syncDeleted($version, $individu, $individu_form->getDelete());
+                        // modification éventuelle des flags delt/delb
+                        $this->syncDeleted($version, $individu, $individu_form->getDelt(), $individu_form->getDelb());
                     }
                     $em -> flush();
                 }
@@ -1097,8 +1085,8 @@ class ServiceVersions
                     $individu = $individu_form->nouvelIndividu($sval);
                     if ($individu != null) {
                         $collaborateurVersion   =   new CollaborateurVersion($individu);
-                        $collaborateurVersion->setLogin($individu_form->getLogin());
-                        $collaborateurVersion->setClogin($individu_form->getClogin());
+                        $collaborateurVersion->setLogint($individu_form->getLogint());
+                        $collaborateurVersion->setLoginb($individu_form->getLoginb());
                         $collaborateurVersion->setVersion($version);
     
                         $sj->infoMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur ' . $individu .

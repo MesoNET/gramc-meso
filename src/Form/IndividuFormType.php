@@ -62,27 +62,24 @@ class IndividuFormType extends AbstractType
         if ($this->coll_login == true)
         {
              $builder->add(
-                'login',
+                'logint',
                 CheckboxType::class,
                 [
-                    'label'     => 'login calcul',
+                    'label'     => 'login Turpan',
                     'required'  => false,
-                    'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur le supercalculateur' ]
+                    'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Turpan' ]
                 ]
             );
         };
-        if ($this->nodata == false)
-        {
-             $builder->add(
-                'clogin',
-                CheckboxType::class,
-                [
-                    'label'     => 'accès callisto',
-                    'required'  => false,
-                    'attr' => [ 'title' => 'Demander un accès à la plateforme Callisto' ]
-                ]
-            );
-        };
+         $builder->add(
+            'loginb',
+            CheckboxType::class,
+            [
+                'label'     => 'login Boreal',
+                'required'  => false,
+                'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Boreal' ]
+            ]
+        );
         $builder->add(
             'mail',
             TextType::class,
@@ -188,15 +185,15 @@ class IndividuFormType extends AbstractType
                 ]
             );
         }
-        $builder->add(
+      /*  $builder->add(
             'delete',
             CheckboxType::class,
             [
                 'label'     =>  'supprimer',
                 'required'  =>  false,
             ]
-        )
-        ->add(
+        ); */
+        $builder->add(
             'id',
             HiddenType::class,
             [

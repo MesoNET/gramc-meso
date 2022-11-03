@@ -41,9 +41,10 @@ use Doctrine\ORM\EntityManager;
  ************************************************************************/
 class IndividuForm
 {
-    protected $login;
-    protected $clogin;
-    protected $delete;
+    protected $logint;
+    protected $loginb;
+    protected $delt;
+    protected $delb;
     protected $responsable;
 
     protected $mail;
@@ -57,7 +58,8 @@ class IndividuForm
 
     public function __construct(Individu $individu = null)
     {
-        $this->delete      = false;
+        $this->delt = false;
+        $this->delb = false;
         $this->responsable = false;
         if ($individu != null) {
             $this->mail          = $individu->getMail();
@@ -73,8 +75,11 @@ class IndividuForm
     public function __toString()
     {
         $output = '';
-        if ($this->getDelete() == true) {
-            $output .= 'TO DELETE:';
+        if ($this->getDelt() == true) {
+            $output .= 'TO DELETE FROM TURPAN ';
+        }
+        if ($this->getDelb() == true) {
+            $output .= 'TO DELETE FROM BOREAL ';
         }
         if ($this->getResponsable() == true) {
             $output .= 'RESPONSABLE:';
@@ -84,22 +89,22 @@ class IndividuForm
         return $output;
     }
 
-    public function getLogin()
+    public function getLogint()
     {
-        return $this->login;
+        return $this->logint;
     }
-    public function setLogin($login)
+    public function setLogint($logint)
     {
-        $this->login = $login;
+        $this->logint = $logint;
         return $this;
     }
-    public function getClogin()
+    public function getLoginb()
     {
-        return $this->clogin;
+        return $this->loginb;
     }
-    public function setClogin($clogin)
+    public function setLoginb($loginb)
     {
-        $this->clogin = $clogin;
+        $this->loginb = $loginb;
         return $this;
     }
 
@@ -113,13 +118,23 @@ class IndividuForm
         return $this;
     }
 
-    public function getDelete()
+    public function getDelt()
     {
-        return $this->delete;
+        return $this->delt;
     }
-    public function setDelete($delete)
+    public function setDelt($delt)
     {
-        $this->delete = $delete;
+        $this->delt = $delt;
+        return $this;
+    }
+
+    public function getDelb()
+    {
+        return $this->delb;
+    }
+    public function setDelb($delb)
+    {
+        $this->delb = $delb;
         return $this;
     }
 

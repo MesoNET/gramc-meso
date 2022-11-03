@@ -54,6 +54,22 @@ class ServiceUsers
         return $loginnames;
     }
 
+    /******************************************
+     * Renvoie la liste des loginnames pour un CollaborateurVersion donné
+     * sous forme de tableau associatif SERVEUR -> login
+     *************************************/
+    public function collaborateurVersion2LoginNames2(CollaborateurVersion $cv): array
+    {
+        $loginnames = $this->collaborateurVersion2LoginNames($cv);
+        $loginnames2 = [];
+        foreach ($loginnames as $u)
+        {
+            $l = $this->parseLoginname($u);
+            $loginnames2[$l['serveur']] = $l['loginname'];
+        }
+        return $loginnames2;
+    }
+
     /*******************************************************
      * Renvoie le loginname sous la forme alice@serveur
      ******************************************************/

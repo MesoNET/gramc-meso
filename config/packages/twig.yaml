@@ -9,6 +9,7 @@ twig:
        infos: '@App\GramcServices\ServiceInfos'
        serviceVersions: '@App\GramcServices\ServiceVersions'
        serviceProjets: '@App\GramcServices\ServiceProjets'
+       serviceUsers: '@App\GramcServices\ServiceUsers'
        mailadmin: '%mailadmin%'
        mailsupport: '%mailsupport%'
        mesoc: '%mesoc%'

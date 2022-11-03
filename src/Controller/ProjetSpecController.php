@@ -164,7 +164,9 @@ class ProjetSpecController extends AbstractController
                 $cpt_rall  = 0;
             }
 
-            if ($versionActive != null) {
+            //if ($versionActive != null)
+            if ( false)
+            {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $login = $cv->getLoginname()==null ? 'nologin' : $cv->getLoginname();
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -297,7 +299,8 @@ class ProjetSpecController extends AbstractController
         // Calcul du loginname, pour affichage de la conso
         $loginname = null;
         $cv = $coll_vers_repo->findOneBy(['version' => $version, 'collaborateur' => $token->getUser()]);
-        if ($cv != null)
+        //if ($cv != null)
+        if (false)
         {
             $loginname = $cv -> getLoginname() == null ? 'nologin' : $cv -> getLoginname();
         }
@@ -562,9 +565,6 @@ class ProjetSpecController extends AbstractController
         $menu[] = $sm->gererPublications($projet);
         $menu[] = $sm->modifierCollaborateurs($version);
 
-        if ($this->getParameter('nodata')==false) {
-            $menu[] = $sm->donnees($version);
-        }
         $menu[] = $sm->telechargerFiche($version);
         $menu[] = $sm->televerserFiche($version);
 
