@@ -10,9 +10,12 @@ security:
         in_memory:
             memory:
                 users:
-                    consoupload:
-                       password: '%env(PASSWORD_CONSOUPLOAD)%'
-                       roles: 'ROLE_ADMIN' 
+                    apiuft:
+                       password: '%env(PASSWORD_APIUFT)%'
+                       roles: 'ROLE_ADMIN'
+                    apicriann:
+                       password: '%env(PASSWORD_APICRIANN)%'
+                       roles: 'ROLE_ADMIN'
         #users_in_memory: { memory: null }
         gramc_provider:
             #id: App\Security\GramcUserProvider

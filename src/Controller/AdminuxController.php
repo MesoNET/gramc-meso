@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 use App\Utils\Functions;
 use App\GramcServices\Etat;
@@ -74,6 +75,8 @@ class AdminuxController extends AbstractController
         private GramcDate $sd,
         private ServiceVersions $sv,
         private ServiceUsers $su,
+        private TokenStorageInterface $tok,
+
         private EntityManagerInterface $em
     ) {}
 
@@ -224,6 +227,12 @@ class AdminuxController extends AbstractController
            $error[] = 'No serveur ' . $loginname_p['serveur'];
         }
 
+        // On vérifie que le user connecté est bien autorisé à agir sur ce serveur
+        if ($serveur != null && ! $this->checkUser($serveur))
+        {
+           $error[] = 'ACCES INTERDIT A ' . $loginname_p['serveur']; 
+        }
+
         if ($error != []) {
             $sj->errorMessage("AdminUxController::setloginnameAction - " . print_r($error, true));
             return new Response(json_encode(['KO' => $error ]));
@@ -285,7 +294,7 @@ class AdminuxController extends AbstractController
       * Positionne le mot de passe du user demandé, à condition que ce user existe dans la table user
       */
 
-    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
+    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "bob@serveur", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
 
     public function setpasswordAction(Request $request, LoggerInterface $lg): Response
     {
@@ -324,12 +333,20 @@ class AdminuxController extends AbstractController
             $cpassword = $content['cpassword'];
         }
 
-        # Calcul de la date d'expiration
+        // Calcul de la date d'expiration
         $pwd_duree = $this->getParameter('pwd_duree');  // Le nombre de jours avant expiration du mot de passe
         $grdt      = $this->sd;
         $passexpir = $grdt->getNew()->add(new \DateInterval($pwd_duree));
 
-        # Vérifie que ce loginname est connu
+        // Vérifie qu'on a le droit d'intervenir sur ce serveur
+        if ( !$this->checkUser($loginname))
+        {
+            $msg = 'ACCES INTERDIT A CE SERVEUR'; 
+            $sj->errorMessage("AdminUxController::setpasswordAction - " . $msg);
+            return new Response(json_encode(['KO' => $msg ])); 
+        }
+        
+        // Vérifie que ce loginname est connu
         try
         {
             $cv = $em->getRepository(User::class)->existsLoginname($loginname);
@@ -409,6 +426,15 @@ class AdminuxController extends AbstractController
             $loginname = $content['loginname'];
         }
 
+        // Vérifie qu'on a le droit d'intervenir sur ce serveur
+        if ( !$this->checkUser($loginname))
+        {
+            $msg = 'ACCES INTERDIT A CE SERVEUR'; 
+
+            $sj->errorMessage("AdminUxController::setpasswordAction - " . $msg);
+            return new Response(json_encode(['KO' => $msg ])); 
+        }
+        
         # Vérifie que ce loginname est connu
         try
         {
@@ -460,7 +486,8 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
-
+        $token = $this->tok->getToken();
+        
         if ($this->getParameter('noconso')==true) {
             throw new AccessDeniedException("Accès interdit (parametre noconso)");
         }
@@ -483,7 +510,15 @@ class AdminuxController extends AbstractController
             $idProjet = $content['projet'];
         }
 
-        # Vérifie que ce loginname est connu
+        // Vérifie qu'on a le droit d'intervenir sur ce serveur
+        if ( !$this->checkUser($loginname))
+        {
+            $msg = 'ACCES INTERDIT A CE SERVEUR'; 
+            $sj->errorMessage("AdminUxController::clearloginnameAction - " . $msg);
+            return new Response(json_encode(['KO' => $msg ])); 
+        }
+
+        // Vérifie que ce loginname est connu
         $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
         
         //return new Response(json_encode($cvs));
@@ -1331,7 +1366,7 @@ class AdminuxController extends AbstractController
      * @Route("/utilisateurs/checkpassword", name="check_password", methods={"GET"})
      *
      * curl --netrc -H "Content-Type: application/json" https://.../adminux/utilisateurs/checkpassword
-     *q
+     *
      */
     public function checkPasswordAction(Request $request, LoggerInterface $lg): Response
     {
@@ -1353,6 +1388,14 @@ class AdminuxController extends AbstractController
         foreach ($users as $user)
         {
             $u = [];
+            $u["loginname"] = $su->getLoginname($user);
+
+            // Si pas le droit de travailler sur ce serveur, on passe
+            if ( ! $this->checkUser($u["loginname"]))
+            {
+                continue;
+            }
+            
             // Si nécessaire on marque le user comme expiré, mais on ne supprime rien
             if ($user->getPassexpir() <= $sd && $user->getExpire() == false)
             {
@@ -1379,4 +1422,45 @@ class AdminuxController extends AbstractController
         $sj -> infoMessage(__METHOD__ . " OK");
         return new Response(json_encode($rusers));
     }
+
+    /**
+     * 
+     * Vérifie que le user connecté a le droit d'intervenir sur ce serveur
+     *
+     * params = $loginname ou $serveur
+     * return = true ssi le user connecté est admin sur le serveur 
+     * 
+     */
+    private function checkUser(string|Serveur $prm ): bool
+    {
+        $token = $this->tok->getToken();
+        $su = $this->su;
+        $em = $this->em;
+        
+        if ( $prm instanceof Serveur)
+        {
+            $serveur = $prm;
+        }
+        else
+        {
+            $loginname_p = $su -> parseLoginname($prm);
+            $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
+            if ($serveur == null)
+            {
+               return false;
+            }
+        }
+
+        // On vérifie que le user connecté est bien autorisé à agir sur ce serveur
+        $moi = $token->getUser();
+        if ($moi != null && $moi->getUserIdentifier() != $serveur->getAdmname())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
 }

@@ -52,6 +52,14 @@ class Serveur
     private $desc;
 
     /**
+     * @var desc
+     *
+     * @ORM\Column(name="admname", type="string", length=20 )
+     * 
+     */
+    private $admname;
+
+    /**
      * Get nom
      *
      * @return string
@@ -92,6 +100,28 @@ class Serveur
     public function setDesc(string $desc): Serveur
     {
         $this->desc = $desc;
+        return $this;
+    }
+
+    /**
+     * Get Admname
+     *
+     * @return string
+     */
+    public function getAdmname(): string
+    {
+        return $this->admname;
+    }
+
+    /**
+     * Set Admname
+     *
+     * @param string
+     * @return Serveur
+     */
+    public function setAdmname(string $admname): Serveur
+    {
+        $this->admname = $admname;
         return $this;
     }
 
