@@ -184,15 +184,15 @@ class IndividuFormType extends AbstractType
                     'placeholder' => "-- Indiquez l'établissement",
                 ]
             );
-        }
-      /*  $builder->add(
-            'delete',
+        };
+        $builder->add(
+            'deleted',
             CheckboxType::class,
             [
                 'label'     =>  'supprimer',
                 'required'  =>  false,
             ]
-        ); */
+        );
         $builder->add(
             'id',
             HiddenType::class,

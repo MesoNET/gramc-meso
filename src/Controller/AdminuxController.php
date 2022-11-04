@@ -1149,9 +1149,9 @@ class AdminuxController extends AbstractController
             $i = 0; // i=0 -> version dernière, $i=1 -> version active
             foreach ($vs as $v) {
                 $collaborateurs = $v->getCollaborateurVersion();
-                foreach ($collaborateurs as $c)
+                foreach ($collaborateurs as $cv)
                 {
-                    $m = $c -> getCollaborateur() -> getMail();
+                    $m = $cv -> getCollaborateur() -> getMail();
 
                     // si on a spécifié un mail, ne retenir que celui-la
                     if ($mail != null && strtolower($mail) != strtolower($m))
@@ -1160,16 +1160,16 @@ class AdminuxController extends AbstractController
                     }
 
                     // Pas de login demandé ni de login enregistré
-                    //if ($c->getLogin()==false && $c->getClogin()==false && $c->getLoginname()==null) {
+                    //if ($cv->getLogin()==false && $cv->getClogin()==false && $cv->getLoginname()==null) {
                     //    continue;
                     //}
 
                     if (!isset($users[$m]))
                     {
                         $users[$m] = [];
-                        $users[$m]['nom']        = $c -> getCollaborateur() -> getNom();
-                        $users[$m]['prenom']     = $c -> getCollaborateur() -> getPrenom();
-                        $users[$m]['idIndividu'] = $c -> getCollaborateur() -> getIdIndividu();
+                        $users[$m]['nom']        = $cv -> getCollaborateur() -> getNom();
+                        $users[$m]['prenom']     = $cv -> getCollaborateur() -> getPrenom();
+                        $users[$m]['idIndividu'] = $cv -> getCollaborateur() -> getIdIndividu();
                         $users[$m]['projets']    = [];
                     }
 
@@ -1183,7 +1183,7 @@ class AdminuxController extends AbstractController
                     }
 
                     // Les loginnames au niveau version
-                    $loginnames = $su -> collaborateurVersion2LoginNames($c);
+                    $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
@@ -1193,10 +1193,10 @@ class AdminuxController extends AbstractController
                     
                     $v_info = [];
                     $v_info['version'] = $v->getIdVersion();
-                    $v_info['login'] = $c->getLogin();
-                    $v_info['clogin'] = $c->getClogin();
+                    $v_info['logint'] = $cv->getLogint();
+                    $v_info['loginb'] = $cv->getloginb();
                     $v_info['loginnames'] = $loginnames;
-                    $v_info['deleted'] = $c->getDeleted();
+                    $v_info['deleted'] = $cv->getDeleted();
                     
                     $prj_info[$vs_labels[$i]] = $v_info;
 

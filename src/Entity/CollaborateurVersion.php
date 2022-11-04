@@ -65,6 +65,13 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
+     * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"comment":"supprimé prochainement"})
+     */
+    private $deleted = false;
+
+    /**
+     * @var boolean
+     *
      * @ORM\Column(name="logint", type="boolean", nullable=false, options={"comment":"login sur Turpan"}))
      */
     private $logint = false;
@@ -252,6 +259,30 @@ class CollaborateurVersion
     public function getDelb()
     {
         return $this->delb;
+    }
+
+    /**
+     * Set deleted
+     *
+     * @param boolean $deleted
+     *
+     * @return CollaborateurVersion
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    /**
+     * Get deleted
+     *
+     * @return boolean
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
     }
 
     /**

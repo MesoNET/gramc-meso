@@ -81,7 +81,7 @@ $(document).ready(
             { complete_ligne( $(this).val(), $(this) ); })
         
         // Lorsqu'on décoche une case login, on se choppe un message !
-        $("input[id$='_login'][type='checkbox']", context.parent() .parent() ).unbind('change')
+        $("input[id*='_login'][type='checkbox']", context.parent() .parent() ).unbind('change')
         .change(function()
         {
             //alert("coucou");
@@ -113,7 +113,7 @@ $(document).ready(
         });
     
         // Lorsqu'on coche une case Suppression, on se choppe un message !
-        $("input[id$='_delete'][type='checkbox']", context.parent() .parent() ).unbind('change')
+        $("input[id$='_deleted'][type='checkbox']", context.parent() .parent() ).unbind('change')
         .change(function()
         {
             if( $(this).prop('checked') )

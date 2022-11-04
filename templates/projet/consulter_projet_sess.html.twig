@@ -276,7 +276,7 @@
 
             <tbody>
                 {% for cv in version.CollaborateurVersion %}
-                    {% if not cv.delt %}
+                    {% if not cv.deleted %}
                         <tr style="stroke:black;">
                             {% if coll_login %}
                                 {% set users = serviceUsers.collaborateurVersion2LoginNames2(cv) %}
@@ -297,20 +297,6 @@
                                     {% endif %}
                                 {% else %}
                                     <td>-</td>
-                                {% endif %}
-                                
-                                {% if version.etat==500 or version.etat == 4 %}
-                                    <td style="stroke:black;">
-                                        {% if (cv.login == true) %}
-                                            {% if cv.loginname==null %}
-                                               {{icones.attention(25,25)}}
-                                            {% else %}
-                                                <tt>{{ cv.loginname }}</tt>
-                                            {% endif %}
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
                                 {% endif %}
                             {% endif %}
 

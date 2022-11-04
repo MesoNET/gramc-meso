@@ -45,6 +45,7 @@ class IndividuForm
     protected $loginb;
     protected $delt;
     protected $delb;
+    protected $deleted;
     protected $responsable;
 
     protected $mail;
@@ -60,6 +61,7 @@ class IndividuForm
     {
         $this->delt = false;
         $this->delb = false;
+        $this->deleted = false;
         $this->responsable = false;
         if ($individu != null) {
             $this->mail          = $individu->getMail();
@@ -76,10 +78,13 @@ class IndividuForm
     {
         $output = '';
         if ($this->getDelt() == true) {
-            $output .= 'TO DELETE FROM TURPAN ';
+            $output .= 'FERMER LE COMPTE TURPAN ';
         }
         if ($this->getDelb() == true) {
-            $output .= 'TO DELETE FROM BOREAL ';
+            $output .= 'FERMET LE COMPTE BOREAL ';
+        }
+        if ($this->getDeleted() == true) {
+            $output .= 'SUPPRIMER COLLABORATEUR ';
         }
         if ($this->getResponsable() == true) {
             $output .= 'RESPONSABLE:';
@@ -135,6 +140,16 @@ class IndividuForm
     public function setDelb($delb)
     {
         $this->delb = $delb;
+        return $this;
+    }
+
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
         return $this;
     }
 

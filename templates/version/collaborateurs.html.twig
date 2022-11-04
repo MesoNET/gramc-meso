@@ -54,7 +54,7 @@
                     {% if rows.vars.data.responsable is defined and rows.vars.data.responsable %} {# accès à la donnée via PHP #}
                         {% set resp = 'resp' %}{% else %}{% set resp = '' %}
                     {% endif %}
-                    {% if rows.vars.data.delete is defined and rows.vars.data.delete %} {# accès à la donnée via PHP #}
+                    {% if rows.vars.data.deleted is defined and rows.vars.data.deleted %} {# accès à la donnée via PHP #}
                         {% set suppr = 'suppr' %}{% else %}{% set suppr = '' %}
                     {% endif %}
                    <tr>

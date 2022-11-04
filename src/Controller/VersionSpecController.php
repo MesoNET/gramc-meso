@@ -174,7 +174,6 @@ class VersionSpecController extends AbstractController
         $collaborateur_form = $sv->getCollaborateurForm($version);
         $collaborateur_form->handleRequest($request);
         $data = $collaborateur_form->getData();
-
         $individu_forms = $collaborateur_form->getData()['individus'];
         $validated = $sv->validateIndividuForms($individu_forms);
         if (! $validated) {

@@ -593,8 +593,9 @@ class ServiceVersions
 
     /*********************************************************
      * Synchroniser les flags Deleted d'un collaborateurVersion
+     * NB - Les flags $delt et $delb sont inutlisés actuellement
      **********************************************************/
-    private function syncDeleted( Version $version, Individu $individu, bool $delt, bool $delb): void
+    private function syncDeleted( Version $version, Individu $individu, bool $delt, bool $delb, bool $deleted): void
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -612,6 +613,13 @@ class ServiceVersions
             $em->persist($cv);
             $em->flush();
         }
+        if ($cv->getDeleted() != $deleted) {
+            $sj->debugMessage("ServiceVersion:syncDeleted \$deleted => $deleted");
+            $cv -> setDeleted($deleted);
+            $em->persist($cv);
+            $em->flush();
+        }
+
     }
 
     /*********************************************************
@@ -894,6 +902,7 @@ class ServiceVersions
                 $individuForm->setResponsable($cv->getResponsable());
                 $individuForm->setDelt($cv->getDelt());
                 $individuForm->setDelb($cv->getDelb());
+                $individuForm->setDeleted($cv->getDeleted());
 
                 if ($individuForm->getResponsable() == true) {
                     $dataR[] = $individuForm;
@@ -923,8 +932,8 @@ class ServiceVersions
         //dd($individu_forms);
         foreach ($individu_forms as  $individu_form) {
 
-            // On ne teste pas la validité des collaborateur supprimés !
-            if ($individu_form->getDelete()) continue;
+            // On ne teste pas la validité des collaborateurs supprimés !
+            if ($individu_form->getDeleted()) continue;
 
             // Tiens, un login !
             if ($individu_form->getLogint() || $individu_form->getLoginb()) {
@@ -1070,9 +1079,11 @@ class ServiceVersions
                         if ($version->isResponsable($individu)) {
                             $this->setLaboResponsable($version, $individu);
                         }
+
+                        //$sj->debugMessage(__METHOD__ . ':' . __LINE__ .' T '.$individu_form->getDelt().' B '.$individu_form->getDelb().' D '.$individu_form->getDeleted());
     
                         // modification éventuelle des flags delt/delb
-                        $this->syncDeleted($version, $individu, $individu_form->getDelt(), $individu_form->getDelb());
+                        $this->syncDeleted($version, $individu, $individu_form->getDelt(), $individu_form->getDelb(), $individu_form->getDeleted());
                     }
                     $em -> flush();
                 }
@@ -1107,10 +1118,10 @@ class ServiceVersions
                     }
                 }
     
-                // Ligne vide
-                elseif ($individu_form->getMail() == null && $id == null) {
-                    $sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur vide ignoré');
-                }
+                // Ligne vide - Pas la peine de logguer
+                // elseif ($individu_form->getMail() == null && $id == null) {
+                //    $sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur vide ignoré');
+                //}
             }
         }
     }
