@@ -197,8 +197,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     private $rattachement;
 
-    ///////////////////////////////////////
-
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
@@ -206,7 +204,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     private $sso;
 
-
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * ORM\OneToMany(targetEntity="\App\Entity\Pubkey", mappedBy="individu")
+     * @ORM\OneToMany(targetEntity=Pubkey::class, mappedBy="individu")
+     */
+    private $pubkey;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -340,6 +344,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pubkey = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
         $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
@@ -796,7 +801,39 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         return $this->sso;
     }
 
+    /**
+     * Add pubkey
+     *
+     * @param \App\Entity\Pubkey $pubkey
+     *
+     * @return Individu
+     */
+    public function addPubkey(\App\Entity\Pubkey $pubkey)
+    {
+        $this->pubkey[] = $pubkey;
 
+        return $this;
+    }
+
+    /**
+     * Remove pubkey
+     *
+     * @param \App\Entity\Pubkey $pubkey
+     */
+    public function removePubkey(\App\Entity\Pubkey $pubkey)
+    {
+        $this->pubkey->removeElement($pubkey);
+    }
+
+    /**
+     * Get pubkey
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPubkey()
+    {
+        return $this->pubkey;
+    }
 
     /**
      * Add collaborateurVersion
