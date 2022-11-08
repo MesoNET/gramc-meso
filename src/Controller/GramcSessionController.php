@@ -32,6 +32,7 @@ use App\Entity\Individu;
 use App\Entity\Invitation;
 use App\Entity\Scalar;
 use App\Entity\Sso;
+use App\Entity\Clessh;
 use App\Entity\CompteActivation;
 use App\Entity\Journal;
 
@@ -298,9 +299,9 @@ class GramcSessionController extends AbstractController
             return $this->redirectToRoute('accueil');
         }
         $old_individu = clone $individu;
+        
         $form = $this->createForm(IndividuType::class, $individu, ['mail' => false ]);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid())
         {
             if ($old_individu->isPermanent() != $individu->isPermanent() && $individu->isPermanent() == false) {
@@ -362,12 +363,11 @@ class GramcSessionController extends AbstractController
                     }
                 }
             }
-
             return $this->redirectToRoute('accueil');
         }
         else
         {
-            return $this->render('default/profil.html.twig', ['form' => $form->createView() ]);
+            return $this->render('default/profil.html.twig', ['form' => $form->createView(), 'individu' => $individu ]);
         }
     }
 

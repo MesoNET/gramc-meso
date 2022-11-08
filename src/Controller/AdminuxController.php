@@ -24,18 +24,6 @@
 
 namespace App\Controller;
 
-use Psr\Log\LoggerInterface;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-
 use App\Utils\Functions;
 use App\GramcServices\Etat;
 
@@ -47,6 +35,7 @@ use App\Entity\CollaborateurVersion;
 use App\Entity\User;
 use App\Entity\Serveur;
 use App\Entity\Compta;
+use App\Entity\Clessh;
 
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceJournal;
@@ -55,6 +44,18 @@ use App\GramcServices\ServiceSessions;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
+
+use Psr\Log\LoggerInterface;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -1285,7 +1286,7 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
-                            $loginnames = $su->collaborateurVersion2LoginNames($cv);
+                            $loginnames = $su->collaborateurVersion2LoginNames3($cv);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
                                     'idProjet' =>$idProjet,

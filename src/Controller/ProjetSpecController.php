@@ -47,6 +47,7 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceUsers;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 use App\GramcServices\GramcGraf\CalculTous;
@@ -102,6 +103,7 @@ class ProjetSpecController extends AbstractController
         private ServiceMenus $sm,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
+        private ServiceUsers $su,
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
@@ -130,6 +132,7 @@ class ProjetSpecController extends AbstractController
         $sm                  = $this->sm;
         $ss                  = $this->ss;
         $sp                  = $this->sp;
+        $su                  = $this->su;
         $token               = $this->token;
         $em                  = $this->em;
         $individu            = $token->getUser();
@@ -164,11 +167,14 @@ class ProjetSpecController extends AbstractController
                 $cpt_rall  = 0;
             }
 
-            //if ($versionActive != null)
-            if ( false)
+            if ($versionActive != null)
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
-                $login = $cv->getLoginname()==null ? 'nologin' : $cv->getLoginname();
+                $loginnames = $su->collaborateurVersion2LoginNames3($cv);
+                $loginnames['TURPAN']['login'] = $cv->getLogint();
+                $loginnames['BOREAL']['login'] = $cv->getLoginb();
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
                 if ($u==null) {
                     $passwd    = null;
@@ -177,12 +183,15 @@ class ProjetSpecController extends AbstractController
                     $passwd    = $u->getPassword();
                     $passwd    = Functions::simpleDecrypt($passwd);
                     $pwd_expir = $u->getPassexpir();
-                }
+                } */
             } else {
-                $login  = 'nologin';
+                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
+                $loginnames['TURPAN']['login'] = false;
+                $loginnames['BOREAL']['login'] = false;
                 $passwd = null;
                 $pwd_expir = null;
             }
+
             $projets_resp[]   =
             [
                 'projet'    => $projet,
@@ -190,7 +199,7 @@ class ProjetSpecController extends AbstractController
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
                 'meta_etat' => $sp->getMetaEtat($projet),
-                'login'     => $login,
+                'loginnames' => $loginnames,
                 'passwd'    => $passwd,
                 'pwd_expir' => $pwd_expir
             ];

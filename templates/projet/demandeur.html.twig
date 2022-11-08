@@ -28,16 +28,24 @@
         <td>{{ item.projet.idProjet }}</td>
         
         {% if noconso==false %}
-            <td rowspan="{{ item.cpt_rall + 1 }}">
-                {% if item.login == 'nologin' %}
-                    - 
-                {% else %} 
-                    {{item.login}} 
-                {% endif %}
-                {% if item.passwd != null %}
-                    &nbsp;&nbsp;<img id="bouton_{{item.projet}}" class="bouton_poussoir cadenas" src="{{ asset('icones/cadenas.png') }}" alt="Donnez-moi mon mot de passe" title="Donnez-moi mon mot de passe" /></a> {% endif %}
-                {% endif %}
-            </td>
+            {% for s in ['TURPAN','BOREAL'] %}
+                <td rowspan="{{ item.cpt_rall + 1 }}">
+                    {#{{dump(item.loginnames)}}#}
+    
+                    {% if item.loginnames[s]['nom'] == 'nologin' %}
+                        -
+                        {% if item.loginnames[s]['login'] %} <span title="Votre compte n'est pas encore créé">{{ icones.attention(20,20) }}</span> {% endif %}
+                    {% else %}
+                         <tt>{{item.loginnames[s]['nom'] }}</tt> - 
+                        {% if item.loginnames[s]['clessh'] != null %}
+                            <tt>{{ item.loginnames[s]['clessh'].nom }}</tt><span title="Changer de clé ssh"><a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
+                        {% else %}
+                            <span title="Vous devez choisir une clé avant de vous connecter">{{ icones.attention(20,20) }}<a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
+                        {% endif %} 
+                    {% endif %}
+                </td>
+            {% endfor %}
+        {% endif %}
         
         <td rowspan="{{ item.cpt_rall + 1 }}">
             {% if item.projet.titre != null %}
@@ -47,8 +55,9 @@
             {% endif %}
         </td>
 
-        {% if noconso==false %}
-        
+        {#{% if noconso==false %}#}
+        {% if false %}
+
             {% if item.conso < conso_seuil_1 %}
                 <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0">{{ item.conso |number_format(1)}}&nbsp;%</td>
                 
@@ -180,7 +189,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Identifiant</th>{% endif %}
+            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREAL</th>{% endif %}
             <th>Titre</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>
@@ -217,7 +226,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Identifiant</th>{% endif %}
+            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREAL</th>{% endif %}
             <th>Titre</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>

@@ -113,17 +113,20 @@
                 <p>&nbsp;</p>
             {% endif %}
             {% include "default/flash.html.twig" %}
-            <div class="profil">
+            <div class="profil"  style="stroke:black">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <div>
                     {% if is_granted('IS_IMPERSONATOR') %}
                         <p> SUDO par {{ app.token.originalToken.user }}</p>
                     {% endif %}
+                    <p>
                     {% if app.debug %}
-                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a></p>
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a>
                     {% else %}
-                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a></p>
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a>
                     {% endif %}
+                     <span title="Gérer vos clés ssh"><a href="{{ path('gerer_clessh') }}">{{ icones.clessh(25,25)}}</a></span>
+                    </p>
                     </div>
                     <a href=" {{ path('deconnexion') }}" class="deconnexion_profil">Déconnexion</a>
                 {% else %}

@@ -39,11 +39,11 @@ class User
     /**
      * @var integer
      *
-     * @ORM\Column(name="id_user", type="integer")
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $iduser;
+    private $id;
 
     /**
      * @var string
@@ -68,7 +68,7 @@ class User
      * @ORM\ManyToMany(targetEntity="App\Entity\CollaborateurVersion", inversedBy="user")
      * @ORM\JoinTable(name="CollaborateurVersionUser",
      *   joinColumns={
-     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id_user")
+     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id")
      *   },
      *   inverseJoinColumns={
      *     @ORM\JoinColumn(name="id_collaborateurversion", referencedColumnName="id")
@@ -108,9 +108,20 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="pubkey", type="string", nullable=true,length=1000 )
+     * @ORM\Column(name="clessh", type="string", nullable=true,length=1000 )
      */
-    private $pubkey;
+    /**
+     * 
+     * @var \App\Entity\Clessh
+     *
+     * ORM\Column(name="id_clessh", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_clessh", referencedColumnName="id")
+     * })
+     * 
+     */
+    private $clessh;
 
     public function __toString()
     {
@@ -127,13 +138,13 @@ class User
     }
 
     /**
-     * Get idUser
+     * Get id
      *
      * @return integer
      */
-    public function getIdUser(): int
+    public function getId(): int
     {
-        return $this->iduser;
+        return $this->id;
     }
 
     /**
@@ -280,27 +291,26 @@ class User
         return $this->expire;
     }
     /**
-     * Set pubkey
+     * Set Clessh
      *
-     * @param string $pubkey
+     * @param string \App\Entity\Clessh $clessh
      *
      * @return User
      */
-    public function setPubkey($pubkey): User
+    public function setClessh(\App\Entity\Clessh $clessh): User
     {
-        $this->pubkey = $pubkey;
-
+        $this->clessh = $clessh;
         return $this;
     }
 
     /**
-     * Get pubkey
+     * Get clessh
      *
-     * @return string
+     * @return \App\Entity\Clessh
      */
-    public function getPubkey(): ?string
+    public function getClessh()
     {
-        return $this->pubkey;
+        return $this->clessh;
     }
 
     /**

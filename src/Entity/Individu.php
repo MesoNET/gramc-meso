@@ -197,6 +197,8 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     private $rattachement;
 
+    ///////////////////////////////////////
+
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
@@ -207,10 +209,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * ORM\OneToMany(targetEntity="\App\Entity\Pubkey", mappedBy="individu")
-     * @ORM\OneToMany(targetEntity=Pubkey::class, mappedBy="individu")
+     * @ORM\OneToMany(targetEntity="\App\Entity\Clessh", mappedBy="individu")
      */
-    private $pubkey;
+    private $clessh;
+
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -344,7 +346,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->pubkey = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
         $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
@@ -802,37 +804,39 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add pubkey
+     * Add clessh
      *
-     * @param \App\Entity\Pubkey $pubkey
+     * @param \App\Entity\Clessh $clessh
      *
      * @return Individu
      */
-    public function addPubkey(\App\Entity\Pubkey $pubkey)
+    public function addClessh(\App\Entity\Clessh $clessh)
     {
-        $this->pubkey[] = $pubkey;
-
+        $this->clessh[] = $clessh;
         return $this;
     }
 
     /**
-     * Remove pubkey
+     * Remove clessh
      *
-     * @param \App\Entity\Pubkey $pubkey
+     * @param \App\Entity\Clessh $clessh
+     *
+     * @return Individu
      */
-    public function removePubkey(\App\Entity\Pubkey $pubkey)
+    public function removeClessh(\App\Entity\Clessh $clessh)
     {
-        $this->pubkey->removeElement($pubkey);
+        $this->clessh->removeElement($clessh);
+        return $this;
     }
 
     /**
-     * Get pubkey
+     * Get clessh
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPubkey()
+    public function getClessh()
     {
-        return $this->pubkey;
+        return $this->clessh;
     }
 
     /**

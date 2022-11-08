@@ -25,6 +25,7 @@ namespace App\GramcServices;
 
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
+use App\Utils\Functions;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -70,6 +71,41 @@ class ServiceUsers
         return $loginnames2;
     }
 
+    /******************************************
+     * Renvoie la liste des loginnames pour un CollaborateurVersion donné
+     * sous forme de tableau associatif:
+     *      $s['TURPAN']['nom'] -> le nom du serveur, ou 'nologin'
+     *      $s['TURPAN']['clessh'] -> la cléssh, ou null
+     *      $s['TURPAN']['userid] -> le id du user
+     *************************************/
+    public function collaborateurVersion2LoginNames3(CollaborateurVersion $cv): array
+    {
+        $em = $this->em;
+        
+        $users = $cv->getUser();
+        $loginnames3 = [];
+        foreach ( $users as $u)
+        {
+            $s = $u->getServeur()->getNom();
+            $loginnames3[$s]['nom'] = $u->getLoginname();
+            $clessh = $u->getClessh();
+            if ($clessh === null)
+            {
+                $loginnames3[$s]['clessh'] = null;
+            }
+            else
+            {
+                $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
+                $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
+            }
+            $loginnames3[$s]['userid'] = $u->getId();
+        }
+        
+        if (!array_key_exists('TURPAN', $loginnames3)) $loginnames3['TURPAN']['nom'] = 'nologin';
+        if (!array_key_exists('BOREAL', $loginnames3)) $loginnames3['BOREAL']['nom'] = 'nologin';
+        return $loginnames3;
+    }
+
     /*******************************************************
      * Renvoie le loginname sous la forme alice@serveur
      ******************************************************/
@@ -86,7 +122,7 @@ class ServiceUsers
         $rvl = explode('@', $u,2);
         if (count($rvl) != 2)
         {
-            throwException ($sj->throwException(__METHOD__ . ":" . __LINE__ . " $u n'est pas de la forme alice@serveur"));
+            throw new \Exception (__METHOD__ . ":" . __LINE__ . " $u n'est pas de la forme alice@serveur");
         }
         return [ 'loginname' => $rvl[0], 'serveur' => $rvl[1]];
     }

@@ -24,30 +24,24 @@
 
 namespace App\Form;
 
+use App\Entity\Clessh;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use App\Entity\Individu;
-//use App\App;
-use App\Utils\Functions;
-
 use Doctrine\ORM\EntityManagerInterface;
 
-class RattachementType extends AbstractType
+class UserType extends AbstractType
 {
     private $em;
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this -> em = $em;
+        $this->em = $em;
     }
 
     /**
@@ -55,28 +49,19 @@ class RattachementType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('libelleRattachement')
-            ->add(
-                'expert',
-                EntityType::class,
-                [
-                'multiple' => true,
-                //'expanded' => true,
-                'class' => Individu::class,
-                'choices' =>  $options['experts'],
-                ]
-            );
-
-        if ($options['modifier'] == true) {
-            $builder
+        $builder->add(
+                    'clessh',
+                    EntityType::class,
+                    [
+                        'label' => 'Choisissez une clé ssh: ',
+                        'required' => true,
+                        'multiple' => false,
+                        'expanded' => true,
+                        'class' => clessh::class,
+                        'choices' =>  $options['clessh']
+                    ])
                 ->add('submit', SubmitType::class, ['label' => 'modifier' ])
                 ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        } elseif ($options['ajouter'] == true) {
-            $builder
-                ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        }
     }
 
     /**
@@ -84,14 +69,10 @@ class RattachementType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(
-            [
-            'data_class' => 'App\Entity\Rattachement',
-            'modifier' => false,
-            'ajouter'  => false,
-            'experts'  => $this->em->getRepository(Individu::class)->findAll(),
-            ]
-        );
+        $resolver->setDefaults(array(
+            'data_class' => 'App\Entity\User',
+            'clessh' => []
+        ));
     }
 
     /**
@@ -99,6 +80,6 @@ class RattachementType extends AbstractType
      */
     public function getBlockPrefix(): string
     {
-        return 'appbundle_rattachement';
+        return 'user';
     }
 }
