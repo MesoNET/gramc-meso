@@ -107,11 +107,14 @@
         </header>
 
         <div class="sous_header">
+            {# PAS DE SESSIONS DANS CETTE VERSION
             {% if is_granted('ROLE_OBS')  %}
                 {% include "default/etat_sessions.html.twig" %}
             {% else %}
                 <p>&nbsp;</p>
             {% endif %}
+            #}
+            <p>&nbsp;</p>
             {% include "default/flash.html.twig" %}
             <div class="profil"  style="stroke:black">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}

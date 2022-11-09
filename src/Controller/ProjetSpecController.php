@@ -273,7 +273,6 @@ class ProjetSpecController extends AbstractController
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
 
-     // SUPPRIME ! PASSE PAR LA SESSION ! Route("/{id}/consulter/{warn_type}", name="consulter_projet",methods={"GET","POST"})
     public function consulterAction(Request $request, Projet $projet, Version $version = null)
     {
         $em = $this->em;

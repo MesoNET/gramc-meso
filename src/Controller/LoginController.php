@@ -162,11 +162,18 @@ class LoginController extends AbstractController
 
         // Etablir la liste des users pouvant se connecter de cette manière
         $repository = $this->em->getRepository(Individu::class);
+        /*
         $experts    = $repository->findBy(['expert'   => true ]);
+        $valideurs  = $repository->findBy(['valideur' => true ]);
         $admins     = $repository->findBy(['admin'    => true ]);
         $obs        = $repository->findby(['obs'      => true ]);
-        $sysadmins  = $repository->findby(['sysadmin' => true ]);
-        $users      = array_unique(array_merge($admins, $experts, $obs, $sysadmins));
+        $sysadmins  = $repository->findby(['sysadmin' => true ]); 
+        $users      = array_unique(array_merge($admins, $experts, $valideurs, $obs, $sysadmins));
+        */
+
+        // Pour le moment - Tous les utilisateurs
+        $users = $repository->findAll();
+
 
         // TODO - Il doit y avoir plus élégant
         $choices = [];

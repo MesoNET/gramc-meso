@@ -929,7 +929,8 @@ class ServiceMenus
         $menu['lien']   =   "Nouveau responsable";
         $user = $this->token->getUser();
 
-        if ($this->ac->isGranted('ROLE_ADMIN')) {
+        if ($this->ac->isGranted('ROLE_ADMIN'))
+        {
             $menu['commentaire'] = "Changer le responsable du projet en tant qu'administrateur";
             $menu['raison']      = "L'admininstrateur peut TOUJOURS modifier le responsable d'une version quelque soit son état !";
             $menu['ok']          = true;
@@ -942,17 +943,29 @@ class ServiceMenus
             $session        =   $this->ss->getSessionCourante();
             $etatVersion    =   $version->getEtatVersion();
     
-            if ($version->getEtatVersion() != Etat::EDITION_DEMANDE) {
+            if ($version->getEtatVersion() != Etat::EDITION_DEMANDE)
+            {
                 $menu['raison']         = "Commencez par demander le renouvellement du projet !";
-            } elseif ($session->getEtatSession() != Etat::EDITION_DEMANDE && ! $version->isProjetTest()) {
-                $menu['raison']         = "Nous ne sommes pas en période de demandes de ressources";
-            } elseif ($etatVersion == Etat::EDITION_EXPERTISE || $etatVersion == Etat::EXPERTISE_TEST) {
+            }
+            // PAS DE SESSION
+            //elseif ($session->getEtatSession() != Etat::EDITION_DEMANDE && ! $version->isProjetTest())
+            //{
+            //    $menu['raison']         = "Nous ne sommes pas en période de demandes de ressources";
+            //}
+            elseif ($etatVersion == Etat::EDITION_EXPERTISE || $etatVersion == Etat::EXPERTISE_TEST)
+            {
                 $menu['raison']         = "Le projet a déjà été envoyé en expertise";
-            } elseif ($etatVersion != Etat::EDITION_DEMANDE && $etatVersion != Etat::EDITION_TEST) {
+            }
+            elseif ($etatVersion != Etat::EDITION_DEMANDE && $etatVersion != Etat::EDITION_TEST)
+            {
                 $menu['raison']         = "Cette version de projet n'est pas en mode édition";
-            } elseif (! $version->isResponsable($user)) {
+            }
+            elseif (! $version->isResponsable($user))
+            {
                 $menu['raison']         = "Seul le responsable du projet peut passer la main. S'il n'est pas joignable, merci de nous envoyer un mail";
-            } else {
+            }
+            else
+            {
                 $menu['ok']             = true;
                 $menu['commentaire']    = "Quitter la responsabilité de ce projet";
             }
@@ -984,10 +997,12 @@ class ServiceMenus
             $isProjetTest = $version->isProjetTest();
             $isProjetSess = $version->getProjet()->getTypeProjet() === Projet::PROJET_SESS;
     
-            if ($version->getSession() == null) {
-                $menu['raison'] = "Pas de session attachée à ce projet !";
-                $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
-            } elseif ($etatVersion ==  Etat::EDITION_EXPERTISE) {
+            // PAS DE SESSION !
+            //if ($version->getSession() == null) {
+            //    $menu['raison'] = "Pas de session attachée à ce projet !";
+            //    $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
+            //}
+            if ($etatVersion ==  Etat::EDITION_EXPERTISE) {
                 $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
             } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {
                 $menu['raison'] = "Le projet test a été annulé !";

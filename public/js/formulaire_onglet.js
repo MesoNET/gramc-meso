@@ -14,12 +14,13 @@ $(document).ready(function() {
     // Lorsque je clique sur un lien #machin, activer l'onglet correspondant
     // Prérequis = Les div constituant les onglets ont comme id: #tab1, #tab2 etc.
     $('.gerer_onglets').click( function() {
-    idcible = $(this).attr("href");
-    tab = $(idcible).parents("div.onglet").attr("id");
-
-    // tab3 ==> index 2 (zero-based !)
-    tab_index = tab.slice(tab.length-1) - 1;
-    $( '#onglets' ).tabs( "option", "active" , tab_index );
+        idcible = $(this).attr("href");
+        tab = $(idcible).parents("div.onglet").attr("id");
+    
+        // tab3 ==> index 2 (zero-based !)
+        tab_index = tab.slice(tab.length-1) - 1;
+        
+        $( '#onglets' ).tabs( "option", "active" , tab_index );
     });
 
     // Le dialog js utilisé suite à un appel ajax

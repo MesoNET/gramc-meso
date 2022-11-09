@@ -174,6 +174,7 @@ class Rgpd extends Command
             if ($d == "0") continue;
             $annee_limite = intval($d) + 1;
             $date = new \DateTime("$annee_limite-01-01");
+            // TODO - compta::class ou Compta::class ?
             $del = $em->getRepository(compta::class)->removeLoginname($l,$date);
             $output->writeln ("   $log -> lignes supprimées = $del");
         }

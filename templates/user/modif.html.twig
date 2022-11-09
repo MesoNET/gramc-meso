@@ -1,0 +1,13 @@
+{% extends 'default/base.html.twig' %}
+
+{% block body %}
+    <h1>Clé ssh associée à l'utilisateur {{ serviceUsers.getloginname(user) }}</h1>
+
+    <div id="choix_cle_ssh" class="inputrond submitdyn" >
+        {% form_theme edit_form 'foundation_5_layout.html.twig' %}
+        {{ form_start(edit_form) }}
+            {{ form_widget(edit_form) }}
+        {{ form_end(edit_form) }}
+    </div>
+    
+{% endblock %}

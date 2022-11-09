@@ -1089,7 +1089,7 @@ class ServiceVersions
                 }
     
                 // Le formulaire correspond à un nouvel utilisateur (adresse mail pas trouvée)
-                elseif ($individu_form->getMail() != null && $individu_form->getDelete() == false) {
+                elseif ($individu_form->getMail() != null && $individu_form->getDeleted() == false) {
                     
                     // Création d'un individu à partir du formulaire
                     // Renvoie null si la validation est négative

@@ -55,6 +55,8 @@
     Les champs ci-dessous <strong>doivent être complétés</strong> avant que vous puissiez envoyer votre projet en expertise.<br>
 
     {% if 'prj_titre' in todo %}<a href="#form_prjTitre" class="gerer_onglets">titre du projet</a><br>{% endif %}
+    {% if 'dem_heures_criann' in todo %}<a href="#form_demHeuresCriann" class="gerer_onglets">Nombre d'heures demandées sur Boreal</a><br>{% endif %}
+    {% if 'dem_heures_uft' in todo %}<a href="#form_demHeuresUft" class="gerer_onglets">Nombre d'heures demandées sur Turpan</a><br>{% endif %}
     {% if 'dem_heures' in todo %}<a href="#form_demHeures" class="gerer_onglets">Nombre d'heures demandées</a><br>{% endif %}
     {% if 'prj_id_thematique' in todo %}<a href="#form_prjThematique" class="gerer_onglets">Choix d'une thématique</a><br>{% endif %}
     {% if 'prj_expose' in todo %}<a href="#form_prjExpose" class="gerer_onglets">Exposé scientifique</a><br>{% endif %}
@@ -86,19 +88,20 @@
     <li>
         <a href="#tab3">La technique</a>
     </li>
+    {# TODO - VIRER DEFINITIVEMENT tab4 - Ici ça merdouille #}
     {% if nodata == false %}
     <li >
         <a href="#tab4">Les données</a>
     </li>
     {% endif %}
     <li >
-        <a href="#tab5">Formation</a>
+        <a href="#tab4">Formation</a>
     </li>
     <li>
-        <a href="#tab6">TURPAN</a>
+        <a href="#tab5">TURPAN</a>
     </li>
     <li>
-        <a href="#tab7">BOREAL</a>
+        <a href="#tab6">BOREAL</a>
     </li>
   </ul>
 </nav>

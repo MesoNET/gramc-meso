@@ -20,7 +20,8 @@
 
         <div class="titre">
             <h3>{{ version.prjTitre }}</h3>
-            <p>({{ version.demHeures }} heures demandées)</p> {% if toomuch %}<span title="Demande trop forte, cf. règles d'attribution"> {{ icones.attention }}</span>{% endif %}
+            {# <p>({{ version.demHeures }} heures demandées)</p> {% if toomuch %}<span title="Demande trop forte, cf. règles d'attribution"> {{ icones.attention }}</span>{% endif %} #}
+            <p>({{ version.demHeuresUft }} heures demandées sur Turpan, {{ version.demHeuresCriann }} heures demandées sur Boreal)</p>
         </div>
     </div>
 
@@ -79,6 +80,7 @@
             <p>Publications</p>
         </a>
 
+        {# SUPPRIME POUR L'INSTANT
         {% if noconso==false %}
             {% if not isNouvelle %}
                     <a class="conso" title="consommation {{anneePrec}}" data-href="{{ absolute_url(path('projet_conso', { 'id': expertise.version.projet.idProjet, 'annee' : anneePrec })) }}">
@@ -93,6 +95,7 @@
                 {% endif %}
             {% endif %}
         {% endif %}
+        #}
         
     </div>
     <hr class="retour" />

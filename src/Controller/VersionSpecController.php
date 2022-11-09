@@ -755,9 +755,11 @@ class VersionSpecController extends AbstractController
         if ($version->getPrjTitre() == null) {
             $todo[] = 'prj_titre';
         }
-        /*if ($version->getDemHeures() == null) {
-            $todo[] = 'dem_heures';
-        }*/
+        // Il faut demander des heures soit au Criann soit à l'Uft, soit aux deux
+        if ($version->getDemHeuresCriann() == 0 && $version->getDemHeuresUft() == 0) {
+            $todo[] = 'dem_heures_criann';
+            $todo[] = 'dem_heures_uft';
+        }
         if ($version->getPrjThematique() == null) {
             $todo[] = 'prj_id_thematique';
         }
@@ -769,6 +771,43 @@ class VersionSpecController extends AbstractController
         }
 
         // TODO - Automatiser cela avec le formulaire !
+        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_DYN) {
+            if ($version->getPrjExpose() == null) {
+                $todo[] = 'prj_expose';
+            }
+
+            // s'il s'agit d'un renouvellement
+            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
+                $todo[] = 'prj_justif_renouv';
+            }
+
+            // Centres nationaux
+            if ($version->getPrjGenciCentre()     == null
+                || $version->getPrjGenciMachines() == null
+                || $version->getPrjGenciHeures()   == null
+                || $version->getPrjGenciDari()     == null) {
+                $todo[] = 'genci';
+            };
+
+            if ($this->getParameter('nosession')==false)
+            {
+                if ($version->typeSession()  == 'A' ) {
+                    $version_precedente = $version->versionPrecedente();
+                    if ($version_precedente != null) {
+                        $rapportActivite = $em->getRepository(RapportActivite::class)->findOneBy(
+                            [
+                            'projet' => $version_precedente->getProjet(),
+                            'annee' => $version_precedente->getAnneeSession(),
+                        ]
+                        );
+                        if ($rapportActivite == null) {
+                            $todo[] = 'rapport_activite';
+                        }
+                    }
+                }
+            }
+        }
+
         if ($version->getProjet()->getTypeProjet()==Projet::PROJET_SESS) {
             if ($version->getPrjExpose() == null) {
                 $todo[] = 'prj_expose';
