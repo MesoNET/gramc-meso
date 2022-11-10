@@ -40,6 +40,11 @@ class Clessh
         $this->user = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getNom();
+    }
+
     /**
      * @var integer
      *
@@ -201,10 +206,5 @@ class Clessh
     public function getPub()
     {
         return $this->pub;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getPub();
     }
 }

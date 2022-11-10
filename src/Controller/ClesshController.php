@@ -39,7 +39,6 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Sso controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  * @Route("clessh")
  */
 class ClesshController extends AbstractController
@@ -77,7 +76,7 @@ class ClesshController extends AbstractController
      *
      * @Route("/{id}/supprimer", name="supprimer_clessh", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method("DELETEEEE")
+     * Method("DELETE")
      */
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {

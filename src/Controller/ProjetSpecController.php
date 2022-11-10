@@ -155,6 +155,7 @@ class ProjetSpecController extends AbstractController
         //$dec = Functions::simpleDecrypt($enc);
         //echo "$dec\n";
 
+        // TODO - Hou le vilain copier-coller !
         // projets responsable
         $projets_resp  = [];
         foreach ($list_projets_resp as $projet) {
@@ -219,6 +220,7 @@ class ProjetSpecController extends AbstractController
             }
 
             $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+            /*
             if ($cv != null) {
                 // TODO - Remonter au niveau du ProjetRepository (fonctions get_projet_etats et getProjetsCollab)
                 if ($cv->getDeleted() == true) continue;
@@ -237,6 +239,32 @@ class ProjetSpecController extends AbstractController
                 $passwd= null;
                 $pwd_expir = null;
             }
+            */
+            if ($versionActive != null)
+            {
+                $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames3($cv);
+                $loginnames['TURPAN']['login'] = $cv->getLogint();
+                $loginnames['BOREAL']['login'] = $cv->getLoginb();
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd    = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd    = $u->getPassword();
+                    $passwd    = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                } */
+            } else {
+                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
+                $loginnames['TURPAN']['login'] = false;
+                $loginnames['BOREAL']['login'] = false;
+                $passwd = null;
+                $pwd_expir = null;
+            }
+            
             $projets_collab[] =
                 [
                 'projet'    => $projet,
@@ -244,7 +272,7 @@ class ProjetSpecController extends AbstractController
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
                 'meta_etat' => $sp->getMetaEtat($projet),
-                'login'     => $login,
+                'loginnames' => $loginnames,
                 'passwd'    => $passwd,
                 'pwd_expir' => $pwd_expir
                 ];

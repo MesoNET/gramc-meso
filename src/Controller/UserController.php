@@ -89,6 +89,7 @@ class UserController extends AbstractController
 
         return $this->render('user/modif.html.twig', array(
             'user' => $user,
+            'clessh' => $clessh,
             'edit_form' => $editForm->createView(),
         ));
     }
