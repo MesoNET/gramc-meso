@@ -74,9 +74,9 @@
                         <th>&nbsp;</th>
                         <th>&nbsp;</th>
                         <th>Activé</th>
-                        <th><span title="Expert">&nbsp;&nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;&nbsp;</span></th>
+                        {% if nosession == false %}<th><span title="Expert">&nbsp;&nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;&nbsp;</span></th>{% endif %}
                         <th><span title="Valideur">V</span></th>
-                        <th><span title="Président">P</span></th>
+                        {% if nosession == false %}<th><span title="Président">P</span></th>{% endif %}
                         <th><span title="Admin">A</span></th>
                         <th><span title="Observateur">O</span></th>
                         <th><span title="Admin sys">AS</span></th>

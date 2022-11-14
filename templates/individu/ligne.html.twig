@@ -72,35 +72,35 @@
 
 {# ################################################################################################# #}
 
-{% if( individu.expert) == false %}
-
-
-<td style="text-align:center">
-    {#
-    <a class="expert" href="{{ path('devenir_expert',  { 'id': individu.id }) }}?" title="Devenir expert">
-        {{icones.expert(20,20)}}
-    </a>
-    #}
-    <span class="expert" title="PAS D'EXPERTS DANS CETTE VERSION">
-        {{icones.expert(20,20)}}
-    </span>
-    <span style="display:none">0</span>
-</td>
-
-{% else %}
-
-<td style="text-align:center; background-color:#eeeeee;">
-    <a class="thematiques" href="{{ path('choisir_thematique', { 'id': individu.id }) }}?" title="Choisir les thématiques de cet expert">
-        {{icones.thematique(20,20)}}
-    </a>
-    <a class="expert" href="{{ path('plus_expert', { 'id': individu.id }) }}?" title="Cesser d'être expert">
-        {{icones.expert(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
+{# nosession => noexperts #}
+{% if nosession == false %}
+    {% if( individu.expert) == false %}
+    <td style="text-align:center">
+        {#
+        <a class="expert" href="{{ path('devenir_expert',  { 'id': individu.id }) }}?" title="Devenir expert">
+            {{icones.expert(20,20)}}
+        </a>
+        #}
+        <span class="expert" title="PAS D'EXPERTS DANS CETTE VERSION">
+            {{icones.expert(20,20)}}
+        </span>
+        <span style="display:none">0</span>
+    </td>
+    
+    {% else %}
+    
+    <td style="text-align:center; background-color:#eeeeee;">
+        <a class="thematiques" href="{{ path('choisir_thematique', { 'id': individu.id }) }}?" title="Choisir les thématiques de cet expert">
+            {{icones.thematique(20,20)}}
+        </a>
+        <a class="expert" href="{{ path('plus_expert', { 'id': individu.id }) }}?" title="Cesser d'être expert">
+            {{icones.expert(20,20)}}
+        </a>
+        <span style="display:none">1</span>
+    </td>
+    
+    {% endif %}
 {% endif %}
-
 {# ################################################################################################# #}
 
 {% if( individu.valideur) == true %}
@@ -125,28 +125,31 @@
 
 {# ################################################################################################# #}
 
-{% if( individu.president) == true %}
-
-<td style="text-align:right; background-color:#eeeeee;">
-    <a class="admin" href="{{ path('plus_president',  { 'id': individu.id }) }}?" title="Retirer les droits de président">
-        {{icones.president(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
-{% else %}
-
-<td style="text-align:left">
-    {#<a class="admin" href="{{ path('devenir_president',  { 'id': individu.id }) }}?" title="Devenir président">
-        {{icones.president(20,20)}}
-    </a>#}
-    <span class="expert" title="PAS DE PRESIDENTS DANS CETTE VERSION">
-        {{icones.president(20,20)}}
-    </span>
-
-    <span style="display:none">0</span>
-</td>
-
+{# nosession => nopresident #}
+{% if nosession == false %}
+    {% if( individu.president) == true %}
+    
+    <td style="text-align:right; background-color:#eeeeee;">
+        <a class="admin" href="{{ path('plus_president',  { 'id': individu.id }) }}?" title="Retirer les droits de président">
+            {{icones.president(20,20)}}
+        </a>
+        <span style="display:none">1</span>
+    </td>
+    
+    {% else %}
+    
+    <td style="text-align:left">
+        {#<a class="admin" href="{{ path('devenir_president',  { 'id': individu.id }) }}?" title="Devenir président">
+            {{icones.president(20,20)}}
+        </a>#}
+        <span class="expert" title="PAS DE PRESIDENTS DANS CETTE VERSION">
+            {{icones.president(20,20)}}
+        </span>
+    
+        <span style="display:none">0</span>
+    </td>
+    
+    {% endif %}
 {% endif %}
 
 {# ################################################################################################# #}
