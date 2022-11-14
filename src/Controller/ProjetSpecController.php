@@ -168,6 +168,8 @@ class ProjetSpecController extends AbstractController
                 $cpt_rall  = 0;
             }
 
+            $passwd = null;
+            $pwd_expir = null;
             if ($versionActive != null)
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
@@ -189,8 +191,6 @@ class ProjetSpecController extends AbstractController
                 $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
                 $loginnames['BOREAL']['login'] = false;
-                $passwd = null;
-                $pwd_expir = null;
             }
 
             $projets_resp[]   =

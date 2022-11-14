@@ -248,6 +248,22 @@ class ServiceNotifications
                         $users  =  array_merge($users, $new_users);
                     }
                     break;
+
+                case 'V': // Valideurs
+                    $new_users  = $em->getRepository(Individu::class)->getValideurs();
+                    
+                    //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts : " . Functions::show($new_users) );
+                    if ($new_users == null) {
+                        $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." Aucun valideur trouvé !");
+                    } else {
+                        if (! is_array($new_users)) {
+                            $new_users = $new_users->toArray();
+                        }
+                        //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts après toArray : " . Functions::show($new_users) );
+                        $users  =  array_merge($users, $new_users);
+                    }
+                    break;
+
                 case 'R': // responsable
                     if ($objet == null) {
                         $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ .' Objet null pour responsable');

@@ -302,12 +302,19 @@ class ServiceExperts
 
             // Attention, l'algorithme de proposition des experts dépend du type de projet
             $projet = $version->getProjet();
-            if ($projet -> getTypeProjet() == Projet::PROJET_TEST || $projet->getTypeProjet() == Projet::PROJET_FIL) {
+            if ($projet -> getTypeProjet() == Projet::PROJET_TEST || $projet->getTypeProjet() == Projet::PROJET_FIL)
+            {
                 $prop_expert = $pe2;
-            } else {
-                $prop_expert = $pe1;
             }
-            $expert      = $prop_expert->getProposition($version);
+            elseif ($projet -> getTypeProjet() == Projet::PROJET_DYN)
+            {
+                $prop_expert = null;
+            }
+            $expert = null;
+            if ($prop_expert != null)
+            {
+                $expert = $prop_expert->getProposition($version);
+            }
             if ($expert != null) {
                 $expertise->setExpert($expert);
             }

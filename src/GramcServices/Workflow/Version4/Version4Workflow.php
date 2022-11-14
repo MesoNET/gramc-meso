@@ -56,7 +56,8 @@ class Version4Workflow extends Workflow
                 Signal::CLK_VAL_DEM => new Version4Transition(
                     Etat::EDITION_EXPERTISE,
                     Signal::CLK_VAL_DEM,
-                    [ 'R' => 'depot_pour_demandeur' ]
+                    [ 'R' => 'depot_pour_demandeur' ,
+                      'V' => 'depot_pour_experts' ]
                 ),
                 Signal::CLK_FERM        => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
@@ -68,13 +69,13 @@ class Version4Workflow extends Workflow
                     Etat::ACTIF,
                     Signal::CLK_VAL_EXP_OK,
                     [ 'R' => 'expertise',
-                      'E' => 'expertise_pour_expert',
+                      'V' => 'expertise_pour_expert',
                       'A' => 'expertise_pour_admin' ]
                 ),
                 Signal::CLK_VAL_EXP_KO  => new Version4Transition(
                     Etat::TERMINE,
                     Signal::CLK_VAL_EXP_KO,
-                    [ 'E' => 'expertise_pour_expert',
+                    [ 'V' => 'expertise_pour_expert',
                       'A' => 'expertise_pour_admin',
                       'P' => 'expertise_refusee' ]
                 ),

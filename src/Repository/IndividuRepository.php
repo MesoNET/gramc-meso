@@ -50,6 +50,14 @@ class IndividuRepository extends \Doctrine\ORM\EntityRepository
                    ->getResult();
     }
 
+    public function getValideurs()
+    {
+        return $this->getEntityManager()
+                   ->createQuery("SELECT DISTINCT u FROM App:Individu u  WHERE ( u.valideur = true )")
+                   ->getResult();
+    }
+
+
     public function countAll()
     {
         return $this->createQueryBuilder('l')

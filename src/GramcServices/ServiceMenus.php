@@ -779,6 +779,25 @@ class ServiceMenus
         return $menu;
     }
 
+    public function projetsDyn(int $priorite=self::HPRIO):array
+    {
+        $menu['name']   =   'projet_dynamique';
+        $menu['commentaire']    =   "Tous les projets dynamiques";
+        $menu['lien']           =   "Projets";
+        $menu['icone']          =   "tous";
+
+
+        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            $menu['ok'] = true;
+        } else {
+            $menu['ok'] = false;
+            $menu['raison'] = "Vous devez être un administrateur ou président pour accéder à cette page";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
     //////////////////////////////////////
 
     public function lireJournal(int $priorite=self::HPRIO):array
@@ -924,6 +943,7 @@ class ServiceMenus
 
     public function changerResponsable(Version $version, int $priorite=self::HPRIO):array
     {
+        $nosession = $this->nosession;
         $menu['name']   =   'changer_responsable';
         $menu['param']  =   $version->getIdVersion();
         $menu['lien']   =   "Nouveau responsable";
@@ -947,11 +967,10 @@ class ServiceMenus
             {
                 $menu['raison']         = "Commencez par demander le renouvellement du projet !";
             }
-            // PAS DE SESSION
-            //elseif ($session->getEtatSession() != Etat::EDITION_DEMANDE && ! $version->isProjetTest())
-            //{
-            //    $menu['raison']         = "Nous ne sommes pas en période de demandes de ressources";
-            //}
+            elseif ($nosession == false && $session->getEtatSession() != Etat::EDITION_DEMANDE )
+            {
+                $menu['raison']         = "Nous ne sommes pas en période de demandes de ressources";
+            }
             elseif ($etatVersion == Etat::EDITION_EXPERTISE || $etatVersion == Etat::EXPERTISE_TEST)
             {
                 $menu['raison']         = "Le projet a déjà été envoyé en expertise";
@@ -979,6 +998,7 @@ class ServiceMenus
 
     public function modifierVersion(Version $version, int $priorite=self::HPRIO):array
     {
+        $nosession = $this->nosession;
         $menu['name'] = 'modifier_version';
         $menu['param'] = $version->getIdVersion();
         $menu['lien'] = "Modifier";
@@ -997,11 +1017,11 @@ class ServiceMenus
             $isProjetTest = $version->isProjetTest();
             $isProjetSess = $version->getProjet()->getTypeProjet() === Projet::PROJET_SESS;
     
-            // PAS DE SESSION !
-            //if ($version->getSession() == null) {
-            //    $menu['raison'] = "Pas de session attachée à ce projet !";
-            //    $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
-            //}
+            if ($nosession == false && $version->getSession() == null)
+            {
+                $menu['raison'] = "Pas de session attachée à ce projet !";
+                $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
+            }
             if ($etatVersion ==  Etat::EDITION_EXPERTISE) {
                 $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
             } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {
