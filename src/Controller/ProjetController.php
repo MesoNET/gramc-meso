@@ -41,6 +41,7 @@ use App\Entity\Compta;
 
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Version\VersionWorkflow;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
@@ -109,6 +110,7 @@ class ProjetController extends AbstractController
         private ServiceVersions $sv,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
+        private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private TokenStorageInterface $tok,
         private Environment $tw,
@@ -353,11 +355,22 @@ class ProjetController extends AbstractController
      */
     public function backAction(Version $version, Request $request): Response
     {
-        if ($request->isMethod('POST')) {
+        $se = $this->se;
+        $em = $this->em;
+        if ($version->getTypeVersion() == Projet::PROJET_DYN)
+        {
+            $workflow = $this->pw4;
+        }
+        else
+        {
+            $workflow = $this->pw;
+        }
+
+        if ($request->isMethod('POST'))
+        {
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                $workflow = $this->pw;
                 if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet())) {
                     $workflow->execute(Signal::CLK_ARR, $version->getProjet());
                     // Supprime toutes les expertises
@@ -369,13 +382,17 @@ class ProjetController extends AbstractController
                     $em->flush();
                 }
             }
-            return $this->redirectToRoute('projet_session'); // NON - on ne devrait jamais y arriver !
-        } else {
+            // TODO - Il faudrait mettre l'url de départ dans la session php
+            return $this->redirectToRoute('projet_dynamique');
+            //return $this->redirectToRoute('projet_session');
+        }
+        else
+        {
             return $this->render(
                 'projet/dialog_back.html.twig',
                 [
-            'version' => $version,
-            ]
+                    'version' => $version,
+                ]
             );
         }
     }
@@ -392,11 +409,19 @@ class ProjetController extends AbstractController
     {
         $se = $this->se;
         $em = $this->em;
-        if ($request->isMethod('POST')) {
+        if ($version->getTypeVersion() == Projet::PROJET_DYN)
+        {
+            $workflow = $this->pw4;
+        }
+        else
+        {
+            $workflow = $this->pw;
+        }
+        if ($request->isMethod('POST'))
+        {
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                $workflow = $this->pw;
                 if ($workflow->canExecute(Signal::CLK_VAL_DEM, $version->getProjet())) {
                     $workflow->execute(Signal::CLK_VAL_DEM, $version->getProjet());
 
@@ -404,8 +429,12 @@ class ProjetController extends AbstractController
                     $se->newExpertiseIfPossible($version);
                 }
             }
-            return $this->redirectToRoute('projet_session');
-        } else {
+            // TODO - Il faudrait mettre l'url de départ dans la session php
+            return $this->redirectToRoute('projet_dynamique');
+            //return $this->redirectToRoute('projet_session');
+        }
+        else
+        {
             return $this->render(
                 'projet/dialog_fwd.html.twig',
                 [
@@ -981,7 +1010,7 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Lists all projet entities.
+     * Tous les projets
      *
      * @Route("/tous", name="projet_tous", methods={"GET"})
      * Method("GET")
@@ -1033,6 +1062,66 @@ class ProjetController extends AbstractController
 
         return $this->render(
             'projet/projets_tous.html.twig',
+            [
+            'etat_projet'   =>  $etat_projet,
+            'data' => $data,
+        ]
+        );
+    }
+
+    /**
+     * Projets dynamiques
+     *
+     * @Route("/dynamiques", name="projet_dynamique", methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_OBS')")
+     */
+    public function dynamiquesAction(): Response
+    {
+        $em      = $this->em;
+        $projets = $em->getRepository(Projet::class)->findAll();
+        $sp      = $this->sp;
+
+        foreach (['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
+            $etat_projet[$e]         = 0;
+            $etat_projet[$e.'_test'] = 0;
+        }
+
+        $data = [];
+
+        $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
+        $versionRepository              = $em->getRepository(Version::class);
+        $projetRepository               = $em->getRepository(Projet::class);
+
+        foreach ($projets as $projet) {
+            $info     = $versionRepository->info($projet); // les stats du projet
+            $version  = $projet->getVersionDerniere();
+            $metaetat = strtolower($sp->getMetaEtat($projet));
+
+            if ($projet->getTypeProjet() == Projet::PROJET_TEST) {
+                $etat_projet[$metaetat.'_test'] += 1;
+            } else {
+                $etat_projet[$metaetat] += 1;
+            }
+
+            $data[] = [
+                    'projet'       => $projet,
+                    'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
+                    'metaetat'     => $metaetat,
+                    'version'      => $version,
+                    'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
+                    'count'        => $info[1],
+                    'dem'          => $info[2],
+                    'attr'         => $info[3],
+                    'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
+            ];
+        }
+
+        $etat_projet['total']      = $projetRepository->countAll();
+        $etat_projet['total_test'] = $projetRepository->countAllTest();
+
+        return $this->render(
+            'projet/projets_dyn.html.twig',
             [
             'etat_projet'   =>  $etat_projet,
             'data' => $data,

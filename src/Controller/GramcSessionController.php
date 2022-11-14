@@ -141,7 +141,8 @@ class GramcSessionController extends AbstractController
             $menu3[] = $sm->projetsSession();
             $menu3[] = $sm->projetsAnnee();
         }
-        $menu3[] = $sm->projetsTous();
+        //$menu3[] = $sm->projetsTous();
+        $menu3[] = $sm->projetsDyn();
 
         if ($this->getParameter('nodata')==false) {
             $menu3[] = $sm->projet_donnees();
