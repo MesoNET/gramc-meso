@@ -784,7 +784,7 @@ class VersionController extends AbstractController
                     [
                         'required'  =>  false,
                         'label'     => '',
-                        ]
+                    ]
                 )
             ->add('envoyer', SubmitType::class, ['label' => "Envoyer à l'expert"])
             ->add('annuler', SubmitType::class, ['label' => "Annuler"])

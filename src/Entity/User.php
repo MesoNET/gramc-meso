@@ -106,6 +106,14 @@ class User
     private $passexpir;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="cgu", type="boolean")
+     */
+    private $CGU = false;
+
+
+    /**
      * @var string
      *
      * @ORM\Column(name="clessh", type="string", nullable=true,length=1000 )
@@ -347,5 +355,29 @@ class User
     public function getCollaborateurVersion(): \Doctrine\Common\Collections\Collection
     {
         return $this->collaborateurversion;
+    }
+
+    /**
+     * Set CGU
+     *
+     * @param boolean $CGU
+     *
+     * @return Version
+     */
+    public function setCGU($CGU)
+    {
+        $this->CGU = $CGU;
+
+        return $this;
+    }
+
+    /**
+     * Get CGU
+     *
+     * @return boolean
+     */
+    public function getCGU()
+    {
+        return $this->CGU;
     }
 }

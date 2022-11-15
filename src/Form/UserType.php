@@ -29,6 +29,7 @@ use App\Entity\Clessh;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -59,7 +60,16 @@ class UserType extends AbstractType
                         'expanded' => true,
                         'class' => clessh::class,
                         'choices' =>  $options['clessh']
-                    ])
+                    ]
+                )
+                ->add(
+                    'cgu',
+                    CheckBoxType::class,
+                    [
+                        'required'  =>  false,
+                        'label'     => '',
+                    ]
+                )
                 ->add('submit', SubmitType::class, ['label' => 'modifier' ])
                 ->add('reset', ResetType::class, ['label' => 'reset' ]);
     }

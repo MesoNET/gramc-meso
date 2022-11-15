@@ -73,24 +73,37 @@ class UserController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " ERREUR INTERNE: User $user - Pas de CollaborateurVersion associé ");
         }
 
-        // TODO - Normalement tous les CollaborateurVerison associés à ce User pointent vers le MEME individu
+        // TODO - Normalement tous les CollaborateurVersion associés à ce User pointent vers le MEME individu
         //        Comment vérifier ça ?
         $individu = $cv[0]->getCollaborateur();
         $clessh = $em->getRepository(Clessh::class)->findBy(['individu' => $individu]);
 
-        $editForm = $this->createForm(UserType::class, $user, ['clessh' => $clessh] );
-        $editForm->handleRequest($request);
+        $form = $this->createForm(UserType::class, $user, ['clessh' => $clessh] );
+        $form->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->em->flush();
-
-            return $this->redirectToRoute('projet_accueil');
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->getData()->getCgu() == false)
+            {
+                $request->getSession()->getFlashbag()->add("flash erreur","Vous devez accepter les CGU");
+            }
+            else
+            {
+                $this->em->flush();
+                return $this->redirectToRoute('projet_accueil');
+            }
         }
 
+        // TODO - Traitement d'erreur si serveur est null
+        $serveur_cgu = $this->getParameter('serveur_cgu');
+        $serveur_nom = $user->getServeur()->getNom();
+        $serveur_cgu = $this->getParameter('serveur_cgu')['TURPAN'];
+        
         return $this->render('user/modif.html.twig', array(
             'user' => $user,
             'clessh' => $clessh,
-            'edit_form' => $editForm->createView(),
+            'form' => $form->createView(),
+            'serveur_cgu' => $serveur_cgu,
+            'serveur_nom' => $serveur_nom
         ));
     }
 }

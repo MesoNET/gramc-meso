@@ -40,4 +40,4 @@ twig:
        noinvitation: '%noinvitation%'
        nosession: '%nosession%'
        resp_peut_modif_collabs: '%resp_peut_modif_collabs%'
-       
+       #mode_auth: '%mode_auth%'
