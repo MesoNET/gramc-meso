@@ -38,7 +38,14 @@
                     {% else %}
                          <tt>{{item.loginnames[s]['nom'] }}</tt> - 
                         {% if item.loginnames[s]['clessh'] != null %}
-                            <tt>{{ item.loginnames[s]['clessh'].nom }}</tt><span title="Changer de clé ssh"><a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
+                            <tt>{{ item.loginnames[s]['clessh'].nom }}</tt>
+                            {% if not item.loginnames[s]['deply'] and not item.loginnames[s]['clessh'].rvk %}
+                                <span title="Vous pourrez vous connecter lorsque votre clé sera déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
+                            {% endif %}
+                            {% if item.loginnames[s]['clessh'].rvk %}
+                                <span title="PROBLEME DE SECURITE - VOTRE CLE A ETE REVOQUEE">{{ icones.attention(20,20) }}</span>
+                            {% endif %}
+                            <span title="Changer de clé ssh"><a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
                         {% else %}
                             <span title="Vous devez choisir une clé avant de vous connecter">{{ icones.attention(20,20) }}<a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
                         {% endif %} 

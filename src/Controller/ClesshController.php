@@ -123,7 +123,8 @@ class ClesshController extends AbstractController
             }
             catch ( \Exception $e)
             {
-                $msg = "La clé n'a pas été ajoutée: Vous ne pouvez pas avoir deux fois le même nom de clé";
+                $msg = "La clé n'a pas été ajoutée: Vous ne pouvez pas avoir deux fois la même clé, ou le même nom de clé.
+                Ou pire, quelqu'un a la même clé que vous";
                 $request->getSession()->getFlashbag()->add("flash erreur",$msg);
             }
             return $this->redirectToRoute('gerer_clessh');

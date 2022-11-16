@@ -30,7 +30,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Sso
  *
  * @ORM\Table(name="clessh",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="nom_individu", columns={"id_individu", "nom"})})
+ *            uniqueConstraints={@ORM\UniqueConstraint(name="nom_individu", columns={"id_individu", "nom"}),
+ *                               @ORM\UniqueConstraint(name="pubuniq", columns={"pub"})})
  * @ORM\Entity
  */
 class Clessh
@@ -91,6 +92,12 @@ class Clessh
      */
     private $pub;
     
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="rvk", type="boolean")
+     */
+    private $rvk = false;
 
     /**
      * Get id
@@ -206,5 +213,29 @@ class Clessh
     public function getPub()
     {
         return $this->pub;
+    }
+
+    /**
+     * Set rvk
+     *
+     * @param boolean $rvk
+     *
+     * @return Version
+     */
+    public function setRvk($rvk)
+    {
+        $this->rvk = $rvk;
+
+        return $this;
+    }
+
+    /**
+     * Get rvk
+     *
+     * @return boolean
+     */
+    public function getRvk()
+    {
+        return $this->rvk;
     }
 }

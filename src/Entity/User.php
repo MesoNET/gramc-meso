@@ -112,12 +112,6 @@ class User
      */
     private $CGU = false;
 
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="clessh", type="string", nullable=true,length=1000 )
-     */
     /**
      * 
      * @var \App\Entity\Clessh
@@ -130,6 +124,13 @@ class User
      * 
      */
     private $clessh;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="deply", type="boolean")
+     */
+    private $deply = false;
 
     public function __toString()
     {
@@ -362,12 +363,11 @@ class User
      *
      * @param boolean $CGU
      *
-     * @return Version
+     * @return User
      */
     public function setCGU($CGU)
     {
         $this->CGU = $CGU;
-
         return $this;
     }
 
@@ -379,5 +379,28 @@ class User
     public function getCGU()
     {
         return $this->CGU;
+    }
+
+    /**
+     * Set deply
+     *
+     * @param boolean $deply
+     *
+     * @return User
+     */
+    public function setDeply($deply): self
+    {
+        $this->deply = $deply;
+        return $this;
+    }
+
+    /**
+     * Get deply
+     *
+     * @return boolean
+     */
+    public function getDeply()
+    {
+        return $this->deply;
     }
 }

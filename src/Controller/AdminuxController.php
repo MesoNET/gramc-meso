@@ -1219,7 +1219,7 @@ class AdminuxController extends AbstractController
                     }
 
                     // Les loginnames au niveau version
-                    $loginnames = $su -> collaborateurVersion2LoginNames($cv);
+                    $loginnames = $su -> collaborateurVersion2LoginNames3($cv);
 
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
@@ -1250,7 +1250,7 @@ class AdminuxController extends AbstractController
     }
 
     /**
-     * get loginname
+     * get loginnames
      *
      * @Route("/getloginnames/{idProjet}/projet", name="get_loginnames", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
@@ -1463,5 +1463,273 @@ class AdminuxController extends AbstractController
             return true;
         }
     }
-    
+
+    /**
+     * get clessh
+     *
+     * @Route("/clessh/get", name="get_cles", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Exemples de données POST (fmt json):
+     *             ''
+     *             ou
+     *             '{ "rvk" : true }' -> Les clés qui ont été révoquées
+     *             ou
+     *             '{ "rvk" : false }' -> Les clés qui ne sont PAS révoquées
+     *
+     */
+    // curl -s --netrc -H "Content-Type: application/json" -X POST -d '{}' https://.../adminux/clessh/get
+
+    public function clesshGetAction(Request $request): Response
+    {
+        $em = $this->em;
+        $raw_content = $request->getContent();
+        $sj = $this->sj;
+        $su = $this->su;
+        
+        if ($raw_content == '' || $raw_content == '{}')
+        {
+            $content = null;
+        }
+        else
+        {
+            $content  = json_decode($request->getContent(), true);
+        }
+        
+        if ($content == null) {
+            $rvk = false;
+        }
+        else
+        {
+            $rvk = (isset($content['rvk'])) ? $content['rvk'] : false;
+        }
+
+        //
+        // Construire le tableau $clessh:
+        //      [ 'idCle' => 1, 'nom' => 'toto', 'pub' => 'rsa...', 'rvk' => false, 'users' => [ ['loginname' => 'toto', 'dply' => true] ]
+        //
+
+        $clessh = $em->getRepository(Clessh::class)->findall();
+        $reponse = [];
+        foreach ($clessh as $c)
+        {
+            $r_c = [];
+            $r_c['idCle'] = $c->getId();
+            $r_c['nom'] = $c->getNom();
+            $r_c['pub'] = $c->getPub();
+            $r_c['rvk'] = $c->getrvk();
+            $users = $c->getUser();
+            $r_users = [];
+            foreach ($users as $u)
+            {
+                $r_u = [];
+                $c_cv = $u->getCollaborateurVersion();
+                if (empty($c_cv)) continue;   // oups ne devrait jamais arriver !
+                $l = count($c_cv);
+                $cv = $c_cv[$l-1];
+                $r_u['individu'] = $cv->getCollaborateur()->getPrenom() . " " . $cv->getCollaborateur()->getNom();
+                $r_u['idIndividu'] = $cv->getCollaborateur()->getIdIndividu();
+                $r_u['mail'] = $cv->getCollaborateur()->getMail();
+                $r_u['loginname'] = $u->getLoginname();
+                $r_u['deply'] = $u->getDeply();
+                $r_users[] = $r_u;
+            }
+            $r_c['users'] = $r_users;
+            $reponse[] = $r_c;
+        }
+        $sj -> infoMessage(__METHOD__ . " OK");
+
+        return new Response(json_encode($reponse));
+    }
+
+    /**
+     * Déploie une cléssh pour un utilisateur
+     *
+     * @Route("/clessh/deployer", name="deployer", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Positionne à true le flag deply du user, ce qui signifie que la clé ssh associée est déployée
+     *
+     */
+
+    // curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }' https://.../adminux/clessh/deployer
+    public function setdeplyAction(Request $request, LoggerInterface $lg): Response
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        $su = $this->su;
+
+        if ($this->getParameter('noconso')==true) {
+            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
+        }
+
+        $content  = json_decode($request->getContent(), true);
+        if ($content == null) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de données");
+            return new Response(json_encode(['KO' => 'Pas de données']));
+        }
+        if (empty($content['loginname'])) {
+            $sj->errorMessage("AdminUxController::setloginnameAction - Pas de nom de login");
+            return new Response(json_encode(['KO' => 'Pas de nom de login']));
+        } else {
+            $loginname = $content['loginname'];
+        }
+        if (empty($content['projet'])) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de projet");
+            return new Response(json_encode(['KO' => 'Pas de projet']));
+        } else {
+            $idProjet = $content['projet'];
+        }
+        if (empty($content['idIndividu'])) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de idIndividu");
+            return new Response(json_encode(['KO' => 'Pas de idIndividu']));
+        } else {
+            $idIndividu = $content['idIndividu'];
+        }
+
+        $error = [];
+        $projet      = $em->getRepository(Projet::class)->find($idProjet);
+        if ($projet == null) {
+            $error[]    =   'No Projet ' . $idProjet;
+        }
+
+        $individu = $em->getRepository(Individu::class)->find($idIndividu);
+        if ($individu == null) {
+            $error[]    =   'No idIndividu ' . $idIndividu;
+        }
+
+        try
+        {
+            $loginname_p = $su -> parseLoginname($loginname);
+        }
+        catch (\Exception $e)
+        {
+            $error[] = "$loginname doit être de la forme 'alice@SERVEUR";
+            $loginname_p = [];
+            $loginname_p['serveur'] = '';
+        }
+        $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
+        if ($serveur == null)
+        {
+           $error[] = 'No serveur ' . $loginname_p['serveur'];
+        }
+
+        // On vérifie que le user connecté est bien autorisé à agir sur ce serveur
+        if ($serveur != null && ! $this->checkUser($serveur))
+        {
+           $error[] = 'ACCES INTERDIT A ' . $loginname_p['serveur']; 
+        }
+
+        if ($error != []) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - " . print_r($error, true));
+            return new Response(json_encode(['KO' => $error ]));
+        }
+
+        $versions = $projet->getVersion();
+        $i=0;
+        foreach ($versions as $version) {
+            // $version->getIdVersion()."\n";
+            if ($version->getEtatVersion() == Etat::ACTIF             ||
+                $version->getEtatVersion() == Etat::ACTIF_TEST        ||
+                $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
+                $version->getEtatVersion() == Etat::EN_ATTENTE
+              )
+              {
+              foreach ($version->getCollaborateurVersion() as $cv)
+              {
+                  $collaborateur  =  $cv->getCollaborateur() ;
+                  if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
+                      $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
+                      if ($user == null)
+                      {
+                          $msg = "L'utilisateur $loginname n'existe pas";
+                          $sj->errorMessage("AdminUxController::setdeplyAction - $msg");
+                          return new Response(json_encode(['KO' => $msg]));
+                      }
+                      $user->setDeply(true);
+                      Functions::sauvegarder($user,$em,$lg);
+                      
+                      $i += 1;
+                      break; // Sortir de la boucle sur les cv
+                  }
+               }
+            }
+        }
+        if ($i > 0 ) {
+            $sj -> infoMessage(__METHOD__ . "$i versions modifiées");
+            return new Response(json_encode(['OK' => "$i versions modifiees"]));
+        } else {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Mauvais projet ou mauvais idIndividu !");
+            return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
+        }
+    }
+
+    /**
+     * Révoque une clé ssh 
+     *
+     * @Route("/clessh/revoquer", name="revoquer", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Positionne à true le flag rvk de la clé, ce qui signifie que la clé ssh est révoquée
+     *
+     */
+
+    // curl --netrc -X POST -d '{ "idIndividu": "6543", "idCle": "55" }' https://.../adminux/clessh/revoquer
+    public function setrvkAction(Request $request, LoggerInterface $lg): Response
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        $su = $this->su;
+
+        if ($this->getParameter('noconso')==true) {
+            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
+        }
+
+        $content  = json_decode($request->getContent(), true);
+        if ($content == null) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de données");
+            return new Response(json_encode(['KO' => 'Pas de données']));
+        }
+        if (empty($content['idCle'])) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de idCle");
+            return new Response(json_encode(['KO' => 'Pas de clé']));
+        } else {
+            $idCle = $content['idCle'];
+        }
+        if (empty($content['idIndividu'])) {
+            $sj->errorMessage("AdminUxController::setdeplyAction - Pas de idIndividu");
+            return new Response(json_encode(['KO' => 'Pas de idIndividu']));
+        } else {
+            $idIndividu = $content['idIndividu'];
+        }
+
+        $error = [];
+
+        $individu = $em->getRepository(Individu::class)->find($idIndividu);
+        if ($individu == null) {
+            $error[] = 'No idIndividu ' . $idIndividu;
+        }
+
+        $cle = $em->getRepository(Clessh::class)->find($idCle);
+        if ($cle == null) {
+            $error[] = 'No Cle ' . $idCle;
+        }
+        else
+        {
+            if ($cle->getIndividu()==null || $cle->getIndividu()->getIdIndividu() != $idIndividu)
+            {
+                $error[] = "La clé $idCle n'appartient pas à l'individu $idIndividu";
+            }
+        }
+
+        if ($error != []) {
+            $sj->errorMessage("AdminUxController::setrvkAction - " . print_r($error, true));
+            return new Response(json_encode(['KO' => $error ]));
+        }
+
+        $cle->setRvk(true);
+        Functions::sauvegarder($cle,$em,$lg);
+        return new Response(json_encode(['OK' => "clé $idCle révoquée"]));
+
+    }
 }

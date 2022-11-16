@@ -77,6 +77,7 @@ class ServiceUsers
      *      $s['TURPAN']['nom'] -> le nom du serveur, ou 'nologin'
      *      $s['TURPAN']['clessh'] -> la cléssh, ou null
      *      $s['TURPAN']['userid] -> le id du user
+     *      $s['TURPAN']['deply'] -> le flag deply (clé déployée ou pas)
      *************************************/
     public function collaborateurVersion2LoginNames3(CollaborateurVersion $cv): array
     {
@@ -95,8 +96,11 @@ class ServiceUsers
             }
             else
             {
+                $loginnames3[$s]['clessh']['idCle'] = $u->getClessh()->getId();
                 $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
                 $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
+                $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
+                $loginnames3[$s]['deply'] = $u->getDeply();
             }
             $loginnames3[$s]['userid'] = $u->getId();
         }

@@ -66,8 +66,8 @@ class UserController extends AbstractController
     public function modifAction(Request $request, User $user): Response
     {
         $em = $this->em;
-
         $cv = $user->getCollaborateurVersion();
+        
         if (count($cv) == 0)
         {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " ERREUR INTERNE: User $user - Pas de CollaborateurVersion associé ");
@@ -76,8 +76,9 @@ class UserController extends AbstractController
         // TODO - Normalement tous les CollaborateurVersion associés à ce User pointent vers le MEME individu
         //        Comment vérifier ça ?
         $individu = $cv[0]->getCollaborateur();
-        $clessh = $em->getRepository(Clessh::class)->findBy(['individu' => $individu]);
+        $clessh = $em->getRepository(Clessh::class)->findBy(['individu' => $individu, 'rvk' => false]);
 
+        $old_clessh = $user->getClessh();
         $form = $this->createForm(UserType::class, $user, ['clessh' => $clessh] );
         $form->handleRequest($request);
 
@@ -88,7 +89,16 @@ class UserController extends AbstractController
             }
             else
             {
-                $this->em->flush();
+                // Si on a changé de cle ssh, remettre à false le flag de déploiement
+                $new_clessh = $form->getData()->getClessh();
+                if ($old_clessh != null)
+                {
+                    if ($new_clessh != null && $old_clessh->getId() != $new_clessh->getId())
+                    {
+                        $user->setDeply(false);
+                    }
+                }
+                $em->flush();
                 return $this->redirectToRoute('projet_accueil');
             }
         }
