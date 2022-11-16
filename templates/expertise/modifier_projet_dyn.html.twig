@@ -30,11 +30,11 @@
             <ul>
                 <li>Accepter ou refuser le projet</li>
                 <li>Entrer un commentaire à destination du responsable du projet</li>
-                <li>Entrer un commentaire à destination des valideurs</li>
+                <li>Entrer un commentaire à destination des autres valideurs</li>
                 <li>Proposer une attribution (en heures cpu)</li>
-                <li>Cliquer sur le bouton <strong>Enregistrer</strong> ou <strong>Fermer</strong> pour enregistrer un brouillon de votre expertise</li>
+                <li>Cliquer sur le bouton <strong>Enregistrer</strong> ou <strong>Fermer</strong> pour enregistrer un brouillon de votre argumentaire</li>
                 {% if peut_envoyer %}
-                <li><strong>N'oubliez pas de Cliquer sur le bouton <strong>Envoyer</strong></strong> pour envoyer votre expertise au comité d'attribution</li>
+                <li><strong>N'oubliez pas de Cliquer sur le bouton <strong>Envoyer</strong></strong> pour valider définitivement </li>
                 {% endif %}
             </ul>
         </p>
@@ -110,7 +110,7 @@
 
    {{ form_start(edit_form) }}
 
-        <h3>Votre expertise </h3>
+        <h3>Votre proposition d'attribution</h3>
 
         {% if commentaireExterne %}
         <div class="input">
@@ -143,12 +143,19 @@
 
         <div class="input">
             <div>
-                <h4>Nombre d'heures attribuées :</h4>
+                <h4>Nombre d'heures attribuées sur TURPAN:</h4>
                 <small>Pour les 12 prochains mois</small>
             </div>
-                {{ form_widget(edit_form.nbHeuresAtt) }}
+                {{ form_widget(edit_form.nbHeuresAttUft) }}
         </div>
 
+        <div class="input">
+            <div>
+                <h4>Nombre d'heures attribuées sur BOREAL:</h4>
+                <small>Pour les 12 prochains mois</small>
+            </div>
+                {{ form_widget(edit_form.nbHeuresAttCriann) }}
+        </div>
 
         <div id="panneau_enregistrer">
             <div class="panneau">

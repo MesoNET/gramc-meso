@@ -1337,9 +1337,9 @@ class ServiceMenus
 
         $menu['name']           =   'envoyer_en_expertise';
         $menu['param']          =   $version->getIdVersion();
-        $menu['lien']           =   "Envoyer en expertise";
+        $menu['lien']           =   "Envoyer en validation";
         $menu['icone']           =   "envoyer";
-        $menu['commentaire']    =   "Vous ne pouvez pas envoyer ce projet en expertise";
+        $menu['commentaire']    =   "Vous ne pouvez pas envoyer ce projet en validation";
         $menu['ok']             =   false;
         $menu['raison']         =   "";
         $menu['incomplet']      =   false;
@@ -1348,7 +1348,7 @@ class ServiceMenus
 
         if ($version->isResponsable($user) == false)
         {
-            $menu['raison'] = "Seul le responsable du projet peut envoyer ce projet en expertise";
+            $menu['raison'] = "Seul le responsable du projet peut envoyer ce projet en validation";
             $this->__prio($menu, $priorite);
             return $menu;
         }
@@ -1361,8 +1361,8 @@ class ServiceMenus
         }
 
         $menu['ok']          = true;
-        $menu['commentaire'] = "Envoyer votre demande pour expertise. ATTENTION, vous ne pourrez plus la modifier par la suite";
-        $menu['todo']        = "Envoyer le projet en <strong>expertise</strong>";
+        $menu['commentaire'] = "Envoyer votre demande pour validation. ATTENTION, vous ne pourrez plus la modifier par la suite";
+        $menu['todo']        = "Envoyer le projet en <strong>validation</strong>";
         $menu['name']        = 'avant_modifier_version';
         $this->__prio($menu, $priorite);
         return $menu;

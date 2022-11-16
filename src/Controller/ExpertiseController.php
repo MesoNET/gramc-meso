@@ -753,14 +753,23 @@ class ExpertiseController extends AbstractController
                      ->add('validation', HiddenType::class, [ 'data' => 1 ]);
         }            
 
+        // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREAL)
         // Par défaut on attribue les heures demandées
-        if ($expertise->getNbHeuresAtt() == 0)
+        if ($expertise->getNbHeuresAttUft() == 0)
         {
-            $editForm->add('nbHeuresAtt', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeures(), ]);
+            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresUft(), ]);
         }
         else
         {
-            $editForm->add('nbHeuresAtt', IntegerType::class, ['required'  =>  false, ]);
+            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, ]);
+        }
+        if ($expertise->getNbHeuresAttCriann() == 0)
+        {
+            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresCriann(), ]);
+        }
+        else
+        {
+            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, ]);
         }
 
         // En session B mais SEULEMENT POUR LES PROJETS DE SESSION, on propose une attribution spéciale pour heures d'été
@@ -954,6 +963,7 @@ class ExpertiseController extends AbstractController
         $ac = $this->ac;
         $pw = $this->pw;
         $p4w = $this->p4w;
+        $grdt = $this->grdt;
         $em = $this->em;
         $token = $this->token;
 
@@ -1001,7 +1011,10 @@ class ExpertiseController extends AbstractController
             $max_expertises_nb = $this->getParameter('max_expertises_nb');
             if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT'))
             {
-                $expertise->getVersion()->setAttrHeures($expertise->getNbHeuresAtt());
+                $expertise->getVersion()->setAttrHeuresUft($expertise->getNbHeuresAttUft());
+                $expertise->getVersion()->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
+                $expertise->getVersion()->setJourJ($grdt->getNew());
+
                 // SUPPRIME DANS CETTE VERSION !
                 // $expertise->getVersion()->setAttrHeuresEte($expertise->getNbHeuresAttEte());
                 $expertise->getVersion()->setAttrAccept($expertise->getValidation());

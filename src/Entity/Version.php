@@ -264,6 +264,7 @@ class Version implements Demande
 
     /**
      * @var \App\Entity\Individu
+     * A chaque fois que la version est modifiée la personne connectée est ici
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
      * @ORM\JoinColumns({
@@ -274,10 +275,19 @@ class Version implements Demande
 
     /**
      * @var \DateTime
+     * A chaque modification on met à jour cette date
      *
      * @ORM\Column(name="maj_stamp", type="datetime", nullable=true)
      */
     private $majStamp;
+
+    /**
+     * @var \DateTime
+     * Date à partir de laquelle le projet est en état ACTIF
+     *
+     * @ORM\Column(name="jour_j", type="datetime", nullable=true)
+     */
+    private $jourJ;
 
     /**
      * @var integer
@@ -1239,6 +1249,30 @@ class Version implements Demande
     public function getMajStamp()
     {
         return $this->majStamp;
+    }
+
+    /**
+     * Set jourJ
+     *
+     * @param \DateTime $jourJ
+     *
+     * @return Version
+     */
+    public function setJourJ($jourJ)
+    {
+        $this->jourJ = $jourJ;
+
+        return $this;
+    }
+
+    /**
+     * Get jourJ
+     *
+     * @return \DateTime
+     */
+    public function getJourJ()
+    {
+        return $this->jourJ;
     }
 
     /**

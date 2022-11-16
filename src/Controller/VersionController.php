@@ -771,7 +771,7 @@ class VersionController extends AbstractController
 
         if ($sm->envoyerEnExpertise($version)['ok'] == false) {
         $sj->throwException(__METHOD__ . ":" . __LINE__ .
-            " impossible d'envoyer en expertise parce que " . $sm->envoyerEnExpertise($version)['raison']);
+            " impossible d'envoyer le projet parce que " . $sm->envoyerEnExpertise($version)['raison']);
         }
 
         $projet  = $version->getProjet();
@@ -786,7 +786,7 @@ class VersionController extends AbstractController
                         'label'     => '',
                     ]
                 )
-            ->add('envoyer', SubmitType::class, ['label' => "Envoyer à l'expert"])
+            ->add('envoyer', SubmitType::class, ['label' => "Envoyer le projet"])
             ->add('annuler', SubmitType::class, ['label' => "Annuler"])
             ->getForm();
 
@@ -795,13 +795,13 @@ class VersionController extends AbstractController
             $CGU = $form->getData()['CGU'];
             if ($form->get('annuler')->isClicked())
             {
-                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas été envoyé en expertise");
+                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet ne nous a pas été envoyé");
                 return $this->redirectToRoute('consulter_projet', [ 'id' => $projet->getIdProjet() ]);
             }
 
             if ($CGU == false && $form->get('envoyer')->isClicked())
             {
-                $request->getSession()->getFlashbag()->add("flash erreur","Vous ne pouvez pas envoyer votre projet en expertise si vous n'acceptez pas les CGU");
+                $request->getSession()->getFlashbag()->add("flash erreur","Vous ne pouvez pas envoyer votre projet si vous n'acceptez pas les CGU");
             }
             elseif ($CGU == true && $form->get('envoyer')->isClicked())
             {
@@ -816,7 +816,7 @@ class VersionController extends AbstractController
 
                 if ($rtn == true)
                 {
-                    $request->getSession()->getFlashbag()->add("flash info","Votre projet a été envoyé en expertise. Vous allez recevoir un courriel de confirmation.");
+                    $request->getSession()->getFlashbag()->add("flash info","Votre projet nous a été envoyé. Vous allez recevoir un courriel de confirmation.");
                 }
                 else
                 {

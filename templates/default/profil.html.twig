@@ -1,4 +1,5 @@
 {% extends 'default/base.html.twig' %}
+{% import "default/icone.html.twig" as icones %}
 
 {% form_theme form with ['form_table_layout.html.twig', _self] %}
 
@@ -42,7 +43,9 @@
 
 {% block body %}
 
-<section><h2>Votre profil: {{ individu }}</h2>
+<section>
+    <h2>Votre profil: {{ individu }}</h2>
+    <p class="centrage"><strong>Gestion de vos clés ssh:</strong> <a href="{{ path('gerer_clessh') }}">{{ icones.clessh(25,25)}}</a></p>
 
 <div class="information"><p class="centrage">Veuillez s'il vous plaît vérifier et si nécessaire mettre à jour
 les informations vous concernant.
@@ -59,5 +62,6 @@ Votre profil doit être entièrement renseigné<br>
 
 {% endif %}
 
+<strong>Gestion de vos clés ssh:</strong> <a href="{{ path('gerer_clessh') }}">{{ icones.clessh(25,25)}}</a>
 {% endblock %}
 

@@ -57,6 +57,22 @@ class Expertise
     private $nbHeuresAtt = 0;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="nb_heures_att_uft", type="integer", nullable=false)
+     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
+     */
+    private $nbHeuresAttUft = 0;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="nb_heures_att_criann", type="integer", nullable=false)
+     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
+     */
+    private $nbHeuresAttCriann = 0;
+
+    /**
      * @var string
      *
      * Expertise qui sera connue du comité d'attribution uniquement
@@ -177,6 +193,54 @@ class Expertise
     public function getNbHeuresAtt()
     {
         return $this->nbHeuresAtt;
+    }
+
+    /**
+     * Set nbHeuresAttUft
+     *
+     * @param integer $nbHeuresAttUft
+     *
+     * @return Expertise
+     */
+    public function setNbHeuresAttUft($nbHeuresAttUft)
+    {
+        $this->nbHeuresAttUft = $nbHeuresAttUft;
+
+        return $this;
+    }
+
+    /**
+     * Get nbHeuresAttUft
+     *
+     * @return integer
+     */
+    public function getNbHeuresAttUft()
+    {
+        return $this->nbHeuresAttUft;
+    }
+
+    /**
+     * Set nbHeuresAttCriann
+     *
+     * @param integer $nbHeuresAttCriann
+     *
+     * @return Expertise
+     */
+    public function setNbHeuresAttCriann($nbHeuresAttCriann)
+    {
+        $this->nbHeuresAttCriann = $nbHeuresAttCriann;
+
+        return $this;
+    }
+
+    /**
+     * Get nbHeuresAttCriann
+     *
+     * @return integer
+     */
+    public function getNbHeuresAttCriann()
+    {
+        return $this->nbHeuresAttCriann;
     }
 
     /**

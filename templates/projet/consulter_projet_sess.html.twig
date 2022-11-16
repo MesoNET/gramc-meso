@@ -12,7 +12,7 @@
 
     {# PROVISOIRE !!!! #}
     {% set noconso = true %}
-    
+
     <section id="consulter_projet" style="stroke:black">
 
         <div class="top_body">
@@ -36,7 +36,10 @@
             (version {{ version.nbversion }})
             <br>
             <small>
-                <em>{{ version.getMetaEtat }}</em>
+                <em>{{ version.getMetaEtat }}
+                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.jourj|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
+
+                </em>
             </small>
         </h2>
 
@@ -241,25 +244,8 @@
                     {% if not cv.deleted %}
                         <tr style="stroke:black;">
                             {% if coll_login %}
-                                {% set users = serviceUsers.collaborateurVersion2LoginNames2(cv) %}
-                                {% if( cv.logint == true) %}
-                                    {% if version.etat==5 or version.etat == 4 %}
-                                        <td>{% if users.TURPAN is not defined %}<span title="Compte non encore créé">{{icones.attention(25,25)}}</span>{% else %}<tt>{{users.TURPAN}}</tt>{% endif %}</td>
-                                    {% else %}
-                                        <td>oui</td>
-                                    {% endif %}
-                                {% else %}
-                                    <td>-</td>
-                                {% endif %}
-                                {% if( cv.loginb == true) %}
-                                    {% if version.etat==5 or version.etat == 4 %}
-                                        <td>{% if users.BOREAL is not defined %}<span title="compte non encore créé">{{icones.attention(25,25)}}</span>{% else %}<tt>{{users.BOREAL}}</tt>{% endif %}</td>
-                                    {% else %}
-                                        <td>oui</td>
-                                    {% endif %}
-                                {% else %}
-                                    <td>-</td>
-                                {% endif %}
+                                <td>{% if( cv.logint == true) %}oui{% else %}- {%endif%}</td>
+                                <td>{% if( cv.loginb == true) %}oui{% else %}- {%endif%}</td>
                             {% endif %}
 
                             {% if nodata==false %}
