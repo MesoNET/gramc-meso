@@ -1047,6 +1047,7 @@ class AdminuxController extends AbstractController
      *             '{ "projet" : null,     "mail" : "toto@exemple.fr"}' -> Tous les projets dans lesquels ce collaborateur a un login (version ACTIVE de chaque projet)
      *
      *             '{ "projet" : "P01234", "mail" : "toto@exemple.fr" }' -> rien ou toto si toto avait un login sur ce projet
+     * On peut aussi ajouter "deply
      *
      * Par défaut on ne considère QUE les version actives et dernières de chaque projet non terminé
      * MAIS si on AJOUTE un PARAMETRE "session" : "20A" on travaille sur la session passée en paramètres (ici 20A)
@@ -1219,7 +1220,7 @@ class AdminuxController extends AbstractController
                     }
 
                     // Les loginnames au niveau version
-                    $loginnames = $su -> collaborateurVersion2LoginNames3($cv);
+                    $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
@@ -1286,7 +1287,7 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
-                            $loginnames = $su->collaborateurVersion2LoginNames3($cv);
+                            $loginnames = $su->collaborateurVersion2LoginNames($cv);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
                                     'idProjet' =>$idProjet,

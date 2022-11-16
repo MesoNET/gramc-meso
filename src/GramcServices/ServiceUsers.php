@@ -40,46 +40,13 @@ class ServiceUsers
 
     /******************************************
      * Renvoie la liste des loginnames pour un CollaborateurVersion donné
-     *************************************/
-    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv): array
-    {
-        $em = $this -> em;
-        
-        //$users = $em->getRepository(User::class)->findBy(['collaborateurversion' => $cv ]);
-        $users = $cv->getUser();
-        $loginnames = [];
-        foreach ( $users as $u)
-        {
-            $loginnames[] = $this->getLoginname($u);
-        }
-        return $loginnames;
-    }
-
-    /******************************************
-     * Renvoie la liste des loginnames pour un CollaborateurVersion donné
-     * sous forme de tableau associatif SERVEUR -> login
-     *************************************/
-    public function collaborateurVersion2LoginNames2(CollaborateurVersion $cv): array
-    {
-        $loginnames = $this->collaborateurVersion2LoginNames($cv);
-        $loginnames2 = [];
-        foreach ($loginnames as $u)
-        {
-            $l = $this->parseLoginname($u);
-            $loginnames2[$l['serveur']] = $l['loginname'];
-        }
-        return $loginnames2;
-    }
-
-    /******************************************
-     * Renvoie la liste des loginnames pour un CollaborateurVersion donné
      * sous forme de tableau associatif:
      *      $s['TURPAN']['nom'] -> le nom du serveur, ou 'nologin'
      *      $s['TURPAN']['clessh'] -> la cléssh, ou null
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deply'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames3(CollaborateurVersion $cv): array
+    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv): array
     {
         $em = $this->em;
         

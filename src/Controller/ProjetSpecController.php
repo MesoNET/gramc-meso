@@ -173,7 +173,7 @@ class ProjetSpecController extends AbstractController
             if ($versionActive != null)
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
-                $loginnames = $su->collaborateurVersion2LoginNames3($cv);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
                 $loginnames['TURPAN']['login'] = $cv->getLogint();
                 $loginnames['BOREAL']['login'] = $cv->getLoginb();
 
@@ -243,7 +243,7 @@ class ProjetSpecController extends AbstractController
             if ($versionActive != null)
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
-                $loginnames = $su->collaborateurVersion2LoginNames3($cv);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
                 $loginnames['TURPAN']['login'] = $cv->getLogint();
                 $loginnames['BOREAL']['login'] = $cv->getLoginb();
 
