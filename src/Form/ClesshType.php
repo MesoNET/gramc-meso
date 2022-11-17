@@ -24,6 +24,8 @@
 
 namespace App\Form;
 
+use App\Validator\Constraints\Clessh;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,7 +46,9 @@ class ClesshType extends AbstractType
             ->add('nom', TextType::class, ['required' => true, 'label' => "Nom de la clé:" ])
             ->add('pub', TextType::class, ['required' => true,
                                            'label' => "Votre clé publique ssh",
-                                           'attr' => [ "size" => "100" ]])
+                                           'attr' => [ "size" => "100" ],
+                                           'constraints' => [new Clessh()]
+                                           ])
             ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
             ->add('reset', ResetType::class, ['label' => 'reset' ]);
     }

@@ -31,7 +31,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="clessh",
  *            uniqueConstraints={@ORM\UniqueConstraint(name="nom_individu", columns={"id_individu", "nom"}),
- *                               @ORM\UniqueConstraint(name="pubuniq", columns={"pub"})})
+ *                               @ORM\UniqueConstraint(name="pubuniq", columns={"emp"})})
  * @ORM\Entity
  */
 class Clessh
@@ -91,6 +91,17 @@ class Clessh
      *
      */
     private $pub;
+    
+    /**
+     * 
+     * @var string
+     *
+     * @ORM\Column(name="emp", type="string", length=100, nullable=false)
+     *
+     * L'empreinte de cette clé ssh
+     * 
+     */
+    private $emp;
     
     /**
      * @var boolean
@@ -202,6 +213,29 @@ class Clessh
     public function setPub($pub)
     {
         $this->pub = $pub;
+        return $this;
+    }
+
+    /**
+     * Get emp
+     *
+     * @return string
+     */
+    public function getEmp()
+    {
+        return $this->emp;
+    }
+
+    /**
+     * Set emp
+     *
+     * @param string
+     *
+     * @return Clessh
+     */
+    public function setEmp($emp)
+    {
+        $this->emp = $emp;
         return $this;
     }
 

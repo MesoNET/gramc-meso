@@ -17,7 +17,7 @@
                 <th title="Demandes d'heures sur Turpan">Turpan</th>
                 <th title="Demandes d'heures sur Boreal">Boreal</th>
                 <th>Responsable</th>
-                <th>Valideur</th>
+                <th>Valideur en cours</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
                     <td>{{ expertise.version.demHeuresUft }}</td>
                     <td>{{ expertise.version.demHeuresCriann }}</td>
                     <td>{{ expertise.version.responsable }}</td>
-                    <td>{{ expertise.expert }}</td>
+                    <td>{% if expertise.expert == null %}<em>pourquoi pas vous ?</em>{% else %}{{ expertise.expert }}{% endif %}</td>
                 </tr>
         {% endfor %}
         </tbody>

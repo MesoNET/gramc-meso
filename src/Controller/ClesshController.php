@@ -60,13 +60,52 @@ class ClesshController extends AbstractController
         $em = $this->em;
 
         $moi = $token->getUser();
-        $menu = [ ['ok' => true,'name' => 'ajouter_clessh' ,'lien' => 'Ajouter une clé','commentaire'=> 'Ajouter une clé'] ];
+        $menu = [];
+        $menu[] = ['ok' => true,'name' => 'gerer_clessh_all' ,'lien' => 'Montrer tout','commentaire'=> 'Montrer aussi les clés révoquées'];
+        $menu[] = ['ok' => true,'name' => 'ajouter_clessh' ,'lien' => 'Ajouter une clé','commentaire'=> 'Ajouter une clé'];
+
+        // On filtre en ne présentant pas les clés révoquées !
+        $clessh_all = $moi->getClessh();
+        $clessh = [];
+        foreach ($clessh_all as $c)
+        {
+            if ($c->getRvk()) continue;
+            $clessh[] = $c;
+        }
 
         return $this->render(
             'clessh/liste.html.twig',
             [
             'menu' => $menu,
-            'clessh' => $moi->getClessh()
+            'clessh' => $clessh
+            ]
+        );
+    }
+
+    /**
+     * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées
+     * 
+     * @Route("/gerer_all",name="gerer_clessh_all", methods={"GET"} )
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+     */
+    public function gererActionAll(): Response
+    {
+        $token = $this->tok->getToken();
+        $em = $this->em;
+
+        $moi = $token->getUser();
+        $menu = [];
+        $menu[] = ['ok' => true,'name' => 'gerer_clessh' ,'lien' => 'Masquer','commentaire'=> 'Masquer les clés révoquées'];
+        $menu[] = ['ok' => true,'name' => 'ajouter_clessh' ,'lien' => 'Ajouter une clé','commentaire'=> 'Ajouter une clé'];
+
+        // On filtre en ne présentant pas les clés révoquées !
+        $clessh_all = $moi->getClessh();
+
+        return $this->render(
+            'clessh/liste.html.twig',
+            [
+            'menu' => $menu,
+            'clessh' => $clessh_all
             ]
         );
     }
@@ -80,16 +119,26 @@ class ClesshController extends AbstractController
      */
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {
-        $em = $this->em;
-        $em->remove($clessh);
 
-        try {
-            $em->flush();
-        }
-        catch ( \Exception $e)
+        // On n'a pas le droit de supprimer une clé ssh révoquée !
+        if ($clessh->getRvk())
         {
-            $msg = "Votre clé est utilisée dans un de vos projets, on ne peut pas la supprimer";
+            $msg = "Cette clé est révoquée, vous ne pouvez ni la supprimer, ni l'utiliser";
             $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+        }
+        else
+        {
+            $em = $this->em;
+            $em->remove($clessh);
+    
+            try {
+                $em->flush();
+            }
+            catch ( \Exception $e)
+            {
+                $msg = "Votre clé est utilisée dans un de vos projets, on ne peut pas la supprimer";
+                $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+            }
         }
         
         return $this->redirectToRoute('gerer_clessh');
@@ -114,20 +163,44 @@ class ClesshController extends AbstractController
         $form = $this->createForm('App\Form\ClesshType', $clessh);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->persist($clessh);
-            try
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
             {
-                $em->flush();
+                // On garde l'empreinte de la clé ssh dans la base de données pour être sûr de l'unicité de chaque clé ssh
+
+                // TODO ssh-keygen est appelé ici pour la SECONDE FOIS car il a déjà été appelé
+                //      par ClesshValidator: pas très malin
+                //      Mais au moins on est sûr qu'il renverra un résultat correct !
+                //      Du coup on ne fait pas trop de tests
+                //
+
+                $o = [];
+                $pub = $clessh->getPub();
+                exec("/bin/bash -c 'ssh-keygen -l -f <(echo $pub)'",$o,$c);
+                $empreinte = explode(' ',$o[0]);
+                $clessh->setEmp($empreinte[1]);
+
+                $em = $this->em;
+                $em->persist($clessh);
+                try
+                {
+                    $em->flush();
+                }
+                catch ( \Exception $e)
+                {
+                    $msg = "La clé n'a pas été ajoutée: Vous ne pouvez pas avoir deux fois la même clé, ou le même nom de clé.
+                    Ou pire, quelqu'un a la même clé que vous";
+                    $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+                }
+                return $this->redirectToRoute('gerer_clessh');
             }
-            catch ( \Exception $e)
+            else
             {
-                $msg = "La clé n'a pas été ajoutée: Vous ne pouvez pas avoir deux fois la même clé, ou le même nom de clé.
-                Ou pire, quelqu'un a la même clé que vous";
+                $msg = "La clé n'a pas été ajoutée: elle n'est pas valide. Seuls certains types de clé sont autorisés";
                 $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+                return $this->redirectToRoute('gerer_clessh');
             }
-            return $this->redirectToRoute('gerer_clessh');
         }
 
         return $this->render(

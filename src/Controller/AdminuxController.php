@@ -1519,6 +1519,9 @@ class AdminuxController extends AbstractController
             $r_c['nom'] = $c->getNom();
             $r_c['pub'] = $c->getPub();
             $r_c['rvk'] = $c->getrvk();
+            $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
+            $r_c['empreinte'] = $c->getEmp();
+
             $users = $c->getUser();
             $r_users = [];
             foreach ($users as $u)

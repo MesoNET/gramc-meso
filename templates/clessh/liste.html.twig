@@ -9,7 +9,7 @@
     {{ gramcmacros.menu(menu) }}
 
     {% if clessh is empty %}
-        <div class = "information attention"><p><em>Vous n'avez pas encore téléversé de clé ssh</em></p></div>
+        <div class = "information attention"><p><em>Soit vous n'avez pas encore téléversé de clé ssh, soit elles ont été révoquées</em></p></div>
     {% else %}
         <table>
             <tr><th>&nbsp;</th><th>Nom</th><th>Clé publique</th><th>Etat</th></tr>

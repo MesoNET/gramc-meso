@@ -7,6 +7,9 @@
     {{ gramcmacros.menu(menu) }}
     <div class="information ok">
         <p>Veuillez faire un copier-coller depuis votre fichier de clé publique ssh</p>
+        <p>Algorithmes autorisés: 
+           <tt><strong>{% for a in clessh_algos %}{{a}} {%endfor%}</strong></tt>
+       </p>
     </div>
 
     {{ form_start(form) }}
