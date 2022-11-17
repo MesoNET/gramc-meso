@@ -128,7 +128,7 @@
                     {% else %}
                         <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a>
                     {% endif %}
-                     <span title="Gérer vos clés ssh"><a href="{{ path('gerer_clessh') }}">{{ icones.clessh(25,25)}}</a></span>
+                     <span title="Gérer vos clés ssh"><a href="{{ path('gerer_clessh') }}">{{ icones.trousseau(40,40)}}</a></span>
                     </p>
                     </div>
                     <a href=" {{ path('deconnexion') }}" class="deconnexion_profil">Déconnexion</a>

@@ -783,8 +783,8 @@ class ServiceMenus
     {
         $menu['name']   =   'projet_dynamique';
         $menu['commentaire']    =   "Tous les projets dynamiques";
-        $menu['lien']           =   "Projets";
-        $menu['icone']          =   "tous";
+        $menu['lien']           =   "Projets dynamiques";
+        $menu['icone']          =   "annee";
 
 
         if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
