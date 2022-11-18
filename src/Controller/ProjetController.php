@@ -48,6 +48,7 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceUsers;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 use App\GramcServices\GramcGraf\CalculTous;
@@ -103,6 +104,7 @@ class ProjetController extends AbstractController
         private ServiceMenus $sm,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
+        private ServiceUsers $su,
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
@@ -1309,18 +1311,19 @@ class ProjetController extends AbstractController
      *    Affiche un menu permettant de choisir quelle consommation on veut voir afficher
      *
      *
-     * @Route("/{id}/conso/{annee}/annee/{loginname}/loginname", name="projet_conso",
+     * @Route("/{id}/conso/{cv}/cv/{annee}/annee", name="projet_conso",
      *        defaults={"loginname" = "nologin"},
      *        methods={"GET"})
      * Method("GET")
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
 
-    public function consoAction(Projet $projet, $loginname="nologin", $annee=null): Response
+    public function consoAction(Projet $projet, CollaborateurVersion $cv, int $annee=9999): Response
     {
         $sp = $this->sp;
         $sj = $this->sj;
-
+        $su = $this->su;
+        $grdt = $this->grdt;
 
         // Seuls les collaborateurs du projet ont accès à la consommation
         if (! $sp->projetACL($projet)) {
@@ -1328,20 +1331,29 @@ class ProjetController extends AbstractController
         }
 
         // Si année non spécifiée on prend l'année la plus récente du projet
-        if ($annee == null) {
-            $version    =   $projet->derniereVersion();
-            $annee = '20' . substr($version->getIdVersion(), 0, 2);
+        // L'URL ne peut être construite si $annee vaut null, du coup 9999 signifie: année non spécifiée
+        // cf. Version::getFullAnnee()
+        if ($annee == 9999) {
+            $version = $projet->derniereVersion();
+            $annee = $version->getFullAnnee();
+            if ($annee==9999)
+            {
+                $annee = $grdt->showYear(); // En désespoir de cuase on prend l'année courante
+            }
         }
+
+        $loginnames = $su->collaborateurVersion2LoginNames($cv);
 
         return $this->render(
             'projet/conso_menu.html.twig',
             ['projet'=>$projet,
-                             'annee'=>$annee,
-                             'loginname'=>$loginname,
-                             'types'=>['group','user'],
-                             'titres'=>['group' => 'Les consos du projet',
-                                        'user' => 'Mes consommations']
-                             ]
+             'cv' => $cv,
+             'annee'=>$annee,
+             'loginnames'=>$loginnames,
+             'types'=>['group','user'],
+             'titres'=>['group' => 'Les consos du projet',
+                        'user' => 'Mes consommations']
+            ]
         );
     }
 

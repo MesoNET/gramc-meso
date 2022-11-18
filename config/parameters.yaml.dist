@@ -112,34 +112,47 @@ parameters:
         2: T
 
     # Ressources dont on peut visualiser la consommation
+    # NOTE - Si on ne veut pas visualiser la conso de BOREAL (par exemple) il suffit de supprimer
+    #        les tableaux BOREAL
+    #
     ressources_conso_group:
-        1:
-            type: calcul
-            ress: 'cpu,gpu'
-            nom: 'Heures normalisées'
-            unite: h
-        2:
-            type: stockage
-            ress: work_space
-            nom: 'Espace work'
-            unite: Tio
+        TURPAN:
+            1:
+                type: calcul
+                ress: 'cpu@TURPAN,gpu@TURPAN'
+                nom: 'TURPAN - Heures normalisées'
+                unite: h
+
+        BOREAL:
+            1:
+                type: calcul
+                ress: 'cpu@BOREAL'
+                nom: 'BOREAL - Heures de calcul'
+                unite: h
 
     ressources_conso_user:
-        1:
-            type: calcul
-            ress: 'cpu,gpu'
-            nom: 'Heures normalisées'
-            unite: h
-        2:
-            type: stockage
-            ress: home_space
-            nom: Home
-            unite: Gio
-        3:
-            type: stockage
-            ress: tmpdir_space
-            nom: tmpdir
-            unite: Gio
+        TURPAN:
+            1:
+                type: calcul
+                ress: 'cpu@TURPAN,gpu@TURPAN'
+                nom: 'TURPAN - Heures normalisées'
+                unite: h
+            2:
+                type: stockage
+                ress: home_space@TURPAN
+                nom: Home TURPAN
+                unite: Gio
+        BOREAL:
+            1:
+                type: calcul
+                ress: 'cpu@BOREAL'
+                nom: 'Heures de calcul'
+                unite: h
+            2:
+                type: stockage
+                ress: home_space@BOREAL
+                nom: Home BOREAL
+                unite: Gio
 
     # Nombre max d'experts par version de projet
     max_expertises_nb: 1

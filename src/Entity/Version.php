@@ -1774,10 +1774,28 @@ class Version implements Demande
         //return $this->getSession()->getAnneeSession() + 2000;
         return $this->getFullAnnee();
     }
-    public function getFullAnnee()
+    public function getFullAnnee():string
     {
-        return '20' . substr($this->getIdVersion(), 0, 2);
+        if ($this->getTypeVersion()==Projet::PROJET_DYN)
+        {
+            $j = $this -> getJourJ();
+            if ($j == null)
+            {
+                // On retourne une chaine de caractères idiote
+                // TOO - mise à jour du code en 9999
+                return '9999';
+            }
+            else
+            {
+                return $j->format('Y');
+            }
+        }
+        else
+        {
+            return '20' . substr($this->getIdVersion(), 0, 2);
+        }
     }
+    
     ////////////////////////////////////////////////////////////////////
 
     public function getLibelleEtat()

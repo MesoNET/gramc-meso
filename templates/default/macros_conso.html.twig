@@ -1,0 +1,12 @@
+{# Affichage des données de conso #}
+
+{# Affichage de la conso sur une ensemble de serveurs #}
+
+{% macro affiche_conso(class, width, idProjet, idCollaborateurVersion) %}
+{% import "default/icone.html.twig" as icones %}
+<a title="Consommation" alt="Consommation" class="{{class}} conso"  id="bconso_{{ idProjet }}"
+    data-href="{{ absolute_url(path('projet_conso', { 'id': idProjet, 'cv': idCollaborateurVersion })) }}" >
+    {{ icones.conso(width) }}<p>Consommation</p>
+</a>
+
+{% endmacro %}

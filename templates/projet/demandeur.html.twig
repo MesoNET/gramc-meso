@@ -2,6 +2,9 @@
 
 
 {% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/macros_conso.html.twig" as gramcconsomacros %}
+
 {% import _self as thismacro %}
 {% import "default/icone.html.twig" as icones %}
 
@@ -62,45 +65,18 @@
             {% endif %}
         </td>
 
-        {#{% if noconso==false %}#}
-        {% if false %}
-
-            {% if item.conso < conso_seuil_1 %}
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0">{{ item.conso |number_format(1)}}&nbsp;%</td>
-                
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" title="Evolution de la consommation">
-
-                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}" data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'loginname': item.login, 'annee' : item.projet.derniereVersion.getFullAnnee() })) }}">
-                        {{ icones.consommation }}
-                    </div>
-
-                </td>
-            {% elseif item.conso < conso_seuil_2 %}
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_1">{{ item.conso |number_format(1)}}&nbsp;%</td>
-                
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_1" title="Evolution de la consommation">
-
-                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}" data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'loginname': item.login, 'annee' : item.projet.derniereVersion.getFullAnnee() })) }}">
-                        {{ icones.consommation }}
-                    </div>
-
-                </td>
-
-            {% else %}
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_2">{{ item.conso |number_format(1)}}&nbsp;%</td>
-                
-                <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_2" title="Evolution de la consommation">
-
-                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}" data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'loginname': item.login, 'annee' : item.projet.derniereVersion.getFullAnnee() })) }}">
-                        {{ icones.consommation }}
-                    </div>
-
-                </td>
-
-            {% endif %}
-
-
-        <input id="conso_{{ item.projet.idProjet }}" value="{{ item.conso |number_format(1)}}" type="hidden">
+        {% if noconso==false %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
+                {% if item.cv != null %}
+                    {#{{ gramcconsomacros.affiche_conso(item.projet.idProjet, item.loginnames) }} #}
+    
+                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}"
+                    data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'cv': item.cv.id })) }}">
+    -                   {{ icones.consommation }}
+    -               </div>
+                {% endif %}
+            </td>
+            <input id="conso_{{ item.projet.idProjet }}" value="{{ item.conso |number_format(1)}}" type="hidden">
         {% endif %}
     </tr>
 

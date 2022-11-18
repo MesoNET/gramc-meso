@@ -170,6 +170,7 @@ class ProjetSpecController extends AbstractController
 
             $passwd = null;
             $pwd_expir = null;
+            $cv = null;
             if ($versionActive != null)
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
@@ -200,6 +201,7 @@ class ProjetSpecController extends AbstractController
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
                 'meta_etat' => $sp->getMetaEtat($projet),
+                'cv' => $cv,
                 'loginnames' => $loginnames,
                 'passwd'    => $passwd,
                 'pwd_expir' => $pwd_expir
@@ -214,12 +216,13 @@ class ProjetSpecController extends AbstractController
             if ($versionActive != null) {
                 $rallonges = $versionActive ->getRallonge();
                 $cpt_rall  = count($rallonges->toArray());
-            } else {
+            }
+            else
+            {
                 $rallonges = null;
                 $cpt_rall  = 0;
             }
 
-            $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
             /*
             if ($cv != null) {
                 // TODO - Remonter au niveau du ProjetRepository (fonctions get_projet_etats et getProjetsCollab)
@@ -240,9 +243,10 @@ class ProjetSpecController extends AbstractController
                 $pwd_expir = null;
             }
             */
+            $cv = null;
             if ($versionActive != null)
             {
-                $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
                 $loginnames['TURPAN']['login'] = $cv->getLogint();
                 $loginnames['BOREAL']['login'] = $cv->getLoginb();
@@ -257,8 +261,10 @@ class ProjetSpecController extends AbstractController
                     $passwd    = Functions::simpleDecrypt($passwd);
                     $pwd_expir = $u->getPassexpir();
                 } */
-            } else {
-                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
+            }
+            else
+            {
+                $loginnames = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
                 $loginnames['BOREAL']['login'] = false;
                 $passwd = null;
@@ -271,6 +277,7 @@ class ProjetSpecController extends AbstractController
                 'conso'     => $sp->getConsoCalculP($projet),
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
+                'cv' => $cv,
                 'meta_etat' => $sp->getMetaEtat($projet),
                 'loginnames' => $loginnames,
                 'passwd'    => $passwd,
@@ -306,6 +313,7 @@ class ProjetSpecController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
+        $su = $this->su;
         $coll_vers_repo= $em->getRepository(CollaborateurVersion::class);
         $token = $this->token;
 
@@ -336,14 +344,7 @@ class ProjetSpecController extends AbstractController
         $loginname = null;
         $cv = $coll_vers_repo->findOneBy(['version' => $version, 'collaborateur' => $token->getUser()]);
         //if ($cv != null)
-        if (false)
-        {
-            $loginname = $cv -> getLoginname() == null ? 'nologin' : $cv -> getLoginname();
-        }
-        else
-        {
-            $loginname = 'nologin';
-        }
+        $loginnames = $su->collaborateurVersion2LoginNames($cv);
 
         // LA SUITE DEPEND DU TYPE DE PROJET !
         // Même affichage pour projets de type 2 et 3 (projets test => projets fil)
@@ -352,28 +353,30 @@ class ProjetSpecController extends AbstractController
         $type = $projet->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_SESS:
-                return $this->consulterType1($projet, $version, $loginname, $request, $warn_type);
+                return $this->consulterType1($projet, $version, $loginnames, $request, $warn_type);
             case Projet::PROJET_TEST:
-                return $this->consulterType2($projet, $version, $loginname, $request, $warn_type);
+                return $this->consulterType2($projet, $version, $loginnames, $request, $warn_type);
             case Projet::PROJET_FIL:
-                return $this->consulterType3($projet, $version, $loginname, $request, $warn_type);
+                return $this->consulterType3($projet, $version, $loginnames, $request, $warn_type);
             case Projet::PROJET_DYN:
-                return $this->consulterType4($projet, $version, $loginname, $request);
+                return $this->consulterType4($projet, $version, $loginnames, $request);
             default:
                 $sj->errorMessage(__METHOD__ . " Type de projet inconnu: $type");
         }
     }
 
     // Consulter les projets de type 1
-    private function consulterType1(Projet $projet, Version $version, $loginname, Request $request, $warn_type)
+    private function consulterType1(Projet $projet, Version $version, array $loginname, Request $request, $warn_type)
     {
         $em = $this->em;
+        $token = $this->token;
         $sm = $this->sm;
         $sp = $this->sp;
         $ac = $this->ac;
         $sv = $this->sv;
         $sj = $this->sj;
         $ff = $this->ff;
+        $moi = $token->getUser();
 
         $session_form = Functions::createFormBuilder($ff, ['version' => $version ])
         ->add(
@@ -460,13 +463,16 @@ class ProjetSpecController extends AbstractController
         } else {
             $tmpl = 'projet/consulter_projet_fil.html.twig';
         }
+
+        $cv = $em->getRepository(CollaborateurVersion::class)
+                 ->findOneBy(['version' => $version, 'collaborateur' => $moi]);
         
         return $this->render(
             $tmpl,
             [
                 'warn_type'          => $warn_type,
                 'projet'             => $projet,
-                'loginname'          => $loginname,
+                'loginnames'          => $loginnames,
                 'version_form'       => $session_form->createView(),
                 'version'            => $version,
                 'session'            => $session,
@@ -479,6 +485,7 @@ class ProjetSpecController extends AbstractController
                 'rapport'            => $rapport,
                 'document'           => $document,
                 'toomuch'            => $toomuch,
+                'cv'                 => $cv,
                 'formation'          => $formation
             ]
         );
@@ -486,7 +493,7 @@ class ProjetSpecController extends AbstractController
 
     // Consulter les projets de type 2 (projets test, en voie de disparition)
     // Même chose que Type3, moins le lien Transformer et Renouveler
-    private function consulterType2(Projet $projet, Version $version, $loginname, Request $request)
+    private function consulterType2(Projet $projet, Version $version, array $loginnames, Request $request)
     {
         $sm = $this->sm;
         $sp = $this->sp;
@@ -515,7 +522,7 @@ class ProjetSpecController extends AbstractController
     }
 
     // Consulter les projets de type 3 (projets fil, c-a-d nouveaux projets test)
-    private function consulterType3(Projet $projet, Version $version, $loginname, Request $request)
+    private function consulterType3(Projet $projet, Version $version, array $loginnames, Request $request)
     {
         $sm = $this->sm;
         $sp = $this->sp;
@@ -545,7 +552,7 @@ class ProjetSpecController extends AbstractController
     }
 
     // Consulter les projets de type 4
-    private function consulterType4(Projet $projet, Version $version, $loginname, Request $request)
+    private function consulterType4(Projet $projet, Version $version, array $loginnames, Request $request)
     {
         $em = $this->em;
         $sm = $this->sm;
@@ -555,6 +562,8 @@ class ProjetSpecController extends AbstractController
         $sj = $this->sj;
         $ff = $this->ff;
         $ss = $this->ss;
+        $token = $this->token;
+        $moi = $token->getUser();
 
         //$session_form = Functions::createFormBuilder($ff, ['version' => $version ])
         //->add(
@@ -636,26 +645,30 @@ class ProjetSpecController extends AbstractController
         $formation = $sv->buildFormations($version);
 
         $tmpl = 'projet/consulter_projet_sess.html.twig';
+
+        $cv = $em->getRepository(CollaborateurVersion::class)
+             ->findOneBy(['version' => $version, 'collaborateur' => $moi]);
         
         return $this->render(
             $tmpl,
             [
-                'warn_type'          => false,
-                'projet'             => $projet,
-                'loginname'          => $loginname,
-                //'version_form'       => $session_form->createView(),
-                'version'            => $version,
-                'session'            => null,
-                'menu'               => $menu,
-                'img_expose'         => $img_expose,
-                'img_justif_renou'   => $img_justif_renou,
+                'warn_type' => false,
+                'projet' => $projet,
+                'loginnames' => $loginnames,
+                //'version_form' => $session_form->createView(),
+                'version' => $version,
+                'session' => null,
+                'menu' => $menu,
+                'img_expose' => $img_expose,
+                'img_justif_renou' => $img_justif_renou,
                // 'conso_cpu'          => $sp->getConsoRessource($projet, 'cpu', $version->getAnneeSession()),
                // 'conso_gpu'          => $sp->getConsoRessource($projet, 'gpu', $version->getAnneeSession()),
                 //'rapport_1'          => $rapport_1,
                 //'rapport'            => $rapport,
-                'document'           => $document,
-                'toomuch'            => false,
-                'formation'          => $formation
+                'document' => $document,
+                'toomuch' => false,
+                'formation' => $formation,
+                'cv' => $cv
             ]
         );
     }

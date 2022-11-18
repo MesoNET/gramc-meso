@@ -1,6 +1,8 @@
 {% extends 'default/base.html.twig' %}
 {% import "default/macros.html.twig" as gramcmacros %}
 {% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
+{% import "default/macros_conso.html.twig" as gramcconsomacros %}
+
 {% import "default/icone.html.twig" as icones %}
 
 {% block myjavascripts %}
@@ -9,9 +11,6 @@
 
 {% block body %}
 
-
-    {# PROVISOIRE !!!! #}
-    {% set noconso = true %}
 
     <section id="consulter_projet" style="stroke:black">
 
@@ -101,10 +100,11 @@
                 {% endif %}
             {% endif %}
             {% if noconso == false %}
-                <a class="lien_supplementaire conso" title="Visualiser la consommation {{version.getAnneeSession}}" data-href="{{ absolute_url(path('projet_conso', { 'id': version.projet.idProjet, 'loginname': loginname, 'annee' : version.getAnneeSession })) }}" > {{icones.consommation}}
-                    <p>Visualiser ma consommation</p>
+                <a title="Consommation" alt="Consommation" class="lien_supplementaire conso"  id="bconso_{{ projet }}"
+                    data-href="{{ absolute_url(path('projet_conso', { 'id': projet.id, 'cv': cv.id })) }}" >
+                    {{ icones.consommation }}
+                    <p>Afficher la consommation</p>
                 </a>
-                {# Pour les graphiques de conso #}
                 <div id="dialog-compta"></div>
             {% endif %}
     
@@ -118,7 +118,8 @@
             </section>
         {% endif %}
     
-        {% if noconso==false %}
+        {# if noconso == false #}
+        {% if false %}
 
             {% set conso     = conso_cpu[0] + conso_gpu[0] %}
             {% set quota     = conso_cpu[1]                %}
@@ -139,7 +140,8 @@
 {% endif %}
 
         <div class="chapitre">
-        {% if noconso == false %}
+        {# if noconso == false #}
+        {% if false %}
         {% if conso_gpu[0] > 0 %}
             <div class="information ok">
                 <p>Les heures gpu sont affichées en heures
@@ -168,7 +170,8 @@
                     </tr>
                 {% endif %}
 
-                {% if noconso == 0 %}
+                {# if noconso == false #}
+                {% if false %}
                     <tr>
                         <th>Quota machine d'heures allouées pour XXX</th>
                         <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
@@ -509,28 +512,35 @@
                     <th>Heures attribuées</th>
                     <td>{{ (version.attrHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
-                {% if noconso == 0 %}
+                {% if noconso == false %}
+                {% if version.typeversion != 4 %}
                 <tr>
                     <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
                     <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
                 </tr>
+                {% endif %}
         
                 <tr>
                     <th>Nombre d'heures consommées<br>
+                        {% if version.typeversion != 4 %}
                         <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
+                        {% else %}
+                            <span class="petit">depuis le {{version.jourj}}</span>
+                        {% endif %}
+                        }
                     </th>
                     <td>{# {{ version.conso }}
                         {% if(version.getQuota > 0) %}
                             ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
                         {% endif %}
-                        <br> #}
+                        <br> 
                         {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
                         {% if(quota!=0) %} 
                             ({{consop|number_format(1)}} %) 
                         {% endif %}
                         {% if conso_gpu[0] != 0 %}
                             - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
-                        {% endif %}
+                        {% endif %} #} coucou
                     </td>
                 </tr>
                 {% endif %}
@@ -562,7 +572,8 @@
                     <th>Heures attribuées</th>
                     <td>{{ (version.attrHeuresCriann)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
-                {% if noconso == 0 %}
+                {# if noconso == false #}
+                {% if false %}
                 <tr>
                     <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
                     <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>

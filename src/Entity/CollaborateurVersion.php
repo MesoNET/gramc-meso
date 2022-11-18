@@ -155,8 +155,11 @@ class CollaborateurVersion
         if ($this->getResponsable() == true) {
             $output .= 'responsable:';
         }
-        if ($this->getLogin() == true) {
-            $output .= 'login:';
+        if ($this->getLogint() == true) {
+            $output .= 'login TURPAN:';
+        }
+        if ($this->getLoginb() == true) {
+            $output .= 'login BOREAL:';
         }
         $output .= 'version=' . $this->getVersion() .':';
         $output .= 'id=' . $this->getId() . ':';
