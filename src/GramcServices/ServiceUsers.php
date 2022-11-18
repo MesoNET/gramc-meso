@@ -41,12 +41,13 @@ class ServiceUsers
     /******************************************
      * Renvoie la liste des loginnames pour un CollaborateurVersion donné
      * sous forme de tableau associatif:
-     *      $s['TURPAN']['nom'] -> le nom du serveur, ou 'nologin'
+     *      $s['TURPAN']['nom'] -> le nom de login (toto), ou 'nologin'
+     *                             si $long=true, renvoie toto@TURPAN
      *      $s['TURPAN']['clessh'] -> la cléssh, ou null
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deply'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv): array
+    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv, bool $long = false): array
     {
         $em = $this->em;
         
@@ -56,6 +57,7 @@ class ServiceUsers
         {
             $s = $u->getServeur()->getNom();
             $loginnames3[$s]['nom'] = $u->getLoginname();
+            if ($long) $loginnames3[$s]['nom'] .= '@'.$s;
             $clessh = $u->getClessh();
             if ($clessh === null)
             {

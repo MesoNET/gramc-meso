@@ -89,7 +89,11 @@ class AdminuxController extends AbstractController
      * type      = user ou group unix
      * @Route("/compta_update_batch", name="compta_update_batch", methods={"PUT"})
      * @Security("is_granted('ROLE_ADMIN')")
+     *
      */
+
+    // exemple: curl --netrc -T path/to/file.csv https://.../adminux/compta_update_batch
+    
     public function UpdateComptaBatchAction(Request $request): Response
     {
         $em = $this->em;
@@ -175,7 +179,7 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // exemple: curl --insecure --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
+    // exemple: curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
     public function setloginnameAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
@@ -565,6 +569,8 @@ class AdminuxController extends AbstractController
         $em    = $this->em;
 
         $attr  = $v->getAttrHeuresTotal();
+        $attrUft = $v->getAttrHeuresUft();
+        $attrCriann = $v->getAttrHeuresCriann();
 
         $session = $v->getSession();
         $id_session = '';
@@ -597,6 +603,9 @@ class AdminuxController extends AbstractController
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
         $r['attrHeures']      = $attr;
+        $r['attrHeures@TURPAN'] = $attrUft;
+        $r['attrHeures@BOREAL'] = $attrCriann;
+        
         // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
         // Pour le déboguage
         // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
@@ -735,7 +744,9 @@ class AdminuxController extends AbstractController
      *                 idSession   20A
      *                 idVersion   20AP01234
      *                 mail        mail du responsable de la version
-     *                 attrHeures  Heures cpu attribuées
+     *                 attrHeures  Heures cpu attribuées (NON UTLISE)
+     *                 attrHeuresUft Heures cpu attribuées à Uft
+     *                 attrHeuresCriann Heures cpu attribuées à Criann
      *                 quota       Quota sur la machine
      *                 gpfs        sondVolDonnPerm stockage permanent demandé (pas d'attribution pour le stockage)
      *
@@ -754,6 +765,7 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
+        $nosession = $this->getParameter('nosession');
         
         $versions = [];
 
@@ -771,15 +783,27 @@ class AdminuxController extends AbstractController
             $long = (isset($content['long']))? $content['long']: false;
         }
 
+        if ($id_session != null && $nosession == true)
+        {
+            return new Response(json_encode(['KO' => 'Les sessions sont désactivées']));
+        }
+        
         $v_tmp = [];
         // Tous les projets actifs
         if ($id_projet == null && $id_session == null)
         {
-            $sessions = $em->getRepository(Session::class)->get_sessions_non_terminees();
-            foreach ($sessions as $sess)
+            if ($nosession == false)
             {
-                //$versions = $em->getRepository(Version::class)->findSessionVersionsActives($sess);
-                $v_tmp = array_merge($v_tmp,$em->getRepository(Version::class)->findSessionVersions($sess));
+                $sessions = $em->getRepository(Session::class)->get_sessions_non_terminees();
+                foreach ($sessions as $sess)
+                {
+                    //$versions = $em->getRepository(Version::class)->findSessionVersionsActives($sess);
+                    $v_tmp = array_merge($v_tmp,$em->getRepository(Version::class)->findSessionVersions($sess));
+                }
+            }
+            else
+            {
+                $v_tmp = $em->getRepository(Version::class)->findAll();
             }
         }
 
@@ -812,13 +836,9 @@ class AdminuxController extends AbstractController
             foreach ($v_tmp as $v)
             {
                 if ($v == null) continue;
-                if ($v->getSession()->getEtatSession() != Etat::TERMINE)
+                if (in_array($v->getEtatVersion(),$etats,true))
                 {
-                    if (in_array($v->getEtatVersion(),$etats,true))
-                    //if ($v->getProjet()->getMetaEtat() === 'ACCEPTE' || $v->getProjet()->getMetaEtat() === 'NONRENOUVELE')
-                    {
-                        $versions[] = $v;
-                    }
+                    $versions[] = $v;
                 }
             }
         }
@@ -834,16 +854,27 @@ class AdminuxController extends AbstractController
         foreach ($versions as $v)
         {
             if ($v==null) continue;
-            $annee = 2000 + $v->getSession()->getAnneeSession();
-            $attr  = $v->getAttrHeures() - $v->getPenalHeures();
+            if ($nosession==false)
+            {
+                $annee = 2000 + $v->getSession()->getAnneeSession();
+            }
+            else
+            {
+                $annee = null;
+            }
+            
+            ///////////////$attr  = $v->getAttrHeures() - $v->getPenalHeures();
+            $attr = 0;
             foreach ($v->getRallonge() as $r)
             {
                 $attr += $r->getAttrHeures();
             }
+            $attrUft = $v->getAttrHeuresUft();
+            $attrCriann = $v->getAttrHeuresCriann();
 
             // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
             // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-            if ($v->getSession()->getTypeSession())
+            if ($v->getsession() != null && $v->getSession()->getTypeSession())
             {
                 $id_va = $v->getAutreIdVersion();
                 $va = $em->getRepository(Version::class)->find($id_va);
@@ -859,14 +890,24 @@ class AdminuxController extends AbstractController
             }
             $r = [];
             $r['idProjet']        = $v->getProjet()->getIdProjet();
-            $r['idSession']       = $v->getSession()->getIdSession();
+            $r['idSession']       = $v->getSession()!=null ? $v->getSession()->getIdSession() : 'N/A';
             $r['idVersion']       = $v->getIdVersion();
             $r['etatVersion']     = $v->getEtatVersion();
             $r['etatProjet']      = $v->getProjet()->getEtatProjet();
             $r['mail']            = $v->getResponsable()->getMail();
             $r['attrHeures']      = $attr;
-            $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
-            $r['quota']           = $sp->getConsoRessource($v->getProjet(),'cpu',$annee)[1];
+            $r['attrHeures@TURPAN'] = $attrUft;
+            $r['attrHeures@BOREAL'] = $attrCriann;
+            //$r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
+
+            // Conso et quota sur TURPAN et BOREAL
+            $c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
+            $c_boreal = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREAL');
+            $r['quota@TURPAN'] = $c_turpan[1];
+            $r['conso@TURPAN'] = $c_turpan[0];
+            $r['quota@BOREAL'] = $c_boreal[1];
+            $r['conso@BOREAL'] = $c_boreal[0];
+            
             if ($long)
             {
                 $r['titre']       = $v->getPrjTitre();
@@ -1287,7 +1328,7 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
-                            $loginnames = $su->collaborateurVersion2LoginNames($cv);
+                            $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
                                     'idProjet' =>$idProjet,
