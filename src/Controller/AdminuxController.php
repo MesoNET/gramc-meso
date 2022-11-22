@@ -36,6 +36,7 @@ use App\Entity\User;
 use App\Entity\Serveur;
 use App\Entity\Compta;
 use App\Entity\Clessh;
+use App\Entity\Param;
 
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceJournal;
@@ -73,7 +74,7 @@ class AdminuxController extends AbstractController
         private ServiceJournal $sj,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
-        private GramcDate $sd,
+        private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceUsers $su,
         private TokenStorageInterface $tok,
@@ -340,7 +341,7 @@ class AdminuxController extends AbstractController
 
         // Calcul de la date d'expiration
         $pwd_duree = $this->getParameter('pwd_duree');  // Le nombre de jours avant expiration du mot de passe
-        $grdt      = $this->sd;
+        $grdt = $this->grdt;
         $passexpir = $grdt->getNew()->add(new \DateInterval($pwd_duree));
 
         // Vérifie qu'on a le droit d'intervenir sur ce serveur
@@ -1035,7 +1036,7 @@ class AdminuxController extends AbstractController
         // Cela revient à écrire directement dans la table de conso
         // On écrit le même quota pour toutes les ressources "calcul"
 
-        $date = $this->sd;  // aujourd'hui
+        $date = $this->grdt;  // aujourd'hui
         $loginname = strtolower($idProjet); // Le projet traduit en groupe unix
         $type = 2;                          // Un groupe, pas un utilisateur
         foreach ($ressources as $ress)
@@ -1355,7 +1356,7 @@ class AdminuxController extends AbstractController
      */
     public function quotaCheckAction(Request $request): Response
     {
-        $sd = $this->sd;
+        $grdt = $this->grdt;
         $sn = $this->sn;
         $sj = $this->sj;
 
@@ -1373,7 +1374,7 @@ class AdminuxController extends AbstractController
                 throw new AccessDeniedException("Accès interdit (paramètre noconso)");
             }
     
-            $annee_courante = $sd->showYear();
+            $annee_courante = $grdt->showYear();
             $sp      = $this->sp;
             $projets = $sp->projetsParAnnee($annee_courante)[0];
     
@@ -1425,8 +1426,8 @@ class AdminuxController extends AbstractController
             throw new AccessDeniedException("Accès interdit (paramètre noconso)");
         }
 
-        $sd     = $this->sd;
-        $users  = $em->getRepository(User::class)->findAll();
+        $grdt = $this->grdt;
+        $users = $em->getRepository(User::class)->findAll();
         $rusers = [];
         foreach ($users as $user)
         {
@@ -1440,7 +1441,7 @@ class AdminuxController extends AbstractController
             }
             
             // Si nécessaire on marque le user comme expiré, mais on ne supprime rien
-            if ($user->getPassexpir() <= $sd && $user->getExpire() == false)
+            if ($user->getPassexpir() <= $grdt && $user->getExpire() == false)
             {
                 $user->setExpire(true);
                 $em->persist($user);
@@ -1449,7 +1450,7 @@ class AdminuxController extends AbstractController
             }
 
             // On ne devrait jamais rentrer dans le if mais on ajoute de la robustesse
-            if ($user->getPassexpir() > $sd && $user->getExpire() == true)
+            if ($user->getPassexpir() > $grdt && $user->getExpire() == true)
             {
                 $user->setExpire(false);
                 $em->persist($user);
@@ -1775,6 +1776,98 @@ class AdminuxController extends AbstractController
         $cle->setRvk(true);
         Functions::sauvegarder($cle,$em,$lg);
         return new Response(json_encode(['OK' => "clé $idCle révoquée"]));
+    }
+    
+    /**
+     * SEULEMENT EN DEBUG: renvoie la date
+     *
+     * @Route("/gramcdate/get", name="grdt_get", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Renvoie la date d'après gramc
+     *
+     */
 
+    // curl --netrc -X GET https://.../adminux/gramcdate/get
+    public function getDateAction(Request $request, LoggerInterface $lg): Response
+    {
+        if ($this->getParameter('kernel.debug') == false)
+        {
+            return new Response(json_encode(['KO' => 'Seulement en debug !']));
+        }
+        else
+        {
+            return new Response(json_encode($this->grdt->format('Y-m-d')));
+        }
+    }
+
+    /**
+     * SEULEMENT EN DEBUG: modifie la date
+     *
+     * @Route("/gramcdate/set", name="grdt_set", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Modifie la gramcdate en ajoutant d jours à la date d'aujourd'hui
+     * OU en revenant à la date d'aujourd'hui
+     *
+     */
+
+    // curl --netrc -X POST -d '{ "shift": "2" }' https://.../adminux/gramcdate/set
+    // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
+    public function setDateAction(Request $request, LoggerInterface $lg): Response
+    {
+        $grdt = $this->grdt;
+        $em = $this->em;
+        
+        if ($this->getParameter('kernel.debug') == false)
+        {
+            return new Response(json_encode(['KO' => 'Seulement en debug !']));
+        }
+        else
+        {
+            $content  = json_decode($request->getContent(), true);
+            if ($content == null)
+            {
+                $sj->errorMessage("AdminUxController::setDateAction - Pas de données");
+                return new Response(json_encode(['KO' => 'Pas de données']));
+            }
+            if (empty($content['shift']))
+            {
+                $sj->errorMessage("AdminUxController::setDateAction - Pas de shift");
+                return new Response(json_encode(['KO' => 'Pas de shift']));
+            }
+            else
+            {
+                $shift = $content['shift'];
+            }
+
+            $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
+            if ($grdt_now == null)
+            {
+                $grdt_now = new Param();
+                $grdt_now->setCle('now');
+            }
+
+            if ($shift === 'today')
+            {
+                $em->remove($grdt_now);
+            }
+            else
+            {
+                $shift = intval($shift);
+                if ($shift <= 0)
+                {
+                    return new Response(json_encode(['KO' => 'shift vaut soit un entier positif soit "today"']));
+                }
+                $dateInterval = new \DateInterval('P'.$shift.'D');
+                $date = new \DateTime();
+                $date -> add($dateInterval);
+                $grdt_now->setVal($date->format("Y-m-d"));
+                $em->persist($grdt_now);
+            }
+            $em->flush();
+
+            return new Response(json_encode(['OK' => '']));
+        }
     }
 }
