@@ -341,10 +341,12 @@ class ProjetSpecController extends AbstractController
         }
 
         // Calcul du loginname, pour affichage de la conso
-        $loginname = null;
+        $loginnames = null;
         $cv = $coll_vers_repo->findOneBy(['version' => $version, 'collaborateur' => $token->getUser()]);
-        //if ($cv != null)
-        $loginnames = $su->collaborateurVersion2LoginNames($cv);
+        if ($cv != null)
+        {
+            $loginnames = $su->collaborateurVersion2LoginNames($cv);
+        }
 
         // LA SUITE DEPEND DU TYPE DE PROJET !
         // Même affichage pour projets de type 2 et 3 (projets test => projets fil)
@@ -552,7 +554,7 @@ class ProjetSpecController extends AbstractController
     }
 
     // Consulter les projets de type 4
-    private function consulterType4(Projet $projet, Version $version, array $loginnames, Request $request)
+    private function consulterType4(Projet $projet, Version $version, array $loginnames=null, Request $request)
     {
         $em = $this->em;
         $sm = $this->sm;

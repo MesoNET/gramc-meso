@@ -664,6 +664,7 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
+        $grdt = $this->grdt;
         $rep= $em->getRepository(Projet::class);
 
         $content  = json_decode($request->getContent(), true);
@@ -694,6 +695,8 @@ class AdminuxController extends AbstractController
             $data['etatProjet'] = $p->getEtat();
             $data['metaEtat']   = $sp->getMetaEtat($p);
             $data['typeProjet'] = $p->getTypeProjet();
+            $data['consoTurpan'] = $sp->getConsoRessource($p,'gpu@TURPAN',$grdt);
+            $data['consoBoreal'] = $sp->getConsoRessource($p,'cpu@BOREAL',$grdt);
             $va = ($p->getVersionActive()!=null) ? $p->getVersionActive() : null;
             $vb = ($p->getVersionDerniere()!=null) ? $p->getVersionDerniere() : null;
             $v_data = [];

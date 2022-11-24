@@ -37,7 +37,6 @@
             <small>
                 <em>{{ version.getMetaEtat }}
                     {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.jourj|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
-
                 </em>
             </small>
         </h2>
@@ -99,7 +98,10 @@
                     </a>
                 {% endif %}
             {% endif %}
-            {% if noconso == false %}
+
+            {# cv est null si c'est un valideur ou un admin (et pas un collab) qui le regarde #}
+            {# TODO - Mais on devrait avoir accès à la conso du projet dans sa globalité #}
+            {% if noconso == false and cv != null %}
                 <a title="Consommation" alt="Consommation" class="lien_supplementaire conso"  id="bconso_{{ projet }}"
                     data-href="{{ absolute_url(path('projet_conso', { 'id': projet.id, 'cv': cv.id })) }}" >
                     {{ icones.consommation }}
@@ -512,14 +514,16 @@
                     <th>Heures attribuées</th>
                     <td>{{ (version.attrHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
-                {% if noconso == false %}
+                {# if noconso == false #}
+                {% if false %}
                 {% if version.typeversion != 4 %}
                 <tr>
                     <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
                     <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
                 </tr>
                 {% endif %}
-        
+
+            
                 <tr>
                     <th>Nombre d'heures consommées<br>
                         {% if version.typeversion != 4 %}
@@ -629,8 +633,12 @@
                     <td>{{  version.demHeures|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
                 <tr>
-                    <th>Nombre d'heures attribuées</th>
-                    <td>{{  expertise.nbHeuresAtt|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    <th>Nombre d'heures attribuées sur TURPAN</th>
+                    <td>{{  expertise.nbHeuresAttUft|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre d'heures attribuées sur BOREAL</th>
+                    <td>{{  expertise.nbHeuresAttCriann|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') or version.isExpertDe(app.user) %}
                     <tr>

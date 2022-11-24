@@ -219,7 +219,8 @@ $(document).ready(
                     let mail = context.val();
                     if (regEmail.test(mail))
                     {
-                        if (NOINVITATION != 0)
+                        //if (NOINVITATION != 0)
+                        if (false)
                         {
                             msg = "ERREUR ! Pas possible d'enregistrer ! \n";
                             msg += "Vous avez peut-être ajouté un collaborateur inconnnu, il faut dans ce cas qu’il se connecte à cette plateforme pour y créer un compte avant de pouvoir être ajouté en tant que collaborateur. \n";
