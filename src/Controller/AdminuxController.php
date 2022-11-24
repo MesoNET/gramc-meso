@@ -1087,12 +1087,11 @@ class AdminuxController extends AbstractController
      *             ou
      *             '{ "projet" : "P01234", "mail" : null }' -> Tous les collaborateurs avec login du projet P01234 (version ACTIVE)
      *
-     *             '{ "mail" : "toto@exemple.fr"}
+     *             '{ "mail" : "toto@exemple.fr"}'
      *             ou
      *             '{ "projet" : null,     "mail" : "toto@exemple.fr"}' -> Tous les projets dans lesquels ce collaborateur a un login (version ACTIVE de chaque projet)
      *
      *             '{ "projet" : "P01234", "mail" : "toto@exemple.fr" }' -> rien ou toto si toto avait un login sur ce projet
-     * On peut aussi ajouter "deply
      *
      * Par défaut on ne considère QUE les version actives et dernières de chaque projet non terminé
      * MAIS si on AJOUTE un PARAMETRE "session" : "20A" on travaille sur la session passée en paramètres (ici 20A)
@@ -1119,7 +1118,6 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null, "session" : "19A" }' https://.../adminux/utilisateurs/get
-
     public function utilisateursGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1332,6 +1330,8 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
+                            $logint = $cv->getLogint();
+                            $loginb = $cv->getLoginb();
                             $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
@@ -1339,6 +1339,8 @@ class AdminuxController extends AbstractController
                                     'mail' => $mail,
                                     'prenom' => $prenom,
                                     'nom' => $nom,
+                                    'logint' => $logint,
+                                    'loginb' => $loginb,
                                     'loginnames' => $loginnames,
                             ];
                         }
@@ -1517,7 +1519,7 @@ class AdminuxController extends AbstractController
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Exemples de données POST (fmt json):
-     *             ''
+     *             '' -> toutes les clés
      *             ou
      *             '{ "rvk" : true }' -> Les clés qui ont été révoquées
      *             ou
@@ -1543,11 +1545,18 @@ class AdminuxController extends AbstractController
         }
         
         if ($content == null) {
-            $rvk = false;
+            $rvk = 0;
         }
         else
         {
-            $rvk = (isset($content['rvk'])) ? $content['rvk'] : false;
+            if (isset($content['rvk']))
+            {
+                $rvk = $content['rvk'] ? 1:-1;
+            }
+            else
+            {
+                $rvk = 0;
+            }
         }
 
         //
@@ -1564,6 +1573,8 @@ class AdminuxController extends AbstractController
             $r_c['nom'] = $c->getNom();
             $r_c['pub'] = $c->getPub();
             $r_c['rvk'] = $c->getrvk();
+            if ( $rvk === 1 && $r_c['rvk'] == false) continue;
+            if ( $rvk === -1 && $r_c['rvk'] == true) continue;
             $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
             $r_c['empreinte'] = $c->getEmp();
 
@@ -1592,7 +1603,7 @@ class AdminuxController extends AbstractController
     }
 
     /**
-     * Déploie une cléssh pour un utilisateur
+     * Déploie une clé ssh pour un utilisateur
      *
      * @Route("/clessh/deployer", name="deployer", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
