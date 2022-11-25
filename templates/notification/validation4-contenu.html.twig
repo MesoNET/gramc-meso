@@ -1,0 +1,14 @@
+Bonjour {{ object.responsable  |raw }},
+
+La validation de votre projet {{ object.projet.idProjet  |raw }} a été effectuée.
+
+Cette demande a été acceptée.
+
+Le nombre d'heures demandées  est : {{ object.demHeuresUft |raw }} (TURPAN) et {{ object.demHeuresCriann |raw }} (BOREALE)
+Le nombre d'heures attribuées est : {{ object.expertise[0].nbHeuresAttUft |raw }} (TURPAN) et {{ object.expertise[0].nbHeuresAttCriann |raw }} (BOREALE)
+
+Commentaire de l'expert :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Cordialement,
+l'équipe {{mesoc}}

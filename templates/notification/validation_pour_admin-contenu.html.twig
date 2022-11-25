@@ -1,0 +1,20 @@
+Bonjour
+
+La validation du projet {{ object.projet |raw }} (resp {{ object.responsable|raw }}) a été effectuée.
+
+Cette demande a été {% if( object.expertise[0].validation == true ) %}ACCEPTÉE{% else %}REFUSÉE{% endif %} .
+
+Le nombre d'heures demandées  est : {{ object.demHeuresUft |raw }} (TURPAN) et {{ object.demHeuresCriann |raw }} (BOREALE)
+Le nombre d'heures attribuées est : {{ object.expertise[0].nbHeuresAttUft |raw }} (TURPAN) et {{ object.expertise[0].nbHeuresAttCriann |raw }} (BOREALE)
+URL du projet                     : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}
+
+Commentaire du valideur :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Commentaire du valideur à destination de {{mesoc}}:
+{{ object.expertise[0].commentaireInterne |raw }}
+
+
+Cordialement,
+gramc
+

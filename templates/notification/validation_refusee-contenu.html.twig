@@ -1,0 +1,21 @@
+Bonjour
+
+La validation du projet {{ object.projet |raw }} a été REFUSÉE.
+
+Nous vous laissons le soin de prendre contact avec {{ object.responsable  |raw }}, responsable du projet
+Son adresse: {{ object.responsable.mail  |raw }}
+
+ATTENTION - Aucun mail automatique n'a été envoyé !
+
+Le nombre d'heures demandées était : {{ object.demHeuresUft  |raw }} (TURPAN) et {{ object.demHeuresCriann  |raw }} (BOREALE)
+URL du projet                      : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}
+
+Commentaire de validation :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Commentaire de validation à destination de {{mesoc}} :
+{{ object.expertise[0].commentaireInterne |raw }}
+
+Cordialement,
+gramc
+
