@@ -176,7 +176,7 @@ class ProjetSpecController extends AbstractController
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
                 $loginnames['TURPAN']['login'] = $cv->getLogint();
-                $loginnames['BOREAL']['login'] = $cv->getLoginb();
+                $loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -189,9 +189,9 @@ class ProjetSpecController extends AbstractController
                     $pwd_expir = $u->getPassexpir();
                 } */
             } else {
-                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
+                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
-                $loginnames['BOREAL']['login'] = false;
+                $loginnames['BOREALE']['login'] = false;
             }
 
             $projets_resp[]   =
@@ -249,7 +249,7 @@ class ProjetSpecController extends AbstractController
                 $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
                 $loginnames['TURPAN']['login'] = $cv->getLogint();
-                $loginnames['BOREAL']['login'] = $cv->getLoginb();
+                $loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -264,9 +264,9 @@ class ProjetSpecController extends AbstractController
             }
             else
             {
-                $loginnames = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREAL' => ['nom' => 'nologin']];
+                $loginnames = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
-                $loginnames['BOREAL']['login'] = false;
+                $loginnames['BOREALE']['login'] = false;
                 $passwd = null;
                 $pwd_expir = null;
             }

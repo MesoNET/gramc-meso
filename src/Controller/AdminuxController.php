@@ -272,7 +272,7 @@ class AdminuxController extends AbstractController
                       $user -> addCollaborateurVersion($cv);
                       $cv -> addUser($user);
                       if ( $serveur->getNom() == 'TURPAN' ) $cv->setLogint(true);
-                      if ( $serveur->getNom() == 'BOREAL' ) $cv->setLoginb(true);
+                      if ( $serveur->getNom() == 'BOREALE' ) $cv->setLoginb(true);
                       Functions::sauvegarder($user,$em,$lg);
                       Functions::sauvegarder($cv,$em,$lg);
                       
@@ -605,7 +605,7 @@ class AdminuxController extends AbstractController
         $r['mail']            = $resp == null ? null : $resp->getMail();
         $r['attrHeures']      = $attr;
         $r['attrHeures@TURPAN'] = $attrUft;
-        $r['attrHeures@BOREAL'] = $attrCriann;
+        $r['attrHeures@BOREALE'] = $attrCriann;
         
         // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
         // Pour le déboguage
@@ -696,7 +696,7 @@ class AdminuxController extends AbstractController
             $data['metaEtat']   = $sp->getMetaEtat($p);
             $data['typeProjet'] = $p->getTypeProjet();
             $data['consoTurpan'] = $sp->getConsoRessource($p,'gpu@TURPAN',$grdt);
-            $data['consoBoreal'] = $sp->getConsoRessource($p,'cpu@BOREAL',$grdt);
+            $data['consoBoreale'] = $sp->getConsoRessource($p,'cpu@BOREALE',$grdt);
             $va = ($p->getVersionActive()!=null) ? $p->getVersionActive() : null;
             $vb = ($p->getVersionDerniere()!=null) ? $p->getVersionDerniere() : null;
             $v_data = [];
@@ -901,16 +901,16 @@ class AdminuxController extends AbstractController
             $r['mail']            = $v->getResponsable()->getMail();
             $r['attrHeures']      = $attr;
             $r['attrHeures@TURPAN'] = $attrUft;
-            $r['attrHeures@BOREAL'] = $attrCriann;
+            $r['attrHeures@BOREALE'] = $attrCriann;
             //$r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
 
-            // Conso et quota sur TURPAN et BOREAL
+            // Conso et quota sur TURPAN et BOREALE
             $c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
-            $c_boreal = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREAL');
+            $c_boreale = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREALE');
             $r['quota@TURPAN'] = $c_turpan[1];
             $r['conso@TURPAN'] = $c_turpan[0];
-            $r['quota@BOREAL'] = $c_boreal[1];
-            $r['conso@BOREAL'] = $c_boreal[0];
+            $r['quota@BOREALE'] = $c_boreale[1];
+            $r['conso@BOREALE'] = $c_boreale[0];
             
             if ($long)
             {

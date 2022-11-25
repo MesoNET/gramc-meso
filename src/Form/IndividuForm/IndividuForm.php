@@ -81,7 +81,7 @@ class IndividuForm
             $output .= 'FERMER LE COMPTE TURPAN ';
         }
         if ($this->getDelb() == true) {
-            $output .= 'FERMET LE COMPTE BOREAL ';
+            $output .= 'FERMER LE COMPTE BOREALE ';
         }
         if ($this->getDeleted() == true) {
             $output .= 'SUPPRIMER COLLABORATEUR ';

@@ -3,11 +3,11 @@
 {% if projet.versionActive == null %}
     <em>Ce projet n'a pas encore démarré'</em>
 {% else %}
-    {% for s in ['TURPAN','BOREAL'] %}
+    {% for s in ['TURPAN','BOREALE'] %}
         {% if ressources_conso_group[s] is defined %}
             {# TODO Corriger ça oulala #}
             {% if (s=='TURPAN' and projet.versionActive.attrHeuresUft>0)
-               or (s=='BOREAL' and projet.versionActive.attrHeuresCriann>0) %}
+               or (s=='BOREALE' and projet.versionActive.attrHeuresCriann>0) %}
             <h2>{{s}}</h2>
             {% set loginname = loginnames[s].nom %}
                 {% for t in types %}

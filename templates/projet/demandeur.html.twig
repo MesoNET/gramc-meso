@@ -31,7 +31,7 @@
         <td>{{ item.projet.idProjet }}</td>
         
         {% if noconso==false %}
-            {% for s in ['TURPAN','BOREAL'] %}
+            {% for s in ['TURPAN','BOREALE'] %}
                 <td rowspan="{{ item.cpt_rall + 1 }}">
                     {#{{dump(item.loginnames)}}#}
     
@@ -172,7 +172,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREAL</th>{% endif %}
+            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
             <th>Titre</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>
@@ -209,7 +209,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREAL</th>{% endif %}
+            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
             <th>Titre</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>

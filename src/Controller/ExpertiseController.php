@@ -753,7 +753,7 @@ class ExpertiseController extends AbstractController
                      ->add('validation', HiddenType::class, [ 'data' => 1 ]);
         }            
 
-        // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREAL)
+        // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREALE)
         // Par défaut on attribue les heures demandées
         if ($expertise->getNbHeuresAttUft() == 0)
         {

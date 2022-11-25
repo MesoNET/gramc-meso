@@ -75,9 +75,9 @@ class IndividuFormType extends AbstractType
             'loginb',
             CheckboxType::class,
             [
-                'label'     => 'login Boreal',
+                'label'     => 'login Boreale',
                 'required'  => false,
-                'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Boreal' ]
+                'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Boreale' ]
             ]
         );
         $builder->add(

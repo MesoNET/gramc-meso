@@ -75,7 +75,7 @@ class ServiceUsers
         }
         
         if (!array_key_exists('TURPAN', $loginnames3)) $loginnames3['TURPAN']['nom'] = 'nologin';
-        if (!array_key_exists('BOREAL', $loginnames3)) $loginnames3['BOREAL']['nom'] = 'nologin';
+        if (!array_key_exists('BOREALE', $loginnames3)) $loginnames3['BOREALE']['nom'] = 'nologin';
         return $loginnames3;
     }
 

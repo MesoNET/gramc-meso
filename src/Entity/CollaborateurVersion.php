@@ -58,7 +58,7 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
-     * @ORM\Column(name="delb", type="boolean", nullable=false, options={"comment":"login Boreal à supprimer"})
+     * @ORM\Column(name="delb", type="boolean", nullable=false, options={"comment":"login Boreale à supprimer"})
      */
     private $delb = false;
 
@@ -79,7 +79,7 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
-     * @ORM\Column(name="loginb", type="boolean", nullable=false, options={"comment":"login sur Boreal"}))
+     * @ORM\Column(name="loginb", type="boolean", nullable=false, options={"comment":"login sur Boreale"}))
      */
     private $loginb = false;
 
@@ -159,7 +159,7 @@ class CollaborateurVersion
             $output .= 'login TURPAN:';
         }
         if ($this->getLoginb() == true) {
-            $output .= 'login BOREAL:';
+            $output .= 'login BOREALE:';
         }
         $output .= 'version=' . $this->getVersion() .':';
         $output .= 'id=' . $this->getId() . ':';

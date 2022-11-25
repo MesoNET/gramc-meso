@@ -232,7 +232,7 @@
                 <tr>
                     {% if coll_login %}
                         <th>TURPAN</th>
-                        <th>BOREAL</th>
+                        <th>BOREALE</th>
                     {% endif %}
 
                     <th>Prénom</th>
@@ -560,10 +560,10 @@
 
 {% if pdf is defined %}
     <div class="details">
-        <h3>Boreal</h3>
+        <h3>Boreale</h3>
 {% else %}
     <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Boreal</summary>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Boreale</summary>
 {% endif %}
     <div class="chapitre">
         <table class="table_vertical">
@@ -637,7 +637,7 @@
                     <td>{{  expertise.nbHeuresAttUft|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
                 <tr>
-                    <th>Nombre d'heures attribuées sur BOREAL</th>
+                    <th>Nombre d'heures attribuées sur BOREALE</th>
                     <td>{{  expertise.nbHeuresAttCriann|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                 </tr>
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') or version.isExpertDe(app.user) %}
