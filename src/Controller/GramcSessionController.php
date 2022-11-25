@@ -199,6 +199,7 @@ class GramcSessionController extends AbstractController
         $sm = $this->sm;
         $ss = $this->ss;
         $sid = $this->sid;
+        $token = $this->ts->getToken();
         
         $session = null;
         if ($this->getParameter('nosession')==false)
@@ -214,37 +215,6 @@ class GramcSessionController extends AbstractController
             }
         }
 
-        // Si true, cet utilisateur n'est ni expert ni admin ni président !
-        $seulement_demandeur=true;
-
-        $menu   = [];
-        $m = $sm->demandeur();
-        if ($m['ok'] == false) {
-            // Même pas demandeur !
-            $seulement_demandeur = false;
-        }
-        $menu[] = $m;
-
-        $m = $sm->expert();
-        if ($m['ok']) {
-            $seulement_demandeur = false;
-        }
-        $menu[] = $m;
-
-        $m = $sm->administrateur();
-        if ($m['ok']) {
-            $seulement_demandeur = false;
-        }
-        $menu[] = $m;
-
-        $m = $sm->president();
-        if ($m['ok']) {
-            $seulement_demandeur = false;
-        }
-        $menu[] = $m;
-        $menu[] = $sm->aide();
-
-        $token = $this->ts->getToken();
         if ($token != null)
         {
             $individu = $this->ts->getToken()->getUser();
@@ -253,18 +223,8 @@ class GramcSessionController extends AbstractController
                 return $this->redirectToRoute('profil');
             };
         }
-        
-        if ($seulement_demandeur) {
-            return $this->redirectToRoute('projet_accueil');
-        } else {
-            // juin 2021 -> Suppression des projets tests
-            return $this->render(
-                'default/accueil.html.twig',
-                ['menu' => $menu,
-         'projet_test' => false,
-         'session' => $session ]
-            );
-        }
+
+        return $this->render('default/accueil.html.twig');
     }
 
     /**
