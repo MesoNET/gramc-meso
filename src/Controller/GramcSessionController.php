@@ -342,6 +342,7 @@ class GramcSessionController extends AbstractController
 
         // vérifier si eppn est disponible dans $session
         // Sinon, c'est peut-être qu'on est allé à l'URL nouveau_compte sans être authentifié
+
         if (! $request->getSession()->has('eppn')) {
             $sj->warningMessage(__FILE__ . ":" . __LINE__ . " Pas d'eppn dans session");
             $lg->warning("URL nouveau_compte: Pas d'EPPN", [ 'request' => $request ]);
@@ -385,7 +386,7 @@ class GramcSessionController extends AbstractController
         if ($form->get('save')->isClicked() && $form->isSubmitted() && $form->isValid()) {
             return $this->redirectToRoute('nouveau_profil');
         };
-        
+
         return $this->render('default/nouveau_compte.html.twig', [ 'mail' => $email , 'eppn' => $eppn, 'form' => $form->createView()]);    
     }
 
@@ -453,7 +454,7 @@ class GramcSessionController extends AbstractController
         // $session->set('givenName','ursule');
         // $session->set('sn','Dupont');
         
-        // Préremplissage du formulaire si la fédération nous a envoyé l'info !
+        // Préremplissage du formulaire si on nous a envoyé l'info !
         if ($session->has('givenName')) {
             $individu->setPrenom($session->get('givenName'));
         }
@@ -461,7 +462,6 @@ class GramcSessionController extends AbstractController
         if ($session->has('sn')) {
             $individu->setNom($session->get('sn'));
         }
-
 
         $form = $this->createForm(IndividuType::class, $individu, [ 'mail' => false ]);
         $form->handleRequest($request);
@@ -508,7 +508,8 @@ class GramcSessionController extends AbstractController
             $session = $request->getSession();
             $session->remove('eppn');
             $session->remove('mail');
-            return $this->redirectToRoute('connexionshiblogin');
+            return $this->redirectToRoute('remlogin');
+
         }
         return $this->render('default/nouveau_profil.html.twig', array( 'mail' => $request->getSession()->get('mail'), 'form' => $form->createView()));
     }

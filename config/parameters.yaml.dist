@@ -195,11 +195,9 @@ parameters:
     #
     # Actuellement deux authentifications supportées:
     #
-    #    - SAML2 (Fédération d'identité/Renater)
-    #    - OPENID (Indigo-Iam)
+    #    - saml2 (Fédération d'identité/Renater)
+    #    - openid (Indigo-Iam)
 
-    #mode_auth: ''
-    #mode_auth: 'saml2'
     mode_auth: 'openid'
 
     # Utile SEULEMENT si SAML2/Fédération Renater

@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-//use App\Utils\IDP;
 use App\Utils\Functions;
 use App\Entity\Scalar;
 use App\Entity\Individu;
@@ -43,14 +42,15 @@ class LoginController extends AbstractController
                                 private EntityManagerInterface $em)
     {}
 
-    /** 
-     * @Route("/login", name="connexionshiblogin",methods={"GET"})
+    /**
+     * Login "remote" - saml2 (shibboleth) ou openid (iam)
+     * 
+     * @Route("/login", name="remlogin",methods={"GET"})
      * Method({"GET"})
      */
-    public function shibloginAction(Request $request): Response
+    public function remLoginAction(Request $request): Response
     {
-        $this->sj->InfoMessage("shiblogin d'un utilisateur");
-        //dd($request);
+        $this->sj->InfoMessage("remote login d'un utilisateur");
         if( $request->getSession()->has('url') )
             return $this->redirect( $request->getSession()->get('url') );
         else
@@ -130,13 +130,13 @@ class LoginController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $url    =   $request->getSchemeAndHttpHost();
             $url    .= '/Shibboleth.sso/Login?target=';
-            $url    .= $this->generateUrl('connexionshiblogin');
+            $url    .= $this->generateUrl('remlogin');
 
             if ($form->getData()['data'] != 'WAYF') {
                 $url = $url . '&providerId=' . $form->getData()['data'];
             }
 
-            $sj->debugMessage(__FILE__. ":" . __LINE__ . " URL shiblogin = " . $url);
+            $sj->debugMessage(__FILE__. ":" . __LINE__ . " URL remlogin = " . $url);
 
             return $this->redirect($url);
         }
@@ -182,8 +182,6 @@ class LoginController extends AbstractController
         }
         ksort($choices);
     
-        //dd($choices);
-
         $form = Functions::createFormBuilder($ff)
             ->add(
                 'data',

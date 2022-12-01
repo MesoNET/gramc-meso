@@ -133,7 +133,12 @@
                     </div>
                     <a href=" {{ path('deconnexion') }}" class="deconnexion_profil">Déconnexion</a>
                 {% else %}
-                    <p><a href=" {{ path('connexion') }}" class="connexion_profil">connexion</a>
+                    {% if mode_auth == 'saml2' %}
+                        <p class="droite"><a class="droite" href=" {{ path('connexion') }}">connexion</a></p>
+                    {% endif %}
+                    {% if mode_auth == 'openid' %}
+                       <p><a href=" {{ path('remlogin') }}" class="connexion_profil">connexion</a></p>
+                    {% endif %}
                     {% if app.debug %}
                     <p><a href=" {{ path('connexion_dbg') }}" class="connexion_profil">connexion (DBG)</a>
                     {% endif %}

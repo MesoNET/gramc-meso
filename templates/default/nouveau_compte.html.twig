@@ -9,7 +9,7 @@
 <h2>Vos accès à la plateforme d'attribution des ressources</h2>
 
 {% if mail != "" %}
-    <div class="message info"> 
+    <div class="information ok"> 
         <p>Bonjour. La fédération d'identité-recherche vous a authentifié.</p>
     </div>
     
@@ -23,7 +23,7 @@
 {{ form_end(form) }}
 
 {% else %}
-    <div class="message erreur">
+    <div class="information error">
         <p>Bonjour. Vous êtes bien authentifié, mais nous n'avons pas votre adresse de courriel. <br>
         Veuillez s'il vous plaît envoyer un courriel à <strong><code>{{ mailsupport }}</code></strong> contenant:</p>
            <ul>
