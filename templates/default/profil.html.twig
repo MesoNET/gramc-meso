@@ -25,18 +25,6 @@
 
 {% block _individu_idLabo_widget %}
 {{ block('choice_widget') }}
-
-    <div class="information attention">
-        <em>Si votre laboratoire ne figure pas dans la liste,
-            <a href="mailto:{{ mailadmin }}?Subject=Nouveau%20laboratoire%20à%20introduire%20dans%20gramc%20!&amp;body=Bonjour
-            %0D%0AMerci%20d'ajouter%20à%20la%20base%20de%20données%20le%20laboratoire%20suivant:
-            %0D%0ASIGLE:%20
-            %0D%0ANOM%20COMPLET:
-            %0D%0ACordialement,">
-            <strong> cliquez ici</strong></a>
-            pour faire la demande
-        </em>, ou envoyez un courriel à {{ mailadmin }})
-    </div>
 {% endblock  %}
 
 {# ################################################################################################### #}
@@ -47,21 +35,31 @@
     <h2>Votre profil: {{ individu }}</h2>
     <p class="centrage"><strong>Gestion de vos clés ssh:</strong> <a href="{{ path('gerer_clessh') }}">{{ icones.trousseau(40,40)}}</a></p>
 
-<div class="information"><p class="centrage">Veuillez s'il vous plaît vérifier et si nécessaire mettre à jour
-les informations vous concernant.
-Votre profil doit être entièrement renseigné<br>
-<strong>NOTE</strong> - Pour changer l'adresse de courriel, veuillez vous adresser à {{ mailadmin}}
+<div class="information attention"><p class="centrage">Veuillez s'il vous plaît vérifier et si nécessaire mettre à jour
+vos informations. <br><strong>Tous les champs doivent être renseignés.</strong><br>
+<strong>NOTE</strong> - Pour changer l'adresse de courriel, veuillez vous adresser à {{ mailsupport}}
 </p></div>
 
 
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
 
-{{ form_start(form) }}
-{{ form_widget(form) }}
-{{ form_end(form) }}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+    <p>&nbsp;</p>
+    <div class="information attention">
+        <em>Si votre laboratoire ne figure pas dans la liste,
+            <a href="mailto:{{ mailadmin }}?Subject=Nouveau%20laboratoire%20à%20introduire%20dans%20gramc-meso0%20!&amp;body=Bonjour
+            %0D%0AMerci%20d'ajouter%20à%20la%20base%20de%20données%20le%20laboratoire%20suivant:
+            %0D%0ASIGLE:%20
+            %0D%0ANOM%20COMPLET:
+            %0D%0ACordialement,">
+            <strong> cliquez ici</strong></a>
+            pour faire la demande
+        </em>, ou envoyez un courriel à {{ mailadmin }})
+    </div>
 
 {% endif %}
 
-<strong>Gestion de vos clés ssh:</strong> <a href="{{ path('gerer_clessh') }}">{{ icones.clessh(25,25)}}</a>
 {% endblock %}
 

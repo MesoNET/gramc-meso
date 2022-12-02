@@ -7,7 +7,6 @@ use App\Entity\Sso;
 use App\GramcServices\ServiceJournal;
 
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
-//use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -129,7 +128,7 @@ class GramcAuthenticator extends AbstractAuthenticator
                 {
                     return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
                     [
-                        new GramcBadge($this->sj, $individu)
+                        new GramcBadge($individu, $request, $this->sj)
                     ]);
                 }
                 else
@@ -171,8 +170,8 @@ class GramcAuthenticator extends AbstractAuthenticator
                 // Pas de sso --> nouveau compte ou nouvel eppn !
                 if ($sso == null)
                 {
-                    // Récupérer les autres headers utiles dans la session
-                    //$this->shibbHeadersToSession($request);
+                    // Récupérer les variables d'environnement utiles dans la session
+                    $this->oidcToSession($request);
                     throw new UserNotFoundException();
                 }
                 $individu = $sso->getIndividu();
@@ -180,7 +179,7 @@ class GramcAuthenticator extends AbstractAuthenticator
                 {
                     return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
                     [
-                        new GramcBadge($this->sj, $individu)
+                        new GramcBadge($individu, $request, $this->sj)
                     ]);
                 }
                 else
@@ -226,7 +225,7 @@ class GramcAuthenticator extends AbstractAuthenticator
                         return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
                         [
                             new CsrfTokenBadge('form',$form_data['_token']),
-                            new GramcBadge($this->sj, $individu)
+                            new GramcBadge($individu, $request, $this->sj)
                         ]);
                     }
                 }
@@ -279,7 +278,7 @@ class GramcAuthenticator extends AbstractAuthenticator
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        //dd($exception);
+        //dd($exception,$request);
         //dd($request);
 
         // S'il y a eppn ET mail dans la session on redirige vers nouveau_compte
@@ -324,7 +323,7 @@ class GramcAuthenticator extends AbstractAuthenticator
             $this->sj->warningMessage("--> pairwise-id = $pairwise_id");
             
             $message = "ERREUR d'AUTHENTIFICATION";
-            $request->getSession()->getFlashbag()->add("flash erreur",$message . " - Merci de vous rapprocher de CALMIP");
+            $request->getSession()->getFlashbag()->add("flash erreur",$message);
             return new RedirectResponse($this->urg->generate('accueil'));
         }
     }
@@ -377,5 +376,34 @@ class GramcAuthenticator extends AbstractAuthenticator
     
         return $headers_values;
     }
+
+    /*
+     * Déposer dans la session les variables envoyées par Iam/OIDC
+     * NOTE - On ne s'occupe QUE de given_name et family_name
+     *
+     ***/
+    private function oidcToSession(Request $request): array {
+        $vars = ['given_name', 'family_name'];
+        $vars_values = [];
+
+        // On recherche dans les variables du serveur
+        $server = $request->server;
+        foreach($vars as $v) {
+            // mail -> REDIRECT_mail
+            $k = 'REDIRECT_OIDC_CLAIM_'.$v;
+            if ($server->has($k))
+            {
+                $vars_values[$v] = $server->get($k);
+            }
+        }
+        
+        $session = $request->getSession();
+        foreach($vars_values as $v => $val) {
+            $session->set($v, $val);
+        }
+    
+        return $vars_values;
+    }
+
 }
 

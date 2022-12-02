@@ -124,7 +124,19 @@ class GramcSessionController extends AbstractController
 
     public function adminAccueilAction(): Response
     {
-        $sm      = $this->sm;
+        $sm = $this->sm;
+        $sid = $this->sid;
+        $token = $this->ts->getToken();
+
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
+            {
+                return $this->redirectToRoute('profil');
+            };
+        }
+
         $menu1[] = $sm->gererIndividu();
         $menu1[] = $sm->gererInvitations();
 
@@ -217,7 +229,7 @@ class GramcSessionController extends AbstractController
 
         if ($token != null)
         {
-            $individu = $this->ts->getToken()->getUser();
+            $individu = $token->getUser();
             if (! $sid->validerProfil($individu))
             {
                 return $this->redirectToRoute('profil');
@@ -428,7 +440,6 @@ class GramcSessionController extends AbstractController
         }
 
         // Est-ce qu'il y a déjà un compte avec cette adresse ?
-
         $individu = $em->getRepository(Individu::class)->findOneBy(['mail' => $mail]);
         if ($individu === null)
         {
@@ -458,9 +469,15 @@ class GramcSessionController extends AbstractController
         if ($session->has('givenName')) {
             $individu->setPrenom($session->get('givenName'));
         }
-        
+        if ($session->has('given_name')) {
+            $individu->setPrenom($session->get('given_name'));
+        }
+      
         if ($session->has('sn')) {
             $individu->setNom($session->get('sn'));
+        }
+        if ($session->has('family_name')) {
+            $individu->setNom($session->get('family_name'));
         }
 
         $form = $this->createForm(IndividuType::class, $individu, [ 'mail' => false ]);

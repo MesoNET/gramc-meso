@@ -10,12 +10,12 @@
 
 {% if mail != "" %}
     <div class="information ok"> 
-        <p>Bonjour. La fédération d'identité-recherche vous a authentifié.</p>
+        <p>Bonjour. Vous êtes correctement authentifié-e.</p>
     </div>
     
     <table>
     <tr><td>Votre courriel:</td><td> {{ mail }}</td></tr>
-    <tr><td>Votre eppn:</td><td> {{ eppn }}</td></tr>
+    <tr><td>Votre identifiant:</td><td> {{ eppn }}</td></tr>
     </table>
 
 {{ form_start(form) }}

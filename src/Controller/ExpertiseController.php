@@ -57,6 +57,7 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 
@@ -91,6 +92,7 @@ class ExpertiseController extends AbstractController
         private $max_expertises_nb,
         private ServiceNotifications $sn,
         private ServiceJournal $sj,
+        private ServiceIndividus $sid,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
         private ServiceMenus $sm,
@@ -256,6 +258,7 @@ class ExpertiseController extends AbstractController
     public function listeAction(): Response
     {
         $grdt= $this->grdt;
+        $sid = $this->sid;
         $ss  = $this->ss;
         $sp  = $this->sp;
         $sj  = $this->sj;
@@ -265,6 +268,15 @@ class ExpertiseController extends AbstractController
         $moi = $token->getUser();
         if (is_string($moi)) {
             $sj->throwException();
+        }
+
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
+            {
+                return $this->redirectToRoute('profil');
+            };
         }
 
         $mes_thematiques     = $moi->getThematique();
@@ -454,9 +466,10 @@ class ExpertiseController extends AbstractController
      * Method("GET")
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
-    public function ListeDynAction(): Response
+    public function listeDynAction(): Response
     {
         $grdt = $this->grdt;
+        $sid = $this->sid;
         $ss  = $this->ss;
         $sp  = $this->sp;
         $sj  = $this->sj;
@@ -466,6 +479,15 @@ class ExpertiseController extends AbstractController
         $moi = $token->getUser();
         if (is_string($moi)) {
             $sj->throwException();
+        }
+
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
+            {
+                return $this->redirectToRoute('profil');
+            };
         }
 
         $mes_thematiques     = $moi->getThematique();

@@ -27,6 +27,7 @@ use App\Entity\Individu;
 use App\GramcServices\ServiceJournal;
 
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Passport badges allow to add more information to a passport (e.g. a CSRF token).
@@ -35,15 +36,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
  */
 class GramcBadge implements BadgeInterface
 {
-    private $sind = null;
-    private $sj = null;
-    private $ind = null;
-    
-    public function __construct(ServiceJournal $sj, Individu $ind)
-    {
-        $this->sj = $sj;
-        $this->ind = $ind;
-    }
+    public function __construct(private Individu $ind, private Request $request, private ServiceJournal $sj) {}
 
     /**
      * Checks if this badge is resolved by the security system.
@@ -57,6 +50,8 @@ class GramcBadge implements BadgeInterface
         //dd($this->ind);
         if ( $this->ind->getDesactive() )
         {
+            $message = "Ce compte est désactivé, vous ne pouvez pas vous authentifier.";
+            $this->request->getSession()->getFlashbag()->add("flash erreur",$message);
             $this->sj->errorMessage($this->ind . " n'a pas pu s'authentifier (compte désactivé)");
             return false;
         }

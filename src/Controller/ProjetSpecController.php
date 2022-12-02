@@ -41,6 +41,7 @@ use App\Entity\Compta;
 
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Version\VersionWorkflow;
+use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
@@ -99,6 +100,7 @@ class ProjetSpecController extends AbstractController
 {
     private $token;
     public function __construct(
+        private ServiceIndividus $sid,
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
@@ -134,6 +136,7 @@ class ProjetSpecController extends AbstractController
         $sp                  = $this->sp;
         $su                  = $this->su;
         $token               = $this->token;
+        $sid                 = $this->sid;
         $em                  = $this->em;
         $individu            = $token->getUser();
         $id_individu         = $individu->getIdIndividu();
@@ -146,6 +149,16 @@ class ProjetSpecController extends AbstractController
         $list_projets_resp   = $projetRepository-> getProjetsCollab($id_individu, true, false);
 
         $projets_term        = $projetRepository-> get_projets_etat($id_individu, 'TERMINE');
+
+        // Vérifier le profil
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
+            {
+                return $this->redirectToRoute('profil');
+            };
+        }
 
         // TODO - Faire en sorte pour que les erreurs soient proprement affichées dans l'API
         // En attendant ce qui suit permet de se dépanner mais c'est franchement dégueu
