@@ -150,6 +150,9 @@ class ProjetSpecController extends AbstractController
 
         $projets_term        = $projetRepository-> get_projets_etat($id_individu, 'TERMINE');
 
+        $passwd = null;
+        $pwd_expir = null;
+
         // Vérifier le profil
         if ($token != null)
         {

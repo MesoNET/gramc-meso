@@ -281,6 +281,12 @@ class GramcAuthenticator extends AbstractAuthenticator
         //dd($exception,$request);
         //dd($request);
 
+        // Si le compte est marqué désactivé" par gramcBadge, on retourne à la page d'accueil
+        if ($request->getSession()->has('desactive') && $request->getSession()->get('desactive'))
+        {
+            return new RedirectResponse($this->urg->generate('accueil'));
+        }
+        
         // S'il y a eppn ET mail dans la session on redirige vers nouveau_compte
         if ($request->getSession()->has('eppn') && $request->getSession()->has('mail'))
         //if (0)

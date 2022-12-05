@@ -50,7 +50,9 @@ class GramcBadge implements BadgeInterface
         //dd($this->ind);
         if ( $this->ind->getDesactive() )
         {
-            $message = "Ce compte est désactivé, vous ne pouvez pas vous authentifier.";
+            // Marque la session comme compte désactivé
+            $this->request->getSession()->set('desactive',true);
+            $message = "Ce compte est désactivé.";
             $this->request->getSession()->getFlashbag()->add("flash erreur",$message);
             $this->sj->errorMessage($this->ind . " n'a pas pu s'authentifier (compte désactivé)");
             return false;

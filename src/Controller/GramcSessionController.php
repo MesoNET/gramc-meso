@@ -599,6 +599,8 @@ class GramcSessionController extends AbstractController
 
     /**
      * @Route("/{clef}/repinvit", name="repinvit", methods={"GET","POST"})
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+
      */
     public function repinvitAction(Request $request, Invitation $invitation=null): Response
     {
