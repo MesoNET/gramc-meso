@@ -6,28 +6,30 @@ parameters:
     # parameter_name: value
 
     # Identifications diverses du mésocentre et de la documentation
-    mesoc: CALMIP
-    mesoc_web: 'https://www.calmip.univ-toulouse.fr'
-    mesoc_cgu: 'https://www.calmip.univ-toulouse.fr/cgu'
-    mesoc_visu: 'https://www.calmip.univ-toulouse.fr/spip.php?article463'
-    mesoc_attrib: 'https://www.calmip.univ-toulouse.fr/spip.php?article19'
-    mesoc_merci: 'https://www.calmip.univ-toulouse.fr/spip.php?article337'
-    mesoc_formation: 'https://www.calmip.univ-toulouse.fr/spip.php?rubrique15'
+    mesoc: MESONET
+    mesoc_web: 'https://www.mesonet.fr'
+    mesoc_cgu: 'https://www.mesonet.fr/cgu'
+    mesoc_visu: 'https://www.mesonet.fr'
+    mesoc_attrib: 'https://www.mesonet.fr'
+    mesoc_merci: 'https://www.mesonet.fr'
+    mesoc_formation: 'https://www.mesonet.fr'
     serveur_cgu:
-       TURPAN: 'https://www.calmip.univ-toulouse.fr/turpan/cgu'
-       BOREAL: 'https://www.criann.fr/boreal/cgu'
+       TURPAN: 'https://www.mesonet.fr/turpan/cgu'
+       BOREAL: 'https://www.mesonet.fr/boreal/cgu'
     
-    mesoc_address: 'CALMIP - Espace Clément Ader - 3 rue Caroline Aigle - 31400 TOULOUSE'
+    mesoc_address: 'MESONET - GENCI - 6 bis rue Auguste Vitu 75015 PARIS'
 
     # Types de cles ssh autorises
     clessh_algos:
-        - RSA-2048
-        - ED25519-256
+       - RSA-2048
+       - ED25519-256
 
     # Si false, on n'affiche pas la case login dans l'écran collaborateurs
     # La gestion des mots de passe est elle aussi désactivée
     coll_login: true
 
+    # PARAMETRES PAS UTILISES ACTUELLEMENT
+    # ====================================
     # Si la demande en session A est supérieure à attrib_seuil_a (en hcpu), on surveille la demande en B
     attrib_seuil_a: 600000
     
@@ -51,6 +53,8 @@ parameters:
     conso_seuil_1: 70
     conso_seuil_2: 90
     
+    # ===============================
+    # FIN DES PARAMETRES PAS UTILISES
     # format max des figures associées à une description de projet
     max_fig_width: 800
     max_fig_height: 400
@@ -59,7 +63,7 @@ parameters:
     #             C'est redondant et si on a les deux à true ça va entraîner des dysfonctionnements
     #             Les deux à false, pas de pb
     #             Si mis à true, rapport d'activité (annuel) demandé à la fin de l'année
-    rapport_dactivite: true
+    rapport_dactivite: false
 
     # Si mis à true, propose de téléverser un fichier attaché à chaque version
     fichier_attache: false
@@ -77,44 +81,40 @@ parameters:
     noconso: false
     
     # Suppression de la notion de rattachement administratif
-    norattachement: false
+    norattachement: true
     
     # Suppression des formulaires concernant les données (stockage et partage)
-    nodata: false
+    nodata: true
 
     # Si true, le resp de projet peut modifier le profil de ses collaborateurs
-    resp_peut_modif_collabs: true
+    resp_peut_modif_collabs: false
 
     # Si != 0, le mécanisme des invitations est désactivé
-    noinvitation: 0
+    noinvitation: false
 
     # Y a-t-il des sessions ?
     nosession: true
-
-    # =====================================================
-    # SI nosession vaut true, ce qui suit est IGNORE
-    #
+    
     # Suppression d'une étape dans le workflow des sessions
     # Cette étape est utile si on a un comité d'attribution constitué,
     # car elle vient APRES la réunion: on attend la réunion ET l'entrée du commentaire de session
     # pour pour laisser les experts envoyer les expertises !
-    noedition_expertise: false
+    noedition_expertise: true
 
     # Fonctionnalité permettant d'affecter des heures spéciales pour l'été (en session B uniquement) #}
-    heures_ete: true
+    heures_ete: false
     
     # Nombre max de rallonges par projet et par session
     max_rall: 2
     
     # Préfixe associé au nom du projet, dépend du type de projet
+    # Seuls les projets de type M sont utilisés actuellement
     prj_prefix:
         1: P
         2: T
+        4: M
 
     # Ressources dont on peut visualiser la consommation
-    # NOTE - Si on ne veut pas visualiser la conso de BOREAL (par exemple) il suffit de supprimer
-    #        les tableaux BOREAL
-    #
     ressources_conso_group:
         TURPAN:
             1:
@@ -158,8 +158,8 @@ parameters:
     max_expertises_nb: 1
     
     # Les experts peuvent entrer un commentaire général entre les mois de mai et de mars
-    commentaires_experts_d: 5
-    commentaires_experts_f: 3
+    commentaires_experts_d: 0
+    commentaires_experts_f: 0
     
     # Répertoires de données
     signature_directory: '%kernel.project_dir%/data/fiches'
@@ -195,9 +195,11 @@ parameters:
     #
     # Actuellement deux authentifications supportées:
     #
-    #    - saml2 (Fédération d'identité/Renater)
-    #    - openid (Indigo-Iam)
+    #    - SAML2 (Fédération d'identité/Renater)
+    #    - OPENID (Indigo-Iam)
 
+    #mode_auth: ''
+    #mode_auth: 'saml2'
     mode_auth: 'openid'
 
     # Utile SEULEMENT si SAML2/Fédération Renater
@@ -206,12 +208,12 @@ parameters:
     #        Les IDP les plus importants - Sur la fédération de dev on se limite aux comptes CRU on sait qu'ils fonctionnent
     
     # Les IDP les plus importants - Sur la fédération de dev on se limite aux comptes CRU on sait qu'ils fonctionnent
-    IDPprod:
+#    IDPprod:
 #        CNRS: 'https://janus.cnrs.fr/idp'
 #        'Université de Toulouse 3 Paul Sabatier': 'https://shibboleth.ups-tlse.fr/idp/shibboleth'
-        'Comptes CRU': 'urn:mace:cru.fr:federation:sac'
+#        'Comptes CRU': 'urn:mace:cru.fr:federation:sac'
 #        'INPT - Institut National Polytechnique de Toulouse': 'https://idp.inp-toulouse.fr/idp/shibboleth'
-        AUTRE: WAYF
+#        AUTRE: WAYF
 
     # Parametres de connexion du supercalculateur pour envoyer la consommation
     # voir .env.local
