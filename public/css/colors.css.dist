@@ -21,9 +21,9 @@
 
 /* ========== COLORS ========== */
 :root{
-    --first-color: #1C77E4;
-    --first-color-hover: #488de2;
-    --second-color: #D62412;
+    --first-color: #00AEEF;
+    --first-color-hover: #004660;
+    --second-color: #e75585;
     --third-color: #5E5F5F;
     --warning-color: #D96800;
     --error-color: red;
