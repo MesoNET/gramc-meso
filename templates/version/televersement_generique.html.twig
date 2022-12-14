@@ -1,6 +1,5 @@
 {% extends 'default/base.html.twig' %}
 
-
 {% block body %}
 
 <section>
@@ -39,6 +38,10 @@
     {{ form_end(form) }}
     
     <h2>Modifier l'attribution de la version</h2>
+
+    <div class="information attention">
+        <p><em>Ne marche pas pour l'instant - sorry</em></p>
+    </div>
     
     {% if not erreurs1 == null %}
         <div class="message erreur">
