@@ -108,6 +108,8 @@ class StatistiquesController extends AbstractController
         $prj_rep = $em->getRepository(Projet::class);
         $ver_rep = $em->getRepository(Version::class);
 
+        return $this->render('default/oups.html.twig');
+        
         // Traitement du premier formulaire (annee)
         // On met le résultat dans la session
         if ($request->getSession()->has('statistiques_annee'))
