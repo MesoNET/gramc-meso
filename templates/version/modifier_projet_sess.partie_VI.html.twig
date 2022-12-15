@@ -5,64 +5,12 @@
 
     <div class="information ok">
         <h2>A savoir...</h2>
-        <h3>Heures normalisées</h3>
-
-        <ul>
-            <li>Les heures que vous demandez seront utilisables indifféremment sur des noeuds CPU ou des noeuds avec GPU.</li>
-            <li>Sur un nœud GPU:
-                <ul>
-                    <li>Les heures utilisées seront converties en heures cpu avec un coefficient de conversion égal à 33 par GPU.</li>
-                    <li>Les heures CPU
-                        <strong>ne seront pas comptées</strong>
-                    </li>
-                </ul>
-            </li>
-            <li>Si vous pensez utiliser les noeuds GPU
-                <strong>vous devez prendre en compte ce coefficient de conversion</strong>.</li>
-            <li>Votre demande d'heures totale intègre vos besoins en usage des noeuds CPU
-                <strong>et vos besoins en usage des noeuds GPU</strong>.</li>
-        </ul>
-
-        <h3>Quelques exemples:</h3>
-        <ul>
-            <li>Un calcul utilisant
-                <strong>1 cœur</strong>
-                et
-                <strong>1 GPU</strong>
-                durant
-                <strong>1 heure</strong>
-                comptera
-                <strong>33 heures</strong>
-            </li>
-            <li>Un calcul utilisant
-                <strong>2 cœurs</strong>
-                et
-                <strong>2 GPUs</strong>
-                durant
-                <strong>1 heure</strong>
-                comptera 2x33=<strong>66 heures</strong>
-            </li>
-            <li>Un calcul utilisant
-                <strong>36 cœurs</strong>
-                et
-                <strong>4 GPUs</strong>
-                durant
-                <strong>1 heure</strong>
-                comptera 4x33 =
-                <strong>132 heures</strong>
-            </li>
-        </ul>
-
-        <p>Plus de détails
-            <a href="{{mesoc_web}}">
-                <strong>sur notre site web</strong>
-            </a>
-        </p>
+        <p>bla bla</p>
     </div>
 
     <div class="inputs">
         <div class="input">
-        {{ form_label( form.demHeuresUft, "Nombre d'heures demandées") }}
+        {{ form_label( form.demHeuresUft, "Nombre d'heures demandées (ex: 50 000)") }}
         {{ form_widget( form.demHeuresUft) }}
         </div>
     </div>
