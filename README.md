@@ -49,8 +49,8 @@ Installer le code de gramc3:
 ----
 
 ```
-git clone https://github.com/calmip/gramc3
-cd gramc3
+git clone https://github.com/calmip/gramc-meso
+cd gramc-meso
 ```
 
 Répertoire data:
@@ -79,13 +79,10 @@ Le répertoire data:
 C'est dans ce répertoire que vont se trouver:
 
 - Le cache
-
 - Les répertoires de session php
-
 - Les fichiers de log
 
-- doit être accessible en écriture par www-data
-
+- Il doit être accessible en écriture par www-data
 - Les sous-répertoires var *ne doivent* pas être exportés par apache (cf. ci-dessus)
 
 ~~~~
@@ -96,12 +93,6 @@ C'est dans ce répertoire que vont se trouver:
 Configuration, personnalisation:
 ----
 
-### Répertoire altermeso:
-
-Créer un lien symbolique vers calmip ou criann.
-
-`ln -s mesocentres/calmip altermeso`
-
 ### Charte graphique:
 
 Vous pouvez modifier les couleurs ainsi que les logos afin de les faire coller à votre charte graphique. 
@@ -110,15 +101,15 @@ Vous pouvez modifier les couleurs ainsi que les logos afin de les faire coller �
 
 Il faut générer **trois fichiers png**:
 
-- La bannière (en haut à gauche de l'écran): `altermeso/public/icones/banniere.png`
-- Le favicon: `altermeso/public/icones/favicon.ico`
-- Un élément graphique tirée de votre charte et qui sera affiché en haut à droite: `altermeso/public/icones/header.png`
+- La bannière (en haut à gauche de l'écran): `public/icones/banniere.png`
+- Le favicon: `public/icones/favicon.ico`
+- Un élément graphique tiré de votre charte et qui sera affiché en haut à droite: `public/icones/header.png`
 
-Des fichiers `.dist` sont fournis, ils peuvent servir d'exemple *(à ne pas prendre pour une installation qui ne dépendrait pas de calmip)*.
+Des fichiers `.dist` sont fournis, ils peuvent servir d'exemple *(à ne pas prendre pour une installation qui ne dépendrait pas de mesonet)*.
 
 #### Couleurs:
 
-Vous devez copier le fichier `altermeso/public/css/colors.css.dist` sur `colors.css` et l'éditer afin de faire correspondre les couleurs de l'application à celles de votre charte graphique:
+Vous devez copier le fichier `public/css/colors.css.dist` sur `colors.css` et l'éditer afin de faire correspondre les couleurs de l'application à celles de votre charte graphique:
 
 ### Fichier parameters.yaml:
 
@@ -223,15 +214,6 @@ Si APP_DEBUG vaut 1 le mail sera envoyé à MAILER_RECIPIENT
 cd reprise
 sudo -u www-data ./reload-db un-dump-de-la-bd.sql
 ~~~~
-
-**ATTENTION:**
-Si votre dump provient d'une version 3.5 ou 3.6 de gramc3, il est nécessaire d'initaliser certains champs. Cela se fait année par année:
-
-~~~~
-bin/console app:InitTypeVersion 2022
-~~~~
-
-A exécuter pour chaque année se trouvant dans votre base de données.
 
 **Installation d'une base de données vide sur une instance de développement:**
 
