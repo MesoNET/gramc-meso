@@ -215,9 +215,5 @@ parameters:
 #        'INPT - Institut National Polytechnique de Toulouse': 'https://idp.inp-toulouse.fr/idp/shibboleth'
 #        AUTRE: WAYF
 
-    # Parametres de connexion du supercalculateur pour envoyer la consommation
-    # voir .env.local
-    password_consoupload: '%env(PASSWORD_CONSOUPLOAD)%'
-    
     # Pour crypter les cookies
     secret: '%env(APP_SECRET)%'
