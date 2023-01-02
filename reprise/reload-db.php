@@ -319,7 +319,7 @@ function appelle_mysql($sql="") {
     $cmd .= 'mysql -N -s --user ';
     $cmd .= DATABASE_USER;
     $cmd .= ' --password=';
-    $cmd .= DATABASE_PASSWORD;
+    $cmd .= '"' . DATABASE_PASSWORD . '"';
     $cmd .= ' ';
     $cmd .= DATABASE_NAME;
     return $cmd;
