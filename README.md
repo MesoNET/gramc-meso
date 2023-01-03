@@ -38,14 +38,14 @@ Configuration du mail:
 
 **Le serveur doit être capable d'envoyer des mails:**
 
-  - Par exemple `Exim4` (le MTA standard sous Debian) fonctionne très bien avec gramc
+  - Par exemple `Exim4` (le MTA standard sous Debian) fonctionne très bien avec gramc-meso
   - Ou encore `ssmtp`, ` msmtp` (les mails sont envoyés, jamais reçus), ou postfix
 
 ### Configurer le mail pour une version de développement:
 
-Avec une version de développement vous ne voudrez pas que l'application envoie des notifications à de vrais utilisateurs. C'est surtout vrai si vous avez chargé la version de dev avec une vraie base de données. Pour éviter cela, n'oubliez pas la variable `MAILER_RECIPIENT` du fichier `.env.local` (voir ci-dessous)
+Avec une version de développement vous ne voudrez pas que l'application envoie des notifications à de vrais utilisateurs. C'est surtout vrai si vous avez chargé la version de dev avec une vraie base de données. Pour éviter cela, n'oubliez pas la variable `MAILER_RECIPIENT` du fichier `.env` (voir ci-dessous)
 
-Installer le code de gramc3:
+Installer le code de gramc-meso:
 ----
 
 ```
@@ -134,21 +134,10 @@ cp index.php.dist index.php
 
 Editez ce fichier et éventuellement commentez ou décommentez quelques lignes suivant que vous êtes derrière un reverse proxy ou pas.
 
-### Fichier adresses.txt:
-
-Ce fichier est propre à gramc3, il est utilisé uniquement en mode "développement". Il répertorie les adresses IP à partir desquelles il est possible d'utiliser gramc3.
+### Fichier .env:
 
 ~~~~
-cd config
-cp adresses.txt.dist adresses.txt
-~~~~
-
-Editer le fichier et introduire les adresses IP de vos postes de développement
-
-### Fichier env.local:
-
-~~~~
-cp .env.local.dist .env.local
+cp .env.dist .env
 ~~~~
 
 Editer le fichier et inscrivez les paramètres demandés (identifiants de connexion à la base de données notamment). N'oubliez pas de remplacer `serverVersion=mariadb-10.3.29` par la version correcte qui se trouve sur votre serveur
@@ -169,8 +158,8 @@ APP_DEBUG=1   On peut se connecter en mode debug, c'est-à-dire SANS AUTHENTIFIC
 APP_DEBUG=0   A UTILISER EN PRODUCTION (sinon n'importe qui peut se connecter !)
 
 ```
-chown www-data .env.local
-chmod 400 .env.local
+chown www-data .env
+chmod 400 .env
 ```
 
 Installation de symfony:
@@ -219,7 +208,7 @@ sudo -u www-data ./reload-db un-dump-de-la-bd.sql
 
 ~~~~
 cd reprise
-sudo -u www-data ./reload-db gramc3.sql.dist
+sudo -u www-data ./reload-db gramc-meso.sql.dist
 ~~~~
 
 La commande reload-db va effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
@@ -250,17 +239,17 @@ Il ne doit pas y avoir de warning ou de message d'erreur. S'il y a des messages,
 configuration apache2:
 ----
 
-*Il est important que gramc3 ne ne soit pas à l'URL /, sinon on aura du mal à configurer shibboleth. Le plus simple est alors de:*
+*Il est important que gramc-meso ne ne soit pas à l'URL /, sinon on aura du mal à configurer shibboleth. Le plus simple est alors de:*
 
 - Activer le module rewrite d'Apache
 
 - Laisser `DocumentRoot` sur `/var/www/html`
 
-- Créer un lien symbolique `gramc3` sur le répertoire `public`:
+- Créer un lien symbolique `gramc-meso` sur le répertoire `public`:
 
 ~~~~
 cd /var/www/html
-ln -s chemin/vers/gramc3/public gramc3
+ln -s chemin/vers/gramc-meso/public gramc-meso
 ~~~~
 
 - On peut utiliser la commande suivante pour générer un fichier `public/.htaccess`:
@@ -269,9 +258,9 @@ ln -s chemin/vers/gramc3/public gramc3
   composer.phar remove symfony/apache-pack
   composer.phar require symfony/apache-pack
   ```
-- la variable d'environnement BASE doit être positionnée à gramc3, ce qui peut se faire grâce à la directiver Apache SetEnvIf 
+- la variable d'environnement BASE doit être positionnée à gramc-meso, ce qui peut se faire grâce à la directiver Apache SetEnvIf 
 
-- Le fichier doc/apache2-gramc3.conf donne un exemple de fichier de configuration pour Apache
+- Le fichier doc/apache2-gramc-meso.conf donne un exemple de fichier de configuration pour Apache
 
 Sécuriser l'installation:
 ----
@@ -291,14 +280,15 @@ Pour mettre à jour Symfony ou pour d'autres opérations de maintenance, il faut
 Fin de la configuration:
 -----
 
-- Se connecter à gramc avec un navigateur: cliquer sur `connection (dbg)`
+- Se connecter à gramc-meso avec un navigateur: cliquer sur `connection (dbg)`
 - Utilisateur = `admin admin`
 
 #### En cas de problème:
 - Regarder les différents fichiers log, notamment `var/dev.log` et le fichier apache.
 - Vérifier la configuration apache (ssl ? rewrite ?)
-- Vérifier que tout est renseigné dans .env.local
-- Si vous avez le message "Erreur dans la page d'accueil", vous pouvez éditer le fichier `gramc3/src/EventListener/ExceptionListener.php` et décommenter deux lignes (aux environs de la ligne 94, voir le commentaire) afin d'afficher l'exception. Mais n'oubliez pas de les recommenter par la suite !
+- Vérifier que tout est renseigné dans .env
+- Si vous avez le message "Erreur dans la page d'accueil",
+  vous pouvez éditer le fichier `gramc-meso/src/EventListener/ExceptionListener.php` et décommenter deux lignes (aux environs de la ligne 94, voir le commentaire) afin d'afficher l'exception. Mais n'oubliez pas de les recommenter par la suite !
 
 Premier démarrage:
 -----
@@ -317,12 +307,12 @@ Configuration de Shibboleth:
 ~~~~
   apt install libapache2-mod-shib shibboleth-sp-common shibboleth-sp-utils
 ~~~~
-- Configuration apache: Ajouter dans la section VirtualHost de gramc3:
+- Configuration apache: Ajouter dans la section VirtualHost de gramc-meso:
   ~~~~
   # important pour pouvoir utiliser d'autres techniques d'authentification (cf. pour git)
   ShibCompatValidUser On
   
-  <Location "url-de-gramc/login">
+  <Location "url-de-gramc-meso/login">
        AuthType shibboleth
        ShibRequestSetting requireSession 1
        ShibRequestSetting applicationId default
@@ -337,9 +327,9 @@ Configuration de Shibboleth:
 
 
 
-Où est le code de gramc ?
+Où est le code de gramc-meso ?
 =========================
-`gramc3` est une application symfony, il repose sur le patron de conception MVC. Les principaux répertoires sont les suivants:
+`gramc-meso` est une application symfony, il repose sur le patron de conception MVC. Les principaux répertoires sont les suivants:
 
         src                   Le code php de l'application
         src/Controller        Tous les contrôleurs (les points d'entrée de chaque requête)
@@ -349,7 +339,7 @@ Où est le code de gramc ?
         src/GramcServices     L'essentiel du code, implémenté en "services symfony" cf. https://symfony.com/doc/current/service_container.html
         src/GramcServices/Workflow  Les workflows de l'application (changement d'états des objets Projet, Version, Rallonge)
         src/Utils             Des trucs bien utiles
-        src/XXX               Le code php "extérieur" utilisé par gramc3
+        src/XXX               Le code php "extérieur" utilisé par gramc-meso
 
 
         templates             Les vues, c'est-à-dire tous les affichages, écrits en html/twig
@@ -367,7 +357,7 @@ Où est le code de gramc ?
         vendor                Le code de symfony
         bin/console           L'application ligne de commande de symfony, utile lors des mises à jour ou des rechargements de base de donnée
     
-        reprise               Le code permettant de recharger la base de données, soit pour initialiser gramc, soit pour installer une copie de la production (pour test et debug par exemple)
+        reprise               Le code permettant de recharger la base de données, soit pour initialiser gramc-meso, soit pour installer une copie de la production (pour test et debug par exemple)
 
 Comment modifier le code ?
 ----
@@ -410,4 +400,4 @@ Après avoir modifié l'entité Version il convient de mettre à jour la base de
 
 ## Pour aller plus loin....
 
-Le fichier `documentation.odt` contient toute la documentation de gramc3, et `documentation-dev.odt` est quant à lui centré sur la structure du code, à des fins de développement
+Le fichier `documentation.odt` contient toute la documentation de gramc-meso, et `documentation-dev.odt` est quant à lui centré sur la structure du code, à des fins de développement
