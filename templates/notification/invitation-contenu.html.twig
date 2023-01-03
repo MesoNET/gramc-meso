@@ -3,7 +3,10 @@ Bonjour {{ invitation.invited |raw }}
 Vous avez été invité-e par le responsable de projet {{ invitation.inviting |raw }} sur la plateforme
 d'attribution de ressources de {{mesoc}}.
 
-Afin de confirmer cette adresse de courriel, merci de vous connecter à
+Si vous n'avez pas encore de compte Mesonet,
+nous vous invitons à vous créer un compte en suivant les instructions suivantes: https://www.calmip.univ-toulouse.fr/demander-un-compte-mesonet
+
+Ensuite, connectez-vous à
  {{ absolute_url(path('repinvit', {'clef': invitation.clef})) }} et renseigner complètement votre profil.
 
 ATTENTION L'invitation expire le {{ date_limite | date('d-m-Y')}}

@@ -12,13 +12,15 @@
 
 <h1>Bonjour {{ app.user.prenom }} {{ app.user.nom }} </h1> 
 
-<div class="information ok"><h2>Bienvenue sur Mesonet</h2>
+<div class="center"><img src="{{ asset('icones/banniere.png') }}" alt="logo" style="width: 25%;margin:0 auto;" /></div>
 
-<p>blabla</p>
-
-</div>
+<h2>Le mésocentre des mésocentres</h2>
 
 {% else %}
+
+<div class="center"><img src="{{ asset('icones/banniere.png') }}" alt="logo" style="width: 25%;margin:0 auto;" /></div>
+
+<h2>Le mésocentre des mésocentres</h2>
 
 <div class="information ok"><h2>Démarrage</h2>
 Merci de cliquer sur connexion en haut à droite de l'écran pour démarrer.<br>

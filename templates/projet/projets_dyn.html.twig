@@ -20,149 +20,130 @@
     </div>
 
     <div class="tableaux">
-    <div class="bilan_legende">
-        <div class="bilan">
-        <table>
-            <tbody>
-                <tr><th colspan="3">Etats des projets</th></tr>
-                {% for etat in ['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] %}
-                {% if ( attribute(etat_projet,etat) > 0 ) %}
-                <tr>
-                    <th>{{ etat }}</th>
-                    <td>{{ attribute(etat_projet,etat) }}</td>
-                    <td><input class="cb" id="{{etat}}" checked="checked" type="checkbox"></td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-                <tr>
-                    <th>Total</th>
-                    <td>{{ etat_projet.total }}</td>
-                    <td>&nbsp;</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table>
-            <tbody>
-                <tr><th colspan="3">Etats des projets test</th></tr>
-                {% for etat in ['termine_test','standby_test','accepte_test','refuse_test','edition_test','expertise_test','nonrenouvele_test'] %}
-                {% if ( attribute(etat_projet,etat) > 0 ) %}
-                <tr>
-                    <th>{{ etat }}</th>
-                    <td>{{ attribute(etat_projet,etat) }}</td>
-                    <td><input class="cb" id="{{etat}}" checked="checked" type="checkbox"></td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-                
-                <tr>
-                    <th>Total</th>
-                    <td>{{ etat_projet.total_test }}</td>
-                    <td>&nbsp;</td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div></div>
-
-    <div class="liste"><div id="projets_tous_wrapper" class="dataTables_wrapper no-footer">
-        <table id="projets_tous" class="dataTable no-footer" role="grid">
-            <thead>
-                <tr role="row">
-                    {# <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th> #}
-                    <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 69px;" aria-label="Numéro: activate to sort column ascending">N°</th>
-                    <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;" aria-label=""></th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Etat: activate to sort column ascending" title="Etat" >E</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 157px;" aria-label="Titre: activate to sort column ascending">Titre</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 136px;" aria-label="Thématique: activate to sort column ascending">Thématique</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 178px;" aria-label="Responsable: activate to sort column ascending">Responsable</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 108px;" aria-label="Laboratoire: activate to sort column ascending">Laboratoire</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 73px;" aria-label="Nb de versions: activate to sort column ascending">Nb de versions</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 75px;" aria-label="Dernière session: activate to sort column ascending">Dernière session</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H dem (cumul): activate to sort column ascending">H dem (cumul)</th>
-                    <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H attr (cumul): activate to sort column ascending">H attr (cumul)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for item in data %}
-                <tr role="row" class="odd" style="stroke:black">
-
-                    {# Sans doute à virer si on adopte un fonctionnement entièreùent automatique des suppressions de projets et comptes
-                    <td class="sorting_1">
-                    {% if item.renouvelable %}
-                        {% if (item.metaetat == 'standby' or item.metaetat == 'agarder') %}
-                            {% if item.projet.nepasterminer==false %}
-                                {{ terminermacros.onpeutterminer(item.projet) }}
-                            {% else %}
-                                {{ terminermacros.nepasterminer(item.projet) }}
-                            {% endif %}
-                        {% endif %}
-                     {% endif %}
-                    </td>
-                    #}
-                    <td>
-                        {% if( item.metaetat == 'expertise') %}
-                        <a class="arriere" href="{{ path('back_version', { 'id': item.version.idVersion }) }}" title="Revenir en édition">
-                            {{ icones.back(25, 25) }}
-                        </a>
-                        {% elseif( item.metaetat == 'edition') %}
-                        <a href="{{ path('fwd_version', { 'id': item.version.idVersion }) }}" title="Envoyer pour expertise">
-                            {{ icones.forward(25,25) }}
-                        </a>
-                        {% else %}
-                            &nbsp;
-                        {% endif %}
-                    </td>
-                    <td>{{ item.projet.idProjet }}</td>
-                    <td>
-                        <a href="{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}" title="Consulter le projet">
-                            {{icones.details}}
-                        </a>
-                    </td>
-
-                        <td class="{{ item.metaetat|lower }}">
-                            {{ gramcmacros.metagraph(item.metaetat) }}
-                        </td>
-
-                    <td>
-                        {% if( item.version != null) %}{{ gramcmacros.afftitre(item.version.prjtitre) }}{% endif %}
-                    </td>
-                    {% if( item.version != null and item.version.prjThematique != null ) %}
-                    <td class="t{{ item.version.prjThematique.idThematique }}">{{ item.version.prjThematique }}
-                    {% else %}
-                    <td>
+        <div class="bilan_legende">
+            <div class="bilan">
+            <table>
+                <tbody>
+                    <tr><th colspan="3">Etats des projets dynamiques</th></tr>
+                    {% for etat in ['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] %}
+                    {% if ( attribute(etat_projet,etat) > 0 ) %}
+                    <tr>
+                        <th>{{ etat }}</th>
+                        <td>{{ attribute(etat_projet,etat) }}</td>
+                        <td><input class="cb" id="{{etat}}" checked="checked" type="checkbox"></td>
+                    </tr>
                     {% endif %}
-                    </td>
-                    <td>
-                        {% if( item.responsable != null) %}
-                        {% if is_granted('ROLE_ADMIN') %}
-                        <a class="sudo" href="{{ path('sudo',  { 'id': item.responsable.id }) }}?" title="Changer d'identité">
-                            {{icones.sudo(20,20)}}
-                        </a>
-                        {% endif %}
-                        <a href="mailto:{{ item.responsable.mail }}" title="Envoyer un courriel au responsable à l'adresse {{ item.responsable.mail }}">
-                            {{icones.mail_send}}
-                        </a>
-                        {{ item.responsable.prenom }} {{ item.responsable.nom }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
-                    </td>
-                    <td>{{ item.count }}</td>
-                    <td>{% if( item.version != null) %}{{ item.version.session }}{% endif %}</td>
-                    <td>{{ item.dem }}</td>
-                    <td>{{ item.attr }}</td>{#
-                    #}
-                </tr>
-                {% endfor %}
-           </tbody>
-        </table>
-        </div></div>
+                    {% endfor %}
+                    <tr>
+                        <th>Total</th>
+                        <td>{{ etat_projet.total }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
 
- </div>
- <div id="formulaire_confirmation"></div>
- </section>
+        <div class="liste">
+        <div id="projets_tous_wrapper" class="dataTables_wrapper no-footer">
+            <table id="projets_tous" class="dataTable no-footer" role="grid">
+                <thead>
+                    <tr role="row">
+                        {# <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th> #}
+                        <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 69px;" aria-label="Numéro: activate to sort column ascending">N°</th>
+                        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;" aria-label=""></th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Etat: activate to sort column ascending" title="Etat" >E</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 157px;" aria-label="Titre: activate to sort column ascending">Titre</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 136px;" aria-label="Thématique: activate to sort column ascending">Thématique</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 178px;" aria-label="Responsable: activate to sort column ascending">Responsable</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 108px;" aria-label="Laboratoire: activate to sort column ascending">Laboratoire</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 73px;" aria-label="Nb de versions: activate to sort column ascending">Nb de versions</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 75px;" aria-label="Dernière session: activate to sort column ascending">Dernière session</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H dem (cumul): activate to sort column ascending">H dem (cumul)</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H attr (cumul): activate to sort column ascending">H attr (cumul)</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    {% for item in data %}
+                    <tr role="row" class="odd" style="stroke:black">
+    
+                        {# Sans doute à virer si on adopte un fonctionnement entièreùent automatique des suppressions de projets et comptes
+                        <td class="sorting_1">
+                        {% if item.renouvelable %}
+                            {% if (item.metaetat == 'standby' or item.metaetat == 'agarder') %}
+                                {% if item.projet.nepasterminer==false %}
+                                    {{ terminermacros.onpeutterminer(item.projet) }}
+                                {% else %}
+                                    {{ terminermacros.nepasterminer(item.projet) }}
+                                {% endif %}
+                            {% endif %}
+                         {% endif %}
+                        </td>
+                        #}
+                        <td>
+                            {% if( item.metaetat == 'expertise') %}
+                            <a class="arriere" href="{{ path('back_version', { 'id': item.version.idVersion }) }}" title="Revenir en édition">
+                                {{ icones.back(25, 25) }}
+                            </a>
+                            {% elseif( item.metaetat == 'edition') %}
+                            <a href="{{ path('fwd_version', { 'id': item.version.idVersion }) }}" title="Envoyer pour expertise">
+                                {{ icones.forward(25,25) }}
+                            </a>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </td>
+                        <td>{{ item.projet.idProjet }}</td>
+                        <td>
+                            <a href="{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}" title="Consulter le projet">
+                                {{icones.details}}
+                            </a>
+                        </td>
+    
+                            <td class="{{ item.metaetat|lower }}">
+                                {{ gramcmacros.metagraph(item.metaetat) }}
+                            </td>
+    
+                        <td>
+                            {% if( item.version != null) %}{{ gramcmacros.afftitre(item.version.prjtitre) }}{% endif %}
+                        </td>
+                        {% if( item.version != null and item.version.prjThematique != null ) %}
+                        <td class="t{{ item.version.prjThematique.idThematique }}">{{ item.version.prjThematique }}
+                        {% else %}
+                        <td>
+                        {% endif %}
+                        </td>
+                        <td>
+                            {% if( item.responsable != null) %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <a class="sudo" href="{{ path('sudo',  { 'id': item.responsable.id }) }}?" title="Changer d'identité">
+                                {{icones.sudo(20,20)}}
+                            </a>
+                            {% endif %}
+                            <a href="mailto:{{ item.responsable.mail }}" title="Envoyer un courriel au responsable à l'adresse {{ item.responsable.mail }}">
+                                {{icones.mail_send}}
+                            </a>
+                            {{ item.responsable.prenom }} {{ item.responsable.nom }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
+                        </td>
+                        <td>{{ item.count }}</td>
+                        <td>{% if( item.version != null) %}{{ item.version.session }}{% endif %}</td>
+                        <td>{{ item.dem }}</td>
+                        <td>{{ item.attr }}</td>{#
+                        #}
+                    </tr>
+                    {% endfor %}
+               </tbody>
+            </table>
+        </div>
+        </div>
+
+    </div>
+    <div id="formulaire_confirmation"></div>
+</section>
 {% endblock %}

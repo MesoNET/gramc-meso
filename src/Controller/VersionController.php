@@ -856,6 +856,9 @@ class VersionController extends AbstractController
         $sp = $this->sp;
         $sj = $this->sj;
 
+        return $this->render('default/oups.html.twig');
+
+
         $format_fichier = new \Symfony\Component\Validator\Constraints\File(
             [
             'mimeTypes'=> [ 'application/pdf' ],
@@ -867,7 +870,9 @@ class VersionController extends AbstractController
         );
 
         $def_annee = $sd->format('Y');
-        $def_sess  = $ss->getSessionCourante()->getIdSession();
+        // Tite bidouille ULTRA PROVISOIRE, on n'a PAS DE SESSION
+        //$def_sess  = $ss->getSessionCourante()->getIdSession();
+        $def_sess = '01';
 
         $form = $this
            ->ff

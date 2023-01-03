@@ -43,10 +43,10 @@ class ClesshType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom', TextType::class, ['required' => true, 'label' => "Nom de la clé:" ])
+            ->add('nom', TextType::class, ['required' => true, 'label' => "Nom de la clé:", 'attr' => [ "placeholder" => "choisissez un nom"] ])
             ->add('pub', TextType::class, ['required' => true,
                                            'label' => "Votre clé publique ssh",
-                                           'attr' => [ "size" => "100" ],
+                                           'attr' => [ "size" => "100", "placeholder" => "ssh-ed25519 AAAAXYZ3SDDVKEDZMPV5DDSGGHVRTYBYUTYUNTYUNTYUNTYUNTYUNyunuyn,tyunnnn7 dupont@example.com" ],
                                            'constraints' => [new Clessh()]
                                            ])
             ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
