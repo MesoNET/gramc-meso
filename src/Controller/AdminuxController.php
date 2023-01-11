@@ -613,12 +613,15 @@ class AdminuxController extends AbstractController
         // supprime provisoirement $r['quota'] = $sp->getConsoRessource($v->getProjet(), 'cpu', $annee)[1];
         if ($long)
         {
-            $r['titre']       = $v->getPrjTitre();
-            //$r['resume']      = $v->getPrjResume();
-            $r['expose']      = $v->getPrjExpose();
-            $r['labo']        = $v->getPrjLLabo();
+            $r['titre']      = $v->getPrjTitre();
+            //$r['resume']   = $v->getPrjResume();
+            $r['expose']     = $v->getPrjExpose();
+            $r['labo']       = $v->getPrjLLabo();
+            $r['idLabo']     = $resp->getLabo()->getId();
             //$r['metadonnees'] = $v->getDataMetaDataFormat();
-            $r['thematique']  = $v->getAcroMetaThematique();
+            $r['thematique'] = $v->getAcroMetaThematique();
+            $r['idthematique'] = $v->getPrjThematique()->getIdThematique();
+            // ajouté à la demande du criann
         }
         return $r;
     }
