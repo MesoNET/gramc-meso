@@ -1268,6 +1268,10 @@ class AdminuxController extends AbstractController
                     // Les loginnames au niveau version
                     $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
+                    // Provisoire...
+                    $loginnames['TURPAN']['login'] = $cv->getLogint();
+                    $loginnames['BOREALE']['login'] = $cv->getLoginb();
+                    
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
                     {
@@ -1276,8 +1280,9 @@ class AdminuxController extends AbstractController
                     
                     $v_info = [];
                     $v_info['version'] = $v->getIdVersion();
-                    $v_info['logint'] = $cv->getLogint();
-                    $v_info['loginb'] = $cv->getloginb();
+                    //$v_info['logint'] = $cv->getLogint();   // A JETER
+                    //$v_info['loginb'] = $cv->getloginb();   // A JETER
+                    
                     $v_info['loginnames'] = $loginnames;
                     $v_info['deleted'] = $cv->getDeleted();
                     
@@ -1576,6 +1581,7 @@ class AdminuxController extends AbstractController
             $r_c['nom'] = $c->getNom();
             $r_c['pub'] = $c->getPub();
             $r_c['rvk'] = $c->getrvk();
+
             if ( $rvk === 1 && $r_c['rvk'] == false) continue;
             if ( $rvk === -1 && $r_c['rvk'] == true) continue;
             $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
@@ -1593,8 +1599,9 @@ class AdminuxController extends AbstractController
                 $r_u['individu'] = $cv->getCollaborateur()->getPrenom() . " " . $cv->getCollaborateur()->getNom();
                 $r_u['idIndividu'] = $cv->getCollaborateur()->getIdIndividu();
                 $r_u['mail'] = $cv->getCollaborateur()->getMail();
-                $r_u['loginname'] = $u->getLoginname();
-                $r_u['deply'] = $u->getDeply();
+                $r_u['loginname'] = $su->getLoginname($u);
+                $r_u['deploy'] = $u->getDeply();
+                $r_u['projet'] = $cv->getVersion()->getProjet()->getIdProjet();
                 $r_users[] = $r_u;
             }
             $r_c['users'] = $r_users;
@@ -1611,7 +1618,7 @@ class AdminuxController extends AbstractController
      * @Route("/clessh/deployer", name="deployer", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
-     * Positionne à true le flag deply du user, ce qui signifie que la clé ssh associée est déployée
+     * Positionne à true le flag deploy du user, ce qui signifie que la clé ssh associée est déployée
      *
      */
 
