@@ -619,9 +619,16 @@ class AdminuxController extends AbstractController
             $r['labo']       = $v->getPrjLLabo();
             $r['idLabo']     = $resp->getLabo()->getId();
             //$r['metadonnees'] = $v->getDataMetaDataFormat();
-            $r['thematique'] = $v->getAcroMetaThematique();
-            $r['idthematique'] = $v->getPrjThematique()->getIdThematique();
-            // ajouté à la demande du criann
+            if ($v->getPrjThematique() != null)
+            {
+                $r['thematique'] = $v->getPrjThematique()->getLibelleThematique();
+                $r['idthematique'] = $v->getPrjThematique()->getIdThematique();
+            }
+            else
+            {
+                $r['thematique'] = '';
+                $r['idthematique'] = 0;
+            }
         }
         return $r;
     }
