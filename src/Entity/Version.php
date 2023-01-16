@@ -283,11 +283,19 @@ class Version implements Demande
 
     /**
      * @var \DateTime
-     * Date à partir de laquelle le projet est en état ACTIF
+     * Date de démarrage de la version (passage en état ACTIF)
      *
      * @ORM\Column(name="jour_j", type="datetime", nullable=true)
      */
-    private $jourJ;
+    private $startDate;
+
+    /**
+     * @var \DateTime
+     * Date de fin de la version (passage en état TERMINE)
+     *
+     * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     */
+    private $endDate;
 
     /**
      * @var integer
@@ -1252,27 +1260,51 @@ class Version implements Demande
     }
 
     /**
-     * Set jourJ
+     * Set startDate
      *
-     * @param \DateTime $jourJ
+     * @param \DateTime $startDate
      *
      * @return Version
      */
-    public function setJourJ($jourJ)
+    public function setStartDate($startDate)
     {
-        $this->jourJ = $jourJ;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
     /**
-     * Get jourJ
+     * Get startDate
      *
      * @return \DateTime
      */
-    public function getJourJ()
+    public function getStartDate()
     {
-        return $this->jourJ;
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     *
+     * @return Version
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 
     /**
@@ -1774,15 +1806,24 @@ class Version implements Demande
         //return $this->getSession()->getAnneeSession() + 2000;
         return $this->getFullAnnee();
     }
+
+    /***********************
+     * Renvoie l'année associée à cette version
+     * Renvoie un nombre de 4 chiffres (d'où le Full, 2023 et pas 23)
+     *
+     * Pour un projet dynamique c'est l'année de $startDate
+     * TODO - A améliorer, un projet qui démarre le 31 Déc 2023 sera noté sur 2023 !
+     * Pour un autre projet c'est l'année de la session associée
+     *
+     **************************************************************/
     public function getFullAnnee():string
     {
         if ($this->getTypeVersion()==Projet::PROJET_DYN)
         {
-            $j = $this -> getJourJ();
+            $j = $this -> getStartDate();
             if ($j == null)
             {
-                // On retourne une chaine de caractères idiote
-                // TOO - mise à jour du code en 9999
+                // On retourne une chaine de caractères idiote (à corriger en 9999)
                 return '9999';
             }
             else

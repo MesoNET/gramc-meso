@@ -35,6 +35,7 @@ use App\GramcServices\Etat;
 use App\GramcServices\ServiceForms;
 use App\GramcServices\ServiceInvitations;
 use App\Form\IndividuFormType;
+use App\GramcServices\GramcDate;
 
 use App\Utils\Functions;
 
@@ -76,6 +77,7 @@ class ServiceVersions
                                 private ServiceForms $sf,
                                 private FormFactoryInterface $ff,
                                 private TokenStorageInterface $tok,
+                                private GramcDate $grdt,
                                 private EntityManagerInterface $em
                                 )
     {
@@ -672,6 +674,49 @@ class ServiceVersions
             } else {
                 return true; // Non il n'y en a pas donc on est bien sur une nouvelle version
             }
+        }
+    }
+
+    /***********************
+     * Renvoie true si la version était active l'année passée en paramètre,
+     * c'est-à-dire s'il y a au moins 1 jour de l'année durant lequel
+     * la version est active
+     *
+     * Pour un projet dynamique on utilise la startDate et la endDate
+     * Pour un autre projet on utilise les informations de session
+     *
+     **************************************************************/
+    public function isAnnee(Version $version, int $annee):bool
+    {
+        $grdt = $this->grdt;
+        
+        if ($version->getTypeVersion()==Projet::PROJET_DYN)
+        {
+            $annee_courante = intval($grdt->showYear());
+            
+            // Si pas de date de début, la version n'a pas démarré
+            if ($version->getStartDate() == null) return false;
+
+            // Si pas de date de fin, la version est en cours
+            return $annee == $annee_courante;
+
+            // Si les deux sont spécifiés, on vérifie s'il y a chevauchement avec l'année
+            $j1 = new \Datetime(strval($annee).'-01-01');
+            $d31 = new \Datetime(strval($annee+1).'-12-31');
+
+            $s = $version->getStartDate();
+            $e = $version->getEndDate();
+
+            // Si $s ou $e sont dans l'intervalle on renvoie true
+            if ($s>=$j1 && $s<=$d31) return true;
+            if ($e>=$j1 && $e<=$d31) return true;
+
+            // Sinon on renvoie false
+            return false;
+        }
+        else
+        {
+            return $version->getFullAnnee() == strval($annee);
         }
     }
 

@@ -1,0 +1,69 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block myjavascripts %}
+<script  type="text/javascript" src="{{ asset('js/projet.js') }}" ></script>
+{% endblock myjavascripts %}
+
+
+{% block body %}
+
+<section id="index_statistiques" class="section_projet_session" style="stroke:black">
+
+    <p><strong>Choisissez une année...</strong></p>
+    <div class="formulaire inputrond submitdyn">
+        {{ form_start(form) }}
+        {{ form_widget(form.annee) }}{{ form_widget(form.submit) }}
+        {{ form_end(form) }}
+    </div>
+
+    <h1>Statistiques de l'année {{ annee }}</h1>
+
+    <div class="information">
+        <p>Sont pris en compte tous les projets <strong>dynamiques</strong> qui ont eu une version active en {{ annee }}</p>
+        <p>Les versions de projets <strong>en cours d'édition</strong> ne sont pas prises en compte</p>
+    </div>
+    
+    <h2>
+        Demandes, attributions, consommation pour {{ annee }}
+    </h2>
+
+    <p class="centrage">En <span class="engros">{{ annee }}</span>, il y avait <span class="engros">{{ total.dyn.prj }}</span> projets dynamiques</p>
+
+    {% if (repart.dyn|length > 0) %}
+    <table class="pdyn_synt">
+        <thead>
+        <tr>
+            <th title="BOREALE">BO</th>
+            <th title="TURPAN">TU</th>
+            <th title="Nombre de projets">Nb</th>
+        </tr>
+        <thead>
+        <tbody>
+        {% for k,n in repart.dyn %}
+            {% if n != 0 %}
+                <tr>
+                    {% set cols = k|split('') %}
+                    {% for c in cols %}
+                    <td>{% if (c=='t') %}&#x23fa{% else %}&nbsp; {% endif %}</td>
+                    {% endfor %}
+                    <td>{{repart.dyn[k]}}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {# gramcmacros.menu(menu) #}
+    
+    <div id="dialog-compta"></div>
+    </div>
+    
+    
+</section>
+
+{# dump(struct_data) #}
+
+{% endblock %}

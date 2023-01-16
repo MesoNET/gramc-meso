@@ -210,6 +210,148 @@ class ServiceProjets
     }
 
     /***********
+     * Renvoie la liste des projets dynamiques qui ont une version en cours cette année
+     * $annee      = Année (4 charactères - ex. 2022)
+     * $isRecup... = Non utilisé, pour la compatibilité avec ProjetsParAnnee
+     * $sess_lbl   = Non utilisé, pour la compatibilité avec ProjetsParAnnee
+     *
+     * Return: un tableau de trois tableaux:
+     *         - Le tableau des projets
+     *         - Le tableau des données consolidées
+     *         - Le tableau de la répartition entre les ressources
+     *
+     ********************/
+    public function projetsDynParAnnee($annee, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
+    {
+        $em = $this->em;
+        
+        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
+        // (nombre de projets, heures demandées etc)
+        $a_filtrer = [ Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE ];
+
+        // Données consolidées - Projets dynamiques
+        $type = 'dyn';
+
+        $total = [];
+        $total[$type] = [];
+
+        $total[$type]['prj'] = 0;  // Nombre de projets
+
+        $total[$type]['demHeuresUft']  = 0;  // Heures demandées par Uft
+        $total[$type]['attrHeuresUft'] = 0;  // Heures attribuées à Uft
+        $total[$type]['demHeuresCriann']  = 0;  // Heures demandées par Criann
+        $total[$type]['attrHeuresCriann'] = 0;  // Heures attribuées à Criann
+
+        $repart[$type] = [];
+        $repart[$type]['tt'] = 0; // Boreale + Turpan
+        $repart[$type]['tf'] = 0; // Boreale
+        $repart[$type]['ft'] = 0; // Turpan
+        
+        // Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
+
+        // Les versions qui ont été actives une partie de l'année
+        // Elles sont triées selon la date de démarrage (les plus récentes en dernier)
+        $versions = $this->getVersionsDynParAnnee($annee);
+
+        // Il peut y avoir plusieurs versions par projet, on conserve les données des projets
+        // $projets est un tableau associatif indexé par $p_id
+        $projets= [];
+
+        // Boucle sur les versions
+        foreach ($versions as $v) {
+            $p_id = $v->getProjet()->getIdProjet();
+            if (isset($projets[$p_id]))
+            {
+                $p = $projets[$p_id];
+            }
+            else
+            {
+                $p = [];
+                $total[$type]['prj'] += 1;
+                $p['demHeuresUft'] = 0;
+                $p['attrHeuresUft'] = 0;
+                $p['demHeuresCriann'] = 0;
+                $p['attrHeuresCriann'] = 0;
+                $p['p'] = $v->getProjet();
+                $p['v'] = $v;
+                $p['metaetat'] = $this->getMetaEtat($p['p']);
+            }
+
+            // En cas de changement de responsable, donc de labo au cours de l'année, on ne considère QUE
+            // la version la plus récente
+            $p['labo']     = $v->getLabo();
+            $p['resp']     = $v->getResponsable();
+
+            $p['demHeuresUft'] += $v->getDemHeuresUft();
+            $p['attrHeuresUft'] += $v->getAttrHeuresUft();
+            $p['demHeuresCriann'] += $v->getDemHeuresCriann();
+            $p['attrHeuresCriann'] += $v->getAttrHeuresCriann();
+
+            $total[$type]['demHeuresUft'] += $p['demHeuresUft'];
+            $total[$type]['demHeuresCriann'] += $p['demHeuresCriann'];
+            $total[$type]['attrHeuresUft'] += $p['attrHeuresUft'];
+            $total[$type]['attrHeuresCriann'] += $p['attrHeuresCriann'];
+
+            if ($p['attrHeuresUft']*$p['attrHeuresCriann'])
+            {
+                $repart[$type]['tt'] += 1;
+            }
+            elseif ($p['attrHeuresUft'])
+            {
+                $repart[$type]['ft'] += 1;
+            }
+            else
+            {
+                $repart[$type]['tf'] += 1;
+            }
+
+            // La Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
+
+            // $this->ppa_conso($p, $annee);
+            
+            //$total['consoHeuresP'] += $p['c'];
+            //$total[$type]['consoHeuresCPU'] += $p['c'] - $p['g'];
+            //$total[$type]['consoHeuresGPU'] += $p['g'];
+            //$total[$type]['sondVolDonnPerm']+= intval($v->getSondVolDonnPerm());
+            //$total[$type]['consoVolDonnPerm']+= $p['stk_c'];
+            //$total[$type]['quotaVolDonnPerm']+= $p['stk_q'];
+            
+           $projets[$p_id] = $p;
+        }
+
+        $rt = &$repart[$type];
+        arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord'
+        while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
+        return [$projets,$total, $repart];
+    }
+
+    /*********************************
+     * Renvoie la liste des versions de projets dynamiques de l'année passée en paramètres
+     * 
+     ************************************************/
+
+     private function getVersionsDynParAnnee(int $annee): array
+     {
+         $em = $this->em;
+         $sv = $this->sv;
+         
+         $ttes_versions = $this->em->getRepository(Version::class)->findBy(['typeVersion' => Projet::PROJET_DYN ]);
+
+         // On ne garde que les versions qui ont été actives cette année
+         $versions = [];
+         foreach ($ttes_versions as $v)
+         {
+             if ($sv -> isAnnee($v, $annee))
+             {
+                 $versions[] = $v;
+             }
+         }
+
+         return $versions;
+         
+     }
+
+    /***********
      * Renvoie la liste des projets par année -
      * $annee      = Année (4 charactères - ex. 2022)
      * $isRecup... = Pour gérer les heures de récupération
@@ -223,7 +365,9 @@ class ServiceProjets
      *            
      *
      ********************/
-    public function projetsParAnnee($annee, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
+ 
+    /* VERSION PROVENANT DE gramc3 - SUPPRIMEE POUR L'INSTANT ! 
+    public function projetsParAnnee_SUPPR($annee, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
     {
         $em = $this->em;
         $ss = $this->ss;
@@ -558,7 +702,8 @@ class ServiceProjets
         $total['rattachements'] = $statsRattachements;
         return [$projets,$total];
     }
-
+    */
+    
     /*
      * Appelle projetsParAnnee et renvoie les tableaux suivants, indexés par le critère
      *
