@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\GramcServices\GramcDate;
 use App\Repository\FormationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,6 +11,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Formation
 {
+    public function __construct()
+    {
+        $this->startDate = new \DateTime();
+        $this->endDate = new \DateTime();
+    }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -31,6 +38,22 @@ class Formation
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $nomForm;
+
+    /**
+     * @var \DateTime
+     * Date à partir de laquelle on propose la formation
+     *
+     * @ORM\Column(name="start_date", type="datetime", nullable=false)
+     */
+    private $startDate;
+
+    /**
+     * @var \DateTime
+     * Date à partir de laquelle on ne propose PLUS la formation
+     *
+     * @ORM\Column(name="end_date", type="datetime", nullable=false)
+     */
+    private $endDate;
 
     public function getId(): ?int
     {
@@ -69,6 +92,30 @@ class Formation
     public function setNomForm(?string $nomForm): self
     {
         $this->nomForm = $nomForm;
+
+        return $this;
+    }
+
+    public function getStartDate(): \DateTime
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(\Datetime $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): \DateTime
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(\Datetime $endDate): self
+    {
+        $this->endDate = $endDate;
 
         return $this;
     }

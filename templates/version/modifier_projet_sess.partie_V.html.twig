@@ -20,6 +20,15 @@
         {% endfor %}
     </div>
 
+    {# form_row(formation_form) #}
+    {{ dump(formation_form)}}
+
+    <table>
+        {% for f in formation_form.children.formation.children %}
+        <tr><td>{{ dump(f) }}{{ f.vars.data.formation.acroForm}} #{{f.vars.data.formation.nomForm}}{{form_widget(f)}}</td></tr>
+        {% endfor %}
+    </table>
+
     <div class="information ok"><p><strong>Contenu détaillé des formations</strong> ici:
         <a href="{{ mesoc_formation }}">{{mesoc_formation}}</a></strong></p></div>
 

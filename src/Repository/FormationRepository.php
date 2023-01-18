@@ -13,6 +13,20 @@ use App\Entity\Formation;
  */
 class FormationRepository extends \Doctrine\ORM\EntityRepository
 {
+    // Renvoie les formations telles que startDate <= today <= endDate
+    // Les formations sont triées selon numeroForm
+    public function findAllCurrentDate()
+    {
+        $today = new \DateTime;
+        return $this->createQueryBuilder('f')
+                    ->where('f.startDate <= ?1 and ?1 <= f.endDate')
+                    ->orderBy('f.numeroForm', 'ASC')
+                    ->setParameter(1, $today)
+                    ->getQuery()
+                    ->getResult();
+    }
+    
+    // A JETER
     /* Renvoie les formations pour lesquelles le numéro d'ordre est < 10 */
     public function getFormationsPourVersion()
     {
@@ -22,33 +36,4 @@ class FormationRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    // /**
-    //  * @return Formation[] Returns an array of Formation objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Formation
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

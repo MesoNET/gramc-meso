@@ -32,6 +32,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+
 
 class FormationType extends AbstractType
 {
@@ -43,7 +45,9 @@ class FormationType extends AbstractType
         $builder
             ->add('numeroform', IntegerType::class, ['required' => false, 'label' => "Numéro d'ordre:" ])
             ->add('acroform', TextType::class, ['required' => false, 'label' => 'Acronyme:' ])
-            ->add('nomform', TextType::class, ['required' => true, 'label' => 'Nom *:' ]);
+            ->add('nomform', TextType::class, ['required' => true, 'label' => 'Nom *:' ])
+            ->add('startdate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer avant cette date *:', 'widget' => 'single_text' ])
+            ->add('enddate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer après cette date *:', 'widget' => 'single_text' ]);
 
         if ($options['modifier'] == false &&  $options['ajouter'] == false) {
             $builder->add('individu');
@@ -56,8 +60,7 @@ class FormationType extends AbstractType
         } elseif ($options['ajouter'] == true) {
             $builder
                 ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ])
-                ;
+                ->add('reset', ResetType::class, ['label' => 'reset' ]);
         }
     }
 

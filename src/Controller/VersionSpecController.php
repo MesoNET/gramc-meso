@@ -161,22 +161,24 @@ class VersionSpecController extends AbstractController
         " parce que : " . $sm->modifierVersion($version)['raison']);
         }
 
-        // ON A CLIQUE SUR ANNULER
-        // version est sauvegardée autrement et je ne sais pas pourquoi
-       /* $form = $this->createFormBuilder(new Version())->add('annuler', SubmitType::class)->getForm();
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->get('annuler')->isClicked()) {dd('coucou');
-            $sj->debugMessage(__METHOD__ .':'. __LINE__ . ' annuler clicked');
-            return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
-        }*/
+        // FORMULAIRE DES FORMATIONS
+        $formation_form = $sv->getFormationForm($version);
+        $formation_form->handleRequest($request);
+        $data = $formation_form->getData();
+        $formation_forms = $data['formation'];
 
+        // NOTE - $validated peut éventuellement modifier $formation_forms afin de le rendre valide
+        $validated = $sv->validateFormationForms($formation_forms);
+        $sv->handleFormationForms($data['formation'], $version);
+        
         // FORMULAIRE DES COLLABORATEURS
         $collaborateur_form = $sv->getCollaborateurForm($version);
         $collaborateur_form->handleRequest($request);
         $data = $collaborateur_form->getData();
-        $individu_forms = $collaborateur_form->getData()['individus'];
+        $individu_forms = $data['individus'];
         $validated = $sv->validateIndividuForms($individu_forms);
-        if (! $validated) {
+        if (! $validated)
+        {
             $message = "Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom";
             $request->getSession()->getFlashbag()->add("flash erreur",$message);
         //    return $this->redirectToRoute('modifier_collaborateurs', ['id' => $version ]);
@@ -187,24 +189,26 @@ class VersionSpecController extends AbstractController
                 $sj->debugMessage('modifierAction traitement des collaborateurs');
                 $sv->handleIndividuForms($data['individus'], $version);
     
-                // ACTUCE : le mail est disabled en HTML et en cas de POST il est annulé
+                // ASTUCE : le mail est disabled en HTML et en cas de POST il est annulé
                 // nous devons donc refaire le formulaire pour récupérer ces mails
                 $collaborateur_form = $sv->getCollaborateurForm($version);
             }
         }
 
+        //dd($formation_form, $collaborateur_form);
+        
         // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET... ou pas
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_SESS:
             case Projet::PROJET_DYN:
-            return $this->modifierType1($request, $version, $collaborateur_form);
+            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form);
     
             case Projet::PROJET_TEST:
-            return $this->modifierType3($request, $version, $collaborateur_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
     
             case Projet::PROJET_FIL:
-            return $this->modifierType3($request, $version, $collaborateur_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
     
             default:
                $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
@@ -221,7 +225,8 @@ class VersionSpecController extends AbstractController
      */
     private function modifierType1(Request $request,
                                    Version $version,
-                                   FormInterface $collaborateur_form
+                                   FormInterface $collaborateur_form,
+                                   FormInterface $formation_form
                                    ): Response
     {
         $sj = $this->sj;
@@ -298,6 +303,7 @@ class VersionSpecController extends AbstractController
                 'img_expose' => $img_expose,
                 'img_justif_renou' => $img_justif_renou,
                 'collaborateur_form' => $collaborateur_form->createView(),
+                'formation_form' => $formation_form->createView(),
                 'todo'          => static::versionValidate($version, $sj, $em, $sval, $this->getParameter('nodata')),
                 'nb_form'       => $nb_form
             ]
@@ -441,7 +447,8 @@ class VersionSpecController extends AbstractController
      */
     private function modifierType3( Request $request,
                                     Version $version,
-                                    FormInterface $collaborateur_form
+                                    FormInterface $collaborateur_form,
+                                    FormInterface $formation_form
                                     ): Response
     {
         $sj = $this->sj;

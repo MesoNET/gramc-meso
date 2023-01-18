@@ -20,7 +20,7 @@
     <table id="formations" >
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th>
+            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th><th>Pas avant</th><th>Pas après</th>
         </tr>
     </thead>
     <tbody>
@@ -41,6 +41,8 @@
             <td>{% if form.numeroform<10 %}{{ form.numeroform }}{% else %} <em>aucun</em> (n°{{form.numeroform}}){% endif %}</td>
             <td> {{ form.acroform }}</td>
             <td>{{ form.nomform }}</td>
+            <td>{{ form.startdate|date("d/m/Y") }}</td>
+            <td>{{ form.enddate |date("d/m/Y") }}</td>
         </tr>
     {% endfor %}
     </tbody>

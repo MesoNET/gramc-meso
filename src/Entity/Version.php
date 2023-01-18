@@ -401,6 +401,12 @@ class Version implements Demande
      */
     private $expertise;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\FormationVersion", mappedBy="version", cascade={"persist"} )
+     */
+    private $formationVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -434,6 +440,7 @@ class Version implements Demande
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rallonge             = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise            = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->formation            = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionDerniere      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionActive        = new \Doctrine\Common\Collections\ArrayCollection();
         $this->etatVersion          = Etat::EDITION_DEMANDE;
@@ -1645,6 +1652,48 @@ class Version implements Demande
     public function getExpertise()
     {
         return $this->expertise;
+    }
+
+    // Formation
+
+    /**
+     * Add formationVersion
+     *
+     * @param \App\Entity\Formation $formation
+     *
+     * @return Version
+     */
+    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    {
+        if (! $this->formationVersion->contains($formationVersion))
+        {
+            $this->formationVersion[] = $formationVersion;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove formationVersion
+     *
+     * @param \App\Entity\FormationVersion $formationVersion
+     */
+    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    {
+        if ($this->formationVersion->contains($formationVersion))
+        {
+            $this->formationVersion->removeElement($formationVersion);
+        }
+    }
+
+    /**
+     * Get formationVersion
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFormationVersion()
+    {
+        return $this->formationVersion;
     }
 
     /***************************************************

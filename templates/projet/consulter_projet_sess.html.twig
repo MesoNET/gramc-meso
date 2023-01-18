@@ -36,7 +36,7 @@
             <br>
             <small>
                 <em>{{ version.getMetaEtat }}
-                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.jourj|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
+                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.startdate|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
                 </em>
             </small>
         </h2>
@@ -461,33 +461,33 @@
 {% endif %}
     <div class="chapitre">
 
+        {% if version.formationversion|length > 0 %}
         <table>
             <thead>
                 <tr>
+                    <th>Code</th>
                     <th>Intitulé</th>
                     <th>Nombre de personnes intéressées</th>
                 </tr>
             </thead>
             <tbody>
-                {% for f in formation %}
-                    {% if f.acro != 'ALL_EMPTY' %}
-                        <tr>
-                            <td>{{f.nom}}</td>
-                            {% if f.rep is null %}
-                            <td>0</td>
-                            {% else %}
-                            <td>{{f.rep}}</td>
-                            {% endif %}
-                        </tr>
-                    {% endif %}
+                {% for vf in version.formationversion %}
+                <tr>
+                    <td>{{vf.formation.acroform}}</td>
+                    <td>{{vf.formation.nomform}}</td>
+                    <td>{{vf.nombre}}</td>
+                </tr>
                 {% endfor %}
                 <tr>
+                    <td>&nbsp;</td>
                     <td>Autres demandes</td>
                     <td><em>A corriger</em></td>
                 </tr>
             </tbody>
         </table>
-
+        {% else %}
+        <p class="centrage"><em>Pas de formation demandée pour ce projet !</em></p>
+        {% endif %}
     </div>
 
 {% if pdf is defined %}
@@ -529,7 +529,7 @@
                         {% if version.typeversion != 4 %}
                         <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
                         {% else %}
-                            <span class="petit">depuis le {{version.jourj}}</span>
+                            <span class="petit">depuis le {{version.startdate}}</span>
                         {% endif %}
                         }
                     </th>
