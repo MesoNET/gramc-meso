@@ -8,27 +8,22 @@
     <h4>Êtes-vous intéressés par des formations organisée par {{mesoc}} ou un partenaire ? <br>
     <em><small>Si oui cochez indiquez le nombre de collaborateurs éventuellement intéressés</small></em></h4>
 
-    <div class="inputs">
-        {% for item in form %}
-            {# On sélectionne les champs form_getDemFormN #}
-            {% if item.vars.id matches '{^form_demForm[0-9]$}' %} 
-            <div class="input">
-                {{ form_label( item) }}
-                {{ form_widget( item) }}
-            </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-
-    {# form_row(formation_form) #}
-    {{ dump(formation_form)}}
-
     <table>
+        <tr>
+            <th>Code</th>
+            <th>Titre</th>
+            <th>Nombre</th>
+        </tr>
         {% for f in formation_form.children.formation.children %}
-        <tr><td>{{ dump(f) }}{{ f.vars.data.formation.acroForm}} #{{f.vars.data.formation.nomForm}}{{form_widget(f)}}</td></tr>
+        <tr>
+            <td>{{ f.vars.data.formation.acroForm}}</td>
+            <td>{{f.vars.data.formation.nomForm}}</td>
+            <td>{{form_widget(f)}}</td>
+        </tr>
         {% endfor %}
     </table>
 
+    <p>&nbsp;</p>
     <div class="information ok"><p><strong>Contenu détaillé des formations</strong> ici:
         <a href="{{ mesoc_formation }}">{{mesoc_formation}}</a></strong></p></div>
 

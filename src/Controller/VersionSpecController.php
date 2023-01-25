@@ -244,7 +244,6 @@ class VersionSpecController extends AbstractController
             $this->modifierType1PartieIV($version, $form_builder);
         }
         $nb_form = 0;
-        $this->modifierType1PartieV($version, $form_builder, $nb_form);
         $this->modifierType1PartieVI($version, $form_builder, $nb_form);
         $this->modifierType1PartieVII($version, $form_builder, $nb_form);
 
@@ -403,22 +402,6 @@ class VersionSpecController extends AbstractController
     /* Les champs de la partie IV */
     private function modifierType1PartieIV($version, &$form): void
     {
-    }
-
-    /* Les champs de la partie V */
-    private function modifierType1PartieV($version, &$form, &$nb_form)
-    {
-        $em = $this->em;
-        $formations = $em->getRepository(\App\Entity\Formation::class)->getFormationsPourVersion();
-
-        $nb_form = 0;
-        foreach ($formations as  $f) {
-            $champ = 'demForm'.$f->getNumeroForm();
-            $label = $f->getNomForm();
-            $form->add($champ, IntegerType::class, [ 'required' => false, 'label' => $label ]);
-            $nb_form++;
-        }
-        //$form->add('demFormAutresAutres', TextAreaType::class, [ 'required' => false, 'label' => 'Vous pouvez préciser ici vos souhaits']);
     }
 
     /* Les champs de la partie VI */

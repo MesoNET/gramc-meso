@@ -43,8 +43,8 @@ class FormationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('numeroform', IntegerType::class, ['required' => false, 'label' => "Numéro d'ordre:" ])
-            ->add('acroform', TextType::class, ['required' => false, 'label' => 'Acronyme:' ])
+            ->add('numeroform', IntegerType::class, ['required' => false, 'label' => "Numéro d'ordre *:" ])
+            ->add('acroform', TextType::class, ['required' => false, 'label' => 'Acronyme *:' ])
             ->add('nomform', TextType::class, ['required' => true, 'label' => 'Nom *:' ])
             ->add('startdate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer avant cette date *:', 'widget' => 'single_text' ])
             ->add('enddate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer après cette date *:', 'widget' => 'single_text' ]);

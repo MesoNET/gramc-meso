@@ -925,7 +925,7 @@ class ServiceVersions
      *
      * params = $version
      *
-     * return = Un tableau d'objets de type FormationForm (cf Form/FormationForm)
+     * return = Un tableau d'objets de type FormationVersion
      *
      *****************************************************************************/
 
