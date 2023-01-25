@@ -739,56 +739,6 @@ class ServiceVersions
         }
     }
 
-    // A partir des champs demFormN et de la table Formation, construit et retourne un tableau des formations
-    // demandées, sous une forme plus simple à manipuler
-    public function buildFormations(Version $version) : array
-    {
-        $em = $this->em;
-
-        // Construction du tableau formations
-        // $form_ver contient les getDemFormN()
-        // TODO --> Un eval ? (pas réussi !)
-        $form_ver=[];
-        $form_ver[0] = $version->getDemForm0();
-        $form_ver[1] = $version->getDemForm1();
-        $form_ver[2] = $version->getDemForm2();
-        $form_ver[3] = $version->getDemForm3();
-        $form_ver[4] = $version->getDemForm4();
-        $form_ver[5] = $version->getDemForm5();
-        $form_ver[6] = $version->getDemForm6();
-        $form_ver[7] = $version->getDemForm7();
-        $form_ver[8] = $version->getDemForm8();
-        $form_ver[9] = $version->getDemForm9();
-
-        $formations_all = $em -> getRepository(Formation::class) -> getFormationsPourVersion();
-        $formation = [];
-
-        $all_empty = true;
-        /*if ( ! empty($version->getDemFormAutresAutres())) {
-            $all_empty = false;
-        }*/
-        foreach ($formations_all as $fa) {
-            $nb = $fa->getNumeroForm();
-            $f = [];
-            $f['nb']  = $nb;
-            $f['nom'] = $fa->getNomForm();
-            $f['acro']= $fa->getAcroForm();
-            $f['rep'] = $form_ver[$nb];
-            if (! empty($f['rep'])) {
-                $all_empty = false;
-            }
-            $formation[$f['acro']] = $f;
-        }
-        // En espérant qu'il n'y a pas de formation avec ALL_EMPTY comme acronyme !
-        $f = [];
-        $f['nb'] = 10;
-        $f['nom'] = "ERREUR - Cette colonne ne devrait pas être affichée";
-        $f['acro']= "ALL_EMPTY";
-        $f['rep'] = $all_empty;
-        $formation['ALL_EMPTY'] = $f;
-        return $formation;
-    }
-
     /*************************************************************
      * Efface les données liées à une version de projet
      *
