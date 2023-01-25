@@ -31,6 +31,8 @@ use App\Entity\Session;
 use App\Entity\Laboratoire;
 use App\Entity\Etablissement;
 use App\Entity\Statut;
+use App\Entity\FormationVersion;
+
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
@@ -109,6 +111,7 @@ class StatistiquesController extends AbstractController
         $ver_rep = $em->getRepository(Version::class);
 
         return $this->render('default/oups.html.twig');
+
         
         // Traitement du premier formulaire (annee)
         // On met le résultat dans la session
@@ -213,6 +216,22 @@ class StatistiquesController extends AbstractController
         );
     }
 
+    /**
+      * @Route("/formation", name="statistiques_formation",methods={"GET"})
+      * @Security("is_granted('ROLE_OBS')")
+      */
+    public function formationAction(Request $request): Response
+    {
+        $sm      = $this->sm;
+        $ss      = $this->ss;
+        $sp      = $this->sp;
+        $em      = $this->em;
+
+        $fvstats = $em->getRepository(FormationVersion::class)->findStats();
+
+        //dd($fstats);
+        return $this->render("statistiques/formation.html.twig", [ 'fvstats' => $fvstats]);
+    }
 
     /**
      * @Route("/repartition", name="statistiques_repartition",methods={"GET"})

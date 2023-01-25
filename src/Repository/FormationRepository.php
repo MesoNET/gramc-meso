@@ -25,15 +25,4 @@ class FormationRepository extends \Doctrine\ORM\EntityRepository
                     ->getQuery()
                     ->getResult();
     }
-    
-    // A JETER
-    /* Renvoie les formations pour lesquelles le numéro d'ordre est < 10 */
-    public function getFormationsPourVersion()
-    {
-        return $this->createQueryBuilder('f')
-            ->where('f.numeroForm < 10')
-            ->orderBy('f.numeroForm', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
 }

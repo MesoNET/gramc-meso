@@ -170,6 +170,7 @@ class GramcSessionController extends AbstractController
         //$menu5[] = $sm->bilanAnnuel();
         //$menu5[] = $sm->statistiques();
         $menu5[] = $sm->statistiquesDyn();
+        $menu5[] = $sm->statistiquesFormation();
         $menu5[] = $sm->publicationsAnnee();
 
         $menu6[] = $sm->lireJournal();
