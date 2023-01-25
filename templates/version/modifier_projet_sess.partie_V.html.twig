@@ -4,7 +4,8 @@
 
     <h2>Formation</h2>
 
-    
+
+    {% if formation_form.children.formation.children | length > 0 %}
     <h4>Êtes-vous intéressés par des formations organisée par {{mesoc}} ou un partenaire ? <br>
     <em><small>Si oui cochez indiquez le nombre de collaborateurs éventuellement intéressés</small></em></h4>
 
@@ -26,6 +27,8 @@
     <p>&nbsp;</p>
     <div class="information ok"><p><strong>Contenu détaillé des formations</strong> ici:
         <a href="{{ mesoc_formation }}">{{mesoc_formation}}</a></strong></p></div>
-
+    {% else %}
+    <div class="information attention"><p><em>Pas de formation proposée pour l'instant</em></p></div>
+    {% endif %}
 
 </div>
