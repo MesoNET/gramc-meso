@@ -36,7 +36,7 @@
             <br>
             <small>
                 <em>{{ version.getMetaEtat }}
-                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.jourj|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
+                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.startdate|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
                 </em>
             </small>
         </h2>
@@ -529,7 +529,7 @@
                         {% if version.typeversion != 4 %}
                         <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
                         {% else %}
-                            <span class="petit">depuis le {{version.jourj}}</span>
+                            <span class="petit">depuis le {{version.startdate}}</span>
                         {% endif %}
                         }
                     </th>
