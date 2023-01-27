@@ -2206,9 +2206,10 @@ tbody tr.rallonge{
 /* =========== BILAN DE SESSION =========== */
 #formations th {
     padding: .5em;
+    text-align: right;
 }
 #formations td {
-    text-align: center;
+    text-align: right;
 }
 #formations td.autres {
     text-align: left;

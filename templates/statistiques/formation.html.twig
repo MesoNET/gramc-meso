@@ -1,0 +1,35 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block myjavascripts %}
+<scriptttt  type="text/javascript" src="{{ asset('js/projet.js') }}" ></scriptttt>
+{% endblock myjavascripts %}
+
+
+{% block body %}
+
+<section id="section_formation" style="stroke:black">
+
+    <h2>Nombre de demandes pour chaque formation</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th><th>Nom</th><th>Demandes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fv in fvstats %}
+            <tr>
+                <td>{{ fv[0].formation.acroform}}</td><td>{{fv[0].formation.nomform}}</td><td>{{fv.nb}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</section>
+
+{# dump(struct_data) #}
+
+{% endblock %}

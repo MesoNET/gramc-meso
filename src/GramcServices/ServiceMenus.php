@@ -1995,7 +1995,26 @@ class ServiceMenus
         } else {
             $menu['ok']             =   false;
             $menu['commentaire']    =   "Vous ne pouvez pas accéder aux statistiques  !";
-            $menu['raison']         =   "Vous devez être président ou observateur";
+            $menu['raison']         =   "Vous devez être au moins observateur";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
+    public function statistiquesFormation(int $priorite=self::HPRIO):array
+    {
+        $menu['name']           =   'statistiques_formation';
+        $menu['lien']           =   "Demandes de formation";
+        $menu['icone']          =   "formation";
+
+        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            $menu['ok']             =   true;
+            $menu['commentaire']    =   "Vous pouvez accéder aux statistiques  !";
+        } else {
+            $menu['ok']             =   false;
+            $menu['commentaire']    =   "Vous ne pouvez pas accéder aux statistiques  !";
+            $menu['raison']         =   "Vous devez être au moins observateur";
         }
 
         $this->__prio($menu, $priorite);
