@@ -45,7 +45,7 @@ class ServiceUsers
      *                             si $long=true, renvoie toto@TURPAN
      *      $s['TURPAN']['clessh'] -> la cléssh, ou null
      *      $s['TURPAN']['userid] -> le id du user
-     *      $s['TURPAN']['deply'] -> le flag deply (clé déployée ou pas)
+     *      $s['TURPAN']['deploy'] -> le flag deply (clé déployée ou pas)
      *************************************/
     public function collaborateurVersion2LoginNames(CollaborateurVersion $cv, bool $long = false): array
     {
@@ -69,7 +69,7 @@ class ServiceUsers
                 $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
                 $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
                 $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
-                $loginnames3[$s]['deply'] = $u->getDeply();
+                $loginnames3[$s]['clessh']['deploy'] = $u->getDeply();
             }
             $loginnames3[$s]['userid'] = $u->getId();
         }
