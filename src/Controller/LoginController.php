@@ -114,37 +114,44 @@ class LoginController extends AbstractController
         $sj = $this->sj;
         $ff = $this->ff;
 
-        $form = Functions::createFormBuilder($ff)
-                ->add(
-                    'data',
-                    ChoiceType::class,
-                    [
-                 'choices' => $this->getParameter('IDPprod')
-                 ]
-                )
-            ->add('connect', SubmitType::class, ['label' => 'Connexion *'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $url    =   $request->getSchemeAndHttpHost();
-            $url    .= '/Shibboleth.sso/Login?target=';
-            $url    .= $this->generateUrl('remlogin');
-
-            if ($form->getData()['data'] != 'WAYF') {
-                $url = $url . '&providerId=' . $form->getData()['data'];
-            }
-
-            $sj->debugMessage(__FILE__. ":" . __LINE__ . " URL remlogin = " . $url);
-
-            return $this->redirect($url);
+        $mode_auth = $this->getParameter('mode_auth');
+        if ($mode_auth != 'saml2')
+        {
+            return $this->redirectToRoute('remlogin');
         }
-
-        return $this->render(
-            'default/login.html.twig',
-            [ 'form' => $form->createView(), ]
-        );
+        else
+        {
+            $form = Functions::createFormBuilder($ff)
+                    ->add(
+                        'data',
+                        ChoiceType::class,
+                        [
+                     'choices' => $this->getParameter('IDPprod')
+                     ]
+                    )
+                ->add('connect', SubmitType::class, ['label' => 'Connexion *'])
+                ->getForm();
+    
+            $form->handleRequest($request);
+    
+            if ($form->isSubmitted() && $form->isValid()) {
+                $url    =   $request->getSchemeAndHttpHost();
+                $url    .= '/Shibboleth.sso/Login?target=';
+                $url    .= $this->generateUrl('remlogin');
+    
+                if ($form->getData()['data'] != 'WAYF') {
+                    $url = $url . '&providerId=' . $form->getData()['data'];
+                }
+    
+                $sj->debugMessage(__FILE__. ":" . __LINE__ . " URL remlogin = " . $url);
+    
+                return $this->redirect($url);
+            }
+            return $this->render(
+                'default/login.html.twig',
+                [ 'form' => $form->createView(), ]
+            );
+        }
     }
 
     /**
