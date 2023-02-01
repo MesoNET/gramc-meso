@@ -474,8 +474,6 @@ class ProjetSpecController extends AbstractController
         $rapport_1 = $sp -> getRapport($projet, $version->getAnneeSession() - 1);
         $rapport   = $sp -> getRapport($projet, $version->getAnneeSession());
 
-        $formation = $sv->buildFormations($version);
-
         if ($projet->getTypeProjet() == Projet::PROJET_SESS) {
             $tmpl = 'projet/consulter_projet_sess.html.twig';
         } else {
@@ -490,7 +488,7 @@ class ProjetSpecController extends AbstractController
             [
                 'warn_type'          => $warn_type,
                 'projet'             => $projet,
-                'loginnames'          => $loginnames,
+                'loginnames'         => $loginnames,
                 'version_form'       => $session_form->createView(),
                 'version'            => $version,
                 'session'            => $session,
@@ -503,8 +501,7 @@ class ProjetSpecController extends AbstractController
                 'rapport'            => $rapport,
                 'document'           => $document,
                 'toomuch'            => $toomuch,
-                'cv'                 => $cv,
-                'formation'          => $formation
+                'cv'                 => $cv
             ]
         );
     }
@@ -660,8 +657,6 @@ class ProjetSpecController extends AbstractController
         //$rapport_1 = $sp -> getRapport($projet, $version->getAnneeSession() - 1);
         //$rapport   = $sp -> getRapport($projet, $version->getAnneeSession());
 
-        $formation = $sv->buildFormations($version);
-
         $tmpl = 'projet/consulter_projet_sess.html.twig';
 
         $cv = $em->getRepository(CollaborateurVersion::class)
@@ -685,7 +680,6 @@ class ProjetSpecController extends AbstractController
                 //'rapport'            => $rapport,
                 'document' => $document,
                 'toomuch' => false,
-                'formation' => $formation,
                 'cv' => $cv
             ]
         );

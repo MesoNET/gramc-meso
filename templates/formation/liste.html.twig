@@ -9,9 +9,9 @@
     <div class="information">
         <h2>Gérer les formations proposées</h2>
         <ul>
-            <li>Vous êtes limité à <strong>10 formations</strong></li>
-            <li>Les formations seront proposées dans l'ordre donné par la "numéro d'ordre"</li>
-            <li>Attention à ne pas donner le même numero d'ordre à deux formations</li>
+            <li>Les formations seront proposées dans l'ordre donné par la colonne "numéro d'ordre"</li>
+            <li>Les formations proposées aux utilisateurs lorsqu'ils écrivent leur projet sont celles dont la date
+            "Pas avant" et la date "Pas après" encadre la date du jour</li>
         </ul>
     </div>
 
@@ -20,7 +20,7 @@
     <table id="formations" >
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th>
+            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th><th>Pas avant</th><th>Pas après</th>
         </tr>
     </thead>
     <tbody>
@@ -41,6 +41,8 @@
             <td>{% if form.numeroform<10 %}{{ form.numeroform }}{% else %} <em>aucun</em> (n°{{form.numeroform}}){% endif %}</td>
             <td> {{ form.acroform }}</td>
             <td>{{ form.nomform }}</td>
+            <td>{{ form.startdate|date("d/m/Y") }}</td>
+            <td>{{ form.enddate |date("d/m/Y") }}</td>
         </tr>
     {% endfor %}
     </tbody>

@@ -1035,7 +1035,7 @@ class ExpertiseController extends AbstractController
             {
                 $expertise->getVersion()->setAttrHeuresUft($expertise->getNbHeuresAttUft());
                 $expertise->getVersion()->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
-                $expertise->getVersion()->setJourJ($grdt->getNew());
+                $expertise->getVersion()->setStartDate($grdt->getNew());
 
                 // SUPPRIME DANS CETTE VERSION !
                 // $expertise->getVersion()->setAttrHeuresEte($expertise->getNbHeuresAttEte());

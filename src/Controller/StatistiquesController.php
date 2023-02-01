@@ -31,6 +31,8 @@ use App\Entity\Session;
 use App\Entity\Laboratoire;
 use App\Entity\Etablissement;
 use App\Entity\Statut;
+use App\Entity\FormationVersion;
+
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
@@ -109,6 +111,7 @@ class StatistiquesController extends AbstractController
         $ver_rep = $em->getRepository(Version::class);
 
         return $this->render('default/oups.html.twig');
+
         
         // Traitement du premier formulaire (annee)
         // On met le résultat dans la session
@@ -150,18 +153,85 @@ class StatistiquesController extends AbstractController
         $num_projets = count($projets);
 
         return $this->render(
-            'statistiques/index.html.twig',
+            'statistiques/index_dyn.html.twig',
             [
                 'form'        => $data['form']->createView(),
-                'forms'       => $datas['form']->createView(),
                 'annee'       => $annee,
-                'sess_lbl'    => $sess_lbl,
                 'menu'        => $menu,
                 'total'       => $total
             ]
         );
     }
 
+    /**
+      * @Route("/dyn", name="statistiques_dyn",methods={"GET","POST"})
+      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
+      */
+    public function indexDynAction(Request $request): Response
+    {
+        $sm      = $this->sm;
+        $ss      = $this->ss;
+        $sp      = $this->sp;
+        $em      = $this->em;
+        $prj_rep = $em->getRepository(Projet::class);
+        $ver_rep = $em->getRepository(Version::class);
+
+        //return $this->render('default/oups.html.twig');
+        
+        // Traitement du premier formulaire (annee)
+        // On met le résultat dans la session
+        if ($request->getSession()->has('statistiques_annee'))
+        {
+            $annee = $request->getSession()->get('statistiques_annee');
+        }
+        else
+        {
+            $annee = null;
+        }
+        $data = $ss->selectAnnee($request,$annee);
+        $annee= $data['annee'];
+        $request->getSession()->set('statistiques_annee',$annee);
+
+        $menu[] = $sm->statistiquesLaboratoire();
+        $menu[] = $sm->statistiquesEtablissement($annee);
+        $menu[] = $sm->statistiquesThematique($annee);
+        //$menu[] = $sm->statistiquesMetathematique($annee);
+        //$menu[] = $sm->statistiquesRattachement($annee);
+        $menu[] = $sm->statistiquesCollaborateur($annee);
+        $menu[] = $sm->statistiquesRepartition();
+
+        [$projets, $total, $repart] = $this->sp->projetsDynParAnnee($annee);
+
+        $num_projets = count($projets);
+
+        return $this->render(
+            'statistiques/index_dyn.html.twig',
+            [
+                'form' => $data['form']->createView(),
+                'annee' => $annee,
+                'menu' => $menu,
+                'total' => $total,
+                'repart' => $repart
+            ]
+        );
+    }
+
+    /**
+      * @Route("/formation", name="statistiques_formation",methods={"GET"})
+      * @Security("is_granted('ROLE_OBS')")
+      */
+    public function formationAction(Request $request): Response
+    {
+        $sm      = $this->sm;
+        $ss      = $this->ss;
+        $sp      = $this->sp;
+        $em      = $this->em;
+
+        $fvstats = $em->getRepository(FormationVersion::class)->findStats();
+
+        //dd($fstats);
+        return $this->render("statistiques/formation.html.twig", [ 'fvstats' => $fvstats]);
+    }
 
     /**
      * @Route("/repartition", name="statistiques_repartition",methods={"GET"})

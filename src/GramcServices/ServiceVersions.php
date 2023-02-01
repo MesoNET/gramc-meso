@@ -28,13 +28,18 @@ use App\Entity\Version;
 use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\Formation;
+use App\Entity\FormationVersion;
 use App\Entity\User;
 use App\Entity\CollaborateurVersion;
 
 use App\GramcServices\Etat;
 use App\GramcServices\ServiceForms;
 use App\GramcServices\ServiceInvitations;
+use App\GramcServices\GramcDate;
+
 use App\Form\IndividuFormType;
+use App\Form\FormationVersionType;
+
 
 use App\Utils\Functions;
 
@@ -76,6 +81,7 @@ class ServiceVersions
                                 private ServiceForms $sf,
                                 private FormFactoryInterface $ff,
                                 private TokenStorageInterface $tok,
+                                private GramcDate $grdt,
                                 private EntityManagerInterface $em
                                 )
     {
@@ -675,6 +681,49 @@ class ServiceVersions
         }
     }
 
+    /***********************
+     * Renvoie true si la version était active l'année passée en paramètre,
+     * c'est-à-dire s'il y a au moins 1 jour de l'année durant lequel
+     * la version est active
+     *
+     * Pour un projet dynamique on utilise la startDate et la endDate
+     * Pour un autre projet on utilise les informations de session
+     *
+     **************************************************************/
+    public function isAnnee(Version $version, int $annee):bool
+    {
+        $grdt = $this->grdt;
+        
+        if ($version->getTypeVersion()==Projet::PROJET_DYN)
+        {
+            $annee_courante = intval($grdt->showYear());
+            
+            // Si pas de date de début, la version n'a pas démarré
+            if ($version->getStartDate() == null) return false;
+
+            // Si pas de date de fin, la version est en cours
+            return $annee == $annee_courante;
+
+            // Si les deux sont spécifiés, on vérifie s'il y a chevauchement avec l'année
+            $j1 = new \Datetime(strval($annee).'-01-01');
+            $d31 = new \Datetime(strval($annee+1).'-12-31');
+
+            $s = $version->getStartDate();
+            $e = $version->getEndDate();
+
+            // Si $s ou $e sont dans l'intervalle on renvoie true
+            if ($s>=$j1 && $s<=$d31) return true;
+            if ($e>=$j1 && $e<=$d31) return true;
+
+            // Sinon on renvoie false
+            return false;
+        }
+        else
+        {
+            return $version->getFullAnnee() == strval($annee);
+        }
+    }
+
     ////////////////////////////////////////////////////
     public function setLaboResponsable(Version $version, Individu $individu): void
     {
@@ -688,56 +737,6 @@ class ServiceVersions
         } else {
             $this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Le nouveau responsable " . $individu . " ne fait partie d'aucun laboratoire");
         }
-    }
-
-    // A partir des champs demFormN et de la table Formation, construit et retourne un tableau des formations
-    // demandées, sous une forme plus simple à manipuler
-    public function buildFormations(Version $version) : array
-    {
-        $em = $this->em;
-
-        // Construction du tableau formations
-        // $form_ver contient les getDemFormN()
-        // TODO --> Un eval ? (pas réussi !)
-        $form_ver=[];
-        $form_ver[0] = $version->getDemForm0();
-        $form_ver[1] = $version->getDemForm1();
-        $form_ver[2] = $version->getDemForm2();
-        $form_ver[3] = $version->getDemForm3();
-        $form_ver[4] = $version->getDemForm4();
-        $form_ver[5] = $version->getDemForm5();
-        $form_ver[6] = $version->getDemForm6();
-        $form_ver[7] = $version->getDemForm7();
-        $form_ver[8] = $version->getDemForm8();
-        $form_ver[9] = $version->getDemForm9();
-
-        $formations_all = $em -> getRepository(Formation::class) -> getFormationsPourVersion();
-        $formation = [];
-
-        $all_empty = true;
-        /*if ( ! empty($version->getDemFormAutresAutres())) {
-            $all_empty = false;
-        }*/
-        foreach ($formations_all as $fa) {
-            $nb = $fa->getNumeroForm();
-            $f = [];
-            $f['nb']  = $nb;
-            $f['nom'] = $fa->getNomForm();
-            $f['acro']= $fa->getAcroForm();
-            $f['rep'] = $form_ver[$nb];
-            if (! empty($f['rep'])) {
-                $all_empty = false;
-            }
-            $formation[$f['acro']] = $f;
-        }
-        // En espérant qu'il n'y a pas de formation avec ALL_EMPTY comme acronyme !
-        $f = [];
-        $f['nb'] = 10;
-        $f['nom'] = "ERREUR - Cette colonne ne devrait pas être affichée";
-        $f['acro']= "ALL_EMPTY";
-        $f['rep'] = $all_empty;
-        $formation['ALL_EMPTY'] = $f;
-        return $formation;
     }
 
     /*************************************************************
@@ -863,6 +862,139 @@ class ServiceVersions
 
     /*********************************************
      *
+     * LES DEMANDES DE FORMATIONS
+     * 
+     ********************************************/
+
+    /**************************
+     * préparation de la liste des formations proposées
+     * Récupère dans la base la liste des formations proposées,
+     * c'est-à-dire les formations pour lesquelles startDate <= date courante <= endDate
+     * Les met dans l'ordre en fonction du champ numeroForm
+     * Pour chaque formation, crée un enregistrement de type FormationVersion s'il n'existe pas
+     *
+     * params = $version
+     *
+     * return = Un tableau d'objets de type FormationVersion
+     *
+     *****************************************************************************/
+
+    public function prepareFormations(Version $version) : array
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        
+        if ($version == null) {
+            $sj->throwException('ServiceVersion:prepareFormations : version null');
+        }
+
+        $formations = $em->getRepository(Formation::class)->findAllCurrentDate();
+
+        // Un array indexé par l'identifiant de formation
+        $formationVersions = [];
+        foreach ( $version->getFormationVersion() as $fv)
+        {
+            $k = $fv->getFormation()->getId();
+            $formationVersions[$k] = $fv;
+        }
+        //dd($formations);
+
+        $data = [];
+        foreach ($formations as $f)
+        {
+            //$formationForm = new formationForm($f);
+            
+            if (array_key_exists($f->getId(), $formationVersions))
+            {
+                $fv = $formationVersions[$f->getId()];
+                //$formationForm->setNombre($fv->getNombre());
+            }
+            else
+            {
+                $fv = new FormationVersion($f, $version);
+            }
+            $data[] = $fv;
+            //$data[] = $formationForm;
+        }
+        return $data;
+    }
+
+    /********************************************************************
+     * Génère et renvoie un form pour modifier les demandes de formation
+     ********************************************************************/
+    public function getFormationForm(Version $version): FormInterface
+    {
+        $sj = $this->sj;
+        $em = $this->em;
+        $sval= $this->vl;
+
+        $text_fields = true;
+        if ( $this->resp_peut_modif_collabs)
+        {
+            $text_fields = false;
+        }
+        return $this->ff
+                   ->createNamedBuilder('form_formation', FormType::class, [ 'formation' => $this->prepareFormations($version) ])
+                   ->add('formation', CollectionType::class, [
+                       'entry_type'     =>  FormationVersionType::class,
+                       'label'          =>  true,
+                       //'allow_add'      =>  true,
+                       //'allow_delete'   =>  true,
+                       //'prototype'      =>  true,
+                       //'required'       =>  true,
+                       //'by_reference'   =>  false,
+                       //'delete_empty'   =>  true,
+                       //'attr'         => ['data-acro' => "profil-horiz",],
+                       //'entry_options' =>['text_fields' => $text_fields]
+                    ])
+                    ->getForm();
+    }
+
+    /*********************************
+     * 
+     * Validation du formulaire des formations - Retourne true/false
+     * Si pas valide (nombre < 0), rend valide en mettant à zéro !
+     *
+     * params = Tableau de formulaires
+     ***********************************************************************/
+    public function validateFormationForms(array &$formation_forms) : bool
+    {
+        $val = true;
+        foreach ($formation_forms as  $iform)
+        {
+            if ($iform->getNombre() < 0)
+            {
+                $iform->setNombre(0);
+                $val = false;
+            }
+        }
+        return $val;
+    }
+
+    /***************************************
+     * Traitement des formulaires des formations
+     *
+     * $formation_forms = Tableau contenant un formulaire par formation
+     * $version        = La version considérée
+     ****************************************************************/
+    public function handleFormationForms(array $formation_forms, Version $version): void
+    {
+        $em   = $this->em;
+        $sj   = $this->sj;
+        $sval = $this->vl;
+
+        //dd($formation_forms);
+        // On fait la modification sur la version passée en paramètre
+        foreach ($formation_forms as $iform)
+        {
+            $version->addFormationVersion($iform);
+        }
+        $em->persist($version);
+        $em->flush();
+    }
+
+    /*********************************************
+     *
      * LES COLLABORATEURS
      * 
      ********************************************/
@@ -872,7 +1004,7 @@ class ServiceVersions
      *
      * params = $version
      *
-     * return = Un tableau d'objets de type IndividuForm (cf Util\IndividuForm)
+     * return = Un tableau d'objets de type IndividuForm (cf Form/IndividuForm)
      *          Le responsable est dans la cellule 0 du tableau
      *
      *****************************************************************************/

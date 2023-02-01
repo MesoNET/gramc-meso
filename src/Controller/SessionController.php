@@ -618,6 +618,8 @@ class SessionController extends AbstractController
         $versions = $em->getRepository(Version::class)->findBy(['session' => $session ]);
         $form_labels = [];
         $form_total = [];
+
+        /* TODO - Partie formations à refaire
         if (count($versions)>0) {
             $v0 = $versions[0];
             $formation = $sv -> buildFormations($v0);
@@ -638,7 +640,7 @@ class SessionController extends AbstractController
                 if ($f['acro']=='ALL_EMPTY') continue;
                 $form_total[$f['acro']] += intval($f['rep']);
             }
-        }
+        } */
         return $this->render(
             'session/bilan.html.twig',
             [

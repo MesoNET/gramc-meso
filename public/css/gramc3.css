@@ -212,6 +212,28 @@ header img {
     color: var(--second-color);
 }
 
+/* ===== PROJETS_DYN_SYNTHESE ===== */
+table.pdyn_synt {
+    font-size: 1.2em;
+    margin-left: 1em;
+    width: 10em;
+    margin: 2em auto;
+}
+
+table.pdyn_synt th, table.pdyn_synt td {
+    padding: 0;
+    text-align: center;
+    background-color: lightgrey;
+}
+
+table.pdyn_synt th {
+   cursor: help;
+}
+table.pdyn_synt tr {
+   margin: 0;
+   height: auto;
+}
+
 /* ===== ETAT DES SESSIONS ===== */
 table.etat_session {
     font-size: .7em;
@@ -2184,9 +2206,10 @@ tbody tr.rallonge{
 /* =========== BILAN DE SESSION =========== */
 #formations th {
     padding: .5em;
+    text-align: right;
 }
 #formations td {
-    text-align: center;
+    text-align: right;
 }
 #formations td.autres {
     text-align: left;

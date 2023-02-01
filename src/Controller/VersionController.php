@@ -355,20 +355,17 @@ class VersionController extends AbstractController
         
         //$toomuch = $sv->is_demande_toomuch($version->getAttrHeures(),$version->getDemHeures());
         $toomuch = false;
-        if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
+/*        if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
             $version_prec = $version->versionPrecedente();
             if ($version_prec->getAnneeSession() == $version->getAnneeSession()) {
                 $toomuch  = $sv -> is_demande_toomuch($version_prec->getAttrHeures(), $version->getDemHeures());
             }
-        }
-
-        $formation = $sv->buildFormations($version);
+        } */
 
         $html4pdf =  $this->render(
             'version/pdf.html.twig',
             [
             'warn_type'          => false,
-            'formation'          => $formation,
             'projet'             => $projet,
             'pdf'                => true,
             'version'            => $version,

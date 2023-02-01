@@ -165,10 +165,12 @@ class GramcSessionController extends AbstractController
         $menu4[] = $sm->gererLaboratoires();
         if ($this->getParameter('norattachement')==false) $menu4[] = $sm->gererRattachements();
         $menu4[] = $sm->gererThematiques();
-        $menu4[] = $sm->gererMetathematiques();
+        //$menu4[] = $sm->gererMetathematiques();
 
-        $menu5[] = $sm->bilanAnnuel();
-        $menu5[] = $sm->statistiques();
+        //$menu5[] = $sm->bilanAnnuel();
+        //$menu5[] = $sm->statistiques();
+        $menu5[] = $sm->statistiquesDyn();
+        $menu5[] = $sm->statistiquesFormation();
         $menu5[] = $sm->publicationsAnnee();
 
         $menu6[] = $sm->lireJournal();

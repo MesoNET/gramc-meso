@@ -179,76 +179,6 @@ class Version implements Demande
     private $codeLicence = '';
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_0", type="integer", nullable=true)
-     */
-    private $demForm0 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_1", type="integer", nullable=true)
-     */
-    private $demForm1 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_2", type="integer", nullable=true)
-     */
-    private $demForm2 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_3", type="integer", nullable=true)
-     */
-    private $demForm3 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_4", type="integer", nullable=true)
-     */
-    private $demForm4 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_5", type="integer", nullable=true)
-     */
-    private $demForm5 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_6", type="integer", nullable=true)
-     */
-    private $demForm6 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_7", type="integer", nullable=true)
-     */
-    private $demForm7 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_8", type="integer", nullable=true)
-     */
-    private $demForm8 = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_form_9", type="integer", nullable=true)
-     */
-    private $demForm9 = '';
-
-    /**
      * @var string
      *
      * @ORM\Column(name="libelle_thematique", type="string", length=200, nullable=true)
@@ -283,11 +213,19 @@ class Version implements Demande
 
     /**
      * @var \DateTime
-     * Date à partir de laquelle le projet est en état ACTIF
+     * Date de démarrage de la version (passage en état ACTIF)
      *
      * @ORM\Column(name="jour_j", type="datetime", nullable=true)
      */
-    private $jourJ;
+    private $startDate;
+
+    /**
+     * @var \DateTime
+     * Date de fin de la version (passage en état TERMINE)
+     *
+     * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     */
+    private $endDate;
 
     /**
      * @var integer
@@ -393,6 +331,12 @@ class Version implements Demande
      */
     private $expertise;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\FormationVersion", mappedBy="version", cascade={"persist"} )
+     */
+    private $formationVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -426,6 +370,7 @@ class Version implements Demande
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rallonge             = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise            = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->formation            = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionDerniere      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionActive        = new \Doctrine\Common\Collections\ArrayCollection();
         $this->etatVersion          = Etat::EDITION_DEMANDE;
@@ -916,246 +861,6 @@ class Version implements Demande
     }
 
     /**
-     * Set demForm0
-     *
-     * @param boolean $demForm0
-     *
-     * @return Version
-     */
-    public function setDemForm0($demForm0)
-    {
-        $this->demForm0 = $demForm0;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm0
-     *
-     * @return boolean
-     */
-    public function getDemForm0()
-    {
-        return $this->demForm0;
-    }
-
-    /**
-     * Set demForm1
-     *
-     * @param boolean $demForm1
-     *
-     * @return Version
-     */
-    public function setDemForm1($demForm1)
-    {
-        $this->demForm1 = $demForm1;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm1
-     *
-     * @return boolean
-     */
-    public function getDemForm1()
-    {
-        return $this->demForm1;
-    }
-
-    /**
-     * Set demForm2
-     *
-     * @param boolean $demForm2
-     *
-     * @return Version
-     */
-    public function setDemForm2($demForm2)
-    {
-        $this->demForm2 = $demForm2;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm2
-     *
-     * @return boolean
-     */
-    public function getDemForm2()
-    {
-        return $this->demForm2;
-    }
-
-    /**
-     * Set demForm3
-     *
-     * @param boolean $demForm3
-     *
-     * @return Version
-     */
-    public function setDemForm3($demForm3)
-    {
-        $this->demForm3 = $demForm3;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm3
-     *
-     * @return boolean
-     */
-    public function getDemForm3()
-    {
-        return $this->demForm3;
-    }
-
-    /**
-     * Set demForm4
-     *
-     * @param boolean $demForm4
-     *
-     * @return Version
-     */
-    public function setDemForm4($demForm4)
-    {
-        $this->demForm4 = $demForm4;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm4
-     *
-     * @return boolean
-     */
-    public function getDemForm4()
-    {
-        return $this->demForm4;
-    }
-
-    /**
-     * Set demForm5
-     *
-     * @param boolean $demForm5
-     *
-     * @return Version
-     */
-    public function setDemForm5($demForm5)
-    {
-        $this->demForm5 = $demForm5;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm5
-     *
-     * @return boolean
-     */
-    public function getDemForm5()
-    {
-        return $this->demForm5;
-    }
-
-    /**
-     * Set demForm6
-     *
-     * @param boolean $demForm6
-     *
-     * @return Version
-     */
-    public function setDemForm6($demForm6)
-    {
-        $this->demForm6 = $demForm6;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm6
-     *
-     * @return boolean
-     */
-    public function getDemForm6()
-    {
-        return $this->demForm6;
-    }
-
-    /**
-     * Set demForm7
-     *
-     * @param boolean $demForm7
-     *
-     * @return Version
-     */
-    public function setDemForm7($demForm7)
-    {
-        $this->demForm7 = $demForm7;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm7
-     *
-     * @return boolean
-     */
-    public function getDemForm7()
-    {
-        return $this->demForm7;
-    }
-
-    /**
-     * Set demForm8
-     *
-     * @param boolean $demForm8
-     *
-     * @return Version
-     */
-    public function setDemForm8($demForm8)
-    {
-        $this->demForm8 = $demForm8;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm8
-     *
-     * @return boolean
-     */
-    public function getDemForm8()
-    {
-        return $this->demForm8;
-    }
-
-    /**
-     * Set demForm9
-     *
-     * @param boolean $demForm9
-     *
-     * @return Version
-     */
-    public function setDemForm9($demForm9)
-    {
-        $this->demForm9 = $demForm9;
-
-        return $this;
-    }
-
-    /**
-     * Get demForm9
-     *
-     * @return boolean
-     */
-    public function getDemForm9()
-    {
-        return $this->demForm9;
-    }
-
-    /**
      * Set libelleThematique
      *
      * @param string $libelleThematique
@@ -1252,27 +957,51 @@ class Version implements Demande
     }
 
     /**
-     * Set jourJ
+     * Set startDate
      *
-     * @param \DateTime $jourJ
+     * @param \DateTime $startDate
      *
      * @return Version
      */
-    public function setJourJ($jourJ)
+    public function setStartDate($startDate)
     {
-        $this->jourJ = $jourJ;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
     /**
-     * Get jourJ
+     * Get startDate
      *
      * @return \DateTime
      */
-    public function getJourJ()
+    public function getStartDate()
     {
-        return $this->jourJ;
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     *
+     * @return Version
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 
     /**
@@ -1615,6 +1344,48 @@ class Version implements Demande
         return $this->expertise;
     }
 
+    // Formation
+
+    /**
+     * Add formationVersion
+     *
+     * @param \App\Entity\Formation $formation
+     *
+     * @return Version
+     */
+    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    {
+        if (! $this->formationVersion->contains($formationVersion))
+        {
+            $this->formationVersion[] = $formationVersion;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove formationVersion
+     *
+     * @param \App\Entity\FormationVersion $formationVersion
+     */
+    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    {
+        if ($this->formationVersion->contains($formationVersion))
+        {
+            $this->formationVersion->removeElement($formationVersion);
+        }
+    }
+
+    /**
+     * Get formationVersion
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFormationVersion()
+    {
+        return $this->formationVersion;
+    }
+
     /***************************************************
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatVersion/setEtatVersion !
@@ -1774,15 +1545,24 @@ class Version implements Demande
         //return $this->getSession()->getAnneeSession() + 2000;
         return $this->getFullAnnee();
     }
+
+    /***********************
+     * Renvoie l'année associée à cette version
+     * Renvoie un nombre de 4 chiffres (d'où le Full, 2023 et pas 23)
+     *
+     * Pour un projet dynamique c'est l'année de $startDate
+     * TODO - A améliorer, un projet qui démarre le 31 Déc 2023 sera noté sur 2023 !
+     * Pour un autre projet c'est l'année de la session associée
+     *
+     **************************************************************/
     public function getFullAnnee():string
     {
         if ($this->getTypeVersion()==Projet::PROJET_DYN)
         {
-            $j = $this -> getJourJ();
+            $j = $this -> getStartDate();
             if ($j == null)
             {
-                // On retourne une chaine de caractères idiote
-                // TOO - mise à jour du code en 9999
+                // On retourne une chaine de caractères idiote (à corriger en 9999)
                 return '9999';
             }
             else
