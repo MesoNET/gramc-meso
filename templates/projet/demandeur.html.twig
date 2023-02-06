@@ -33,7 +33,7 @@
         {% if noconso==false %}
             {% for s in ['TURPAN','BOREALE'] %}
                 <td rowspan="{{ item.cpt_rall + 1 }}">
-                    {#{{dump(item.loginnames)}}#}
+                    {# {{dump(item.loginnames)}} #}
     
                     {% if item.loginnames[s]['nom'] == 'nologin' %}
                         -
@@ -42,7 +42,7 @@
                          <tt>{{item.loginnames[s]['nom'] }}</tt> - 
                         {% if item.loginnames[s]['clessh'] != null %}
                             <tt>{{ item.loginnames[s]['clessh'].nom }}</tt>
-                            {% if not item.loginnames[s]['deply'] and not item.loginnames[s]['clessh'].rvk %}
+                            {% if not item.loginnames[s]['clessh']['deploy'] and not item.loginnames[s]['clessh'].rvk %}
                                 <span title="Vous pourrez vous connecter lorsque votre clé sera déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
                             {% endif %}
                             {% if item.loginnames[s]['clessh'].rvk %}
