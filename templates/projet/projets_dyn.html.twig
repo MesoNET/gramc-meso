@@ -59,9 +59,9 @@
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 178px;" aria-label="Responsable: activate to sort column ascending">Responsable</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 108px;" aria-label="Laboratoire: activate to sort column ascending">Laboratoire</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 73px;" aria-label="Nb de versions: activate to sort column ascending">Nb de versions</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 75px;" aria-label="Dernière session: activate to sort column ascending">Dernière session</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H dem (cumul): activate to sort column ascending">H dem (cumul)</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="H attr (cumul): activate to sort column ascending">H attr (cumul)</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 75px;" aria-label="Date de fin: activate to sort column ascending">Date de fin</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="Attr TURPAN: activate to sort column ascending" title="Heures attribuées sur TURPAN">TURPAN</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 66px;" aria-label="Attr BOREALE: activate to sort column ascending" title="Heures attribuées sur BOREALE">BOREALE</th>
                     </tr>
                 </thead>
     
@@ -69,7 +69,7 @@
                     {% for item in data %}
                     <tr role="row" class="odd" style="stroke:black">
     
-                        {# Sans doute à virer si on adopte un fonctionnement entièreùent automatique des suppressions de projets et comptes
+                        {# Sans doute à virer si on adopte un fonctionnement entièrement automatique des suppressions de projets et comptes
                         <td class="sorting_1">
                         {% if item.renouvelable %}
                             {% if (item.metaetat == 'standby' or item.metaetat == 'agarder') %}
@@ -132,9 +132,9 @@
                             {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
                         </td>
                         <td>{{ item.count }}</td>
-                        <td>{% if( item.version != null) %}{{ item.version.session }}{% endif %}</td>
-                        <td>{{ item.dem }}</td>
-                        <td>{{ item.attr }}</td>{#
+                        <td>{% if( item.version != null) %}{{ item.version.startdate|date_modify("+365 day")|date('d-m-Y')}}{% endif %}</td>
+                        <td>{{ item.version.attrheuresuft }}</td>
+                        <td>{{ item.version.attrheurescriann }}</td>{#
                         #}
                     </tr>
                     {% endfor %}
