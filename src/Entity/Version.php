@@ -228,6 +228,14 @@ class Version implements Demande
     private $endDate;
 
     /**
+     * @var \DateTime
+     * Date limite, la version n'ira pas au-delà
+     *
+     * @ORM\Column(name="limit_date", type="datetime", nullable=true)
+     */
+    private $limitDate;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="prj_fiche_len", type="integer", nullable=true)
@@ -1002,6 +1010,30 @@ class Version implements Demande
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set limitDate
+     *
+     * @param \DateTime $limitDate
+     *
+     * @return Version
+     */
+    public function setLimitDate($limitDate)
+    {
+        $this->limitDate = $limitDate;
+
+        return $this;
+    }
+
+    /**
+     * Get limiteDate
+     *
+     * @return \DateTime
+     */
+    public function getLimitDate()
+    {
+        return $this->limitDate;
     }
 
     /**
@@ -1912,3 +1944,16 @@ class Version implements Demande
         return $this->getIdVersion();
     }
 }
+
+
+
+
+/*
+ * Modifier le schema de la base de données:
+ *
+ * ALTER TABLE version ADD limit_date DATETIME DEFAULT NULL, CHANGE id_session id_session VARCHAR(3) DEFAULT NULL, CHANGE id_projet id_projet VARCHAR(10) DEFAULT NULL, CHANGE prj_l_labo prj_l_labo VARCHAR(300) DEFAULT NULL, CHANGE prj_titre prj_titre VARCHAR(500) DEFAULT NULL, CHANGE prj_financement prj_financement VARCHAR(100) DEFAULT NULL, CHANGE prj_genci_machines prj_genci_machines VARCHAR(60) DEFAULT NULL, CHANGE prj_genci_centre prj_genci_centre VARCHAR(60) DEFAULT NULL, CHANGE prj_genci_heures prj_genci_heures VARCHAR(30) DEFAULT NULL, CHANGE prj_genci_dari prj_genci_dari VARCHAR(15) DEFAULT NULL, CHANGE code_nom code_nom VARCHAR(150) DEFAULT NULL, CHANGE libelle_thematique libelle_thematique VARCHAR(200) DEFAULT NULL, CHANGE maj_stamp maj_stamp DATETIME DEFAULT NULL, CHANGE jour_j jour_j DATETIME DEFAULT NULL, CHANGE end_date end_date DATETIME DEFAULT NULL;
+ *
+ * UPDATE version SET `limit_date`=adddate(`jour_j`,365);
+ *
+ */
+ 

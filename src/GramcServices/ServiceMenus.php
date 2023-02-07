@@ -1266,15 +1266,19 @@ class ServiceMenus
         $menu['commentaire'] = "Vous ne pouvez pas demander de renouvellement";
         $menu['ok']          = false;
 
-        if ($version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE)
+        // On travaille ici sur la dernière version du projet !
+        $projet = $version->getProjet();
+        $verder = $projet->getVersionDerniere();
+        
+        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::EN_STANDBY && $verder->getEtatVersion() != Etat::EN_SURSIS)
         {
-            $menu['raison'] = "Une autre version est déjà demandée";
+            $menu['raison'] = "Pas possible de créer une nouvelle version pour l'instant";
         }
-        elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE)
+        elseif ($verder->getProjet()->getEtatProjet() == Etat::TERMINE)
         {
             $menu['raison'] = "Votre projet est terminé";
         }
-        elseif ($version->isCollaborateur($this->token->getUser()))
+        elseif ($verder->isCollaborateur($this->token->getUser()))
         {
             $menu['commentaire'] = "Demander de nouvelles ressources sur ce projet";
             $priorite = self::HPRIO;

@@ -602,7 +602,7 @@ class ProjetSpecController extends AbstractController
 
         if ($version_form->isSubmitted() && $version_form->isValid())
         {
-            $version = $session_form->getData()['version'];
+            $version = $version_form->getData()['version'];
         }
 
         $menu = [];
