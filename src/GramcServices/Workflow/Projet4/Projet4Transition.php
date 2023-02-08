@@ -64,7 +64,7 @@ class Projet4Transition extends Transition
                 if ($version->getEtatVersion() != Etat::TERMINE && $version->getEtatVersion() != Etat::ANNULE) {
                     $output = $versionWorkflow->canExecute($this->getSignal(), $version);
                     if ($output != true) {
-                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " Version " . $version . "  ne passe pas en état "
+                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " Version " . $version . " état "
                             . Etat::getLibelle($version->getEtatVersion()) . " signal = " . Signal::getLibelle($this->getSignal()));
                     }
                     $rtn = $rtn && $output;

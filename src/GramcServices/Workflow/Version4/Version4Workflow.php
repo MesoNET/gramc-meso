@@ -88,6 +88,8 @@ class Version4Workflow extends Workflow
                 Signal::DAT_STDBY      => new Version4Transition(Etat::EN_STANDBY, Signal::DAT_STDBY),
                 Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
                 Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
+                Signal::CLK_ARR        => new NoTransition(0, 0),
+                Signal::CLK_VAL_DEM    => new NoTransition(0, 0),
                 Signal::CLK_FERM       => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )

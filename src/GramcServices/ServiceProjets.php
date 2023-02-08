@@ -1509,50 +1509,90 @@ class ServiceProjets
     *
     * NOTE - la B.D. doit être cohérente, c-à-d que s'il y a des flush à faire, ils doivent
     *        être faits en entrant dans cette fonction
-    *        Inversement, cette fonction refait le flush du projet afin de garder la cohérence
-    *        TODO - Est-ce bien certain ? Cette fonction est appelée uniquement à partir de l'EventListener...
+    *        Inversement, cette fonction refait si nécessaire le flush du projet afin de garder la cohérence
     *
     * @return \App\Entity\Version
     */
+
+
+    // On réécrit cette fonction car le tri doit se faire sur le NbVersion plutôt que sur la session
+    // (indispensable pour les projets dynamiques, s'il y a un jour des projets de session il faudra que le NbVersion soit géré)
+    //public function calculVersionDerniere_SUPPR(Projet $projet): ?Version
+    //{
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
+        //if ($projet->getVersion() == null) {
+            //return null;
+        //}
+
+        //$iterator = $projet->getVersion()->getIterator();
+        ////$cnt = count(iterator_to_array($iterator));
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
+
+        //$iterator->uasort(function ($a, $b) {
+            //if ($a->getSession() == null) {
+                //return true;
+            //} elseif ($b->getSession() == null) {
+                //return false;
+            //} else {
+                //return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
+            //}
+        //});
+
+        //$sortedVersions =  iterator_to_array($iterator) ;
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
+        //$result = end($sortedVersions);
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
+
+        //if (! $result instanceof Version) {
+            //return null;
+        //}
+
+        //// update BD
+        //$projet->setVersionDerniere($result);
+        //$em = $this->em;
+        //$em->persist($projet);
+        //$em->flush();
+
+        //return $result;
+    //}
+
+    /*
+     * Calcul de la dernière version dun projet - Utilisé par App\EventListener\ProjetDerniereVersion
+     */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
+        $sj = $this->sj;
         if ($projet->getVersion() == null) {
-            return null;
+            $sj->throwException(__METHOD__ . ':' . __LINE__ . " Projet $projet = PAS DE VERSION");
         }
 
         $iterator = $projet->getVersion()->getIterator();
-        //$cnt = count(iterator_to_array($iterator));
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
 
         $iterator->uasort(function ($a, $b) {
-            if ($a->getSession() == null) {
-                return true;
-            } elseif ($b->getSession() == null) {
-                return false;
-            } else {
-                return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
+            if ($a->getNbVersion() == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
             }
+            if ($b->getNbVersion() == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+            }
+            return strcmp($a->getNbVersion(), $b->getNbVersion());
         });
 
         $sortedVersions =  iterator_to_array($iterator) ;
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
         $result = end($sortedVersions);
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
 
-        if (! $result instanceof Version) {
-            return null;
+        // On met à jour projet si nécessaire
+        if ($projet->getVersionDerniere() != $result)
+        {
+            $projet->setVersionDerniere($result);
+            $em = $this->em;
+            $em->persist($projet);
+            $em->flush($projet);
         }
-
-        // update BD
-        $projet->setVersionDerniere($result);
-        $em = $this->em;
-        $em->persist($projet);
-        $em->flush();
-
         return $result;
     }
-    //public function calculDerniereVersion(Projet $projet) { return $this->calculVersionDerniere($projet); }
 
     /**
      * calculVersionActive

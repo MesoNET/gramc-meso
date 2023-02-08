@@ -373,7 +373,8 @@ class ProjetController extends AbstractController
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet())) {
+                if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet()))
+                {
                     $workflow->execute(Signal::CLK_ARR, $version->getProjet());
                     // Supprime toutes les expertises
                     $expertises = $version->getExpertise()->toArray();
