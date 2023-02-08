@@ -699,23 +699,31 @@ class VersionSpecController extends AbstractController
         $new_version->setIdVersion($nb . $projet->getIdProjet());
         $new_version->setProjet($projet);
         $new_version->setEtatVersion(Etat::EDITION_DEMANDE);
-        //$sv->setLaboResponsable($new_version, $version->getResponsable());
 
-        // nouvelles collaborateurVersions
         Functions::sauvegarder($new_version, $em, $this->lg);
 
+        // Nouveaux collaborateurVersions
         $collaborateurVersions = $version->getCollaborateurVersion();
         foreach ($collaborateurVersions as $collaborateurVersion) {
             
             // ne pas reprendre un collaborateur sans login et marqué comme supprimé
-            // Attention un collaborateurVersion avec login = false mais loginname renseigné signifie ue le compte
-            // n'a pas encore été détruit: dans ce cas on le reprends !'
+            // Attention un collaborateurVersion avec login = false mais loginname renseigné signifie que le compte
+            // n'a pas encore été détruit: dans ce cas on le reprend !
             if ($collaborateurVersion->getDeleted() &&
                 $collaborateurVersion->getClogin() === false &&
                 $collaborateurVersion->getLoginname() === null ) continue;
 
             $newCollaborateurVersion    = clone  $collaborateurVersion;
-            //$em->detach( $newCollaborateurVersion );
+
+            // Les users connectés au collaborateurVersion doivent être clonés à la main !
+            $users = $collaborateurVersion->getUser();
+            foreach ($users as $u)
+            {
+                $newCollaborateurVersion->addUser($u);
+                $u->addCollaborateurVersion($newCollaborateurVersion);
+                $em->persist($u);
+            }
+            
             $newCollaborateurVersion->setVersion($new_version);
             $em->persist($newCollaborateurVersion);
         }

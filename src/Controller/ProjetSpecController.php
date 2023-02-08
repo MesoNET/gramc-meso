@@ -176,10 +176,13 @@ class ProjetSpecController extends AbstractController
         $projets_resp  = [];
         foreach ($list_projets_resp as $projet) {
             $versionActive  =   $sp->versionActive($projet);
-            if ($versionActive != null) {
+            if ($versionActive != null)
+            {
                 $rallonges = $versionActive ->getRallonge();
                 $cpt_rall  = count($rallonges->toArray());
-            } else {
+            }
+            else
+            {
                 $rallonges = null;
                 $cpt_rall  = 0;
             }
@@ -204,7 +207,9 @@ class ProjetSpecController extends AbstractController
                     $passwd    = Functions::simpleDecrypt($passwd);
                     $pwd_expir = $u->getPassexpir();
                 } */
-            } else {
+            }
+            else
+            {
                 $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
                 $loginnames['BOREALE']['login'] = false;

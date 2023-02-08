@@ -1949,9 +1949,10 @@ class Version implements Demande
 
 
 /*
- * Modifier le schema de la base de données:
+ * Modifier le schema de la base de données (depuis 0.2.x):
  *
- * ALTER TABLE version ADD limit_date DATETIME DEFAULT NULL, CHANGE id_session id_session VARCHAR(3) DEFAULT NULL, CHANGE id_projet id_projet VARCHAR(10) DEFAULT NULL, CHANGE prj_l_labo prj_l_labo VARCHAR(300) DEFAULT NULL, CHANGE prj_titre prj_titre VARCHAR(500) DEFAULT NULL, CHANGE prj_financement prj_financement VARCHAR(100) DEFAULT NULL, CHANGE prj_genci_machines prj_genci_machines VARCHAR(60) DEFAULT NULL, CHANGE prj_genci_centre prj_genci_centre VARCHAR(60) DEFAULT NULL, CHANGE prj_genci_heures prj_genci_heures VARCHAR(30) DEFAULT NULL, CHANGE prj_genci_dari prj_genci_dari VARCHAR(15) DEFAULT NULL, CHANGE code_nom code_nom VARCHAR(150) DEFAULT NULL, CHANGE libelle_thematique libelle_thematique VARCHAR(200) DEFAULT NULL, CHANGE maj_stamp maj_stamp DATETIME DEFAULT NULL, CHANGE jour_j jour_j DATETIME DEFAULT NULL, CHANGE end_date end_date DATETIME DEFAULT NULL;
+ * ALTER TABLE version ADD limit_date DATETIME DEFAULT NULL;
+ * ALTER TABLE version CHANGE end_date end_date DATETIME DEFAULT NULL;
  *
  * UPDATE version SET `limit_date`=adddate(`jour_j`,365);
  *
