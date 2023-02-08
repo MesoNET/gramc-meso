@@ -1053,6 +1053,17 @@ class ExpertiseController extends AbstractController
                     $signal = Signal::CLK_VAL_EXP_KO;
                 }
 
+                // Positionner la date de fin de la version active, AVANT de changer son état
+                // SAUF si l'état de départ est EN_SURSIS
+                $projet = $expertise->getVersion()->getProjet();
+                $veract = $projet->getVersionActive();
+                if ($veract->getEtatVersion() != Etat::EN_SURSIS)
+                {
+                    $grdt = $this->grdt;
+                    $veract->setEndDate($grdt);
+                    $em->persist($veract);
+                }
+                
                 $rtn      = $workflow->execute($signal, $expertise->getVersion()->getProjet());
                 if ($rtn != true) {
                     $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
