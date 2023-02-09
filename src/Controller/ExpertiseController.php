@@ -1054,10 +1054,10 @@ class ExpertiseController extends AbstractController
                 }
 
                 // Positionner la date de fin de la version active, AVANT de changer son état
-                // SAUF si l'état de départ est EN_SURSIS
+                // SAUF si l'état de départ est STANDBY
                 $projet = $expertise->getVersion()->getProjet();
                 $veract = $projet->getVersionActive();
-                if ($veract->getEtatVersion() != Etat::EN_SURSIS)
+                if ($veract->getEtatVersion() != Etat::STANDBY)
                 {
                     $grdt = $this->grdt;
                     $veract->setEndDate($grdt);

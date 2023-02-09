@@ -1085,9 +1085,8 @@ class ProjetController extends AbstractController
         $projets = $em->getRepository(Projet::class)->findAll();
         $sp      = $this->sp;
 
-        foreach (['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
+        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
             $etat_projet[$e]         = 0;
-            $etat_projet[$e.'_test'] = 0;
         }
 
         $data = [];
@@ -1101,11 +1100,7 @@ class ProjetController extends AbstractController
             $version  = $projet->getVersionDerniere();
             $metaetat = strtolower($sp->getMetaEtat($projet));
 
-            if ($projet->getTypeProjet() == Projet::PROJET_TEST) {
-                $etat_projet[$metaetat.'_test'] += 1;
-            } else {
-                $etat_projet[$metaetat] += 1;
-            }
+            $etat_projet[$metaetat] += 1;
 
             $data[] = [
                     'projet'       => $projet,

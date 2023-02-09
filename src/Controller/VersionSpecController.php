@@ -661,7 +661,7 @@ class VersionSpecController extends AbstractController
         $projet = $version->getProjet();
         $verder = $projet->getVersionDerniere();
         
-        if ($verder->getEtatVersion() != Etat::EN_STANDBY && $verder->getEtatVersion() != Etat::EN_SURSIS && $verder->getEtatVersion() != Etat::ACTIF)
+        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::STANDBY)
         {
             $sj->errorMessage("VersionController:renouvellementAction version " . $verder->getIdVersion() . " existe déjà !");
             return $this->redirect($this->generateUrl('projet_accueil'));
@@ -670,7 +670,7 @@ class VersionSpecController extends AbstractController
         // Si version est en état ACTIF on peut renouveler
         // Mais dans ce cas la date limite est inchangée, la durée d'activité de la nouvelle version sera limitée
 
-        // Si version est en état EN_STANDBY ou EN_SURSIS on peut renouveler
+        // Si version est en état ACTIF_R ou STANDBY on peut renouveler
         // Mais dans ce cas la date limite sera positionnée à start_date + 365j
 
         $old_dir = $sv->imageDir($verder);
@@ -679,13 +679,14 @@ class VersionSpecController extends AbstractController
         // nouvelle version
         $new_version = clone $verder;
 
-        if ($etat_version==Etat::EN_STANDBY || $etat_version==Etat::EN_SURSIS)
+        if ($etat_version==Etat::ACTIF_R || $etat_version==Etat::STANDBY)
         {
             $new_version->setPrjGenciCentre('');
             $new_version->setDemHeuresUft(0);
             $new_version->setDemHeuresCriann(0);
             $new_version->setAttrHeuresUft(0);
             $new_version->setAttrHeuresCriann(0);
+            $new_version->setStartDate($grdt);
             $new_version->setLimitDate($grdt->getNew()->add(new \DateInterval('P365D')));
         }
         

@@ -21,10 +21,11 @@ use App\GramcServices\Cron\GramcCronTask\TempsCronTask;
 class Cron
 {
     private $taches = [];
-    public function __construct(private NopCronTask $nops )
+    public function __construct(private NopCronTask $nct,
+                                private TempsCronTask $tct)
     {
-        $this->taches[] = $nops;
-        //$this->taches[] = $ovpc;
+        $this->taches[] = $nct;
+        $this->taches[] = $tct;
         //$this->taches[] = $tpsc; 
     }
 

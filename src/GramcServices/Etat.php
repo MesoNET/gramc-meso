@@ -34,8 +34,8 @@ class Etat
     public const EN_ATTENTE                = 4;
     public const ACTIF                     = 5;
     public const NOUVELLE_VERSION_DEMANDEE = 6;
-    public const EN_STANDBY                = 7;
-    public const EN_SURSIS                 = 8;
+    public const ACTIF_R                   = 7;
+    public const STANDBY                   = 8;
     public const TERMINE                   = 9;
     public const ANNULE                    = 10;
     public const FIN_ETATS                 = 11;
@@ -57,8 +57,8 @@ class Etat
             self::EN_ATTENTE                =>  'EN_ATTENTE',
             self::ACTIF                     =>  'ACTIF',
             self::NOUVELLE_VERSION_DEMANDEE =>  'NOUVELLE_VERSION_DEMANDEE',
-            self::EN_STANDBY                =>  'EN_STANDBY',
-            self::EN_SURSIS                 =>  'EN_SURSIS',
+            self::ACTIF_R                   =>  'ACTIF_R',
+            self::STANDBY                   =>  'STANDBY',
             self::TERMINE                   =>  'TERMINE',
             self::ANNULE                    =>  'ANNULE',
             self::FIN_ETATS                 =>  'FIN_ETATS',

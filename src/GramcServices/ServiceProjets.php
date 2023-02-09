@@ -104,75 +104,130 @@ class ServiceProjets
     * un "état" qui n'est pas utilisé dans les workflows mais qui peut être
     * affiché et qui a du sens pour les utilisateurs
     ************************************************************/
+    //public function getMetaEtat_SUPPR(Projet $p): string
+    //{
+        //$etat_projet = $p->getEtatProjet();
+        //$type_projet = $p->gettypeProjet();
+
+        //// Projet terminé
+        //if ($etat_projet == Etat::TERMINE) {
+            //return 'TERMINE';
+        //}
+
+        //// Projet non renouvelable:
+        ////    - Projet test   = toujours non renouvelable
+        ////    - Autres projets= sera bientôt terminé car expert a dit "refusé"
+        ////
+        //if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
+            //return 'REFUSE';
+        //}
+
+        //$veract  = $this->versionActive($p);
+        //$version = $p->derniereVersion();
+        //// Ne doit pas arriver: un projet a toujours une dernière version !
+        //// Peut-être la BD est-elle en rade donc on utilise le logger
+        //if ($version == null) {
+            //$this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
+                                            //$p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
+            //return 'STANDBY';
+        //}
+        //$etat_version   =   $version->getEtatVersion();
+
+        //if ($etat_version ==  Etat::EDITION_DEMANDE) {
+            //return 'EDITION';
+        //} elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
+            //return 'EXPERTISE';
+        //} elseif ($etat_version ==  Etat::EDITION_TEST) {
+            //return 'EDITION';
+        //} elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
+            //return 'EXPERTISE';
+        //} elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
+            //if ( $type_projet != Projet::PROJET_DYN )
+            //{
+                //// Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
+                //$session = $this->ss->getSessionCourante();
+                //if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
+                    //return 'NONRENOUVELE';
+                //} // Non renouvelé
+                //else {
+                    //return 'ACCEPTE';
+                //} // Projet ou rallonge accepté par le comité d'attribution
+            //}
+            //else
+            //{
+                //// TODO - Remettre le signe particulier 30 jours avant le renouvellement
+                //return 'ACCEPTE';
+            //}
+        //} elseif ($etat_version == Etat::ACTIF_TEST) {
+            //return 'ACCEPTE';
+        //} // projet-test non renouvelable
+        //elseif ($etat_version == Etat::EN_ATTENTE) {
+            //return 'ACCEPTE';
+        //} elseif ($etat_version == Etat::TERMINE) {
+            //if ($p->getNepasterminer()) {
+                //return 'AGARDER';
+            //} else {
+                //return 'STANDBY';
+            //}
+        //} elseif ($veract       == null) {
+            //return 'STANDBY';
+        //}
+    //}
+
+    /* PLUS SIMPLE POUR LES PROJETS DYNAMIQUES */
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
         $type_projet = $p->gettypeProjet();
 
         // Projet terminé
-        if ($etat_projet == Etat::TERMINE) {
+        if ($etat_projet == Etat::TERMINE)
+        {
             return 'TERMINE';
         }
 
-        // Projet non renouvelable:
-        //    - Projet test   = toujours non renouvelable
-        //    - Autres projets= sera bientôt terminé car expert a dit "refusé"
-        //
-        if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
+        // Projet non renouvelable (refusé)
+        if ($etat_projet == Etat::NON_RENOUVELABLE)
+        {
             return 'REFUSE';
         }
 
-        $veract  = $this->versionActive($p);
-        $version = $p->derniereVersion();
+        //$veract  = $this->versionActive($p);
+        $verder = $p->derniereVersion();
+
         // Ne doit pas arriver: un projet a toujours une dernière version !
         // Peut-être la BD est-elle en rade donc on utilise le logger
-        if ($version == null) {
+        if ($verder == null)
+        {
             $this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
                                             $p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
-            return 'STANDBY';
+            return 'INCONNU';
         }
-        $etat_version   =   $version->getEtatVersion();
 
-        if ($etat_version ==  Etat::EDITION_DEMANDE) {
+        $etat_version   =   $verder->getEtatVersion();
+        if ($etat_version ==  Etat::EDITION_DEMANDE)
+        {
             return 'EDITION';
-        } elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
+        }
+        elseif ($etat_version ==  Etat::EDITION_EXPERTISE)
+        {
             return 'EXPERTISE';
-        } elseif ($etat_version ==  Etat::EDITION_TEST) {
-            return 'EDITION';
-        } elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
-            return 'EXPERTISE';
-        } elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
-            if ( $type_projet != Projet::PROJET_DYN )
-            {
-                // Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
-                $session = $this->ss->getSessionCourante();
-                if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
-                    return 'NONRENOUVELE';
-                } // Non renouvelé
-                else {
-                    return 'ACCEPTE';
-                } // Projet ou rallonge accepté par le comité d'attribution
-            }
-            else
-            {
-                // TODO - Remettre le signe particulier 30 jours avant le renouvellement
-                return 'ACCEPTE';
-            }
-        } elseif ($etat_version == Etat::ACTIF_TEST) {
+        }
+        elseif ($etat_version ==  Etat::ACTIF)
+        {
             return 'ACCEPTE';
-        } // projet-test non renouvelable
-        elseif ($etat_version == Etat::EN_ATTENTE) {
-            return 'ACCEPTE';
-        } elseif ($etat_version == Etat::TERMINE) {
-            if ($p->getNepasterminer()) {
-                return 'AGARDER';
-            } else {
-                return 'STANDBY';
-            }
-        } elseif ($veract       == null) {
+        }
+        elseif ($etat_version == Etat::ACTIF_R)
+        {
+            return 'NONRENOUVELE';
+        }
+        elseif ($etat_version == Etat::STANDBY)
+        {
             return 'STANDBY';
         }
+        return 'INCONNU';
     }
+
 
     /**
       * Liste tous les projets qui ont une version cette annee

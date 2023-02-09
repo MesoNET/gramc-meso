@@ -1839,8 +1839,9 @@ class AdminuxController extends AbstractController
      * @Route("/gramcdate/set", name="grdt_set", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
-     * Modifie la gramcdate en ajoutant d jours à la date d'aujourd'hui
-     * OU en revenant à la date d'aujourd'hui
+     * shift: Modifie la gramcdate en ajoutant d jours à la date d'aujourd'hui
+     *        Si d vaut today, revient à la date d'aujourd'hui
+     * rel:   Si rel vaut true, le shift est calculé par rapport à la gramcdate actuellement positionnée.
      * 
      * Si le paramètre "cron" est spécifié, le service cron est appelé après le changement de date
      * (attention on ne peut pas appeler "cron" avec "shift" : "today")
@@ -1848,13 +1849,15 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -X POST -d '{ "shift": "2" }' https://.../adminux/gramcdate/set
+    // curl --netrc -X POST -d '{ "rel" : true, shift": "2" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
-    // curl --netrc -X POST -d '{ "shift": "today", "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
+    // curl --netrc -X POST -d '{ "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
 
     public function setDateAction(Request $request, LoggerInterface $lg): Response
     {
         $grdt = $this->grdt;
         $cr = $this->cr;
+        $sj = $this->sj;
         $em = $this->em;
         
         if ($this->getParameter('kernel.debug') == false)
@@ -1864,6 +1867,7 @@ class AdminuxController extends AbstractController
         else
         {
             $shift = 0;
+            $rel = false;
             $cron = false;
             $content  = json_decode($request->getContent(), true);
             if ($content == null)
@@ -1884,7 +1888,11 @@ class AdminuxController extends AbstractController
             {
                 $cron = boolval($content['cron']);
             }
-
+            if (!empty($content['rel']))
+            {
+                $rel = boolval($content['rel']);
+            }
+            
             $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
             if ($grdt_now == null)
             {
@@ -1898,13 +1906,23 @@ class AdminuxController extends AbstractController
             }
             else
             {
+                $interval = 0;
                 $shift = intval($shift);
                 if ($shift <= 0)
                 {
                     return new Response(json_encode(['KO' => 'shift vaut soit un entier positif soit "today"']));
                 }
+
+                if ($rel)
+                {
+                    $date = $grdt->getNew();
+                }
+                else
+                {
+                    $date = new \DateTime();
+
+                }
                 $dateInterval = new \DateInterval('P'.$shift.'D');
-                $date = new \DateTime();
                 $date -> add($dateInterval);
                 $grdt_now->setVal($date->format("Y-m-d"));
                 $em->persist($grdt_now);

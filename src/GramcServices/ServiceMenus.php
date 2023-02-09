@@ -555,7 +555,7 @@ class ServiceMenus
     /*
      * Création d'un projet de type PROJET_DYN:
      *     - Peut être créé n'importe quand
-     *     - Renouvelable au bout de 11 mois
+     *     - Renouvelable
      *     - En standby au bout de 12 mois
      *     - Terminé 12 mois après le passage en standby si pas renouvelé entre temps
      *     - Créé seulement par un permanent, qui devient responsable du projet
@@ -1270,7 +1270,7 @@ class ServiceMenus
         $projet = $version->getProjet();
         $verder = $projet->getVersionDerniere();
         
-        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::EN_STANDBY && $verder->getEtatVersion() != Etat::EN_SURSIS)
+        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::STANDBY)
         {
             $menu['raison'] = "Pas possible de créer une nouvelle version pour l'instant";
         }

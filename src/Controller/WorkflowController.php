@@ -399,8 +399,8 @@ class WorkflowController extends AbstractController
                                 'EN_ATTENTE'                    =>   Etat::EN_ATTENTE,
                                 'ACTIF'                         =>   Etat::ACTIF,
                                 'TERMINE'                       =>   Etat::TERMINE,
-                                'EN_STANDBY'                    =>   Etat::EN_STANDBY,
-                                'EN_SURSIS'                     =>   Etat:: EN_SURSIS,
+                                'ACTIF_R'                       =>   Etat::ACTIF_R,
+                                'STANDBY'                       =>   Etat::STANDBY,
                                 'ANNULE'                        =>   Etat::ANNULE,
                                 ],
                     ]

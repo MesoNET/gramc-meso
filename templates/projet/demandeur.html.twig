@@ -65,7 +65,7 @@
             {% endif %}
         </td>
 
-        <td>{{ item.projet.versionactive.limitdate|date('d-m-Y')}}</td>
+        <td>{% if item.projet.versionactive == null %}TERMINE{% else %}{{ item.projet.versionactive.limitdate|date('d-m-Y')}}{% endif %}</td>
 
         {% if noconso==false %}
             <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
