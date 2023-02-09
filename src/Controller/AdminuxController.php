@@ -45,6 +45,7 @@ use App\GramcServices\ServiceSessions;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
+use App\GramcServices\Cron\Cron;
 
 use Psr\Log\LoggerInterface;
 
@@ -77,8 +78,8 @@ class AdminuxController extends AbstractController
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceUsers $su,
+        private Cron $cr,
         private TokenStorageInterface $tok,
-
         private EntityManagerInterface $em
     ) {}
 
@@ -1840,14 +1841,20 @@ class AdminuxController extends AbstractController
      *
      * Modifie la gramcdate en ajoutant d jours à la date d'aujourd'hui
      * OU en revenant à la date d'aujourd'hui
+     * 
+     * Si le paramètre "cron" est spécifié, le service cron est appelé après le changement de date
+     * (attention on ne peut pas appeler "cron" avec "shift" : "today")
      *
      */
 
     // curl --netrc -X POST -d '{ "shift": "2" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
+    // curl --netrc -X POST -d '{ "shift": "today", "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
+
     public function setDateAction(Request $request, LoggerInterface $lg): Response
     {
         $grdt = $this->grdt;
+        $cr = $this->cr;
         $em = $this->em;
         
         if ($this->getParameter('kernel.debug') == false)
@@ -1856,6 +1863,8 @@ class AdminuxController extends AbstractController
         }
         else
         {
+            $shift = 0;
+            $cron = false;
             $content  = json_decode($request->getContent(), true);
             if ($content == null)
             {
@@ -1870,6 +1879,10 @@ class AdminuxController extends AbstractController
             else
             {
                 $shift = $content['shift'];
+            }
+            if (!empty($content['cron']))
+            {
+                $cron = boolval($content['cron']);
             }
 
             $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
@@ -1897,6 +1910,12 @@ class AdminuxController extends AbstractController
                 $em->persist($grdt_now);
             }
             $em->flush();
+
+            // Exécuter le cron si demandé
+            if ($cron)
+            {
+                $cr->execute();
+            }
 
             return new Response(json_encode(['OK' => '']));
         }
