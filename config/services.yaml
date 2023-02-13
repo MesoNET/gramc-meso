@@ -184,3 +184,6 @@ services:
 
     App\Command\InitTypeVersion:
         tags: ["console.command"]
+
+    App\Command\InitLimitDate:
+        tags: ["console.command"]

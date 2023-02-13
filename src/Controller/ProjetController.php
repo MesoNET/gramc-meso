@@ -311,20 +311,20 @@ class ProjetController extends AbstractController
      * @Route("/{id}/nepasterminer", name="nepasterminer_projet", methods={"GET"})
      * Method({"GET"})
      */
-    public function nepasterminerAction(Projet $projet, Request $request): Response
-    {
-        $em = $this->em;
+    //public function nepasterminerAction(Projet $projet, Request $request): Response
+    //{
+    //    $em = $this->em;
 
-        $projet->setNepasterminer(true);
-        $em->persist($projet);
-        $em->flush();
-        return $this->render(
-            'projet/nepasterminer.html.twig',
-            [
-            'projet' => $projet,
-            ]
-        );
-    }
+    //    $projet->setNepasterminer(true);
+    //    $em->persist($projet);
+    //    $em->flush();
+    //    return $this->render(
+    //        'projet/nepasterminer.html.twig',
+    //        [
+    //        'projet' => $projet,
+    //        ]
+    //    );
+    //}
 
     /**
      * Permettre la fermeture d'un projet
@@ -333,23 +333,23 @@ class ProjetController extends AbstractController
      * @Route("/{id}/onpeutterminer", name="onpeutterminer_projet", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function onpeutterminerAction(Projet $projet, Request $request): Response
-    {
-        $em = $this->em;
+    //public function onpeutterminerAction(Projet $projet, Request $request): Response
+    //{
+    //    $em = $this->em;
 
-        $projet->setNepasterminer(false);
-        $em->persist($projet);
-        $em->flush();
-        return $this->render(
-            'projet/onpeutterminer.html.twig',
-            [
-            'projet' => $projet,
-            ]
-        );
-    }
+    //  $projet->setNepasterminer(false);
+    // $em->persist($projet);
+    // $em->flush();
+    // return $this->render(
+    //      'projet/onpeutterminer.html.twig',
+    //      [
+    //      'projet' => $projet,
+    //      ]
+    //    );
+    //}
 
     /**
-     * back une version
+     * Retour en arrière
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
@@ -1085,8 +1085,8 @@ class ProjetController extends AbstractController
         $projets = $em->getRepository(Projet::class)->findAll();
         $sp      = $this->sp;
 
-        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
-            $etat_projet[$e]         = 0;
+        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
+            $etat_projet[$e] = 0;
         }
 
         $data = [];

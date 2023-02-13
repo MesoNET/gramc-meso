@@ -44,7 +44,7 @@ use Doctrine\ORM\EntityManager;
  ************************/
 abstract class Transition
 {
-    public const DEBUG = false;   // Activer - ou pas - le debug dans les transitions
+    public const DEBUG = true;   // Activer - ou pas - le debug dans les transitions
                                   // ATTENTION ! Mettre à false pour la prod, sinon perte de perfs !
     public const FAST  = false;   // TODO - VIRER TOUTE PROPAGATION DANS canExecute !!!
                                   // Si FAST est à false, on appelle canExecute pour TOUS les objets
@@ -138,7 +138,7 @@ abstract class Transition
             Functions::sauvegarder($object, $this->em);
             $reflect = new \ReflectionClass($object);
             $classe  = $reflect->getShortName();
-            $this->sj->debugMessage(__FILE__ . ":" . __LINE__ . " $classe " . $object . " est passé de l'état " . $old_etat . " à " . $object->getObjectState() . " suite au signal " . $this->getSignal());
+            $this->sj->debugMessage('>>> ' . __FILE__ . ":" . __LINE__ . " $classe " . $object . " est passé de l'état " . $old_etat . " à " . $object->getObjectState() . " suite au signal " . $this->getSignal());
 
         } else {
             $object->setObjectState($this->getEtat());

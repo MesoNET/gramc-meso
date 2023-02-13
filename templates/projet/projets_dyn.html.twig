@@ -133,8 +133,8 @@
                             {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
                         </td>
                         <td>{{ item.count }}</td>
-                        <td>{{ item.version.startdate|date('d-m-Y')}}</td>
-                        <td>{{ item.version.limitdate|date('d-m-Y')}}</td>
+                        <td>{% if item.version.startdate != null %}{{ item.version.startdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
+                        <td>{% if item.version.limitdate != null %}{{ item.version.limitdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
                         <td>{{ item.version.attrheuresuft }}</td>
                         <td>{{ item.version.attrheurescriann }}</td>
                     </tr>

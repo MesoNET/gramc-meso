@@ -660,8 +660,7 @@ class VersionSpecController extends AbstractController
         // On s'assure de travailler avec la version DERNIERE
         $projet = $version->getProjet();
         $verder = $projet->getVersionDerniere();
-        
-        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::STANDBY)
+        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE)
         {
             $sj->errorMessage("VersionController:renouvellementAction version " . $verder->getIdVersion() . " existe déjà !");
             return $this->redirect($this->generateUrl('projet_accueil'));
@@ -670,7 +669,7 @@ class VersionSpecController extends AbstractController
         // Si version est en état ACTIF on peut renouveler
         // Mais dans ce cas la date limite est inchangée, la durée d'activité de la nouvelle version sera limitée
 
-        // Si version est en état ACTIF_R ou STANDBY on peut renouveler
+        // Si version est en état ACTIF_R on peut renouveler
         // Mais dans ce cas la date limite sera positionnée à start_date + 365j
 
         $old_dir = $sv->imageDir($verder);
@@ -679,14 +678,20 @@ class VersionSpecController extends AbstractController
         // nouvelle version
         $new_version = clone $verder;
 
-        if ($etat_version==Etat::ACTIF_R || $etat_version==Etat::STANDBY)
+        if ($etat_version==Etat::ACTIF_R ||$etat_version==Etat::TERMINE )
         {
             $new_version->setPrjGenciCentre('');
+            $new_version->setPrjGenciDari('');
+            $new_version->setPrjGenciHeures(0);
+            $new_version->setPrjGenciMachines('');
             $new_version->setDemHeuresUft(0);
             $new_version->setDemHeuresCriann(0);
             $new_version->setAttrHeuresUft(0);
             $new_version->setAttrHeuresCriann(0);
             $new_version->setStartDate($grdt);
+
+            // On fixe la date limite à la date d'aujourd'hui + 365 jours, mais c'est provisoire
+            // La date limite sera fixée de manière définitive lorsqu'on validera la version
             $new_version->setLimitDate($grdt->getNew()->add(new \DateInterval('P365D')));
         }
         

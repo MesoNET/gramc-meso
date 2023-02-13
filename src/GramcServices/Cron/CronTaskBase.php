@@ -8,6 +8,7 @@ use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\Workflow\Version4\Version4Workflow;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 
 
 /********************************************
@@ -20,7 +21,8 @@ abstract class CronTaskBase
                                 protected ServiceJournal $sj,
                                 protected ServiceProjets $sp,
                                 protected GramcDate $grdt,
-                                protected version4Workflow $v4w)
+                                protected version4Workflow $v4w,
+                                protected projet4Workflow $p4w)
                                 
     {}
     

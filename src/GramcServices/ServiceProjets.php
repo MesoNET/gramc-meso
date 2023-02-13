@@ -187,10 +187,10 @@ class ServiceProjets
         }
 
         // Projet non renouvelable (refusé)
-        if ($etat_projet == Etat::NON_RENOUVELABLE)
-        {
-            return 'REFUSE';
-        }
+        //if ($etat_projet == Etat::NON_RENOUVELABLE)
+        //{
+        //    return 'REFUSE';
+        //}
 
         //$veract  = $this->versionActive($p);
         $verder = $p->derniereVersion();
@@ -200,7 +200,7 @@ class ServiceProjets
         if ($verder == null)
         {
             $this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
-                                            $p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
+                                            $p->getIdProjet() . " version active: $p n'a PAS de dernière version !");
             return 'INCONNU';
         }
 
@@ -217,11 +217,17 @@ class ServiceProjets
         {
             return 'ACCEPTE';
         }
+
+        // quelques jours avant la fin du projet: le projet est encore actif mais il
+        // se grouiller de le renouveler si on veut continuer
         elseif ($etat_version == Etat::ACTIF_R)
         {
             return 'NONRENOUVELE';
         }
-        elseif ($etat_version == Etat::STANDBY)
+
+        // Si la dernière version est terminée et le projet renouvelable, il est en standby
+        // ie on ne peut pas calculer mais on peut encore renouveler
+        elseif ($etat_version == Etat::TERMINE)
         {
             return 'STANDBY';
         }
@@ -1612,7 +1618,7 @@ class ServiceProjets
     //}
 
     /*
-     * Calcul de la dernière version dun projet - Utilisé par App\EventListener\ProjetDerniereVersion
+     * Calcul de la dernière version d'un projet - Utilisé par App\EventListener\ProjetDerniereVersion
      */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
@@ -1637,7 +1643,8 @@ class ServiceProjets
 
         $sortedVersions =  iterator_to_array($iterator) ;
         $result = end($sortedVersions);
-
+        if ($result === false) return null;
+        
         // On met à jour projet si nécessaire
         if ($projet->getVersionDerniere() != $result)
         {
@@ -1700,4 +1707,24 @@ class ServiceProjets
     {
         return $this->calculVersionActive($projet);
     }
+
+    /**
+     * getVersionsNonTerminees
+     *
+     * renvoie les versions non terminées d'un projet
+     *
+     *************************************************/
+     public function getVersionsNonTerminees(Projet $p) : array
+     {
+         $versions = $p->getVersion();
+         $vnt = [];
+         foreach ($versions as $v)
+         {
+             if ($v->getEtatVersion() != Etat::ANNULE && $v->getEtatVersion() != Etat::TERMINE)
+             {
+                 $vnt[] = $v;
+             }
+         }
+         return $vnt;
+     }
 }

@@ -86,7 +86,6 @@ class Version4Workflow extends Workflow
                 Etat::ACTIF,
                 [
                 Signal::DAT_ACTR       => new Version4Transition(Etat::ACTIF_R, Signal::DAT_ACTR, [ 'R' => 'version_a_renouveler']),
-                Signal::DAT_STDBY      => new Version4Transition(Etat::STANDBY, Signal::DAT_STDBY,[ 'R' => 'projet_en_standby']),
                 Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
                 Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
                 Signal::CLK_ARR        => new NoTransition(0, 0),
@@ -98,19 +97,10 @@ class Version4Workflow extends Workflow
                 Etat::ACTIF_R,
                 [
                 Signal::DAT_ACTR       => new NoTransition(0,0),
-                Signal::DAT_STDBY      => new Version4Transition(Etat::STANDBY, Signal::DAT_STDBY,[ 'R' => 'projet_en_standby']),
+                Signal::CLK_ARR        => new NoTransition(0,0),
                 Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
                 Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
-                Signal::CLK_FERM       => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
-                ]
-            )
-            ->addState(
-                Etat::STANDBY,
-                [
-                Signal::DAT_ACTR       => new NoTransition(0,0),
-                Signal::DAT_STDBY      => new NoTransition(0,0),
-                Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
-                Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
+                Signal::CLK_VAL_DEM    => new NoTransition(0, 0),
                 Signal::CLK_FERM       => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )

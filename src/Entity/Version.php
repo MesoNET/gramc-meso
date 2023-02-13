@@ -308,15 +308,16 @@ class Version implements Demande
     private $projet;
 
     /**
-    * @ORM\PostUpdate
+    * @
+    * ORM\PostUpdate
     */
-    public function setVersionActive()
-    // on ne sait pas si cela marche parce que l'on ne s'en sert pas
-    {
-        if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
-            $this->projet->setVersionActive($this);
-        }
-    }
+    //public function setVersionActive()
+    //// on ne sait pas si cela marche parce que l'on ne s'en sert pas
+    //{
+    //    if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
+    //        $this->projet->setVersionActive($this);
+    //    }
+    //}
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -1680,10 +1681,6 @@ class Version implements Demande
         elseif ($etat_version == Etat::TERMINE)
         {
             return 'TERMINE';
-        }
-        elseif ($etat_version == etat::STANDBY)
-        {
-            return 'STANDBY';
         }
         return 'INCONNU';
     }
