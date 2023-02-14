@@ -28,10 +28,6 @@ package Classes <<Frame>> {
         - string codeLicence
         - string codeDependances
 
-        - demForm0
-        - ...
-        - demForm9
-        ...
         - int demHeuresUft
         - int attrHeuresUft
         - int consoHeuresUft
@@ -74,7 +70,19 @@ package Classes <<Frame>> {
         - bool login
         - bool clogin
     }
-    
+
+    class FormationVersion <<Demandes de formation>>{
+        - int nombre
+    }
+
+    class Formation <<formation>> {
+        - int numero_form
+        - string acro_form
+        - string nom_form
+        - date start_date
+        - date end_date
+    }
+
     class Expertise <<Décisions des valideurs>> {
         - string commentaireExterne
         - string commentaireInterne
@@ -87,7 +95,14 @@ package Classes <<Frame>> {
         - bool definitif
         + getValidation()
     }
-    
+
+    class Clessh <<Trousseau de clés>> {
+        - string nom
+        - string pub
+        - string emp
+        - bool rvk
+    }
+
     together {
         class Statut
         class Laboratoire
@@ -105,11 +120,6 @@ package Classes <<Frame>> {
     
     class User <<Comptes sur un serveur>> {
         - string loginname
-        
-        - string password
-        - date passexpir
-    
-        - string pubkey
         + getLoginName()
     }
     
@@ -122,10 +132,16 @@ package Classes <<Frame>> {
     Version "1" o-- "0..n" CollaborateurVersion
     Version "0..n" o-- Thématique
     Version "0..n" o-- "0..n" Publication
+
+    Version "1" o-- "0..n" FormationVersion
+    Formation "1" o-- "0..n" FormationVersion
+    
     Expertise "1" o-- "1" Individu
     Expertise "1" o-- "1" Version
-    CollaborateurVersion  -- "0..2" User
+    CollaborateurVersion "1..n"  -- "0..2" User
+
     User "1" o-- "1" Serveur
+    User "0..n" --o "1" Clessh
 
     class Compta <<Données de conso>>{
         - date date;
@@ -136,11 +152,14 @@ package Classes <<Frame>> {
     }
 
     ' Supprimé pour alléger la figure
-    'class Invitation <<Avoir la bonne @ mail>> {
-    '   - string clef
-    '   - string creationStamp
-    '   + string getClef()
-    '}
+    class Invitation <<Avoir la bonne @ mail>> {
+       - string clef
+       - date creationStamp
+       + string getClef()
+    }
+
+    Individu "1" -- "1" Invitation : invited
+    Individu "1" -- "1" Invitation : inviting
 
     ' interface UserInterface
     ' Individu --|> UserInterface
