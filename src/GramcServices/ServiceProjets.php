@@ -272,7 +272,7 @@ class ServiceProjets
 
     /***********
      * Renvoie la liste des projets dynamiques qui ont une version en cours cette année
-     * $annee      = Année (4 charactères - ex. 2022)
+     * $annee      = Année - int, soit 0 (défaut) soit >2000 (ex. 2022)
      * $isRecup... = Non utilisé, pour la compatibilité avec ProjetsParAnnee
      * $sess_lbl   = Non utilisé, pour la compatibilité avec ProjetsParAnnee
      *
@@ -282,7 +282,7 @@ class ServiceProjets
      *         - Le tableau de la répartition entre les ressources
      *
      ********************/
-    public function projetsDynParAnnee($annee, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
+    public function projetsDynParAnnee($annee=0, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
     {
         $em = $this->em;
         
@@ -388,27 +388,32 @@ class ServiceProjets
 
     /*********************************
      * Renvoie la liste des versions de projets dynamiques de l'année passée en paramètres
+     * Si annee vaut zéro, récupère toutes les versions de projets dynamiques
      * 
      ************************************************/
 
      private function getVersionsDynParAnnee(int $annee): array
      {
-         $em = $this->em;
-         $sv = $this->sv;
+        $em = $this->em;
+        $sv = $this->sv;
          
-         $ttes_versions = $this->em->getRepository(Version::class)->findBy(['typeVersion' => Projet::PROJET_DYN ]);
+        $ttes_versions = $this->em->getRepository(Version::class)->findBy(['typeVersion' => Projet::PROJET_DYN ]);
 
-         // On ne garde que les versions qui ont été actives cette année
-         $versions = [];
-         foreach ($ttes_versions as $v)
-         {
-             if ($sv -> isAnnee($v, $annee))
-             {
-                 $versions[] = $v;
-             }
-         }
+        if ($annee == 0)
+        {
+            return $ttes_versions;
+        }
 
-         return $versions;
+        // On ne garde que les versions qui ont été actives cette année
+        $versions = [];
+        foreach ($ttes_versions as $v)
+        {
+            if ($sv -> isAnnee($v, $annee))
+            {
+                $versions[] = $v;
+            }
+        }
+        return $versions;
          
      }
 
