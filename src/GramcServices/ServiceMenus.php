@@ -1274,8 +1274,12 @@ class ServiceMenus
         // On travaille ici sur la dernière version du projet !
         $projet = $version->getProjet();
         $verder = $projet->getVersionDerniere();
-        
-        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE )
+
+        // Pour l'instant on supprime la possibilité de créer une nouvelle version n'importe quand
+        // c-à-d tant qu'on n'est pas en état ACTIF_R (<30 j avant la date de fin)
+        // ou TERMINE (<365j APRES la date de fin)
+        //if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE )
+        if ($verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE )
         {
             $menu['raison'] = "Pas possible de créer une nouvelle version pour l'instant";
         }
