@@ -56,23 +56,21 @@ class ProjetDerniereVersion
     public function postPersist(Version $version, LifecycleEventArgs $event): void
     {
         $projet = $version->getProjet();
-        //$this->sp->calculVersionDerniere($projet);
-        $projet->setVersionDerniere($version);
-        $this->em->persist($projet);
-        $this->em->flush();
+        $this->sp->calculVersionDerniere($projet);
     }
     public function postRemove(Version $version, LifecycleEventArgs $event): void
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
-        $this->em->persist($projet);
-        $this->em->flush();		// ne marche pas si on ne met pas flush ici
+        //$this->em->persist($projet);
+        //$this->em->flush();		// ne marche pas si on ne met pas flush ici
     }
+    // Pas très utile a priori... ceinture et bretelles ?
     public function postUpdate(Version $version, LifecycleEventArgs $event): void
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
-        $this->em->persist($projet);
-        $this->em->flush();
+        //$this->em->persist($projet);
+        //$this->em->flush();
     }
 }

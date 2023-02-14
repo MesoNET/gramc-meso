@@ -555,8 +555,8 @@ class ServiceMenus
     /*
      * Création d'un projet de type PROJET_DYN:
      *     - Peut être créé n'importe quand
-     *     - Renouvelable au bout de 11 mois
-     *     - En standby au bout de 12 mois
+     *     - Renouvelable
+     *     - En standby au bout de 12 mois (voir le metaetat du projet)
      *     - Terminé 12 mois après le passage en standby si pas renouvelé entre temps
      *     - Créé seulement par un permanent, qui devient responsable du projet
      *
@@ -1217,40 +1217,91 @@ class ServiceMenus
     }
 
     /////////////////////////////////////////////////////////////////////
+    //public function renouvelerVersion_SUPPRIME(Version $version, int $priorite=self::BPRIO):array
+    //{
+        //$menu['name']        = 'renouveler_version';
+        //$menu['param']       = $version->getIdVersion();
+        //$menu['lien']        = "Renouveler";
+        //$menu['icone']       = "renouveler";
+        //$menu['commentaire'] = "Vous ne pouvez pas demander de renouvellement";
+        //$menu['ok']          = false;
+
+        //$session = $this->em->getRepository(Session::class)->findOneBy([ 'etatSession' => Etat::EDITION_DEMANDE ]);
+
+        //if ($session == null) {
+            //$menu['raison']     =   "Nous ne sommes pas en période de demandes de ressources";
+        //}
+        //else
+        //{
+            //$idVersion = $session->getIdSession() . $version->getProjet()->getIdProjet();
+    
+            //if ($this->em->getRepository(Version::class)->findOneBy([ 'idVersion' =>  $idVersion]) != null) {
+                //$menu['raison'] = "Version initiale ou renouvellement déjà demandé";
+            //} elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE) {
+                //$menu['raison'] = "Votre projet est ou sera prochainement terminé";
+            //} elseif ($version->isCollaborateur($this->token->getUser())) {
+                //$menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session " . $session->getIdSession();
+                //$priorite = self::HPRIO;
+                //$menu['ok'] =   true;
+            //} elseif ($this->ac->isGranted('ROLE_ADMIN')) {
+                //$menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session "
+                    //.   $session->getIdSession() . " en tant qu'administrateur";
+                //$priorite = self::HPRIO;
+                //$menu['ok'] = true;
+            //} else {
+                //$menu['raison'] = "Vous n'avez pas le droit de renouveler ce projet, vous n'êtes pas un collaborateur";
+            //}
+        //}
+        //$this->__prio($menu, $priorite);
+        //return $menu;
+    //}
+
+    /////////////////////////////////////////////////////////////////////
     public function renouvelerVersion(Version $version, int $priorite=self::BPRIO):array
+    {
+        return $this->__renouvelerVersionDyn($version, $priorite);
+    }
+    
+    private function __renouvelerVersionDyn(Version $version, int $priorite=self::BPRIO):array
     {
         $menu['name']        = 'renouveler_version';
         $menu['param']       = $version->getIdVersion();
-        $menu['lien']        = "Renouveler";
+        $menu['lien']        = "Nouvelle version";
         $menu['icone']       = "renouveler";
         $menu['commentaire'] = "Vous ne pouvez pas demander de renouvellement";
         $menu['ok']          = false;
 
-        $session = $this->em->getRepository(Session::class)->findOneBy([ 'etatSession' => Etat::EDITION_DEMANDE ]);
+        // On travaille ici sur la dernière version du projet !
+        $projet = $version->getProjet();
+        $verder = $projet->getVersionDerniere();
 
-        if ($session == null) {
-            $menu['raison']     =   "Nous ne sommes pas en période de demandes de ressources";
+        // Pour l'instant on supprime la possibilité de créer une nouvelle version n'importe quand
+        // c-à-d tant qu'on n'est pas en état ACTIF_R (<30 j avant la date de fin)
+        // ou TERMINE (<365j APRES la date de fin)
+        //if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE )
+        if ($verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE )
+        {
+            $menu['raison'] = "Pas possible de créer une nouvelle version pour l'instant";
+        }
+        elseif ($verder->getProjet()->getEtatProjet() == Etat::TERMINE)
+        {
+            $menu['raison'] = "Votre projet est terminé";
+        }
+        elseif ($verder->isCollaborateur($this->token->getUser()))
+        {
+            $menu['commentaire'] = "Demander de nouvelles ressources sur ce projet";
+            $priorite = self::HPRIO;
+            $menu['ok'] = true;
+        }
+        elseif ($this->ac->isGranted('ROLE_ADMIN'))
+        {
+            $menu['commentaire'] = "Demander de nouvelles ressources sur ce projet en tant qu'administrateur";
+            $priorite = self::HPRIO;
+            $menu['ok'] = true;
         }
         else
         {
-            $idVersion = $session->getIdSession() . $version->getProjet()->getIdProjet();
-    
-            if ($this->em->getRepository(Version::class)->findOneBy([ 'idVersion' =>  $idVersion]) != null) {
-                $menu['raison'] = "Version initiale ou renouvellement déjà demandé";
-            } elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE) {
-                $menu['raison'] = "Votre projet est ou sera prochainement terminé";
-            } elseif ($version->isCollaborateur($this->token->getUser())) {
-                $menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session " . $session->getIdSession();
-                $priorite = self::HPRIO;
-                $menu['ok'] =   true;
-            } elseif ($this->ac->isGranted('ROLE_ADMIN')) {
-                $menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session "
-                    .   $session->getIdSession() . " en tant qu'administrateur";
-                $priorite = self::HPRIO;
-                $menu['ok'] = true;
-            } else {
-                $menu['raison'] = "Vous n'avez pas le droit de renouveler ce projet, vous n'êtes pas un collaborateur";
-            }
+            $menu['raison'] = "Vous n'avez pas le droit de demander une nouvelle version, vous n'êtes pas collaborateur";
         }
         $this->__prio($menu, $priorite);
         return $menu;

@@ -44,8 +44,7 @@ class Signal
     public const CLK_SESS_FIN      = 21;
     public const CLK_FERM          = 22;
 
-    public const DAT_STDBY         = 30;
-    public const DAT_SURSIS        = 31;
+    public const DAT_ACTR          = 30;
     public const FIN_EVENEMENTS    = 32;
 
     // nouveaux signaux
@@ -73,7 +72,6 @@ class Signal
         self::CLK_SESS_DEB     => 'CLK_SESS_DEB',
         self::CLK_SESS_FIN     => 'CLK_SESS_FIN',
         self::CLK_FERM         => 'CLK_FERM',
-        self::DAT_STDBY        => 'DAT_STDBY',
         self::CLK_ARR          => 'CLK_ARR',
         self::FIN_EVENEMENTS   => 'FIN_EVENEMENTS',
 

@@ -104,75 +104,136 @@ class ServiceProjets
     * un "état" qui n'est pas utilisé dans les workflows mais qui peut être
     * affiché et qui a du sens pour les utilisateurs
     ************************************************************/
+    //public function getMetaEtat_SUPPR(Projet $p): string
+    //{
+        //$etat_projet = $p->getEtatProjet();
+        //$type_projet = $p->gettypeProjet();
+
+        //// Projet terminé
+        //if ($etat_projet == Etat::TERMINE) {
+            //return 'TERMINE';
+        //}
+
+        //// Projet non renouvelable:
+        ////    - Projet test   = toujours non renouvelable
+        ////    - Autres projets= sera bientôt terminé car expert a dit "refusé"
+        ////
+        //if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
+            //return 'REFUSE';
+        //}
+
+        //$veract  = $this->versionActive($p);
+        //$version = $p->derniereVersion();
+        //// Ne doit pas arriver: un projet a toujours une dernière version !
+        //// Peut-être la BD est-elle en rade donc on utilise le logger
+        //if ($version == null) {
+            //$this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
+                                            //$p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
+            //return 'STANDBY';
+        //}
+        //$etat_version   =   $version->getEtatVersion();
+
+        //if ($etat_version ==  Etat::EDITION_DEMANDE) {
+            //return 'EDITION';
+        //} elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
+            //return 'EXPERTISE';
+        //} elseif ($etat_version ==  Etat::EDITION_TEST) {
+            //return 'EDITION';
+        //} elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
+            //return 'EXPERTISE';
+        //} elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
+            //if ( $type_projet != Projet::PROJET_DYN )
+            //{
+                //// Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
+                //$session = $this->ss->getSessionCourante();
+                //if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
+                    //return 'NONRENOUVELE';
+                //} // Non renouvelé
+                //else {
+                    //return 'ACCEPTE';
+                //} // Projet ou rallonge accepté par le comité d'attribution
+            //}
+            //else
+            //{
+                //// TODO - Remettre le signe particulier 30 jours avant le renouvellement
+                //return 'ACCEPTE';
+            //}
+        //} elseif ($etat_version == Etat::ACTIF_TEST) {
+            //return 'ACCEPTE';
+        //} // projet-test non renouvelable
+        //elseif ($etat_version == Etat::EN_ATTENTE) {
+            //return 'ACCEPTE';
+        //} elseif ($etat_version == Etat::TERMINE) {
+            //if ($p->getNepasterminer()) {
+                //return 'AGARDER';
+            //} else {
+                //return 'STANDBY';
+            //}
+        //} elseif ($veract       == null) {
+            //return 'STANDBY';
+        //}
+    //}
+
+    /* PLUS SIMPLE POUR LES PROJETS DYNAMIQUES */
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
         $type_projet = $p->gettypeProjet();
 
         // Projet terminé
-        if ($etat_projet == Etat::TERMINE) {
+        if ($etat_projet == Etat::TERMINE)
+        {
             return 'TERMINE';
         }
 
-        // Projet non renouvelable:
-        //    - Projet test   = toujours non renouvelable
-        //    - Autres projets= sera bientôt terminé car expert a dit "refusé"
-        //
-        if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
-            return 'REFUSE';
-        }
+        // Projet non renouvelable (refusé)
+        //if ($etat_projet == Etat::NON_RENOUVELABLE)
+        //{
+        //    return 'REFUSE';
+        //}
 
-        $veract  = $this->versionActive($p);
-        $version = $p->derniereVersion();
+        //$veract  = $this->versionActive($p);
+        $verder = $p->derniereVersion();
+
         // Ne doit pas arriver: un projet a toujours une dernière version !
         // Peut-être la BD est-elle en rade donc on utilise le logger
-        if ($version == null) {
+        if ($verder == null)
+        {
             $this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
-                                            $p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
-            return 'STANDBY';
+                                            $p->getIdProjet() . " version active: $p n'a PAS de dernière version !");
+            return 'INCONNU';
         }
-        $etat_version   =   $version->getEtatVersion();
 
-        if ($etat_version ==  Etat::EDITION_DEMANDE) {
+        $etat_version   =   $verder->getEtatVersion();
+        if ($etat_version ==  Etat::EDITION_DEMANDE)
+        {
             return 'EDITION';
-        } elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
+        }
+        elseif ($etat_version ==  Etat::EDITION_EXPERTISE)
+        {
             return 'EXPERTISE';
-        } elseif ($etat_version ==  Etat::EDITION_TEST) {
-            return 'EDITION';
-        } elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
-            return 'EXPERTISE';
-        } elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
-            if ( $type_projet != Projet::PROJET_DYN )
-            {
-                // Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
-                $session = $this->ss->getSessionCourante();
-                if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
-                    return 'NONRENOUVELE';
-                } // Non renouvelé
-                else {
-                    return 'ACCEPTE';
-                } // Projet ou rallonge accepté par le comité d'attribution
-            }
-            else
-            {
-                // TODO - Remettre le signe particulier 30 jours avant le renouvellement
-                return 'ACCEPTE';
-            }
-        } elseif ($etat_version == Etat::ACTIF_TEST) {
+        }
+        elseif ($etat_version ==  Etat::ACTIF)
+        {
             return 'ACCEPTE';
-        } // projet-test non renouvelable
-        elseif ($etat_version == Etat::EN_ATTENTE) {
-            return 'ACCEPTE';
-        } elseif ($etat_version == Etat::TERMINE) {
-            if ($p->getNepasterminer()) {
-                return 'AGARDER';
-            } else {
-                return 'STANDBY';
-            }
-        } elseif ($veract       == null) {
+        }
+
+        // quelques jours avant la fin du projet: le projet est encore actif mais il
+        // se grouiller de le renouveler si on veut continuer
+        elseif ($etat_version == Etat::ACTIF_R)
+        {
+            return 'NONRENOUVELE';
+        }
+
+        // Si la dernière version est terminée et le projet renouvelable, il est en standby
+        // ie on ne peut pas calculer mais on peut encore renouveler
+        elseif ($etat_version == Etat::TERMINE)
+        {
             return 'STANDBY';
         }
+        return 'INCONNU';
     }
+
 
     /**
       * Liste tous les projets qui ont une version cette annee
@@ -1509,50 +1570,91 @@ class ServiceProjets
     *
     * NOTE - la B.D. doit être cohérente, c-à-d que s'il y a des flush à faire, ils doivent
     *        être faits en entrant dans cette fonction
-    *        Inversement, cette fonction refait le flush du projet afin de garder la cohérence
-    *        TODO - Est-ce bien certain ? Cette fonction est appelée uniquement à partir de l'EventListener...
+    *        Inversement, cette fonction refait si nécessaire le flush du projet afin de garder la cohérence
     *
     * @return \App\Entity\Version
     */
+
+
+    // On réécrit cette fonction car le tri doit se faire sur le NbVersion plutôt que sur la session
+    // (indispensable pour les projets dynamiques, s'il y a un jour des projets de session il faudra que le NbVersion soit géré)
+    //public function calculVersionDerniere_SUPPR(Projet $projet): ?Version
+    //{
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
+        //if ($projet->getVersion() == null) {
+            //return null;
+        //}
+
+        //$iterator = $projet->getVersion()->getIterator();
+        ////$cnt = count(iterator_to_array($iterator));
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
+
+        //$iterator->uasort(function ($a, $b) {
+            //if ($a->getSession() == null) {
+                //return true;
+            //} elseif ($b->getSession() == null) {
+                //return false;
+            //} else {
+                //return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
+            //}
+        //});
+
+        //$sortedVersions =  iterator_to_array($iterator) ;
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
+        //$result = end($sortedVersions);
+        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
+
+        //if (! $result instanceof Version) {
+            //return null;
+        //}
+
+        //// update BD
+        //$projet->setVersionDerniere($result);
+        //$em = $this->em;
+        //$em->persist($projet);
+        //$em->flush();
+
+        //return $result;
+    //}
+
+    /*
+     * Calcul de la dernière version d'un projet - Utilisé par App\EventListener\ProjetDerniereVersion
+     */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
+        $sj = $this->sj;
         if ($projet->getVersion() == null) {
-            return null;
+            $sj->throwException(__METHOD__ . ':' . __LINE__ . " Projet $projet = PAS DE VERSION");
         }
 
         $iterator = $projet->getVersion()->getIterator();
-        //$cnt = count(iterator_to_array($iterator));
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
 
         $iterator->uasort(function ($a, $b) {
-            if ($a->getSession() == null) {
-                return true;
-            } elseif ($b->getSession() == null) {
-                return false;
-            } else {
-                return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
+            if ($a->getNbVersion() == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
             }
+            if ($b->getNbVersion() == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+            }
+            return strcmp($a->getNbVersion(), $b->getNbVersion());
         });
 
         $sortedVersions =  iterator_to_array($iterator) ;
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
         $result = end($sortedVersions);
-        //$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
-
-        if (! $result instanceof Version) {
-            return null;
+        if ($result === false) return null;
+        
+        // On met à jour projet si nécessaire
+        if ($projet->getVersionDerniere() != $result)
+        {
+            $projet->setVersionDerniere($result);
+            $em = $this->em;
+            $em->persist($projet);
+            $em->flush($projet);
         }
-
-        // update BD
-        $projet->setVersionDerniere($result);
-        $em = $this->em;
-        $em->persist($projet);
-        $em->flush();
-
         return $result;
     }
-    //public function calculDerniereVersion(Projet $projet) { return $this->calculVersionDerniere($projet); }
 
     /**
      * calculVersionActive
@@ -1605,4 +1707,24 @@ class ServiceProjets
     {
         return $this->calculVersionActive($projet);
     }
+
+    /**
+     * getVersionsNonTerminees
+     *
+     * renvoie les versions non terminées d'un projet
+     *
+     *************************************************/
+     public function getVersionsNonTerminees(Projet $p) : array
+     {
+         $versions = $p->getVersion();
+         $vnt = [];
+         foreach ($versions as $v)
+         {
+             if ($v->getEtatVersion() != Etat::ANNULE && $v->getEtatVersion() != Etat::TERMINE)
+             {
+                 $vnt[] = $v;
+             }
+         }
+         return $vnt;
+     }
 }

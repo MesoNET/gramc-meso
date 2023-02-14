@@ -65,6 +65,8 @@
             {% endif %}
         </td>
 
+        <td>{% if item.projet.versionactive == null %}TERMINE{% else %}{{ item.projet.versionactive.limitdate|date('d-m-Y')}}{% endif %}</td>
+
         {% if noconso==false %}
             <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
                 {% if item.cv != null %}
@@ -174,6 +176,7 @@ passwd
             <th>Numéro</th>
             {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
             <th>Titre</th>
+            <th>Fin</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>
     </thead>
@@ -211,6 +214,7 @@ passwd
             <th>Numéro</th>
             {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
             <th>Titre</th>
+            <th>Fin</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>
     </thead>

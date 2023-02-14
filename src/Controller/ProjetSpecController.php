@@ -176,10 +176,13 @@ class ProjetSpecController extends AbstractController
         $projets_resp  = [];
         foreach ($list_projets_resp as $projet) {
             $versionActive  =   $sp->versionActive($projet);
-            if ($versionActive != null) {
+            if ($versionActive != null)
+            {
                 $rallonges = $versionActive ->getRallonge();
                 $cpt_rall  = count($rallonges->toArray());
-            } else {
+            }
+            else
+            {
                 $rallonges = null;
                 $cpt_rall  = 0;
             }
@@ -204,7 +207,9 @@ class ProjetSpecController extends AbstractController
                     $passwd    = Functions::simpleDecrypt($passwd);
                     $pwd_expir = $u->getPassexpir();
                 } */
-            } else {
+            }
+            else
+            {
                 $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
                 $loginnames['TURPAN']['login'] = false;
                 $loginnames['BOREALE']['login'] = false;
@@ -580,43 +585,36 @@ class ProjetSpecController extends AbstractController
         $token = $this->token;
         $moi = $token->getUser();
 
-        //$session_form = Functions::createFormBuilder($ff, ['version' => $version ])
-        //->add(
-            //'version',
-            //EntityType::class,
-            //[
-            //'multiple' => false,
-            //'class'    => Version::class,
-            //'required' =>  true,
-            //'label'    => '',
-            //'choices'  =>  $projet->getVersion(),
-            //'choice_label' => function ($version) {
-                //return $version->getSession();
-            //}
-            //]
-        //)
-        //->add('submit', SubmitType::class, ['label' => 'Changer'])
-        //->getForm();
+        $version_form = Functions::createFormBuilder($ff, ['version' => $version ])
+        ->add(
+            'version',
+            EntityType::class,
+            [
+                'multiple' => false,
+                'class'    => Version::class,
+                'required' =>  true,
+                'label'    => '',
+                'choices'  =>  $projet->getVersion(),
+                'choice_label' => function ($version) {
+                    return $version->getNbVersion();
+                }
+            ]
+        )
+        ->add('submit', SubmitType::class, ['label' => 'Changer'])
+        ->getForm();
         
-        //$session_form->handleRequest($request);
+        $version_form->handleRequest($request);
 
-        //if ($session_form->isSubmitted() && $session_form->isValid()) {
-            //$version = $session_form->getData()['version'];
-        //}
-
-        //$session = null;
-        //if ($version != null) {
-            //$session = $version->getSession();
-        //} else {
-            //$sj->throwException(__METHOD__ . ':' . __LINE__ .' projet ' . $projet . ' sans version');
-        //}
-
-        $data = $ss->selectAnnee($request);
-        
-        $menu = [];
-        if ($ac->isGranted('ROLE_ADMIN')) {
-            $menu[] = $sm->nouvelleRallonge($projet);
+        if ($version_form->isSubmitted() && $version_form->isValid())
+        {
+            $version = $version_form->getData()['version'];
         }
+
+        $menu = [];
+        // Pas de rallonges pour mesonet !
+        /*if ($ac->isGranted('ROLE_ADMIN')) {
+            $menu[] = $sm->nouvelleRallonge($projet);
+        }*/
 
         $menu[] = $sm->renouvelerVersion($version);
         $menu[] = $sm->modifierVersion($version);
@@ -668,7 +666,7 @@ class ProjetSpecController extends AbstractController
                 'warn_type' => false,
                 'projet' => $projet,
                 'loginnames' => $loginnames,
-                //'version_form' => $session_form->createView(),
+                'version_form' => $version_form->createView(),
                 'version' => $version,
                 'session' => null,
                 'menu' => $menu,

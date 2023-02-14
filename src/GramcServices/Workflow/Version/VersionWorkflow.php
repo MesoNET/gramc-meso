@@ -35,6 +35,10 @@ use App\GramcServices\Signal;
 use App\GramcServices\ServiceNotifications;
 use Doctrine\ORM\EntityManagerInterface;
 
+// TODO IL FAUT SUPPRIMER L'ETAT CREE_ATTENTE QUI NE SERT A RIEN
+//      DES QUE L'OBJET EST CREE ON PASSE EN ETAT EDITION_DEMANDE
+//      C'EST DEJA FAIT POUR LES VERSIONS DE TYPE 4 (Version4Workflow)
+
 class VersionWorkflow extends Workflow
 {
     public function __construct(ServiceNotifications $sn,

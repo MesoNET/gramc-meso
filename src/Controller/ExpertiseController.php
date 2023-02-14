@@ -1031,18 +1031,36 @@ class ExpertiseController extends AbstractController
             // Dans tous les autres cas on envoie un signal CLK_VAL_EXP_XXX
             //$type_projet = $expertise->getVersion()->getProjet()->getTypeProjet();
             $max_expertises_nb = $this->getParameter('max_expertises_nb');
+            $version = $expertise->getVersion();
             if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT'))
             {
-                $expertise->getVersion()->setAttrHeuresUft($expertise->getNbHeuresAttUft());
-                $expertise->getVersion()->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
-                $expertise->getVersion()->setStartDate($grdt->getNew());
+                $version->setAttrHeuresUft($expertise->getNbHeuresAttUft());
+                $version->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
+                $version->setAttrAccept($expertise->getValidation());
 
-                // SUPPRIME DANS CETTE VERSION !
-                // $expertise->getVersion()->setAttrHeuresEte($expertise->getNbHeuresAttEte());
-                $expertise->getVersion()->setAttrAccept($expertise->getValidation());
+                // On fixe la date de début à la date de validation
+                $version->setStartDate($grdt->getNew());
 
+                // Si la version active existe, on positionne sa date de fin
+                $projet = $expertise->getVersion()->getProjet();
+                $veract = $projet->getVersionActive();
+                if ($veract != null)
+                {
+                    $grdt = $this->grdt;
+                    $veract->setEndDate($grdt);
+                    $em->persist($veract);
+                }
+
+                // Si la version active est en ACTIF_R, on fixe de manière définitive la date limite
+                // (On a une valeur temporaire, cf. VersionSpecController::__renouvProjetDyn)
+                // On fixe aussi la date limite du projet
+                if ($veract === null || $veract->getEtatVersion() === Etat::ACTIF_R)
+                {
+                    $version->setLimitDate($grdt->getNew()->add(new \DateInterval('P365D')));
+                    $projet->setLimitDate($version->getLimitDate());
+                }
+                
                 $validation =  $expertise->getValidation();
-
                 $rtn = null;
                 $signal = 0;
                 if ($validation == 1) {
@@ -1053,17 +1071,23 @@ class ExpertiseController extends AbstractController
                     $signal = Signal::CLK_VAL_EXP_KO;
                 }
 
-                $rtn      = $workflow->execute($signal, $expertise->getVersion()->getProjet());
-                if ($rtn != true) {
+                $rtn = $workflow->execute($signal, $version->getProjet());
+                if ($rtn != true)
+                {
                     $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
                     . "(" . $signal . ") pour l'expertise " . $expertise . " avec rtn = " . Functions::show($rtn));
-                } else {
+                }
+                else
+                {
                     $expertise->setDefinitif(true);
                 }
 
                 $em->persist($expertise);
                 $em->flush();
+                
             }
+
+            // PAS UTILISE ACTUELLEMENT
             else
             {
                 $expertise->setDefinitif(true);

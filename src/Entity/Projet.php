@@ -112,6 +112,14 @@ class Projet
     private $versionDerniere;
 
     /**
+     * @var \DateTime
+     * Date limite, la version n'ira pas au-delà
+     *
+     * @ORM\Column(name="limit_date", type="datetime", nullable=true)
+     */
+    private $limitDate;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\Publication", inversedBy="projet")
@@ -288,6 +296,30 @@ class Projet
     public function getVersionDerniere()
     {
         return $this->versionDerniere;
+    }
+
+    /**
+     * Set limitDate
+     *
+     * @param \DateTime $limitDate
+     *
+     * @return Version
+     */
+    public function setLimitDate($limitDate)
+    {
+        $this->limitDate = $limitDate;
+
+        return $this;
+    }
+
+    /**
+     * Get limitDate
+     *
+     * @return \DateTime
+     */
+    public function getLimitDate()
+    {
+        return $this->limitDate;
     }
 
     /**
@@ -511,6 +543,16 @@ class Projet
     {
         if ($this->derniereVersion() != null) {
             return $this->derniereVersion()->getResponsable();
+        } else {
+            return null;
+        }
+    }
+
+    // hum hum pas fameux
+    public function getResponsables()
+    {
+        if ($this->derniereVersion() != null) {
+            return $this->derniereVersion()->getResponsables();
         } else {
             return null;
         }
