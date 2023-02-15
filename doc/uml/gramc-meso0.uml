@@ -27,19 +27,7 @@ package Classes <<Frame>> {
         - string codeNom
         - string codeLicence
         - string codeDependances
-
-        - int demHeuresUft
-        - int attrHeuresUft
-        - int consoHeuresUft
-    
-        - int demHeuresCriann
-        - int attrHeuresCriann
-        - int consoHeuresCriann
-    
-        - int demHeuresUrca
-        - int attrHeuresUrca
-        - int consoHeuresUrca
-
+        
         + string getIdVersion()
     }
     
@@ -122,26 +110,45 @@ package Classes <<Frame>> {
         - string loginname
         + getLoginName()
     }
+
+    class Ressource {
+        - string desc
+        - string unite
+        - int maxDem
+        - int co2
+    }
+
+    class Dac <<Demande, Attribution, Consommation>> {
+        - string justification
+        - int demande
+        - int attribution
+        - int consommation
+        - string groupname
+    }
     
-    Projet  "1" o-- "0..n" Version
+    Projet  "1" o-- "1..v" Version
     Individu "1" o-- "0..n" CollaborateurVersion
     Individu "1" o-- "0..n" Sso
     Individu "1" o-- "0..n" Laboratoire
     Individu "1" o-- "0..n" Statut
     Individu "1" o-- "0..n" Etablissement
+    Individu "1" o-- "0..n" Clessh
+    
     Version "1" o-- "0..n" CollaborateurVersion
     Version "0..n" o-- Thématique
     Version "0..n" o-- "0..n" Publication
-
-    Version "1" o-- "0..n" FormationVersion
+    Version "1" o-- "r" Dac
+    Version "1" o-- "f" FormationVersion
     Formation "1" o-- "0..n" FormationVersion
     
-    Expertise "1" o-- "1" Individu
-    Expertise "1" o-- "1" Version
-    CollaborateurVersion "1..n"  -- "0..2" User
+    Expertise "1" -- "1" Individu
+    Expertise "1" -- "1" Version
+    CollaborateurVersion "v"  -- "s" User
 
-    User "1" o-- "1" Serveur
     User "0..n" --o "1" Clessh
+    
+    Serveur "1" o-- "0..n" Ressource: r ressources s serveurs
+    Ressource "1" o-- "0..n" Dac
 
     class Compta <<Données de conso>>{
         - date date;
@@ -151,7 +158,6 @@ package Classes <<Frame>> {
         + int getConso()
     }
 
-    ' Supprimé pour alléger la figure
     class Invitation <<Avoir la bonne @ mail>> {
        - string clef
        - date creationStamp
@@ -161,6 +167,7 @@ package Classes <<Frame>> {
     Individu "1" -- "1" Invitation : invited
     Individu "1" -- "1" Invitation : inviting
 
+    ' Supprimé pour alléger la figure
     ' interface UserInterface
     ' Individu --|> UserInterface
     ' Individu "2" o-- "1" Invitation
