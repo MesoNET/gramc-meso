@@ -725,12 +725,13 @@ class VersionSpecController extends AbstractController
 
             $newCollaborateurVersion    = clone  $collaborateurVersion;
 
-            // Les users connectés au collaborateurVersion doivent être clonés à la main !
+            // Les users connectés au collaborateurVersion connectés au nouveau cv
             $users = $collaborateurVersion->getUser();
             foreach ($users as $u)
             {
                 $newCollaborateurVersion->addUser($u);
                 $u->addCollaborateurVersion($newCollaborateurVersion);
+                $em->persist($newCollaborateurVersion);
                 $em->persist($u);
             }
             
