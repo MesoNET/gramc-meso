@@ -89,6 +89,7 @@ class ExpertiseController extends AbstractController
     private $token = null;
     
     public function __construct(
+        private $dyn_duree,
         private $max_expertises_nb,
         private ServiceNotifications $sn,
         private ServiceJournal $sj,
@@ -979,10 +980,12 @@ class ExpertiseController extends AbstractController
      */
     public function validationAction(Request $request, Expertise $expertise): Response
     {
+        $dyn_duree = $this->dyn_duree;
         $max_expertises_nb = $this->max_expertises_nb;
         $sn = $this->sn;
         $sj = $this->sj;
         $ac = $this->ac;
+        $sp = $this->sp;
         $pw = $this->pw;
         $p4w = $this->p4w;
         $grdt = $this->grdt;
@@ -1056,7 +1059,7 @@ class ExpertiseController extends AbstractController
                 // On fixe aussi la date limite du projet
                 if ($veract === null || $veract->getEtatVersion() === Etat::ACTIF_R)
                 {
-                    $version->setLimitDate($grdt->getNew()->add(new \DateInterval('P365D')));
+                    $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
                     $projet->setLimitDate($version->getLimitDate());
                 }
                 
@@ -1082,9 +1085,12 @@ class ExpertiseController extends AbstractController
                     $expertise->setDefinitif(true);
                 }
 
+                // On met à jour la version active
+                $sp->versionActive($projet);
                 $em->persist($expertise);
+                $em->persist($version);
+                $em->persist($projet);
                 $em->flush();
-                
             }
 
             // PAS UTILISE ACTUELLEMENT

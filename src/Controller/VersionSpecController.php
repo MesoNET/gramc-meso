@@ -93,6 +93,8 @@ use Twig\Environment;
 class VersionSpecController extends AbstractController
 {
     public function __construct(
+        private $dyn_duree,
+        private $dyn_duree_post,
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceSessions $ss,
@@ -646,6 +648,8 @@ class VersionSpecController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
+        $dyn_duree = $this->dyn_duree;
+        $dyn_duree_post = $this->dyn_duree_post;
         $projet_workflow = $this->pw4;
         $grdt = $this->grdt;
         $em = $this->em;
@@ -670,7 +674,7 @@ class VersionSpecController extends AbstractController
         // Mais dans ce cas la date limite est inchangée, la durée d'activité de la nouvelle version sera limitée
 
         // Si version est en état ACTIF_R on peut renouveler
-        // Mais dans ce cas la date limite sera positionnée à start_date + 365j
+        // Mais dans ce cas la date limite sera positionnée à start_date + dyn_duree (def = 365 jours))
 
         $old_dir = $sv->imageDir($verder);
         $etat_version = $verder->getEtatVersion();
@@ -690,9 +694,9 @@ class VersionSpecController extends AbstractController
             $new_version->setAttrHeuresCriann(0);
             $new_version->setStartDate($grdt);
 
-            // On fixe la date limite à la date d'aujourd'hui + 365 jours, mais c'est provisoire
-            // La date limite sera fixée de manière définitive lorsqu'on validera la version
-            $new_version->setLimitDate($grdt->getNew()->add(new \DateInterval('P365D')));
+            // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire
+            // La startDate et la LimitDate seront fixées de manière définitive lorsqu'on validera la version
+            $new_version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
         }
         
         $new_version->setPrjJustifRenouv(null);

@@ -132,8 +132,14 @@ services:
     App\GramcServices\ServiceInvitations:
         arguments: [ "%invit_duree%" ]
 
+    App\GramcServices\Cron\GramcCronTask\TempsCronTask:
+        arguments: [ "%dyn_duree_post%"]
+
+    App\Controller\VersionSpecController:
+        arguments: [ "%dyn_duree%", "%dyn_duree_post%" ]
+        
     App\Controller\ExpertiseController:
-        arguments: [ '%max_expertises_nb%' ]
+        arguments: [ "%dyn_duree%","%max_expertises_nb%" ]
 
     # Formulaires, validateurs, securité
     App\Form\:
@@ -186,4 +192,5 @@ services:
         tags: ["console.command"]
 
     App\Command\InitLimitDate:
+        arguments: [ "%dyn_duree%" ]
         tags: ["console.command"]

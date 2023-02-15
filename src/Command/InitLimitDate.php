@@ -52,7 +52,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 class InitLimitDate extends Command
 {
 
-    public function __construct(private ServiceJournal $sj, private EntityManagerInterface $em)
+    public function __construct(private $dyn_duree, private ServiceJournal $sj, private EntityManagerInterface $em)
     {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
@@ -74,8 +74,8 @@ class InitLimitDate extends Command
         // return this if there was no problem running the command
         $em = $this->em;
         $sj = $this->sj;
+        $dyn_duree = $this->dyn_duree;
 
-        
         $projets = $em->getRepository(Projet::class)->findAll();
         foreach ($projets as $p)
         {
@@ -83,7 +83,7 @@ class InitLimitDate extends Command
             if ($v != null)
             {
                 $debut = $v->getStartDate();
-                $limit = $debut->add(new \DateInterval('P365D'));
+                $limit = $debut->add(new \DateInterval($dyn_duree));
                 $v->setLimitDate($limit);
                 $p->setLimitDate($limit);
                 $em->persist($p);
