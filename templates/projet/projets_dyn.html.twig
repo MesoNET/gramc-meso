@@ -76,6 +76,7 @@
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Nb de versions: activate to sort column ascending">Nb de versions</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">Début</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">fin</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Fiche projet: activate to sort column ascending">Fiche projet</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr TURPAN: activate to sort column ascending" title="Heures attribuées sur TURPAN">TURPAN</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr BOREALE: activate to sort column ascending" title="Heures attribuées sur BOREALE">BOREALE</th>
                     </tr>
@@ -150,6 +151,14 @@
                         <td>{{ item.count }}</td>
                         <td>{% if item.version.startdate != null %}{{ item.version.startdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
                         <td>{% if item.version.limitdate != null %}{{ item.version.limitdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
+                        <td class="prj_fiche_val">
+                            {% if serviceVersions.issigne(item.version) %}
+                            <a href="{{ path('signature',  { 'id': item.version.idVersion }) }}?">{{icones.pdf(25,25)}}</a><br>
+                            <small>({{ serviceVersions.sizesigne(item.version) }}K)</small>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
                         <td>{{ item.version.attrheuresuft }}</td>
                         <td>{{ item.version.attrheurescriann }}</td>
                     </tr>
