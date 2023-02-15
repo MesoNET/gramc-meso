@@ -329,7 +329,7 @@ class User
      *
      * @return User
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): User
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): self
     {
         if (! $this->collaborateurversion->contains($cv)) {
             $this->collaborateurversion[] = $cv;
@@ -343,9 +343,10 @@ class User
      *
      * @param \App\Entity\CollaborateurVersion $cv
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): void
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): self
     {
         $this->CollaborateurVersion->removeElement($cv);
+        return $this;
     }
 
     /**

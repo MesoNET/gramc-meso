@@ -172,7 +172,7 @@ class Thematique
      *
      * @return Thematique
      */
-    public function addExpert(\App\Entity\Individu $expert)
+    public function addExpert(\App\Entity\Individu $expert): self
     {
         if (! $this->expert->contains($expert)) {
             $this->expert[] = $expert;
@@ -186,9 +186,10 @@ class Thematique
      *
      * @param \App\Entity\Individu $expert
      */
-    public function removeExpert(\App\Entity\Individu $expert)
+    public function removeExpert(\App\Entity\Individu $expert): self
     {
         $this->expert->removeElement($expert);
+        return $this;
     }
 
     /**
@@ -208,9 +209,12 @@ class Thematique
      *
      * @return Thematique
      */
-    public function addVersion(\App\Entity\Version $version)
+    public function addVersion(\App\Entity\Version $version): self
     {
-        $this->version[] = $version;
+        if (! $this->version->contains($version))
+        {
+            $this->version[] = $version;
+        }
 
         return $this;
     }
@@ -220,9 +224,10 @@ class Thematique
      *
      * @param \App\Entity\Version $version
      */
-    public function removeVersion(\App\Entity\Version $version)
+    public function removeVersion(\App\Entity\Version $version): self
     {
         $this->version->removeElement($version);
+        return $this;
     }
 
     /**

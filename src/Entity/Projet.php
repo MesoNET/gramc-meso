@@ -353,7 +353,7 @@ class Projet
      *
      * @return Projet
      */
-    public function addPubli(\App\Entity\Publication $publi)
+    public function addPubli(\App\Entity\Publication $publi): self
     {
         if (! $this->publi->contains($publi)) {
             $this->publi[] = $publi;
@@ -367,9 +367,10 @@ class Projet
      *
      * @param \App\Entity\Publication $publi
      */
-    public function removePubli(\App\Entity\Publication $publi)
+    public function removePubli(\App\Entity\Publication $publi): self
     {
         $this->publi->removeElement($publi);
+        return $this;
     }
 
     /**
@@ -389,9 +390,12 @@ class Projet
      *
      * @return Projet
      */
-    public function addVersion(\App\Entity\Version $version)
+    public function addVersion(\App\Entity\Version $version): self
     {
-        $this->version[] = $version;
+        if (! $this->version->contains($version))
+        {
+            $this->version[] = $version;
+        }
 
         return $this;
     }
@@ -401,9 +405,10 @@ class Projet
      *
      * @param \App\Entity\Version $version
      */
-    public function removeVersion(\App\Entity\Version $version)
+    public function removeVersion(\App\Entity\Version $version): self
     {
         $this->version->removeElement($version);
+        return $this;
     }
 
     /**
@@ -423,9 +428,12 @@ class Projet
      *
      * @return Projet
      */
-    public function addRapportActivite(\App\Entity\RapportActivite $rapportActivite)
+    public function addRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
     {
-        $this->rapportActivite[] = $rapportActivite;
+        if (! $this->rapportActivite->contains($rapportActivite))
+        {
+            $this->rapportActivite[] = $rapportActivite;
+        }
 
         return $this;
     }
@@ -435,9 +443,10 @@ class Projet
      *
      * @param \App\Entity\RapportActivite $rapportActivite
      */
-    public function removeRapportActivite(\App\Entity\RapportActivite $rapportActivite)
+    public function removeRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
     {
         $this->rapportActivite->removeElement($rapportActivite);
+        return $this;
     }
 
     /**

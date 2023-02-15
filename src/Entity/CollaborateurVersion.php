@@ -473,9 +473,12 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function addUser(\App\Entity\User $user): CollaborateurVersion
+    public function addUser(\App\Entity\User $user): self
     {
-        $this->user[] = $user;
+        if ( ! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
 
         return $this;
     }
@@ -485,9 +488,10 @@ class CollaborateurVersion
      *
      * @param \App\Entity\User $user
      */
-    public function removeUser(\App\Entity\User $user): void
+    public function removeUser(\App\Entity\User $user): self
     {
         $this->user->removeElement($user);
+        return $this;
     }
 
     /**

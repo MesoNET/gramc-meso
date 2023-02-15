@@ -173,7 +173,7 @@ class Statut
      *
      * @return Statut
      */
-    public function addIndividu(\App\Entity\Individu $individu)
+    public function addIndividu(\App\Entity\Individu $individu): self
     {
         if (!$this->individu->contains($individu)) {
             $this->individu[] = $individu;
@@ -187,9 +187,10 @@ class Statut
      *
      * @param \App\Entity\Individu $individu
      */
-    public function removeIndividu(\App\Entity\Individu $individu)
+    public function removeIndividu(\App\Entity\Individu $individu): self
     {
         $this->individu->removeElement($individu);
+        return $this;
     }
 
     /**

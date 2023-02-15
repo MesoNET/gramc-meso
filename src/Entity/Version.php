@@ -1280,9 +1280,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
-        $this->collaborateurVersion[] = $collaborateurVersion;
+        if (! $this->collaborateurVersion->contains($collaborateurVersion))
+        {
+            $this->collaborateurVersion[] = $collaborateurVersion;
+        }
 
         return $this;
     }
@@ -1292,9 +1295,10 @@ class Version implements Demande
      *
      * @param \App\Entity\CollaborateurVersion $collaborateurVersion
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+        return $this:
     }
 
     /**
@@ -1314,9 +1318,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addRallonge(\App\Entity\Rallonge $rallonge)
+    public function addRallonge(\App\Entity\Rallonge $rallonge): self
     {
-        $this->rallonge[] = $rallonge;
+        if (! $this->rallonge->contains($rallonge))
+        {
+            $this->rallonge[] = $rallonge;
+        }
 
         return $this;
     }
@@ -1326,9 +1333,10 @@ class Version implements Demande
      *
      * @param \App\Entity\Rallonge $rallonge
      */
-    public function removeRallonge(\App\Entity\Rallonge $rallonge)
+    public function removeRallonge(\App\Entity\Rallonge $rallonge): self
     {
         $this->rallonge->removeElement($rallonge);
+        return $this;
     }
 
     /**
@@ -1350,9 +1358,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addExpertise(\App\Entity\Expertise $expertise)
+    public function addExpertise(\App\Entity\Expertise $expertise): self
     {
-        $this->expertise[] = $expertise;
+        if (! $this->expertise->contains($expertise))
+        {
+            $this->expertise[] = $expertise;
+        }
 
         return $this;
     }
@@ -1362,9 +1373,10 @@ class Version implements Demande
      *
      * @param \App\Entity\Expertise $expertise
      */
-    public function removeExpertise(\App\Entity\Expertise $expertise)
+    public function removeExpertise(\App\Entity\Expertise $expertise): self
     {
         $this->expertise->removeElement($expertise);
+        return $this;
     }
 
     /**
@@ -1386,7 +1398,7 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion): self
     {
         if (! $this->formationVersion->contains($formationVersion))
         {
@@ -1401,11 +1413,12 @@ class Version implements Demande
      *
      * @param \App\Entity\FormationVersion $formationVersion
      */
-    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion): self
     {
         if ($this->formationVersion->contains($formationVersion))
         {
             $this->formationVersion->removeElement($formationVersion);
+            return $this;
         }
     }
 

@@ -708,9 +708,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addThematique(\App\Entity\Thematique $thematique)
+    public function addThematique(\App\Entity\Thematique $thematique): self
     {
-        $this->thematique[] = $thematique;
+        if (! $this->thematique->contains($thematique))
+        {
+            $this->thematique[] = $thematique;
+        }
 
         return $this;
     }
@@ -720,9 +723,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\Thematique $thematique
      */
-    public function removeThematique(\App\Entity\Thematique $thematique)
+    public function removeThematique(\App\Entity\Thematique $thematique): self
     {
         $this->thematique->removeElement($thematique);
+        return $this;
     }
 
     /**
@@ -742,9 +746,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addRattachement(\App\Entity\Rattachement $rattachement)
+    public function addRattachement(\App\Entity\Rattachement $rattachement): self
     {
-        $this->rattachement[] = $rattachement;
+        if (! $this->rattachement->contains($rattachement))
+        {
+            $this->rattachement[] = $rattachement;
+        }
 
         return $this;
     }
@@ -754,9 +761,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\Rattachement $rattachement
      */
-    public function removeRattachement(\App\Entity\Rattachement $rattachement)
+    public function removeRattachement(\App\Entity\Rattachement $rattachement): self
     {
         $this->rattachement->removeElement($rattachement);
+        return $this;
     }
 
     /**
@@ -776,9 +784,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addSso(\App\Entity\Sso $sso)
+    public function addSso(\App\Entity\Sso $sso): self
     {
-        $this->sso[] = $sso;
+        if (! $this->sso->contains($sso))
+        {
+            $this->sso[] = $sso;
+        }
 
         return $this;
     }
@@ -788,9 +799,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\Sso $sso
      */
-    public function removeSso(\App\Entity\Sso $sso)
+    public function removeSso(\App\Entity\Sso $sso): self
     {
         $this->sso->removeElement($sso);
+        return $this;
     }
 
     /**
@@ -810,9 +822,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addClessh(\App\Entity\Clessh $clessh)
+    public function addClessh(\App\Entity\Clessh $clessh): self
     {
-        $this->clessh[] = $clessh;
+        if (! $this->clessh->contains($clessh))
+        {
+            $this->clessh[] = $clessh;
+        }
         return $this;
     }
 
@@ -823,7 +838,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function removeClessh(\App\Entity\Clessh $clessh)
+    public function removeClessh(\App\Entity\Clessh $clessh): self
     {
         $this->clessh->removeElement($clessh);
         return $this;
@@ -846,9 +861,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
-        $this->collaborateurVersion[] = $collaborateurVersion;
+        if (! $this->collaborateurVersion->contains($collaborateurVersion))
+        {
+            $this->collaborateurVersion[] = $collaborateurVersion;
+        }
 
         return $this;
     }
@@ -858,9 +876,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\CollaborateurVersion $collaborateurVersion
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+        return $this;
     }
 
     /**
@@ -880,9 +899,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function addExpertise(\App\Entity\Expertise $expertise)
+    public function addExpertise(\App\Entity\Expertise $expertise): self
     {
-        $this->expertise[] = $expertise;
+        if (! $this->expertise->contains($expertise))
+        {
+            $this->expertise[] = $expertise;
+        }
 
         return $this;
     }
@@ -892,9 +914,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\Expertise $expertise
      */
-    public function removeExpertise(\App\Entity\Expertise $expertise)
+    public function removeExpertise(\App\Entity\Expertise $expertise): self
     {
         $this->expertise->removeElement($expertise);
+        return $this;
     }
 
     /**
@@ -913,7 +936,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @param \App\Entity\Journal $journal
      * @return Individu
      */
-    public function addJournal(\App\Entity\Journal $journal)
+    public function addJournal(\App\Entity\Journal $journal): self
     {
         if (!$this->journal->contains($journal)) {
             $this->journal[] = $journal;
@@ -927,9 +950,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @param \App\Entity\Journal $journal
      */
-    public function removeJournal(\App\Entity\Journal $journal)
+    public function removeJournal(\App\Entity\Journal $journal): self
     {
         $this->journal->removeElement($journal);
+        return $this;
     }
 
     /**

@@ -127,9 +127,12 @@ class Etablissement
      *
      * @return Etablissement
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
-        $this->collaborateurVersion[] = $collaborateurVersion;
+        if ( ! $this->collaborateurVersion->contains($collaborateurVersion))
+        {
+            $this->collaborateurVersion[] = $collaborateurVersion;
+        }
 
         return $this;
     }
@@ -139,9 +142,10 @@ class Etablissement
      *
      * @param \App\Entity\CollaborateurVersion $collaborateurVersion
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+        return $this;
     }
 
     /**
@@ -161,9 +165,12 @@ class Etablissement
      *
      * @return Etablissement
      */
-    public function addIndividu(\App\Entity\Individu $individu)
+    public function addIndividu(\App\Entity\Individu $individu): self
     {
-        $this->individu[] = $individu;
+        if ( ! $this->individu->contains($individu))
+        {
+            $this->individu[] = $individu;
+        }
 
         return $this;
     }
@@ -173,9 +180,10 @@ class Etablissement
      *
      * @param \App\Entity\Individu $individu
      */
-    public function removeIndividu(\App\Entity\Individu $individu)
+    public function removeIndividu(\App\Entity\Individu $individu): self
     {
         $this->individu->removeElement($individu);
+        return $this;
     }
 
     /**

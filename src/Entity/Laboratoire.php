@@ -194,7 +194,10 @@ class Laboratoire
      */
     public function addIndividu(\App\Entity\Individu $individu): self
     {
-        $this->individu[] = $individu;
+        if (! $this->individu->contains($individu))
+        {
+            $this->individu[] = $individu;
+        }
 
         return $this;
     }
@@ -204,9 +207,10 @@ class Laboratoire
      *
      * @param \App\Entity\Individu $individu
      */
-    public function removeIndividu(\App\Entity\Individu $individu): void
+    public function removeIndividu(\App\Entity\Individu $individu): self
     {
         $this->individu->removeElement($individu);
+        return $this;
     }
 
     /**
