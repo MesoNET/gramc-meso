@@ -41,7 +41,8 @@ class TempsCronTask extends CronTaskBase
         $em = $this->em;
         $dyn_duree_post = $this->dyn_duree_post;
         $sp = $this->sp;
-        $grdt = $this->grdt;
+        $grdt = $this->grdt->getNew();
+        //echo "date = ".$grdt->format('Y-m-d')."\n";
         $workflow = $this->v4w;
         $workflow_p = $this->p4w;
         $sj = $this->sj;
@@ -53,6 +54,7 @@ class TempsCronTask extends CronTaskBase
         foreach ($projets as $p)
         {
             $derver = $p->getVersionDerniere();
+            //echo "$derver...\n";
             if ( $derver === null )
             {
                 $sj->errorMessage(__METHOD__ .':' . __LINE__ . " Projet $p - Pas de versionDerniere !");
@@ -68,24 +70,28 @@ class TempsCronTask extends CronTaskBase
                     $sj->errorMessage(__METHOD__ .':' . __LINE__ . " Version $derver - Pas de LimitDate !");
                     continue;
                 }
-                if ($grdt < $ld)
+                if ($grdt <= $ld)
                 {
                     // Si on est à moins de 30 jours de la date limite, on passe en ACTIF_R
                     $r_date = $ld->sub(new \DateInterval('P30D'));
-                    if ($grdt > $r_date)
+                    if ($grdt >= $r_date)
                     {
+                        //echo "$derver - DAT_ACTR\n";
                         $signal = Signal::DAT_ACTR;
                         $rtn = $workflow->execute($signal, $derver);
                         if ($rtn==false)
                         {
                             $sj->warningMessage(__METHOD__ .':' . __LINE__ . " Version $derver - Etat $etat_version - Signal $signal - Echec de la transition");
                         }
+                        $em->flush();
+
                     }                    
                 }
 
                 // Si la date limite est dépassée, on ferme la version
                 elseif ($grdt > $ld)
                 {
+                    //echo "$derver - CLK_FERM\n";
                     $derver->setEndDate($grdt);
                     $signal = Signal::CLK_FERM;
                     $rtn = $workflow->execute($signal, $derver);
