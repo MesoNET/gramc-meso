@@ -11,8 +11,7 @@ state ACTIF #red
 note left of EDITION_DEMANDE: Les demandeurs\nremplissent le formulaire
 note left of EDITION_EXPERTISE: Les valideurs analysent le dossier
 note left of ACTIF: La session a démarré l'accès est ouvert pour 1 an
-note left of EN_STANDBY: Au bout de 11 mois on propose le renouvellement\n(nouvelle version)
-note left of EN_SURSIS: Après 12 mois, l'accès est fermé mais on peut toujours renouveler\nLa version est terminée au démarrage de la prochaine\nLa version ET le projet sont terminés 12 mois après
+note left of ACTIF_R: Au bout de 11 mois on propose le renouvellement\n(nouvelle version)
 note right of ACTIF: On sort d'ACTIF lorsque version\nsuivante est validée ou refusée\n (renouvellement)
 
 [*]               --> EDITION_DEMANDE
@@ -20,10 +19,8 @@ EDITION_DEMANDE   --> EDITION_EXPERTISE: CLK_VAL_DEM(10)
 EDITION_EXPERTISE --> EDITION_DEMANDE: CLK_ARR(14)
 EDITION_EXPERTISE --> ACTIF: CLK_VAL_EXP_OK (11)
 EDITION_EXPERTISE --> TERMINE: CLK_VAL_EXP_KO (12)
-ACTIF             --> EN_STANDBY: DAT_STDBY (30)
-EN_STANDBY        --> EN_SURSIS: DAT_SURSIS (29)
-EN_STANDBY        --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)
+ACTIF             --> ACTIF_R: DAT_ACTR (30)
+ACTIF_R           --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)\nCLK_FERM (31)
 ACTIF             --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)
-EN_SURSIS         --> TERMINE: CLK_FERM (31)\nCLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)
 TERMINE           --> [*]
 @enduml

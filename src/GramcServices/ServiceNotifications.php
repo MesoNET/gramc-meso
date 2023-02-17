@@ -329,7 +329,7 @@ class ServiceNotifications
                     $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ . ' Utilisateur '. $user . " n'a pas de mail");
                 }
             } elseif ($user == null) {
-                $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . ' Utilisater null dans la liste');
+                $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . ' Utilisateur null dans la liste');
             } elseif (! $user instanceof Individu) {
                 $this->sj->errorMessage(__METHOD__ . ":".  __LINE__ . ' Un objet autre que Individu dans la liste des utilisateurs');
             }

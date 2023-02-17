@@ -160,6 +160,16 @@ parameters:
     # Les experts peuvent entrer un commentaire général entre les mois de mai et de mars
     commentaires_experts_d: 0
     commentaires_experts_f: 0
+
+    # La durée du projet dynamique
+    dyn_duree: P365D
+    
+    # Lorsque la version est à duree_dyn_actif_r de limitDate, on passe à l'état ACTIF_R
+    # P30D = 30 jours (avant !)
+    dyn_duree_actif_r: P30D
+
+    # Lorsqu'on a dépassé la limitDate du projet de plus de duree_dyn_post jours, on FERME le projet
+    dyn_duree_post: P365D
     
     # Répertoires de données
     signature_directory: '%kernel.project_dir%/data/fiches'
@@ -186,6 +196,7 @@ parameters:
     old_journal: 10
     
     # Durée de vie du mot de passe temporaire géré par gramc
+    # (pas utilisé dans gramc-meso)
     pwd_duree: P30D
 
     # La durée de vie d'une invitation

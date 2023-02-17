@@ -39,7 +39,9 @@ use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceForms;
+use App\GramcServices\GramcDate;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 
 use App\Utils\Functions;
 use App\GramcServices\Etat;
@@ -91,16 +93,20 @@ use Twig\Environment;
 class VersionSpecController extends AbstractController
 {
     public function __construct(
+        private $dyn_duree,
+        private $dyn_duree_post,
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceSessions $ss,
         private ServiceVersions $sv,
         private ServiceForms $sf,
         private ProjetWorkflow $pw,
+        private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private LoggerInterface $lg,
         private Environment $tw,
+        private GramcDate $grdt,
         private EntityManagerInterface $em
     ) {}
 
@@ -627,11 +633,150 @@ class VersionSpecController extends AbstractController
      */
     public function renouvellementAction(Request $request, Version $version): Response
     {
+        if ($version->getTypeVersion() == Projet::PROJET_DYN)
+        {
+            return $this->__renouvProjetDyn($request, $version);
+        }
+        else
+        {
+            return $this->__renouvProjetSess($request, $version);
+        }
+    }
+
+    private function __renouvProjetDyn(Request $request, Version $version): Response
+    {
+        $sm = $this->sm;
+        $sv = $this->sv;
+        $sj = $this->sj;
+        $dyn_duree = $this->dyn_duree;
+        $dyn_duree_post = $this->dyn_duree_post;
+        $projet_workflow = $this->pw4;
+        $grdt = $this->grdt;
+        $em = $this->em;
+
+
+        // ACL
+        if ($sm->renouvelerVersion($version)['ok'] == false) {
+            $sj->throwException("VersionController:renouvellementAction impossible de renouveler la version " . $version->getIdVersion());
+        }
+
+        // Si version déjà en cours de renouvellement, on sort
+        // On s'assure de travailler avec la version DERNIERE
+        $projet = $version->getProjet();
+        $verder = $projet->getVersionDerniere();
+        if ($verder->getEtatVersion() != Etat::ACTIF && $verder->getEtatVersion() != Etat::ACTIF_R && $verder->getEtatVersion() != Etat::TERMINE)
+        {
+            $sj->errorMessage("VersionController:renouvellementAction version " . $verder->getIdVersion() . " existe déjà !");
+            return $this->redirect($this->generateUrl('projet_accueil'));
+        }
+        
+        // Si version est en état ACTIF on peut renouveler
+        // Mais dans ce cas la date limite est inchangée, la durée d'activité de la nouvelle version sera limitée
+
+        // Si version est en état ACTIF_R on peut renouveler
+        // Mais dans ce cas la date limite sera positionnée à start_date + dyn_duree (def = 365 jours))
+
+        $old_dir = $sv->imageDir($verder);
+        $etat_version = $verder->getEtatVersion();
+
+        // nouvelle version
+        $new_version = clone $verder;
+
+        if ($etat_version==Etat::ACTIF_R ||$etat_version==Etat::TERMINE )
+        {
+            $new_version->setPrjGenciCentre('');
+            $new_version->setPrjGenciDari('');
+            $new_version->setPrjGenciHeures(0);
+            $new_version->setPrjGenciMachines('');
+            $new_version->setDemHeuresUft(0);
+            $new_version->setDemHeuresCriann(0);
+            $new_version->setAttrHeuresUft(0);
+            $new_version->setAttrHeuresCriann(0);
+            $new_version->setStartDate($grdt);
+
+            // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire
+            // La startDate et la LimitDate seront fixées de manière définitive lorsqu'on validera la version
+            $new_version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
+        }
+        
+        $new_version->setPrjJustifRenouv(null);
+        $new_version->setCgu(0);
+
+        $nb = $version->getNbVersion();
+        $nb = $this->__incrNbVersion($nb);
+        
+        $new_version->setNbVersion($nb);
+        $new_version->setIdVersion($nb . $projet->getIdProjet());
+        $new_version->setProjet($projet);
+        $new_version->setEtatVersion(Etat::EDITION_DEMANDE);
+
+        Functions::sauvegarder($new_version, $em, $this->lg);
+
+        // Nouveaux collaborateurVersions
+        $collaborateurVersions = $version->getCollaborateurVersion();
+        foreach ($collaborateurVersions as $collaborateurVersion) {
+            
+            // ne pas reprendre un collaborateur sans login et marqué comme supprimé
+            // Attention un collaborateurVersion avec login = false mais loginname renseigné signifie que le compte
+            // n'a pas encore été détruit: dans ce cas on le reprend !
+            if ($collaborateurVersion->getDeleted() &&
+                $collaborateurVersion->getClogin() === false &&
+                $collaborateurVersion->getLoginname() === null ) continue;
+
+            $newCollaborateurVersion    = clone  $collaborateurVersion;
+
+            // Les users connectés au collaborateurVersion connectés au nouveau cv
+            $users = $collaborateurVersion->getUser();
+            foreach ($users as $u)
+            {
+                $newCollaborateurVersion->addUser($u);
+                $u->addCollaborateurVersion($newCollaborateurVersion);
+                $em->persist($newCollaborateurVersion);
+                $em->persist($u);
+            }
+            
+            $newCollaborateurVersion->setVersion($new_version);
+            $em->persist($newCollaborateurVersion);
+        }
+
+        // Remettre à false Nepasterminer qui n'a pas trop de sens ici
+        //$projet->setNepasterminer(false);
+        $em->persist($projet);
+        $em->flush();
+
+        // images: On reprend les images "img_expose" de la version précédente
+        //         On ne REPREND PAS les images "img_justif_renou" !!!
+        $new_dir = $sv->imageDir($new_version);
+        for ($id=1;$id<4;$id++) {
+            $f='img_expose_'.$id;
+            $old_f = $old_dir . '/' . $f;
+            $new_f = $new_dir . '/' . $f;
+            if (is_file($old_f)) {
+                $rvl = copy($old_f, $new_f);
+                if ($rvl==false) {
+                    $sj->errorMessage("VersionController:erreur dans la fonction copy $old_f => $new_f");
+                }
+            }
+        }
+        return $this->redirect($this->generateUrl('modifier_version', [ 'id' => $new_version->getIdVersion() ]));
+    }
+
+    private function __incrNbVersion(string $nbVersion): string
+    {
+        $n = intval($nbVersion);
+        $n += 1;
+        return sprintf('%02d', $n);
+    }
+    
+    // -----------------------------------------------------
+    private function __renouvProjetSess(Request $request, Version $version): Response
+    {
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
         $projet_workflow = $this->pw;
         $em = $this->em;
+
 
         // ACL
         if ($sm->renouvelerVersion($version)['ok'] == false) {

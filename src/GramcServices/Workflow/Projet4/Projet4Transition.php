@@ -64,7 +64,7 @@ class Projet4Transition extends Transition
                 if ($version->getEtatVersion() != Etat::TERMINE && $version->getEtatVersion() != Etat::ANNULE) {
                     $output = $versionWorkflow->canExecute($this->getSignal(), $version);
                     if ($output != true) {
-                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " Version " . $version . "  ne passe pas en état "
+                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " Version " . $version . " état "
                             . Etat::getLibelle($version->getEtatVersion()) . " signal = " . Signal::getLibelle($this->getSignal()));
                     }
                     $rtn = $rtn && $output;
@@ -94,10 +94,12 @@ class Projet4Transition extends Transition
 
         $rtn = true;
         if ($this->getPropageSignal()) {
+            $signal = $this->getSignal();
             $versionWorkflow = new Version4Workflow($this->sn, $this->sj, $this->ss, $this->em);
             foreach ($projet->getVersion() as $version) {
                 if ($version->getEtatVersion() != Etat::TERMINE && $version->getEtatVersion() != Etat::ANNULE) {
-                    $return = $versionWorkflow->execute($this->getSignal(), $version);
+                    $return = $versionWorkflow->execute($signal, $version);
+                    if (Transition::DEBUG) $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " version=$version signal=$signal rtn=" . Functions::show($rtn));
                     $rtn = Functions::merge_return($rtn, $return);
                 }
             }
@@ -105,6 +107,9 @@ class Projet4Transition extends Transition
 
         // Change l'état du projet
         $this->changeEtat($projet);
+
+        // Envoi des notifications
+        $this->sendNotif($projet);
 
         self::$execute_en_cours = false;
         if (Transition::DEBUG) {

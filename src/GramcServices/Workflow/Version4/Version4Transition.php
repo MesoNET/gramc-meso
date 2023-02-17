@@ -85,6 +85,7 @@ class Version4Transition extends Transition
 
         // Propage le signal aux rallonges si demandé
         if ($this->getPropageSignal()) {
+            if (Transition::DEBUG) $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " Propagations aux rallonges (".count($rallonges).")");
             $rallonges = $version->getRallonge();
 
             if (count($rallonges) > 0) {
@@ -100,6 +101,7 @@ class Version4Transition extends Transition
 
         // Propage le signal au projet si demandé
         if ($this->getPropageSignal()) {
+            if (Transition::DEBUG) $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " Propagations au projet");
             $projet = $version->getProjet();
             $workflow = new ProjetWorkflow($this->sn, $this->sj, $this->ss, $this->em);
             $output   = $workflow->execute($this->getSignal(), $projet);
@@ -114,7 +116,7 @@ class Version4Transition extends Transition
 
         self::$execute_en_cours = false;
         if (Transition::DEBUG) {
-            $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " rtn = " . Functions::show($rtn));
+            $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " rtn = " . Functions::show($rtn));
         }
 
         return $rtn;

@@ -59,11 +59,18 @@ class VersionStamp
             return;
         }
         $user = $this->token->getUser();
-        if ($version->isCollaborateur($user)) {
-            $version->setMajInd($user);
-            $version->setMajStamp(new \DateTime());
-        } else {
-            $version->setMajInd(null);
+
+        // $user peut provenir de l'API, dans ce cas c'est un InMemoryUser !
+        if ($user Instanceof Individu)
+        {
+            if ($version->isCollaborateur($user)) {
+                $version->setMajInd($user);
+                $version->setMajStamp(new \DateTime());
+            }
+            else
+            {
+                $version->setMajInd(null);
+            }
         }
     }
 }

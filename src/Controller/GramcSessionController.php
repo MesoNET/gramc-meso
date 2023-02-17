@@ -236,6 +236,13 @@ class GramcSessionController extends AbstractController
             {
                 return $this->redirectToRoute('profil');
             };
+
+            // Si je n'ai que le role demandeur, je vais direct vers la page de mes projets
+            $roles = $individu->getRoles();
+            if (count($roles) == 1)
+            {
+                return $this->redirectToRoute('projet_accueil');
+            }
         }
 
         return $this->render('default/accueil.html.twig');

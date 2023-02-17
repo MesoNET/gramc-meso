@@ -311,20 +311,20 @@ class ProjetController extends AbstractController
      * @Route("/{id}/nepasterminer", name="nepasterminer_projet", methods={"GET"})
      * Method({"GET"})
      */
-    public function nepasterminerAction(Projet $projet, Request $request): Response
-    {
-        $em = $this->em;
+    //public function nepasterminerAction(Projet $projet, Request $request): Response
+    //{
+    //    $em = $this->em;
 
-        $projet->setNepasterminer(true);
-        $em->persist($projet);
-        $em->flush();
-        return $this->render(
-            'projet/nepasterminer.html.twig',
-            [
-            'projet' => $projet,
-            ]
-        );
-    }
+    //    $projet->setNepasterminer(true);
+    //    $em->persist($projet);
+    //    $em->flush();
+    //    return $this->render(
+    //        'projet/nepasterminer.html.twig',
+    //        [
+    //        'projet' => $projet,
+    //        ]
+    //    );
+    //}
 
     /**
      * Permettre la fermeture d'un projet
@@ -333,23 +333,23 @@ class ProjetController extends AbstractController
      * @Route("/{id}/onpeutterminer", name="onpeutterminer_projet", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function onpeutterminerAction(Projet $projet, Request $request): Response
-    {
-        $em = $this->em;
+    //public function onpeutterminerAction(Projet $projet, Request $request): Response
+    //{
+    //    $em = $this->em;
 
-        $projet->setNepasterminer(false);
-        $em->persist($projet);
-        $em->flush();
-        return $this->render(
-            'projet/onpeutterminer.html.twig',
-            [
-            'projet' => $projet,
-            ]
-        );
-    }
+    //  $projet->setNepasterminer(false);
+    // $em->persist($projet);
+    // $em->flush();
+    // return $this->render(
+    //      'projet/onpeutterminer.html.twig',
+    //      [
+    //      'projet' => $projet,
+    //      ]
+    //    );
+    //}
 
     /**
-     * back une version
+     * Retour en arrière
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
@@ -373,7 +373,8 @@ class ProjetController extends AbstractController
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet())) {
+                if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet()))
+                {
                     $workflow->execute(Signal::CLK_ARR, $version->getProjet());
                     // Supprime toutes les expertises
                     $expertises = $version->getExpertise()->toArray();
@@ -1078,56 +1079,132 @@ class ProjetController extends AbstractController
      * Method("GET")
      * @Security("is_granted('ROLE_OBS')")
      */
+    //public function dynamiquesAction(): Response
+    //{
+        //$em = $this->em;
+        //$projets = $em->getRepository(Projet::class)->findAll();
+        //$sj = $this->sj;
+        //$sp = $this->sp;
+
+        //foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
+            //$etat_projet[$e] = 0;
+        //}
+
+        //$data = [];
+
+        //$collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
+        //$versionRepository              = $em->getRepository(Version::class);
+        //$projetRepository               = $em->getRepository(Projet::class);
+        //$total
+
+        //foreach ($projets as $projet) {
+            //$info     = $versionRepository->info($projet); // les stats du projet
+            //$version = $projet->getVersionActive();
+            //if ($version === null)
+            //{
+                //$version = $projet->getVersionDerniere();
+                //if ($version === null)
+                //{
+                    //$sj->errorMessage(__METHOD__ .":" . __LINE__ . "projet $projet - Pas de version !");
+                    //continue;
+                //}
+            //};
+            
+            //$metaetat = strtolower($sp->getMetaEtat($projet));
+
+            //$etat_projet[$metaetat] += 1;
+
+            
+            //$data[] = [
+                    //'projet'       => $projet,
+                    //'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
+                    //'metaetat'     => $metaetat,
+                    //'version'      => $version,
+                    //'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
+                    //'count'        => $info[1],
+                    //'dem'          => $info[2],
+                    //'attr'         => $info[3],
+                    //'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
+            //];
+        //}
+
+        //$etat_projet['total']      = $projetRepository->countAll();
+
+        //return $this->render(
+            //'projet/projets_dyn.html.twig',
+            //[
+            //'etat_projet' => $etat_projet,
+            //'data' => $data,
+            //]
+        //);
+    //}
+
+    /**
+     * Projets dynamiques
+     *
+     * @Route("/dynamiques", name="projet_dynamique", methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_OBS')")
+     */
     public function dynamiquesAction(): Response
     {
-        $em      = $this->em;
-        $projets = $em->getRepository(Projet::class)->findAll();
-        $sp      = $this->sp;
+        $em = $this->em;
+        //$projets = $em->getRepository(Projet::class)->findAll();
+        $sj = $this->sj;
+        $sp = $this->sp;
 
-        foreach (['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
-            $etat_projet[$e]         = 0;
-            $etat_projet[$e.'_test'] = 0;
+        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
+            $etat_projet[$e] = 0;
         }
 
+        // On récupère tous les projets dynamiques toutes années confondues
+        // Avec des informations statistiques
+        [$projets_data,$total,$repart] = $sp->projetsDynParAnnee();
         $data = [];
-
         $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
         $versionRepository              = $em->getRepository(Version::class);
         $projetRepository               = $em->getRepository(Projet::class);
 
-        foreach ($projets as $projet) {
-            $info     = $versionRepository->info($projet); // les stats du projet
-            $version  = $projet->getVersionDerniere();
+        foreach ($projets_data as $projet_data) {
+            $projet = $projet_data['p'];
+            //$info     = $versionRepository->info($projet); // les stats du projet
+            $version = $projet->getVersionActive();
+            if ($version === null)
+            {
+                $version = $projet->getVersionDerniere();
+                if ($version === null)
+                {
+                    $sj->errorMessage(__METHOD__ .":" . __LINE__ . "projet $projet - Pas de version !");
+                    continue;
+                }
+            };
+            
             $metaetat = strtolower($sp->getMetaEtat($projet));
+            $count = intval($projet->getVersionDerniere()->getNbVersion());
 
-            if ($projet->getTypeProjet() == Projet::PROJET_TEST) {
-                $etat_projet[$metaetat.'_test'] += 1;
-            } else {
-                $etat_projet[$metaetat] += 1;
-            }
+            $etat_projet[$metaetat] += 1;
 
+            
             $data[] = [
                     'projet'       => $projet,
                     'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
                     'metaetat'     => $metaetat,
                     'version'      => $version,
                     'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    'count'        => $info[1],
-                    'dem'          => $info[2],
-                    'attr'         => $info[3],
+                    'count'        => $count,
                     'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
             ];
         }
 
         $etat_projet['total']      = $projetRepository->countAll();
-        $etat_projet['total_test'] = $projetRepository->countAllTest();
 
         return $this->render(
             'projet/projets_dyn.html.twig',
             [
-            'etat_projet'   =>  $etat_projet,
+            'etat_projet' => $etat_projet,
             'data' => $data,
-        ]
+            'total' => $total
+            ]
         );
     }
 

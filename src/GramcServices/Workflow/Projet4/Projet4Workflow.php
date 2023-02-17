@@ -68,11 +68,10 @@ class Projet4Workflow extends Workflow
                 Signal::CLK_ARR        => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_ARR, [], true),
                 Signal::CLK_VAL_EXP_OK => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_EXP_OK, [], true),
 
-                Signal::DAT_STDBY      => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_STDBY, [], true),
-                Signal::DAT_SURSIS     => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_SURSIS, [], true),
+                Signal::DAT_ACTR       => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_ACTR, [], true),
 
                 Signal::CLK_VAL_EXP_KO => new Projet4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO, [], true),
-                Signal::CLK_FERM       => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                Signal::CLK_FERM       => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM, [ 'R' => 'projet_ferme' ]),
                 ]
             )
             ->addState(

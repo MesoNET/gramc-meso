@@ -228,6 +228,14 @@ class Version implements Demande
     private $endDate;
 
     /**
+     * @var \DateTime
+     * Date limite, la version n'ira pas au-delà
+     *
+     * @ORM\Column(name="limit_date", type="datetime", nullable=true)
+     */
+    private $limitDate;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="prj_fiche_len", type="integer", nullable=true)
@@ -300,15 +308,16 @@ class Version implements Demande
     private $projet;
 
     /**
-    * @ORM\PostUpdate
+    * @
+    * ORM\PostUpdate
     */
-    public function setVersionActive()
-    // on ne sait pas si cela marche parce que l'on ne s'en sert pas
-    {
-        if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
-            $this->projet->setVersionActive($this);
-        }
-    }
+    //public function setVersionActive()
+    //// on ne sait pas si cela marche parce que l'on ne s'en sert pas
+    //{
+    //    if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
+    //        $this->projet->setVersionActive($this);
+    //    }
+    //}
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -1005,6 +1014,30 @@ class Version implements Demande
     }
 
     /**
+     * Set limitDate
+     *
+     * @param \DateTime $limitDate
+     *
+     * @return Version
+     */
+    public function setLimitDate($limitDate)
+    {
+        $this->limitDate = $limitDate;
+
+        return $this;
+    }
+
+    /**
+     * Get limiteDate
+     *
+     * @return \DateTime
+     */
+    public function getLimitDate()
+    {
+        return $this->limitDate;
+    }
+
+    /**
      * Set fctStamp
      *
      * @param \DateTime $fctStamp
@@ -1621,30 +1654,33 @@ class Version implements Demande
     {
         $etat_version   =   $this->getEtatVersion();
 
-        if ($etat_version == Etat::ACTIF) {
+        if ($etat_version == Etat::ACTIF)
+        {
             return 'ACTIF';
-        } elseif ($etat_version == Etat::ACTIF_TEST) {
-            return 'ACTIF';
-        } elseif ($etat_version == Etat::NOUVELLE_VERSION_DEMANDEE) {
+        }
+        elseif ($etat_version == Etat::ACTIF_R)
+        {
+            return 'A RENOUVELER';
+        }
+        elseif ($etat_version == Etat::NOUVELLE_VERSION_DEMANDEE)
+        {
             return 'PRESQUE TERMINE';
-        } elseif ($etat_version == Etat::ANNULE) {
+        }
+        elseif ($etat_version == Etat::ANNULE)
+        {
             return 'ANNULE';
-        } elseif ($etat_version == Etat::EDITION_DEMANDE) {
+        }
+        elseif ($etat_version == Etat::EDITION_DEMANDE)
+        {
             return 'EDITION';
-        } elseif ($etat_version == Etat::EDITION_TEST) {
-            return 'EDITION';
-        } elseif ($etat_version == Etat::EDITION_EXPERTISE) {
-            return 'EXPERTISE';
-        } elseif ($etat_version == Etat::EXPERTISE_TEST) {
-            return 'EXPERTISE';
-        } elseif ($etat_version == Etat::EN_ATTENTE) {
-            return 'EN ATTENTE';
-        } elseif ($etat_version == Etat::TERMINE) {
-            if ($this->getAttrAccept() == true) {
-                return 'TERMINE';
-            } else {
-                return 'REFUSE';
-            }
+        }
+        elseif ($etat_version == Etat::EDITION_EXPERTISE)
+        {
+            return 'VALIDATION';
+        }
+        elseif ($etat_version == Etat::TERMINE)
+        {
+            return 'TERMINE';
         }
         return 'INCONNU';
     }
@@ -1912,3 +1948,17 @@ class Version implements Demande
         return $this->getIdVersion();
     }
 }
+
+
+
+
+/*
+ * Modifier le schema de la base de données (depuis 0.2.x):
+ *
+ * ALTER TABLE version ADD limit_date DATETIME DEFAULT NULL;
+ * ALTER TABLE version CHANGE end_date end_date DATETIME DEFAULT NULL;
+ *
+ * UPDATE version SET `limit_date`=adddate(`jour_j`,365);
+ *
+ */
+ 

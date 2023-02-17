@@ -818,7 +818,7 @@ class VersionController extends AbstractController
                 else
                 {
                     $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet " . $projet->getIdProjet() . " n'a pas pu etre envoyé à l'expert correctement.");
-                    $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas pu être envoyé en expertise. Merci de vous rapprocher du support");
+                    $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas pu être envoyé en validation. Merci de vous rapprocher du support");
                 }
                 return $this->redirectToRoute('projet_accueil');
             }

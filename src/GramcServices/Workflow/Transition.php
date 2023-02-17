@@ -138,7 +138,7 @@ abstract class Transition
             Functions::sauvegarder($object, $this->em);
             $reflect = new \ReflectionClass($object);
             $classe  = $reflect->getShortName();
-            $this->sj->debugMessage(__FILE__ . ":" . __LINE__ . " $classe " . $object . " est passé de l'état " . $old_etat . " à " . $object->getObjectState() . " suite au signal " . $this->getSignal());
+            $this->sj->debugMessage('>>> ' . __FILE__ . ":" . __LINE__ . " $classe " . $object . " est passé de l'état " . $old_etat . " à " . $object->getObjectState() . " suite au signal " . $this->getSignal());
 
         } else {
             $object->setObjectState($this->getEtat());
