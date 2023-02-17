@@ -1811,6 +1811,24 @@ class AdminuxController extends AbstractController
     }
     
     /**
+     * Exécution des tâches cron
+     *
+     * @Route("/cron/execute", name="cron_execute", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     *
+     *
+     */
+
+    // curl --netrc -X GET https://.../adminux/cron/execute
+    public function cronAction(Request $request, LoggerInterface $lg): Response
+    {
+        $cr = $this->cr;
+        $cr->execute();
+        return new Response(json_encode(['OK' => '']));
+    }
+
+    /**
      * SEULEMENT EN DEBUG: renvoie la date
      *
      * @Route("/gramcdate/get", name="grdt_get", methods={"GET"})
