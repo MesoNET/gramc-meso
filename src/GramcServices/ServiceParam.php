@@ -39,9 +39,12 @@ class ServiceParam
     public function getParameter($parameter): ?string
     {
         $param = $this->em->getRepository(Param::class)->findOneBy([ 'cle' => $parameter ]);
-        if ($param == null) {
+        if ($param == null)
+        {
             return null;
-        } else {
+        }
+        else
+        {
             return $param->getVal();
         }
     }
@@ -50,9 +53,12 @@ class ServiceParam
     public function hasParameter($parameter): bool
     {
         $param = $this->getParameter($parameter);
-        if ($param==null) {
+        if ($param==null)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             return true;
         }
     }
