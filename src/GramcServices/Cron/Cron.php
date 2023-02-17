@@ -26,9 +26,7 @@ class Cron
     {
         $this->taches[] = $nct;
         $this->taches[] = $tct;
-        //$this->taches[] = $tpsc; 
     }
-
 
     public function execute()
     {

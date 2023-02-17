@@ -1906,7 +1906,6 @@ class AdminuxController extends AbstractController
             }
             else
             {
-                $interval = 0;
                 $shift = intval($shift);
                 if ($shift <= 0)
                 {
@@ -1928,6 +1927,9 @@ class AdminuxController extends AbstractController
                 $em->persist($grdt_now);
             }
             $em->flush();
+
+            // On relit le paramètre pour actualiser le cache de Doctrine
+            $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
 
             // Exécuter le cron si demandé
             if ($cron)
