@@ -149,8 +149,8 @@
                             {% if( item.version != null) %}<span title="{{ item.version.PrjLLabo }}">{{ item.version.acroLaboratoire }}</span>{% endif %}
                         </td>
                         <td>{{ item.count }}</td>
-                        <td>{% if item.version.startdate != null %}{{ item.version.startdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
-                        <td>{% if item.version.limitdate != null %}{{ item.version.limitdate|date('d-m-Y')}}{% else %} - {% endif %}</td>
+                        <td>{% if item.version.startdate != null %}{{ item.version.startdate|date('Y-m-d')}}{% else %} - {% endif %}</td>
+                        <td>{% if item.version.limitdate != null %}{{ item.version.limitdate|date('Y-m-d')}}{% else %} - {% endif %}</td>
                         <td class="prj_fiche_val">
                             {% if serviceVersions.issigne(item.version) %}
                             <a href="{{ path('signature',  { 'id': item.version.idVersion }) }}?">{{icones.pdf(25,25)}}</a><br>
