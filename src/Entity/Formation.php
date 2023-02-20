@@ -15,6 +15,7 @@ class Formation
     {
         $this->startDate = new \DateTime();
         $this->endDate = new \DateTime();
+        $this->formationVersion = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -23,6 +24,13 @@ class Formation
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\FormationVersion", mappedBy="formation", cascade={"persist"})
+     */
+    private $formationVersion;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -58,6 +66,44 @@ class Formation
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Add formationVersion
+     *
+     * @param \App\Entity\FormationVersion $formationVersion
+     *
+     * @return Formation
+     */
+    public function addRallonge(\App\Entity\FormationVersion $formationVersion): self
+    {
+        if (! $this->formationVersion->contains($formationVersion))
+        {
+            $this->formationVersion[] = $formationVersion;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove formationVersion
+     *
+     * @param \App\Entity\FormationVersion $formationVersion
+     */
+    public function removeFormationVersion(\App\Entity\Rallonge $formationVersion): self
+    {
+        $this->rallonge->removeElement($formationVersion);
+        return $this;
+    }
+
+    /**
+     * Get formationVersion
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFormationVersion()
+    {
+        return $this->formationVersion;
     }
 
     public function getNumeroForm(): ?int

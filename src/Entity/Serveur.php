@@ -35,6 +35,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Serveur
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ressource = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=20)
@@ -42,6 +50,13 @@ class Serveur
      * @ORM\GeneratedValue(strategy="NONE")
      */
     private $nom;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="serveur", cascade={"persist"})
+     */
+    private $ressource;
 
     /**
      * @var desc
@@ -52,9 +67,9 @@ class Serveur
     private $desc;
 
     /**
-     * @var desc
+     * @var admname
      *
-     * @ORM\Column(name="admname", type="string", length=20 )
+     * @ORM\Column(name="admname", type="string", length=20, options={"comment":"username symfony pour l'api"}) )
      * 
      */
     private $admname;
@@ -79,6 +94,44 @@ class Serveur
     {
         $this->nom = $nom;
         return $this;
+    }
+
+    /**
+     * Add ressource
+     *
+     * @param \App\Entity\Ressource $ressource
+     *
+     * @return Serveur
+     */
+    public function addRallonge(\App\Entity\Serveur $serveur): self
+    {
+        if (! $this->serveur->contains($serveur))
+        {
+            $this->serveur[] = $serveur;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove resource
+     *
+     * @param \App\Entity\Ressource $ressource
+     */
+    public function removeRessource(\App\Entity\Ressource $ressource): self
+    {
+        $this->ressource->removeElement($ressource);
+        return $this;
+    }
+
+    /**
+     * Get ressource
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRessource()
+    {
+        return $this->ressource;
     }
 
     /**

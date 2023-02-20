@@ -108,7 +108,7 @@ parameters:
     max_rall: 2
     
     # Préfixe associé au nom du projet, dépend du type de projet
-    # Seuls les projets de type M sont utilisés actuellement
+    # Seuls les projets de type 4 sont utilisés actuellement
     prj_prefix:
         1: P
         2: T

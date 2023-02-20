@@ -308,18 +308,6 @@ class Version implements Demande
     private $projet;
 
     /**
-    * @
-    * ORM\PostUpdate
-    */
-    //public function setVersionActive()
-    //// on ne sait pas si cela marche parce que l'on ne s'en sert pas
-    //{
-    //    if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
-    //        $this->projet->setVersionActive($this);
-    //    }
-    //}
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
      *
      * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="version", cascade={"persist"})
@@ -332,6 +320,13 @@ class Version implements Demande
      * @ORM\OneToMany(targetEntity="\App\Entity\Rallonge", mappedBy="version", cascade={"persist"})
      */
     private $rallonge;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Dac", mappedBy="version", cascade={"persist"})
+     */
+    private $dac;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -378,8 +373,9 @@ class Version implements Demande
     {
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rallonge             = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->dac                  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise            = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->formation            = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->formationVersion     = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionDerniere      = new \Doctrine\Common\Collections\ArrayCollection();
         $this->versionActive        = new \Doctrine\Common\Collections\ArrayCollection();
         $this->etatVersion          = Etat::EDITION_DEMANDE;
@@ -1298,7 +1294,7 @@ class Version implements Demande
     public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
-        return $this:
+        return $this;
     }
 
     /**
@@ -1347,6 +1343,43 @@ class Version implements Demande
     public function getRallonge()
     {
         return $this->rallonge;
+    }
+
+    /**
+     * Add dac
+     *
+     * @param \App\Entity\Dac $dac
+     *
+     * @return Version
+     */
+    public function addDac(\App\Entity\Dac $dac): self
+    {
+        if (! $this->dac->contains($dac))
+        {
+            $this->dac[] = $dac;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove dac
+     *
+     * @param \App\Entity\Dac $dac
+     */
+    public function removeDac(\App\Entity\Dac $dac): self
+    {
+        $this->dac->removeElement($dac);
+        return $this;
+    }
+
+    /**
+     * Get dac
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDac()
+    {
+        return $this->dac;
     }
 
     // Expertise
