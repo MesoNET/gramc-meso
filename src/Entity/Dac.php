@@ -32,6 +32,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Demande, Attribution, consommation
  * 
  * @ORM\Table(name="dac")
+ * @ORM\Table(name="dac", options={"collation"="utf8mb4_general_ci"})
+
  * @ORM\Entity
  */
 class Dac

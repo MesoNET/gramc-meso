@@ -29,8 +29,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Ressource
  *
- * @ORM\Table(name="ressource", indexes={@ORM\Index(name="nom", columns={"nom"})})
- * @ORM\Entity
+ * @ORM\Table(name="ressource", indexes={@ORM\Index(name="nom", columns={"nom"})}, options={"collation"="utf8mb4_general_ci"})
+ * @ORM\Entity(repositoryClass="App\Repository\RessourceRepository")
  */
 class Ressource
 {
@@ -39,7 +39,7 @@ class Ressource
      */
     public function __construct()
     {
-        $this->dac                  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->dac = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -79,15 +79,23 @@ class Ressource
     /**
      * @var desc
      *
-     * @ORM\Column(name="desc", type="string", length=200)
+     * @ORM\Column(name="descr", type="string", length=2000)
      * 
      */
     private $desc;
 
     /**
+     * @var docUrl
+     *
+     * @ORM\Column(name="doc_url", type="string", length=200)
+     * 
+     */
+    private $docUrl;
+
+    /**
      * @var unite
      * 
-     * @ORM\Column(name="unite", type="string", length=4, options={"comment":"unité utilisée pour les allocations"}) )
+     * @ORM\Column(name="unite", type="string", length=4, nullable=true, options={"comment":"unité utilisée pour les allocations"}) )
      *
      ****/
     private $unite;
@@ -95,7 +103,7 @@ class Ressource
     /**
      * @var maxDem
      * 
-     * @ORM\Column(name="max_dem", type="integer", options={"comment":"Valeur max qu'on a le droit de demander"}) )
+     * @ORM\Column(name="max_dem", type="integer", nullable=true, options={"comment":"Valeur max qu'on a le droit de demander"}) )
      *
      ****/
     private $maxDem;
@@ -103,7 +111,7 @@ class Ressource
     /**
      * @var co2
      * 
-     * @ORM\Column(name="co2", type="integer", options={"comment":"gramme de co2 émis par unite et par heure"}) )
+     * @ORM\Column(name="co2", type="integer", nullable=true, options={"comment":"gramme de co2 émis par unite et par heure"}) )
      *
      ****/
     private $co2;
@@ -143,7 +151,7 @@ class Ressource
      *
      * @return \App\Entity\Serveur
      */
-    public function getServeur(): \App\Entity\Serveur
+    public function getServeur(): ?\App\Entity\Serveur
     {
         return $this->serveur;
     }
@@ -190,7 +198,7 @@ class Ressource
      *
      * @return string
      */
-    public function getNom(): string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -212,7 +220,7 @@ class Ressource
      *
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc(): ?string
     {
         return $this->desc;
     }
@@ -230,11 +238,33 @@ class Ressource
     }
 
     /**
+     * Get docUrl
+     *
+     * @return string
+     */
+    public function getDocUrl(): ?string
+    {
+        return $this->docUrl;
+    }
+
+    /**
+     * Set docUrl
+     *
+     * @param string
+     * @return Ressource
+     */
+    public function setDocUrl(string $docUrl): Self
+    {
+        $this->docUrl = $docUrl;
+        return $this;
+    }
+
+    /**
      * Get Unite
      *
      * @return string
      */
-    public function getUnite(): string
+    public function getUnite(): ?string
     {
         return $this->unite;
     }
@@ -256,7 +286,7 @@ class Ressource
      *
      * @return integer
      */
-    public function getMaxDem(): int
+    public function getMaxDem(): ?int
     {
         return $this->maxDem;
     }
@@ -278,7 +308,7 @@ class Ressource
      *
      * @return integer
      */
-    public function getCo2(): int
+    public function getCo2(): ?int
     {
         return $this->co2;
     }

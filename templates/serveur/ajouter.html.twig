@@ -1,0 +1,31 @@
+{% extends 'default/base.html.twig' %}
+
+{% block body %}
+<section>
+<h2>Ajouter un serveur</h2>
+    {% import "default/macros.html.twig" as gramcmacros %}
+    {{ gramcmacros.menu(menu) }}
+    
+    {{ form_start(form) }}
+    <table>
+        <tr>
+            <th>{{ form_label(form.nom) }}</th>
+            <td>{{ form_widget(form.nom) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.desc) }}</th>
+            <td>{{ form_widget(form.desc) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.admname) }}</th>
+            <td>{{ form_widget(form.admname) }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td class="inputrond submitdyn">{{ form_widget(form.submit) }}{{ form_widget(form.reset) }}</td>
+        </tr>    
+    </table>
+    {{ form_end(form) }}
+</section>
+
+{% endblock body %}

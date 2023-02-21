@@ -29,8 +29,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Serveur
  *
- * @ORM\Table(name="serveur", indexes={@ORM\Index(name="nom", columns={"nom"})})
- * @ORM\Entity
+ * @ORM\Table(name="serveur", options={"collation"="utf8mb4_general_ci"})
+ * @ORM\Entity(repositoryClass="App\Repository\ServeurRepository")
+
  */
 class Serveur
 {
@@ -61,7 +62,8 @@ class Serveur
     /**
      * @var desc
      *
-     * @ORM\Column(name="desc", type="string", length=200)
+     * Attention desc est un nom réservé !
+     * @ORM\Column(name="descr", type="string", length=20, options={"default":""})
      * 
      */
     private $desc;
@@ -79,7 +81,7 @@ class Serveur
      *
      * @return string
      */
-    public function getNom(): string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -139,7 +141,7 @@ class Serveur
      *
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc(): ?string
     {
         return $this->desc;
     }
@@ -161,7 +163,7 @@ class Serveur
      *
      * @return string
      */
-    public function getAdmname(): string
+    public function getAdmname(): ?string
     {
         return $this->admname;
     }

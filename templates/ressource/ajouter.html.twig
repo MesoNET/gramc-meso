@@ -1,0 +1,47 @@
+{% extends 'default/base.html.twig' %}
+
+{% block body %}
+<section>
+<h2>Ajouter une ressource</h2>
+    {% import "default/macros.html.twig" as gramcmacros %}
+    {{ gramcmacros.menu(menu) }}
+    
+    {{ form_start(form) }}
+    <table>
+        <tr>
+            <th>{{ form_label(form.serveur) }}</th>
+            <td>{{ form_widget(form.serveur) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.nom) }}</th>
+            <td>{{ form_widget(form.nom) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.desc) }}</th>
+            <td>{{ form_widget(form.desc) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.docurl) }}</th>
+            <td>{{ form_widget(form.docurl) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.unite) }}</th>
+            <td>{{ form_widget(form.unite) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.maxDem) }}</th>
+            <td>{{ form_widget(form.maxDem) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(form.co2) }}</th>
+            <td>{{ form_widget(form.co2) }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td class="inputrond submitdyn">{{ form_widget(form.submit) }}{{ form_widget(form.reset) }}</td>
+        </tr>    
+    </table>
+    {{ form_end(form) }}
+</section>
+
+{% endblock body %}
