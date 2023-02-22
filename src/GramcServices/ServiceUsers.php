@@ -56,7 +56,8 @@ class ServiceUsers
         foreach ( $users as $u)
         {
             $s = $u->getServeur()->getNom();
-            $loginnames3[$s]['nom'] = $u->getLoginname();
+            $loginnames3[$s]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
+            $loginnames3[$s]['login'] = $u->getLogin() ? 'true' : 'false';
             if ($long) $loginnames3[$s]['nom'] .= '@'.$s;
             $clessh = $u->getClessh();
             if ($clessh === null)
@@ -74,8 +75,6 @@ class ServiceUsers
             $loginnames3[$s]['userid'] = $u->getId();
         }
         
-        if (!array_key_exists('TURPAN', $loginnames3)) $loginnames3['TURPAN']['nom'] = 'nologin';
-        if (!array_key_exists('BOREALE', $loginnames3)) $loginnames3['BOREALE']['nom'] = 'nologin';
         return $loginnames3;
     }
 

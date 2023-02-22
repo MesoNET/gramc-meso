@@ -105,7 +105,7 @@ class Serveur
      *
      * @return Serveur
      */
-    public function addRallonge(\App\Entity\Serveur $serveur): self
+    public function addRessource(\App\Entity\Serveur $serveur): self
     {
         if (! $this->serveur->contains($serveur))
         {

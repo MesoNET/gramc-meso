@@ -94,7 +94,7 @@ class Dac
     /**
      * @var string
      *
-     * @ORM\Column(name="groupname", type="string", options={"comment":"Nom de groupe ou autre objet associé au projet"})
+     * @ORM\Column(name="groupname", type="string", nullable=true, options={"comment":"Nom de groupe ou autre objet associé au projet"})
      * 
      */
     private $groupname;

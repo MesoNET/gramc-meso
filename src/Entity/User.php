@@ -48,7 +48,7 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="loginname", type="string",length=20 )
+     * @ORM\Column(name="loginname", nullable=true, type="string",length=20 )
      */
     private $loginname;
 
@@ -76,6 +76,13 @@ class User
      * )
      */
     private $collaborateurversion;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="login", type="boolean", nullable=false, options={"comment":"login sur le serveur lié"}))
+     */
+    private $login = false;
 
     /**
      * @var string
@@ -357,6 +364,30 @@ class User
     public function getCollaborateurVersion(): \Doctrine\Common\Collections\Collection
     {
         return $this->collaborateurversion;
+    }
+
+    /**
+     * Set login
+     *
+     * @param boolean $login
+     *
+     * @return User
+     */
+    public function setLogin(bool $login): Self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * Get login
+     *
+     * @return boolean
+     */
+    public function getLogin(): bool
+    {
+        return $this->login;
     }
 
     /**
