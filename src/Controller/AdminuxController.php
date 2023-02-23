@@ -247,47 +247,57 @@ class AdminuxController extends AbstractController
 
         $versions = $projet->getVersion();
         $i=0;
-        foreach ($versions as $version) {
+        foreach ($versions as $version)
+        {
             // $version->getIdVersion()."\n";
             if ($version->getEtatVersion() == Etat::ACTIF             ||
                 $version->getEtatVersion() == Etat::ACTIF_TEST        ||
                 $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
                 $version->getEtatVersion() == Etat::EN_ATTENTE
               )
-              {
+            {
               foreach ($version->getCollaborateurVersion() as $cv)
               {
                   $collaborateur  =  $cv->getCollaborateur() ;
-                  if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
+                  if ($collaborateur != null && $collaborateur->isEqualTo($individu))
+                  {
                       $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      if ($user != null)
-                      {
-                          $msg = "Commencez par appeler clearloginname";
-                          $sj->errorMessage("AdminUxController::setloginnameAction - $msg");
-                          return new Response(json_encode(['KO' => $msg]));
+                      foreach ($cv->getUser() as $u)
+                      {                     
+                          if ($serveur === $u->getServeur())
+                          {
+                              if ( $u->getLogin() == false)
+                              {
+                                  $msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
+                                  $sj->warningMessage("AdminUxController::setloginnameAction - $msg");
+                                  return new Response(json_encode(['KO' => $msg]));
+                              }
+                              if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
+                              {
+                                  $msg = "Commencez par appeler clearloginname";
+                                  $sj->warningMessage("AdminUxController::setloginnameAction - $msg ");
+                                  return new Response(json_encode(['KO' => $msg]));
+                              }
+                              
+                              $u->setLoginname($loginname_p['loginname']);
+                              $em->persist($u);
+                              $em->flush();
+                              $i += 1;
+                              break; // Sortir de la boucle sur les cv
+                          }
                       }
-
-                      $user = new User();
-                      $user -> setLoginname($loginname_p['loginname']);
-                      $user -> setServeur($serveur);
-                      $user -> addCollaborateurVersion($cv);
-                      $cv -> addUser($user);
-                      if ( $serveur->getNom() == 'TURPAN' ) $cv->setLogint(true);
-                      if ( $serveur->getNom() == 'BOREALE' ) $cv->setLoginb(true);
-                      Functions::sauvegarder($user,$em,$lg);
-                      Functions::sauvegarder($cv,$em,$lg);
-                      
-                      $i += 1;
-                      break; // Sortir de la boucle sur les cv
                   }
                }
             }
         }
-        if ($i > 0 ) {
+        if ($i > 0 )
+        {
             $sj -> infoMessage(__METHOD__ . "$i versions modifiées");
             return new Response(json_encode(['OK' => "$i versions modifiees"]));
-        } else {
-            $sj->errorMessage("AdminUxController::setloginnameAction - Mauvais projet ou mauvais idIndividu !");
+        }
+        else
+        {
+            $sj->warningMessage("AdminUxController::setloginnameAction - Mauvais projet ou mauvais idIndividu !");
             return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
         }
     }
@@ -535,29 +545,8 @@ class AdminuxController extends AbstractController
         }
         else
         {
-            # On supprime le username dans TOUTES les versions du projet demandé
-            # Si le username existe dans d'autres projets, on le garde dans ces projets, on garde aussi le mot de passe !
-            $keepPwd = false;
-            $cvs = $user -> getCollaborateurVersion();
-            foreach ($cvs as $cv) {
-                if ($cv->getVersion()->getProjet()->getIdProjet() == $idProjet) {
-                    //$cv->setLoginname(null);
-                    $cv->removeUser($user);
-                    $em->persist($cv);
-                }
-                else {
-                    $keepPwd = true;
-                    continue;
-                }                    
-            }
-
-            # Cherche et efface le mot de passe au besoin...
-            # ... SAUF si $keepPwd est true !
-
-            if ($keepPwd == false) {
-                $em->remove($user);
-            }
-                        
+            $user->setLoginname(null);
+            $em->persist($user);
             $em->flush();
         }
 
@@ -604,9 +593,9 @@ class AdminuxController extends AbstractController
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
-        $r['attrHeures']      = $attr;
-        $r['attrHeures@TURPAN'] = $attrUft;
-        $r['attrHeures@BOREALE'] = $attrCriann;
+        //$r['attrHeures']      = $attr;
+        //$r['attrHeures@TURPAN'] = $attrUft;
+        //$r['attrHeures@BOREALE'] = $attrCriann;
         
         // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
         // Pour le déboguage
@@ -631,6 +620,18 @@ class AdminuxController extends AbstractController
                 $r['idthematique'] = 0;
             }
         }
+
+        $ressources = [];
+        foreach ($v->getDac() as $dac)
+        {
+            $d = [];
+            $d['attribution'] = $dac->getAttribution();
+            $d['demande'] = $dac->getDemande();
+            $d['consommation'] = $dac->getConsommation();
+            $ressources[$dac->getRessource()->getNom()] = $d;
+        }
+        $r['ressources'] = $ressources;
+
         return $r;
     }
 
@@ -706,8 +707,8 @@ class AdminuxController extends AbstractController
             $data['etatProjet'] = $p->getEtat();
             $data['metaEtat']   = $sp->getMetaEtat($p);
             $data['typeProjet'] = $p->getTypeProjet();
-            $data['consoTurpan'] = $sp->getConsoRessource($p,'gpu@TURPAN',$grdt);
-            $data['consoBoreale'] = $sp->getConsoRessource($p,'cpu@BOREALE',$grdt);
+            //$data['consoTurpan'] = $sp->getConsoRessource($p,'gpu@TURPAN',$grdt);
+            //$data['consoBoreale'] = $sp->getConsoRessource($p,'cpu@BOREALE',$grdt);
             $va = ($p->getVersionActive()!=null) ? $p->getVersionActive() : null;
             $vb = ($p->getVersionDerniere()!=null) ? $p->getVersionDerniere() : null;
             $v_data = [];
@@ -866,27 +867,23 @@ class AdminuxController extends AbstractController
         }
 
         $retour = [];
+
         foreach ($versions as $v)
         {
             if ($v==null) continue;
-            if ($nosession==false)
-            {
-                $annee = 2000 + $v->getSession()->getAnneeSession();
-            }
-            else
-            {
-                $annee = null;
-            }
             
             ///////////////$attr  = $v->getAttrHeures() - $v->getPenalHeures();
-            $attr = 0;
-            foreach ($v->getRallonge() as $r)
-            {
-                $attr += $r->getAttrHeures();
-            }
+            //$attr = 0;
+            //foreach ($v->getRallonge() as $r)
+            //{
+                //$attr += $r->getAttrHeures();
+            //}
+
+            // A JETER
             $attrUft = $v->getAttrHeuresUft();
             $attrCriann = $v->getAttrHeuresCriann();
-
+            // FIN A JETER
+            
             // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
             // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
             if ($v->getsession() != null && $v->getSession()->getTypeSession())
@@ -903,34 +900,39 @@ class AdminuxController extends AbstractController
                     }
                 }
             }
-            $r = [];
+            $r = $this->__getVersionInfo($v,$long);
             $r['idProjet']        = $v->getProjet()->getIdProjet();
             $r['idSession']       = $v->getSession()!=null ? $v->getSession()->getIdSession() : 'N/A';
             $r['idVersion']       = $v->getIdVersion();
             $r['etatVersion']     = $v->getEtatVersion();
             $r['etatProjet']      = $v->getProjet()->getEtatProjet();
             $r['mail']            = $v->getResponsable()->getMail();
-            $r['attrHeures']      = $attr;
-            $r['attrHeures@TURPAN'] = $attrUft;
-            $r['attrHeures@BOREALE'] = $attrCriann;
-            //$r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
+            
+            //$r['attrHeures']      = $attr;
+            // A JETER
+            //$r['attrHeures@TURPAN'] = $attrUft;
+            //$r['attrHeures@BOREALE'] = $attrCriann;
+            // FIN A JETER
 
             // Conso et quota sur TURPAN et BOREALE
-            $c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
-            $c_boreale = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREALE');
-            $r['quota@TURPAN'] = $c_turpan[1];
-            $r['conso@TURPAN'] = $c_turpan[0];
-            $r['quota@BOREALE'] = $c_boreale[1];
-            $r['conso@BOREALE'] = $c_boreale[0];
+            //$c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
+            //$c_boreale = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREALE');
             
-            if ($long)
-            {
-                $r['titre']       = $v->getPrjTitre();
-                $r['resume']      = $v->getPrjResume();
-                $r['labo']        = $v->getPrjLLabo();
-                $r['metadonnees'] = $v->getDataMetaDataFormat();
-                $r['thematique']  = $v->getAcroMetaThematique();
-            }
+            // A JETER
+            //$r['quota@TURPAN'] = $c_turpan[1];
+            //$r['conso@TURPAN'] = $c_turpan[0];
+            //$r['quota@BOREALE'] = $c_boreale[1];
+            //$r['conso@BOREALE'] = $c_boreale[0];
+            // FIN A JETER
+
+            //if ($long)
+            //{
+                //$r['titre']       = $v->getPrjTitre();
+                //$r['resume']      = $v->getPrjResume();
+                //$r['labo']        = $v->getPrjLLabo();
+                //$r['metadonnees'] = $v->getDataMetaDataFormat();
+                //$r['thematique']  = $v->getAcroMetaThematique();
+            //}
             
             // Pour le déboguage
             // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
@@ -1277,8 +1279,8 @@ class AdminuxController extends AbstractController
                     $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
                     // Provisoire...
-                    $loginnames['TURPAN']['login'] = $cv->getLogint();
-                    $loginnames['BOREALE']['login'] = $cv->getLoginb();
+                    //$loginnames['TURPAN']['login'] = $cv->getLogint();
+                    //$loginnames['BOREALE']['login'] = $cv->getLoginb();
                     
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
@@ -1346,8 +1348,8 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
-                            $logint = $cv->getLogint();
-                            $loginb = $cv->getLoginb();
+                            //$logint = $cv->getLogint();
+                            //$loginb = $cv->getLoginb();
                             $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
@@ -1355,8 +1357,8 @@ class AdminuxController extends AbstractController
                                     'mail' => $mail,
                                     'prenom' => $prenom,
                                     'nom' => $nom,
-                                    'logint' => $logint,
-                                    'loginb' => $loginb,
+                                    //'logint' => $logint,
+                                    //'loginb' => $loginb,
                                     'loginnames' => $loginnames,
                             ];
                         }
