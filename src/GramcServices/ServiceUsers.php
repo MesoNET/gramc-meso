@@ -25,6 +25,8 @@ namespace App\GramcServices;
 
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
+use App\Entity\Serveur;
+
 use App\Utils\Functions;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,34 +49,51 @@ class ServiceUsers
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deploy'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv, bool $long = false): array
+    public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv=null, bool $long = false): array
     {
         $em = $this->em;
         
-        $users = $cv->getUser();
         $loginnames3 = [];
-        foreach ( $users as $u)
+        if ($cv != null)
         {
-            $s = $u->getServeur()->getNom();
-            $loginnames3[$s]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
-            $loginnames3[$s]['login'] = $u->getLogin() ? 'true' : 'false';
-            if ($long) $loginnames3[$s]['nom'] .= '@'.$s;
-            $clessh = $u->getClessh();
-            if ($clessh === null)
+            $users = $cv->getUser();
+            foreach ( $users as $u)
             {
+                $s = $u->getServeur()->getNom();
+                //if ($s=='BOREALE') dd($u);
+                $loginnames3[$s]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
+                $loginnames3[$s]['login'] = $u->getLogin();
+                if ($long && $loginnames3[$s]['nom']!='nologin') $loginnames3[$s]['nom'] .= '@'.$s;
+                $clessh = $u->getClessh();
+                if ($clessh === null)
+                {
+                    $loginnames3[$s]['clessh'] = null;
+                }
+                else
+                {
+                    $loginnames3[$s]['clessh']['idCle'] = $u->getClessh()->getId();
+                    $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
+                    $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
+                    $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
+                    $loginnames3[$s]['clessh']['deploy'] = $u->getDeply();
+                }
+                $loginnames3[$s]['userid'] = $u->getId();
+            }
+        }
+        else
+        {
+            // est-ce bien utile ?
+            $serveurs = $em->getRepository(Serveur::class)->findAll();
+            foreach ($serveurs as $srv)
+            {
+                $s = $srv->getNom();
+                $loginnames3[$s]['nom'] = 'nologin';
+                $loginnames3[$s]['login'] = false;
                 $loginnames3[$s]['clessh'] = null;
             }
-            else
-            {
-                $loginnames3[$s]['clessh']['idCle'] = $u->getClessh()->getId();
-                $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
-                $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
-                $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
-                $loginnames3[$s]['clessh']['deploy'] = $u->getDeply();
-            }
-            $loginnames3[$s]['userid'] = $u->getId();
         }
-        
+
+        //dd($loginnames3);
         return $loginnames3;
     }
 
@@ -98,5 +117,15 @@ class ServiceUsers
         }
         return [ 'loginname' => $rvl[0], 'serveur' => $rvl[1]];
     }
+
+    /************************************************
+     * Renvoie la liste des serveurs connus
+     *********************************************************************/
+    public function getServeurs() : array
+    {
+        $em = $this->em;
+        return $em->getRepository(Serveur::class)->findAll();
+    }
+    
     
 } // class

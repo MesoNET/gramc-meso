@@ -194,8 +194,8 @@ class ProjetSpecController extends AbstractController
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
-                $loginnames['TURPAN']['login'] = $cv->getLogint();
-                $loginnames['BOREALE']['login'] = $cv->getLoginb();
+                //$loginnames['TURPAN']['login'] = $cv->getLogint();
+                //$loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -210,9 +210,8 @@ class ProjetSpecController extends AbstractController
             }
             else
             {
-                $loginnames  = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
-                $loginnames['TURPAN']['login'] = false;
-                $loginnames['BOREALE']['login'] = false;
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
             }
 
             $projets_resp[]   =
@@ -269,8 +268,8 @@ class ProjetSpecController extends AbstractController
             {
                 $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
-                $loginnames['TURPAN']['login'] = $cv->getLogint();
-                $loginnames['BOREALE']['login'] = $cv->getLoginb();
+                //$loginnames['TURPAN']['login'] = $cv->getLogint();
+                //$loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -285,11 +284,8 @@ class ProjetSpecController extends AbstractController
             }
             else
             {
-                $loginnames = [ 'TURPAN' => ['nom' => 'nologin'], 'BOREALE' => ['nom' => 'nologin']];
-                $loginnames['TURPAN']['login'] = false;
-                $loginnames['BOREALE']['login'] = false;
-                $passwd = null;
-                $pwd_expir = null;
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
             }
             
             $projets_collab[] =
@@ -311,10 +307,11 @@ class ProjetSpecController extends AbstractController
         return $this->render(
             'projet/demandeur.html.twig',
             [
-                'projets_collab'  => $projets_collab,
-                'projets_resp'    => $projets_resp,
-                'projets_term'    => $projets_term,
-                'menu'            => $menu,
+                'projets_collab' => $projets_collab,
+                'projets_resp'   => $projets_resp,
+                'projets_term'   => $projets_term,
+                'serveurs'       => $su->getServeurs(),
+                'menu'           => $menu,
                 ]
         );
     }
