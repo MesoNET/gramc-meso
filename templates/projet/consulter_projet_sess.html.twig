@@ -37,7 +37,7 @@
             <small>
                 <em>{{ version.getMetaEtat }}
                     {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.limitdate|date('d-m-Y')}}{% endif %}
-                    {% if version.etat == 2 or version.etat == 3 %} <br>Les ressources seront attribuées jusqu'au {{version.limitdate|date('d-m-Y')}} (environ){% endif %}
+                    {% if version.etat == 2 or version.etat == 3 %} <br>Les ressources seront attribuées jusqu'au {{"now"|date_modify("+365 day")|date('Y-m-d')}} (environ){% endif %}
                     {% if version.etat == 7 %} <br>avant le {{version.limitdate|date('d-m-Y')}}{% endif %}
                     {% if version.etat == 8 %} <br>Peut être renouvelé jusqu'au {{version.limitdate|date_modify("+365 day")|date('d-m-Y')}}{% endif %}
                 </em>
