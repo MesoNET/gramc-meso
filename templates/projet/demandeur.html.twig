@@ -65,8 +65,13 @@
             {% endif %}
         </td>
 
-        <td>{% if item.projet.versionactive == null %}TERMINE{% else %}{{ item.projet.versionactive.limitdate|date('d-m-Y')}}{% endif %}</td>
-
+        <td>
+            {% if item.meta_etat in ['ACCEPTE','NONRENOUVELE' ] %} {{ item.projet.versionactive.limitdate|date('Y-m-d')}}
+            {% elseif item.meta_etat in ['EDITION','EXPERTISE' ] %} ??
+            {% elseif item.meta_etat in ['STANDBY'] %} STANDBY
+            {% else %} TERMINE
+            {% endif %}
+        </td>
         {% if noconso==false %}
             <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
                 {% if item.cv != null %}
