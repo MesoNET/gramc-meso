@@ -87,7 +87,7 @@ class Ressource
     /**
      * @var docUrl
      *
-     * @ORM\Column(name="doc_url", type="string", length=200)
+     * @ORM\Column(name="doc_url", type="string", nullable=true, length=200)
      * 
      */
     private $docUrl;
@@ -95,7 +95,7 @@ class Ressource
     /**
      * @var unite
      * 
-     * @ORM\Column(name="unite", type="string", length=4, nullable=true, options={"comment":"unité utilisée pour les allocations"}) )
+     * @ORM\Column(name="unite", type="string", length=20, nullable=true, options={"comment":"unité utilisée pour les allocations"}) )
      *
      ****/
     private $unite;
@@ -253,7 +253,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setDocUrl(string $docUrl): Self
+    public function setDocUrl(?string $docUrl): Self
     {
         $this->docUrl = $docUrl;
         return $this;
@@ -275,7 +275,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setUnite(string $unite): Self
+    public function setUnite(?string $unite): Self
     {
         $this->unite = $unite;
         return $this;

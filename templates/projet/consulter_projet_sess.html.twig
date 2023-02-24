@@ -230,14 +230,14 @@
 
         <p class="info_supplementaire">* Le laboratoire associé au projet est le laboratoire du responsable</p>
         <h4>Personnes participant au projet :</h4>
+        
         <table>
             <thead>
                 <tr>
-                    {% if coll_login %}
-                        <th>TURPAN</th>
-                        <th>BOREALE</th>
-                    {% endif %}
-
+                    {# Il y a au moins UN collaborateur (le responsable !) #}
+                    {% if coll_login %}{% for u in version.CollaborateurVersion[0].user %}
+                        <th>{{u.serveur}}</th>
+                    {% endfor %}{% endif %}
                     <th>Prénom</th>
                     <th>Nom</th>
                     <th>Mail</th>
@@ -251,10 +251,9 @@
                 {% for cv in version.CollaborateurVersion %}
                     {% if not cv.deleted %}
                         <tr style="stroke:black;">
-                            {% if coll_login %}
-                                <td>{% if( cv.logint == true) %}oui{% else %}- {%endif%}</td>
-                                <td>{% if( cv.loginb == true) %}oui{% else %}- {%endif%}</td>
-                            {% endif %}
+                            {% if coll_login %}{% for u in cv.user %}
+                                <td>{% if u.login %}oui{% else %}-{%endif%}</td>
+                            {%endfor%}{%endif%}
 
                             {% if nodata==false %}
                                 <td>
@@ -499,122 +498,69 @@
     </details>
 {% endif %}
 
-{% if pdf is defined %}
-    <div class="details">
-        <h3>Turpan</h3>
-{% else %}
-    <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Turpan</summary>
-{% endif %}
-    <div class="chapitre">
-        <table class="table_vertical">
-            <tbody>
-                <tr>
-                    <th>Heures demandées</th>
-                    <td>{{ (version.demHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                <tr>
-                    <th>Heures attribuées</th>
-                    <td>{{ (version.attrHeuresUft)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                {# if noconso == false #}
-                {% if false %}
-                {% if version.typeversion != 4 %}
-                <tr>
-                    <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
-                    <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
-                </tr>
-                {% endif %}
+{% for d in version.dac %}
 
-            
-                <tr>
-                    <th>Nombre d'heures consommées<br>
-                        {% if version.typeversion != 4 %}
-                        <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
-                        {% else %}
-                            <span class="petit">depuis le {{version.startdate}}</span>
-                        {% endif %}
-                        }
-                    </th>
-                    <td>{# {{ version.conso }}
-                        {% if(version.getQuota > 0) %}
-                            ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
-                        {% endif %}
-                        <br> 
-                        {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
-                        {% if(quota!=0) %} 
-                            ({{consop|number_format(1)}} %) 
-                        {% endif %}
-                        {% if conso_gpu[0] != 0 %}
-                            - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
-                        {% endif %} #} coucou
-                    </td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-
-{% if pdf is defined %}
-    </div>
-{% else %}
-    </details>
-{% endif %}
-
-{% if pdf is defined %}
-    <div class="details">
-        <h3>Boreale</h3>
-{% else %}
-    <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Boreale</summary>
-{% endif %}
-    <div class="chapitre">
-        <table class="table_vertical">
-            <tbody>
-                <tr>
-                    <th>Heures demandées</th>
-                    <td>{{ (version.demHeuresCriann)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                <tr>
-                    <th>Heures attribuées</th>
-                    <td>{{ (version.attrHeuresCriann)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                {# if noconso == false #}
-                {% if false %}
-                <tr>
-                    <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
-                    <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
-                </tr>
-        
-                <tr>
-                    <th>Nombre d'heures consommées<br>
-                        <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
-                    </th>
-                    <td>{# {{ version.conso }}
-                        {% if(version.getQuota > 0) %}
-                            ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
-                        {% endif %}
-                        <br> #}
-                        {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
-                        {% if(quota!=0) %} 
-                            ({{consop|number_format(1)}} %) 
-                        {% endif %}
-                        {% if conso_gpu[0] != 0 %}
-                            - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-
-    </div>
-
-{% if pdf is defined %}
-    </div>
-{% else %}
-    </details>
-{% endif %}
+    {% if pdf is defined %}
+        <div class="details">
+            <h3>{{d.ressource.nom}}</h3>
+    {% else %}
+        <details>
+            <summary>{{icones.plus_summary}}{{icones.trait_summary}}{{d.ressource.nom}}</summary>
+    {% endif %}
+        <div class="chapitre">
+            <table class="table_vertical">
+                <tbody>
+                    <tr>
+                        <th>Demande ({{d.ressource.unite}})</th>
+                        <td>{{ (d.demande)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                    <tr>
+                        <th>Attribution ({{d.ressource.unite}})</th>
+                        <td>{{ (d.attribution)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                    {# if noconso == false #}
+                    {% if false %}
+                    {% if version.typeversion != 4 %}
+                    <tr>
+                        <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
+                        <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
+                    </tr>
+                    {% endif %}
+    
+                
+                    <tr>
+                        <th>Nombre d'heures consommées<br>
+                            {% if version.typeversion != 4 %}
+                            <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
+                            {% else %}
+                                <span class="petit">depuis le {{version.startdate}}</span>
+                            {% endif %}
+                            }
+                        </th>
+                        <td>{# {{ version.conso }}
+                            {% if(version.getQuota > 0) %}
+                                ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
+                            {% endif %}
+                            <br> 
+                            {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
+                            {% if(quota!=0) %} 
+                                ({{consop|number_format(1)}} %) 
+                            {% endif %}
+                            {% if conso_gpu[0] != 0 %}
+                                - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
+                            {% endif %} #} coucou
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% if pdf is defined %}
+        </div>
+    {% else %}
+        </details>
+    {% endif %}
+{% endfor %}
 
 {% if version.etat in [ 4, 5, 6, 9 ] %}
 
@@ -631,18 +577,6 @@
         {% for expertise in version.expertise %}
         <table class="table_vertical">
             <tbody>
-                <tr>
-                    <th>Nombre d'heures demandées</th>
-                    <td>{{  version.demHeures|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                <tr>
-                    <th>Nombre d'heures attribuées sur TURPAN</th>
-                    <td>{{  expertise.nbHeuresAttUft|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
-                <tr>
-                    <th>Nombre d'heures attribuées sur BOREALE</th>
-                    <td>{{  expertise.nbHeuresAttCriann|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') or version.isExpertDe(app.user) %}
                     <tr>
                         <th>Commentaire pour le responsable</th>
@@ -653,13 +587,12 @@
                         <td>{{ expertise.commentaireInterne | e | nl2br}}</td>
                     </tr>
                      <tr>
-                        <th>Expertisé ou validé par</th>
+                        <th>Validé par</th>
                         <td>{{ expertise.expert | e | nl2br}}</td>
                     </tr>
-                    
                 {% else %}
                     <tr>
-                        <th>Commentaire</th>
+                        <th style="width: 12em;">Commentaire</th>
                         <td>{{ expertise.commentaireExterne | e | nl2br}}</td>
                     </tr>
                 {% endif %}
@@ -688,7 +621,7 @@
                     <td>{{ r.commentaireInterne | e | nl2br}}</td>
                 </tr>{% else %}
                 <tr>
-                    <th>Commentaire</th>
+                    <th style="witdh: 15em">Commentaire</th>
                     <td>{{ r.commentaireExterne | e | nl2br}}</td>
                 </tr>
                 {% endif %}
