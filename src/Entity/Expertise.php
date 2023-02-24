@@ -39,6 +39,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Expertise
 {
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Expa", mappedBy="expertise", cascade={"persist"})
+     */
+    private $expa;
+
+    /**
      * @var boolean
      *
      * true = L'expert a répondu positivement et a attribué des heures (éventuellement 0 heure si le projet est validé mais la machine surchargée)
@@ -146,6 +153,42 @@ class Expertise
         return 'Expertise '. $this->getId() . " par l'expert " . $this->getExpert();
     }
 
+    /**
+     * Add expa
+     *
+     * @param \App\Entity\Expa $expa
+     *
+     * @return Version
+     */
+    public function addExpa(\App\Entity\Expa $expa): self
+    {
+        if (! $this->expa->contains($expa))
+        {
+            $this->expa[] = $expa;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove expa
+     *
+     * @param \App\Entity\Expa $expa
+     */
+    public function removeExpa(\App\Entity\Expa $expa): self
+    {
+        $this->expa->removeElement($expa);
+        return $this;
+    }
+
+    /**
+     * Get expa
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExpa()
+    {
+        return $this->expa;
+    }
 
     /**
      * Set validation

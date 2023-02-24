@@ -94,15 +94,16 @@
         <a href="#tab4">Les données</a>
     </li>
     {% endif %}
-    <li >
+    
+    <li>
         <a href="#tab4">Formation</a>
     </li>
-    <li>
-        <a href="#tab5">TURPAN</a>
-    </li>
-    <li>
-        <a href="#tab6">BOREALE</a>
-    </li>
+
+    {% for ress_form in ressource_form.children.ressource.children %}
+        <li>
+            <a href="#tab_{{ress_form.vars.data.ressource.nom}}">{{ress_form.vars.data.ressource.nom}}</a>
+        </li>
+    {% endfor %}
   </ul>
 </nav>
 
@@ -113,8 +114,8 @@
 {% include('version/modifier_projet_sess.partie_IV.html.twig') %}
 {% endif %}
 {% include('version/modifier_projet_sess.partie_V.html.twig') %}
-{% include('version/modifier_projet_sess.partie_VI.html.twig') %}
-{% include('version/modifier_projet_sess.partie_VII.html.twig') %}
+{% include('version/modifier_projet_sess.partie_R.html.twig') %}
+
 
 {# ################################################################################## #}
 

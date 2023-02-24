@@ -29,6 +29,9 @@ use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\Formation;
 use App\Entity\FormationVersion;
+use App\Entity\Ressource;
+use App\Entity\Dac;
+
 use App\Entity\User;
 use App\Entity\CollaborateurVersion;
 
@@ -39,6 +42,7 @@ use App\GramcServices\GramcDate;
 
 use App\Form\IndividuFormType;
 use App\Form\FormationVersionType;
+use App\Form\DacType;
 
 
 use App\Utils\Functions;
@@ -988,6 +992,124 @@ class ServiceVersions
         foreach ($formation_forms as $iform)
         {
             $version->addFormationVersion($iform);
+        }
+        $em->persist($version);
+        $em->flush();
+    }
+
+    /*********************************************
+     *
+     * LES DEMANDES DE RESSOURCES
+     * 
+     ********************************************/
+
+     // TODO - Copié-presque-collé depuis DEMANDES DE FORMATION
+     //        Il faudrait rendre tout ça générique !
+
+    /**************************
+     * préparation de la liste des ressources disponibles
+     * Récupère dans la base la liste des ressources
+     * c'est-à-dire toutes les ressources (TODO - Ajouter un champ "disponible")
+     * Pour chaque ressource, crée un enregistrement de type Dac s'il n'existe pas
+     *
+     * params = $version
+     *
+     * return = Un tableau d'objets de type Dac
+     *
+     *****************************************************************************/
+
+    public function prepareRessources(Version $version) : array
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        
+        if ($version == null) {
+            $sj->throwException('ServiceVersion:prepareRessources : version null');
+        }
+
+        $ressources = $em->getRepository(Ressource::class)->findAll();
+
+        // Un array indexé par l'identifiant de ressource
+        $dacs = [];
+        foreach ( $version->getDac() as $dac)
+        {
+            $k = $dac->getRessource()->getId();
+            $dacs[$k] = $dac;
+        }
+        //dd($formations);
+
+        $data = [];
+        foreach ($ressources as $r)
+        {
+            if (array_key_exists($r->getId(), $dacs))
+            {
+                $dac = $dacs[$r->getId()];
+            }
+            else
+            {
+                $dac = new Dac($r, $version);
+            }
+            $data[] = $dac;
+        }
+        return $data;
+    }
+
+    /********************************************************************
+     * Génère et renvoie un form pour modifier les demandes de ressources
+     ********************************************************************/
+    public function getRessourceForm(Version $version): FormInterface
+    {
+        $sj = $this->sj;
+        $em = $this->em;
+        $sval= $this->vl;
+
+        $form = $this->ff
+                   ->createNamedBuilder('form_ressource', FormType::class, [ 'ressource' => $this->prepareRessources($version) ])
+                   ->add('ressource', CollectionType::class, [
+                       'entry_type' =>  DacType::class,
+                       'label' =>  true,
+                   ])
+                   ->getForm();
+        return $form;
+    }
+
+    /*********************************
+     * 
+     * Validation du formulaire des ressources - Retourne true car toujours valide !
+     *
+     * params = Tableau de formulaires
+     ***********************************************************************/
+    public function validateRessourceForms(array &$ressource_forms) : bool
+    {
+        $val = true;
+        foreach ( $ressource_forms as &$dac)
+        {
+            if ($dac->getDemande() < 0)
+            {
+                $val = false;
+                $dac->setdemande(0);
+            }
+        }
+        return $val;
+    }
+
+    /***************************************
+     * Traitement des formulaires des ressources
+     *
+     * $ressource_forms = Tableau contenant un formulaire par ressource
+     * $version        = La version considérée
+     ****************************************************************/
+    public function handleRessourceForms(array $ressource_forms, Version $version): void
+    {
+        $em   = $this->em;
+        $sj   = $this->sj;
+        $sval = $this->vl;
+
+        //dd($ressource_forms);
+        // On fait la modification sur la version passée en paramètre
+        foreach ($ressource_forms as $idac)
+        {
+            $version->addDac($idac);
         }
         $em->persist($version);
         $em->flush();

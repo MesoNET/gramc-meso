@@ -31,7 +31,6 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * Demande, Attribution, consommation
  * 
- * @ORM\Table(name="dac")
  * @ORM\Table(name="dac", options={"collation"="utf8mb4_general_ci"})
 
  * @ORM\Entity
@@ -112,6 +111,18 @@ class Dac
     public function getId(): int
     {
         return $this->idDac;
+    }
+
+    public function __construct(Ressource $ressource = null, Version $version = null)
+    {
+        if ($ressource != null)
+        {
+            $this->ressource = $ressource;
+        }
+        if ($version != null)
+        {
+            $this->version  =   $version;
+        }
     }
 
     /**

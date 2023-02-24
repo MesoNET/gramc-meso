@@ -1,0 +1,23 @@
+{# ################################################################################## #}
+{# LES FORMULAIRES DES RESSOURCES ! #}
+
+{% for form in ressource_form.children.ressource.children %}
+
+<div id="tab_{{form.vars.data.ressource.nom}}" class="onglet">
+
+    <h2>{{form.vars.data.ressource.nom}}</h2>
+
+    <div class="information ok">
+        {{ form.vars.data.ressource.desc }}
+    </div>
+
+    <div class="inputs">
+        <div class="input">
+        <strong>{{ form.vars.data.ressource.unite }}:</strong>
+        {{ form_widget( form.demande) }}
+        </div>
+    </div>
+
+</div>
+
+{% endfor %}

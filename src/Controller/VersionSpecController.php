@@ -175,7 +175,22 @@ class VersionSpecController extends AbstractController
 
         // NOTE - $validated peut éventuellement modifier $formation_forms afin de le rendre valide
         $validated = $sv->validateFormationForms($formation_forms);
+
         $sv->handleFormationForms($data['formation'], $version);
+
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $sv->getRessourceForm($version);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+
+        // NOTE - On met à zéro les demandes qui sont invalides
+        $validated = $sv->validateRessourceForms($ressource_forms); // ne sert à rien, renvoie toujours true
+        if (! $validated)
+        {
+            $message = "Erreur dans une de vos demandes,elle a été mise à 0";
+            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+        }
         
         // FORMULAIRE DES COLLABORATEURS
         $collaborateur_form = $sv->getCollaborateurForm($version);
@@ -201,20 +216,22 @@ class VersionSpecController extends AbstractController
             }
         }
 
-        //dd($formation_form, $collaborateur_form);
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $sv->getRessourceform($version);
+        $ressource_form->handleRequest($request);
         
         // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET... ou pas
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_SESS:
             case Projet::PROJET_DYN:
-            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             case Projet::PROJET_TEST:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             case Projet::PROJET_FIL:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             default:
                $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
@@ -232,7 +249,8 @@ class VersionSpecController extends AbstractController
     private function modifierType1(Request $request,
                                    Version $version,
                                    FormInterface $collaborateur_form,
-                                   FormInterface $formation_form
+                                   FormInterface $formation_form,
+                                   FormInterface $ressource_form
                                    ): Response
     {
         $sj = $this->sj;
@@ -250,8 +268,6 @@ class VersionSpecController extends AbstractController
             $this->modifierType1PartieIV($version, $form_builder);
         }
         $nb_form = 0;
-        $this->modifierType1PartieVI($version, $form_builder, $nb_form);
-        $this->modifierType1PartieVII($version, $form_builder, $nb_form);
 
         $form_builder
             ->add('fermer', SubmitType::class)
@@ -309,6 +325,7 @@ class VersionSpecController extends AbstractController
                 'img_justif_renou' => $img_justif_renou,
                 'collaborateur_form' => $collaborateur_form->createView(),
                 'formation_form' => $formation_form->createView(),
+                'ressource_form' => $ressource_form->createView(),
                 'todo'          => static::versionValidate($version, $sj, $em, $sval, $this->getParameter('nodata')),
                 'nb_form'       => $nb_form
             ]
@@ -410,6 +427,7 @@ class VersionSpecController extends AbstractController
     {
     }
 
+    // AJETER
     /* Les champs de la partie VI */
     private function modifierType1PartieVI(Version $version, &$form): void
     {
@@ -437,7 +455,8 @@ class VersionSpecController extends AbstractController
     private function modifierType3( Request $request,
                                     Version $version,
                                     FormInterface $collaborateur_form,
-                                    FormInterface $formation_form
+                                    FormInterface $formation_form,
+                                    FormInterface $ressource_form
                                     ): Response
     {
         $sj = $this->sj;
