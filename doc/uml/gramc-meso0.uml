@@ -3,6 +3,18 @@
 title =Les principales entités de gramc-meso0\nLe code se trouve dans src/Entity
 
 package Classes <<Frame>> {
+
+    together {
+        class Expertise
+        class Expa
+        class Ressource
+        class Dac
+        class Version
+        class Serveur
+        class User
+    }
+    
+
     class Projet {
         - int typeProjet
         - int etatProjet
@@ -55,8 +67,6 @@ package Classes <<Frame>> {
         - string labo
         - string statut
         - string etablissement
-        - bool login
-        - bool clogin
     }
 
     class FormationVersion <<Demandes de formation>>{
@@ -84,6 +94,10 @@ package Classes <<Frame>> {
         + getValidation()
     }
 
+    class Expa <<Attributions>> {
+        - int attribution
+    }
+
     class Clessh <<Trousseau de clés>> {
         - string nom
         - string pub
@@ -104,10 +118,14 @@ package Classes <<Frame>> {
     class Serveur {
         - string nom
         - string desc
+        - string admname
     }
     
     class User <<Comptes sur un serveur>> {
         - string loginname
+        - bool login
+        - bool CGU
+        - bool dply
         + getLoginName()
     }
 
@@ -125,7 +143,7 @@ package Classes <<Frame>> {
         - int consommation
         - string groupname
     }
-    
+
     Projet  "1" o-- "1..v" Version
     Individu "1" o-- "0..n" CollaborateurVersion
     Individu "1" o-- "0..n" Sso
@@ -143,6 +161,9 @@ package Classes <<Frame>> {
     
     Expertise "1" -- "1" Individu
     Expertise "1" -- "1" Version
+    Expertise "1" o-- "r" Expa
+    Ressource "1" -- "0..n" Expa
+    
     CollaborateurVersion "v"  -- "s" User
 
     User "0..n" --o "1" Clessh
