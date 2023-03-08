@@ -1683,7 +1683,7 @@ class ServiceProjets
 
         // Vérifie que la version active est vraiment active
         if ($versionActive != null &&
-          ($versionActive->getEtatVersion() == Etat::ACTIF || $versionActive->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE)
+          ($versionActive->getEtatVersion() == Etat::ACTIF || $versionActive->getEtatVersion() == Etat::ACTIF_R || $versionActive->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE)
           ) {
             return $versionActive;
         }
@@ -1693,6 +1693,7 @@ class ServiceProjets
         foreach (array_reverse($projet->getVersion()->toArray()) as $version) {
             if ($version->getEtatVersion() == Etat::ACTIF ||
                 $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
+                $version->getEtatVersion() == Etat::ACTIF_R ||
                 $version->getEtatVersion() == Etat::EN_ATTENTE ||
                 $version->getEtatVersion() == Etat::ACTIF_TEST) {
                 $result = $version;
