@@ -41,6 +41,7 @@ use App\GramcServices\ServiceInvitations;
 use App\GramcServices\GramcDate;
 
 use App\Form\IndividuFormType;
+use App\Form\IndividuForm\IndividuForm;
 use App\Form\FormationVersionType;
 use App\Form\DacType;
 
@@ -61,7 +62,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormInterface;
-use App\Form\IndividuForm\IndividuForm;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 

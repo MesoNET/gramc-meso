@@ -69,26 +69,26 @@ class Dac
     /**
      * @var integer
      *
-     * @ORM\Column(name="demande", type="integer", options={"comment":"demande, l'unité est celle de la ressource associée"})
+     * @ORM\Column(name="demande", type="integer", nullable=false, options={"comment":"demande, l'unité est celle de la ressource associée"})
      * 
      */
-    private $demande;
+    private $demande = 0;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="attribution", type="integer", options={"comment":"attribution, l'unité est celle de la ressource associée"})
+     * @ORM\Column(name="attribution", type="integer", nullable=false, options={"comment":"attribution, l'unité est celle de la ressource associée"})
      * 
      */
-    private $attribution;
+    private $attribution = 0;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="consommation", type="integer", options={"comment":"consommation, l'unité est celle de la ressource associée"})
+     * @ORM\Column(name="consommation", type="integer", nullable=false, options={"comment":"consommation, l'unité est celle de la ressource associée"})
      * 
      */
-    private $consommation;
+    private $consommation = 0;
 
     /**
      * @var string
