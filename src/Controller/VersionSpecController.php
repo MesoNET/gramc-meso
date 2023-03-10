@@ -745,6 +745,7 @@ class VersionSpecController extends AbstractController
             $newCollaborateurVersion    = clone  $collaborateurVersion;
 
             // Les users connectés au collaborateurVersion connectés au nouveau cv
+            /*
             $users = $collaborateurVersion->getUser();
             foreach ($users as $u)
             {
@@ -756,6 +757,7 @@ class VersionSpecController extends AbstractController
             
             $newCollaborateurVersion->setVersion($new_version);
             $em->persist($newCollaborateurVersion);
+            */
         }
 
         // Remettre à false Nepasterminer qui n'a pas trop de sens ici

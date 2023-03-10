@@ -136,7 +136,7 @@ class ProjetSpecController extends AbstractController
         $sm                  = $this->sm;
         $ss                  = $this->ss;
         $sp                  = $this->sp;
-        //$su                  = $this->su;
+        $su                  = $this->su;
         $sr                  = $this->sr;
         $token               = $this->token;
         $sid                 = $this->sid;

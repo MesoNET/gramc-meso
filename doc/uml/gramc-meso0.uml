@@ -164,10 +164,10 @@ package Classes <<Frame>> {
     Expertise "1" o-- "r" Expa
     Ressource "1" -- "0..n" Expa
     
-    CollaborateurVersion "v"  -- "s" User
-
     User "0..n" --o "1" Clessh
     User "0..n" -- "1" Serveur
+    User "0..n" -- "1" Projet
+    User "0..s*p" -- "1" Individu
     
     Serveur "1" o-- "0..n" Ressource: r ressources s serveurs
     Ressource "1" o-- "0..n" Dac

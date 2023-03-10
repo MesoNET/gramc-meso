@@ -179,11 +179,11 @@ class InitRessources extends Command
                 if ( ! in_array($s_boreale,$srvrs))
                 {
                     $ub = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_boreale);
-                    $cv->addUser($ub);
-                    $ub->addCollaborateurVersion($cv);
+                    //$cv->addUser($ub);
+                    //$ub->addCollaborateurVersion($cv);
                     $ub->setLogin($cv->getLoginb());
                     $em->persist($ub);
-                    $em->persist($cv);
+                    //$em->persist($cv);
                     try
                     {
                         $em->flush();
@@ -198,11 +198,11 @@ class InitRessources extends Command
                 if ( ! in_array($s_turpan,$srvrs))
                 {
                     $ut = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_turpan);
-                    $cv->addUser($ut);
-                    $ut->addCollaborateurVersion($cv);
+                    //$cv->addUser($ut);
+                    //$ut->addCollaborateurVersion($cv);
                     $ut->setLogin($cv->getLogint());
                     $em->persist($ut);
-                    $em->persist($cv);
+                    //$em->persist($cv);
                     try
                     {
                         $em->flush();
