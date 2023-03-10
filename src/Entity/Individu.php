@@ -62,7 +62,20 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         self::INGENIEUR   => 'Ingénieur'
         ];
 
-    /////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @var \DateTime
@@ -224,6 +237,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     */
+    private $user;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="expert")
      */
     private $expertise;
@@ -336,21 +356,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set creationStamp
@@ -890,6 +895,45 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getCollaborateurVersion()
     {
         return $this->collaborateurVersion;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Individu
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Individu
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**

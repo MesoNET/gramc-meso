@@ -28,9 +28,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",
- *                         columns={"serveur","loginname"})},
- *                         indexes={@ORM\Index(name="loginname", columns={"serveur","loginname"})})
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",columns={"serveur","loginname"}),
+ *                                            @ORM\UniqueConstraint(name="i_p_s", columns={"individu", "projet", "serveur"})})
+ *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User
@@ -61,6 +61,26 @@ class User
      * })
      */
     private $serveur;
+
+    /**
+     * @var \App\Entity\Individu
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu")
+     * })
+     */
+    private $individu;
+
+    /**
+     * @var \App\Entity\Projet
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="projet", referencedColumnName="id_projet")
+     * })
+     */
+    private $projet;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -209,6 +229,54 @@ class User
     public function getServeur(): \App\Entity\Serveur
     {
         return $this->serveur;
+    }
+
+    /**
+     * Set individu
+     *
+     * @param \App\Entity\Individu $individu
+     *
+     * @return User
+     */
+    public function setIndividu(\App\Entity\Individu $individu): self
+    {
+        $this->individu = $individu;
+
+        return $this;
+    }
+
+    /**
+     * Get individu
+     *
+     * @return \App\Entity\Individu
+     */
+    public function getIndividu(): \App\Entity\Individu
+    {
+        return $this->individu;
+    }
+
+    /**
+     * Set projet
+     *
+     * @param \App\Entity\Projet $projet
+     *
+     * @return User
+     */
+    public function setProjet(\App\Entity\Projet $projet): self
+    {
+        $this->projet = $projet;
+
+        return $this;
+    }
+
+    /**
+     * Get projet
+     *
+     * @return \App\Entity\Projet
+     */
+    public function getProjet(): \App\Entity\Projet
+    {
+        return $this->projet;
     }
 
     /**

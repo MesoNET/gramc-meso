@@ -31,6 +31,9 @@ use App\Form\IndividuForm\IndividuForm;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\DataMapperInterface;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
+
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -39,8 +42,13 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
+//use Symfony\Component\Form\FormInterface;
 
-class IndividuFormType extends AbstractType
+
+//use Symfony\Component\Form\FormEvent;
+//use Symfony\Component\Form\FormEvents;
+
+class IndividuFormType extends AbstractType implements DataMapperInterface
 {
     private $coll_login;
     private $nodata;
@@ -48,6 +56,7 @@ class IndividuFormType extends AbstractType
     // Utilisation des paramètres coll_login et nodata
     // On pourrait aussi passer par $options de buildForm, sauf que le formulaire est construit la plupart du temps par
     // l'intermédiaire d'un CollectionType, et je ne sais pas comment passer les paramètres
+    // TODO - Maintenant je sais !!!
     public function __construct($coll_login, $nodata)
     {
         $this -> coll_login = $coll_login;
@@ -59,27 +68,28 @@ class IndividuFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        //dd($options);
         if ($this->coll_login == true)
         {
-             $builder->add(
-                'logint',
-                CheckboxType::class,
-                [
-                    'label'     => 'login Turpan',
-                    'required'  => false,
-                    'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Turpan' ]
-                ]
-            );
+            $noms = $options['srv_noms'];
+            if (count($noms) > 0)
+            {
+                foreach ($noms as $n)
+                {
+                    $builder->add(
+                        'login_'.$n,
+                        CheckboxType::class,
+                        [
+                            'label'     => $n,
+                            //'mapped' => true,
+                            'required'  => false,
+                            'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur '.$n ]
+                        ]
+                    );
+                }
+            }
         };
-         $builder->add(
-            'loginb',
-            CheckboxType::class,
-            [
-                'label'     => 'login Boreale',
-                'required'  => false,
-                'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur Boreale' ]
-            ]
-        );
+        $builder->setDataMapper($this);
         $builder->add(
             'mail',
             TextType::class,
@@ -200,6 +210,10 @@ class IndividuFormType extends AbstractType
 
             ]
         );
+
+//        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+//            dd($event, $event->getForm(), $event->getForm()->children);
+//        });
     }
 
     /**
@@ -210,7 +224,8 @@ class IndividuFormType extends AbstractType
         $resolver->setDefaults(
             [
             'data_class' => IndividuForm::class,
-            'text_fields' => false
+            'text_fields' => false,
+            'srv_noms'  => []
             ]
         );
     }
@@ -221,5 +236,81 @@ class IndividuFormType extends AbstractType
     public function getBlockPrefix(): string
     {
         return 'Individu';
+    }
+
+    /**********
+     * Fonctions de mapping
+     * Voir ici https://symfony.com/doc/current/form/data_mappers.html
+     ****************************/
+    public function mapDataToForms($viewData, \Traversable $forms): void
+    {
+        // there is no data yet, so nothing to prepopulate
+        if (null === $viewData) {
+            return;
+        }
+
+        // invalid data type
+        if (!$viewData instanceof IndividuForm) {
+            throw new UnexpectedTypeException($viewData, IndividuForm::class);
+        }
+
+        /** @var FormInterface[] $forms */
+        $forms = iterator_to_array($forms);
+
+        // On initialise les champs login_XXX à partir du tableau logins de l'IndividuForm
+        $vd_logins = $viewData->getLogins();
+        foreach ($vd_logins as $srv => $login)
+        {
+            $field = 'login_' . $srv;
+            // Sinon on ignore (ne devrait pas arriver !))
+            if (isset($forms[$field]))
+            {
+                $forms[$field]->setData($login);
+            }
+        }
+
+        // On initialise les autres champs comme avec le mapper par défaut
+        // NOTE - Pour les champs marqués comme disabled cela ne servira à rien
+        $forms['mail']->setData($viewData->getMail());
+        $forms['prenom']->setData($viewData->getPrenom());
+        $forms['nom']->setData($viewData->getNom());
+        $forms['statut']->setData($viewData->getStatut());
+        $forms['laboratoire']->setData($viewData->getLaboratoire());
+        $forms['etablissement']->setData($viewData->getEtablissement());
+        $forms['id']->setData($viewData->getId());
+    }
+
+    public function mapFormsToData(\Traversable $forms, &$viewData): void
+    {
+        /** @var FormInterface[] $forms */
+        $forms = iterator_to_array($forms);
+
+        // as data is passed by reference, overriding it will change it in
+        // the form object as well
+        // beware of type inconsistency, see caution below
+        $vd_logins = [];
+        foreach ($forms as $f => $field)
+        {
+            if (str_starts_with($f, 'login_'))
+            {
+                $k = str_replace('login_','',$f);
+                $vd_logins[$k] = empty($forms[$f]->getData()) ? false : true;
+            }
+        }
+        $viewData->setLogins($vd_logins);
+
+        // On initialise les autres champs comme avec le mapper par défaut
+        
+        $viewData->setMail($forms['mail']->getData());
+        
+        $viewData->setPrenom($forms['prenom']->getData());
+        $viewData->setNom($forms['nom']->getData());
+        $viewData->setStatut($forms['statut']->getData());
+        $viewData->setLaboratoire($forms['laboratoire']->getData());
+        $viewData->setEtablissement($forms['etablissement']->getData());
+        $viewData->setId($forms['id']->getData());
+
+        
+        //dd($forms['mail']->getData(),$forms, $viewData, $vd_logins_src, $vd_logins_dst);
     }
 }

@@ -61,6 +61,19 @@ class Projet
     ];
 
     /**
+     * Constructor
+     */
+    public function __construct($type)
+    {
+        $this->publi = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->version = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rapportActivite = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->etatProjet = Etat::EDITION_DEMANDE;
+        $this->typeProjet = $type;
+    }
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="etat_projet", type="integer", nullable=false)
@@ -146,6 +159,13 @@ class Projet
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     */
+    private $user;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="\App\Entity\RapportActivite", mappedBy="projet")
      */
     private $rapportActivite;
@@ -164,18 +184,6 @@ class Projet
     public function __toString()
     {
         return $this->getIdProjet();
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct($type)
-    {
-        $this->publi        = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->version      = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rapportActivite = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->etatProjet   = Etat::EDITION_DEMANDE;
-        $this->typeProjet   = $type;
     }
 
     /**
@@ -419,6 +427,45 @@ class Projet
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Projet
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Projet
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**

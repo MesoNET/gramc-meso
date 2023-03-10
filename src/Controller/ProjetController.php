@@ -30,6 +30,7 @@ use App\Entity\Session;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Formation;
 use App\Entity\User;
+use App\Entity\Serveur;
 use App\Entity\Thematique;
 use App\Entity\Rattachement;
 use App\Entity\Expertise;
@@ -1371,13 +1372,26 @@ class ProjetController extends AbstractController
 
         // Affectation de l'utilisateur connecté en tant que responsable
         $moi = $token->getUser();
-        $collaborateurVersion = new CollaborateurVersion($moi);
-        $collaborateurVersion->setVersion($version);
-        $collaborateurVersion->setResponsable(true);
-        $collaborateurVersion->setDeleted(false);
+        $cv = new CollaborateurVersion($moi);
+        $cv->setVersion($version);
+        $cv->setResponsable(true);
+        $cv->setDeleted(false);
         
         // Ecriture de collaborateurVersion dans la BD
-        $em->persist($collaborateurVersion);
+        $em->persist($cv);
+        $em->flush();
+
+        // Création de nouveaux User (1 User par serveur !)
+        $serveurs = $em->getRepository(Serveur::class)->findAll();
+        foreach ($serveurs as $s)
+        {
+            $u = new User();
+            $u->setServeur($s);
+            $u->addCollaborateurVersion($cv);
+            $cv->addUser($u);
+            $em->persist($u);
+        }
+        $em->persist($cv);
         $em->flush();
 
         return $this->redirectToRoute('modifier_version', [ 'id' => $version->getIdVersion() ]);

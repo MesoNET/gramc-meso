@@ -144,6 +144,7 @@ services:
     # Formulaires, validateurs, securité
     App\Form\:
         resource: '../src/Form/*'
+        exclude: '../src/Form/IndividuForm/*'
         tags: ["form.type"]
 
     App\Form\IndividuFormType:

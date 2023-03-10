@@ -461,7 +461,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Individu
      */
-    public function getCollaborateur()
+    public function getCollaborateur(): Individu
     {
         return $this->collaborateur;
     }

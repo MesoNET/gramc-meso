@@ -235,8 +235,8 @@
             <thead>
                 <tr>
                     {# Il y a au moins UN collaborateur (le responsable !) #}
-                    {% if coll_login %}{% for u in version.CollaborateurVersion[0].user %}
-                        <th>{{u.serveur}}</th>
+                    {% if coll_login %}{% for s in serviceServeurs.getServeurs %}
+                        <th>{{s}}</th>
                     {% endfor %}{% endif %}
                     <th>Prénom</th>
                     <th>Nom</th>
@@ -251,7 +251,8 @@
                 {% for cv in version.CollaborateurVersion %}
                     {% if not cv.deleted %}
                         <tr style="stroke:black;">
-                            {% if coll_login %}{% for u in cv.user %}
+                            {% if coll_login %}{% for s in serviceServeurs.getServeurs %}
+                                {% set u=serviceUsers.getUser(cv.collaborateur,version.projet,s) %}
                                 <td>{% if u.login %}oui{% else %}-{%endif%}</td>
                             {%endfor%}{%endif%}
 

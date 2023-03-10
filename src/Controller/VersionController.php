@@ -36,6 +36,7 @@ use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
@@ -106,6 +107,7 @@ class VersionController extends AbstractController
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
+        private ServiceServeurs $sr,
         private ServiceSessions $ss,
         private ServiceForms $sf,
         private GramcDate $sd,
@@ -620,6 +622,7 @@ class VersionController extends AbstractController
         $sj = $this->sj;
         $sval= $this->vl;
         $sv = $this->sv;
+        $sr = $this->sr;
         $em = $this->em;
 
 
@@ -633,6 +636,7 @@ class VersionController extends AbstractController
         {
             $text_fields = false;
         }
+
         $collaborateur_form = $this->ff
                                    ->createNamedBuilder('form_projet', FormType::class, [
                                        'individus' => $sv->prepareCollaborateurs($version, $sj, $sval)
@@ -647,7 +651,8 @@ class VersionController extends AbstractController
                                        'by_reference' =>  false,
                                        'delete_empty' =>  true,
                                        'attr'         => ['class' => "profil-horiz"],
-                                       'entry_options' =>['text_fields' => $text_fields]
+                                       'entry_options' =>['text_fields' => $text_fields,'srv_noms' => $sr->getnoms()],
+                                       //'prototype_options' =>['text_fields' => $text_fields,'srv_noms' => $srv_noms],
                                    ])
                                    ->add('submit', SubmitType::class, [
                                         'label' => 'Sauvegarder',

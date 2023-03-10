@@ -31,6 +31,7 @@ use App\Entity\Formation;
 use App\Entity\FormationVersion;
 use App\Entity\Ressource;
 use App\Entity\Dac;
+use App\Entity\Serveur;
 
 use App\Entity\User;
 use App\Entity\CollaborateurVersion;
@@ -80,6 +81,8 @@ class ServiceVersions
                                 private $max_size_doc,
                                 private $resp_peut_modif_collabs,
                                 private ServiceJournal $sj,
+                                private ServiceServeurs $sr,
+                                private ServiceUsers $su,
                                 private ServiceInvitations $sid,
                                 private ValidatorInterface $vl,
                                 private ServiceForms $sf,
@@ -633,20 +636,31 @@ class ServiceVersions
     }
 
     /*********************************************************
-     * modifier le login d'un collaborateur d'une version
-     * Si le login passe à false, suppression du Loginname,
-     * et suppression de la ligne correspondante si elle existe (mot de passe) dans la table user
+     * modifier les logins d'un collaborateur d'une version
      ***********************************************************/
-    private function modifierLogin(Version $version, Individu $individu, $logint=false, $loginb=false): void
+    private function modifierLogins(Projet $projet, Individu $individu, array $logins): void
     {
         $em = $this->em;
+        $su = $this->su;
         $sj = $this->sj;
-        
-        $cv = $this->TrouverCollaborateur($version, $individu);
-        $cv->setLogint($logint);
-        $cv->setLoginb($loginb);
-        $this->em->persist($cv);
-        $this->em->flush();
+
+        foreach ($em->getRepository(Serveur::class)->findAll() as $s)
+        {
+            $u = $su->getUser($individu, $projet, $s);
+            $k = $s->getnom();
+            if (isset($logins[$k]))
+            {
+                $u->setLogin($logins[$k]);
+                //dd("coucou1", $k, $logins[$k], $s);
+            }
+            else
+            {
+                $u->setLogin(false);
+                //dd("coucou2", $k, $logins[$k], $s);
+            }
+            $this->em->persist($u);
+            $this->em->flush();
+        }
     }
 
     /*******
@@ -1133,6 +1147,8 @@ class ServiceVersions
     public function prepareCollaborateurs(Version $version) : array
     {
         $sj = $this->sj;
+        $sr = $this->sr;
+        $su = $this->su;
         
         if ($version == null) {
             $sj->throwException('ServiceVersion:modifierCollaborateurs : version null');
@@ -1150,7 +1166,19 @@ class ServiceVersions
             }
             else
             {
-                $individuForm = new IndividuForm($individu, $this->resp_peut_modif_collabs);
+                //$individuForm = new IndividuForm($individu, $this->resp_peut_modif_collabs);
+                //$users = $cv->getUser();
+                //dd($users);
+                $individuForm = new IndividuForm($sr->getNoms(),$individu);
+                //$logins = $individuForm->getLogins();
+                $logins = [];
+                foreach ($sr->getServeurs() as $s)
+                {
+                    $u = $su->getUser($cv->getCollaborateur(),$version->getProjet(),$s);
+                    $k = $s->getNom();
+                    $logins[$k] = $u->getLogin();
+                }
+                $individuForm->setLogins($logins);
                 $individuForm->setLogint($cv->getLogint());
                 $individuForm->setLoginb($cv->getLoginb());
                 $individuForm->setResponsable($cv->getResponsable());
@@ -1234,12 +1262,14 @@ class ServiceVersions
      * Traitement des formulaires des individus individuellement
      *
      * $individu_forms = Tableau contenant un formulaire par individu
+     *                   c-à-d un objet de type IndividuForm
      * $version        = La version considérée
      ****************************************************************/
     public function handleIndividuForms(array $individu_forms, Version $vers): void
     {
-        $em   = $this->em;
-        $sj   = $this->sj;
+        $em = $this->em;
+        $sj = $this->sj;
+        $su = $this->su;
         $sval = $this->vl;
 
         // On fait la modification sur 1 ou 2 versions suivant les cas:
@@ -1253,9 +1283,12 @@ class ServiceVersions
 
         foreach ($versions as $version)
         {
+            //dd($version,$individu_forms);
             foreach ($individu_forms as $individu_form)
             {
-                $id =  $individu_form->getId();
+                $id = $individu_form->getId();
+                $srv_logins = $individu_form->getLogins();
+                //dd($id, $individu_form);
     
                 // Le formulaire correspond à un utilisateur existant
                 if ($id != null) {
@@ -1294,13 +1327,14 @@ class ServiceVersions
                 }
     
                 elseif ($individu != null && $individu_form->getMail() != null && $individu_form->getMail() != $individu->getMail()) {
-                    $sj->errorMessage(__METHOD__ . ':' . __LINE__ ." l'adresse mails de l'utilisateur " .
+                    $sj->errorMessage(__METHOD__ . ':' . __LINE__ ." l'adresse mail de l'utilisateur " .
                         $individu . ' est incorrecte dans le formulaire :' . $individu_form->getMail() . ' != ' . $individu->getMail());
                 }
     
                 // --------------> Maintenant des cas réalistes !
                 // L'individu existe déjà
-                elseif ($individu != null) {
+                elseif ($individu != null)
+                {
                     // On modifie le profil de l'individu si on en a le droit
                     if ($this->resp_peut_modif_collabs)
                     {
@@ -1308,50 +1342,59 @@ class ServiceVersions
                         $em->persist($individu);
                     }
     
-                    // Il devient collaborateur
-                    if (! $version->isCollaborateur($individu)) {
+                    // Il devient collaborateur: création d'un collaborateurVersion et peut-être de plusieurs User
+                    if (! $version->isCollaborateur($individu))
+                    {
                         $sj->infoMessage(__METHOD__ . ':' . __LINE__ .' individu ' .
                             $individu . ' ajouté à la version ' .$version);
-                        $collaborateurVersion   =   new CollaborateurVersion($individu);
+                        $collaborateurVersion = new CollaborateurVersion($individu);
                         $collaborateurVersion->setVersion($version);
-                        if ($this->coll_login) {
-                            $collaborateurVersion->setLogint($individu_form->getLogint());
-                            $collaborateurVersion->setLoginb($individu_form->getLoginb());
-                        };
                         $em->persist($collaborateurVersion);
-                    }
-    
-                    // il était déjà collaborateur
-                    else {
-                        $sj->debugMessage(__METHOD__ . ':' . __LINE__ .' individu ' .
-                            $individu . ' confirmé pour la version '.$version);
-    
-                        // Modif éventuelle des cases de login
-                        $this->modifierLogin($version, $individu, $individu_form->getLogint(), $individu_form->getLoginb());
-    
-                        // modification du labo du projet
-                        if ($version->isResponsable($individu)) {
-                            $this->setLaboResponsable($version, $individu);
+                        $em->flush();
+
+                        // Création des User si nécessaire
+                        foreach ($em->getRepository(Serveur::class)->findAll() as $s)
+                        {
+                            $u = $su->getUser($individu, $projet, $s);
                         }
 
-                        //$sj->debugMessage(__METHOD__ . ':' . __LINE__ .' T '.$individu_form->getDelt().' B '.$individu_form->getDelb().' D '.$individu_form->getDeleted());
+                        // Synchronisation des flags de login
+                        $this->modifierLogins($projet, $individu, $individu_form->getLogins());
+                     }
+                 
     
-                        // modification éventuelle des flags delt/delb
-                        $this->syncDeleted($version, $individu, $individu_form->getDelt(), $individu_form->getDelb(), $individu_form->getDeleted());
-                    }
-                    $em -> flush();
+                     // il était déjà collaborateur
+                     else
+                     {
+                         $sj->debugMessage(__METHOD__ . ':' . __LINE__ .' individu ' .
+                                $individu . ' confirmé pour la version '.$version);
+        
+                         // Modif éventuelle des cases de login
+                         $this->modifierLogins($projet, $individu, $individu_form->getLogins());
+        
+                         // modification éventuelle du labo du projet
+                         if ($version->isResponsable($individu))
+                         {
+                             $this->setLaboResponsable($version, $individu);
+                             $em->persist($version);
+                             $em->flush();
+                         }
+
+                        // Synchronisation des flags de login
+                        $this->modifierLogins($projet, $individu, $individu_form->getLogins());
+
+                     }
+                     $em -> flush(); // sans doute inutile
                 }
     
-                // Le formulaire correspond à un nouvel utilisateur (adresse mail pas trouvée)
-                elseif ($individu_form->getMail() != null && $individu_form->getDeleted() == false) {
-                    
+                // Le formulaire correspond à un nouvel utilisateur (adresse mail pas trouvée dans la base)
+                elseif ($individu_form->getMail() != null && $individu_form->getDeleted() == false)
+                {
                     // Création d'un individu à partir du formulaire
                     // Renvoie null si la validation est négative
                     $individu = $individu_form->nouvelIndividu($sval);
                     if ($individu != null) {
                         $collaborateurVersion   =   new CollaborateurVersion($individu);
-                        $collaborateurVersion->setLogint($individu_form->getLogint());
-                        $collaborateurVersion->setLoginb($individu_form->getLoginb());
                         $collaborateurVersion->setVersion($version);
     
                         $sj->infoMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur ' . $individu .
@@ -1361,7 +1404,6 @@ class ServiceVersions
                         $em->persist($collaborateurVersion);
                         $em->persist($version);
                         $em->flush();
-                        $sj->warningMessage('Utilisateur ' . $individu . '(' . $individu->getMail() . ') id(' . $individu->getIdIndividu() . ') a été créé');
     
                         // Envoie une invitation à ce nouvel utilisateur
                         $connected = $this->tok->getToken()->getUser();
@@ -1376,8 +1418,8 @@ class ServiceVersions
                 // elseif ($individu_form->getMail() == null && $id == null) {
                 //    $sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur vide ignoré');
                 //}
-            }
-        }
+            } // foreach $individu_form
+        } // foreach $versions
     }
 
     /*************************************************************
@@ -1387,6 +1429,7 @@ class ServiceVersions
     {
         $sj = $this->sj;
         $em = $this->em;
+        $sr = $this->sr;
         $sval= $this->vl;
 
         $text_fields = true;
@@ -1394,20 +1437,27 @@ class ServiceVersions
         {
             $text_fields = false;
         }
-        return $this->ff
-                   ->createNamedBuilder('form_projet', FormType::class, [ 'individus' => $this->prepareCollaborateurs($version, $sj, $sval) ])
-                   ->add('individus', CollectionType::class, [
-                       'entry_type'     =>  IndividuFormType::class,
-                       'label'          =>  false,
-                       'allow_add'      =>  true,
-                       'allow_delete'   =>  true,
-                       'prototype'      =>  true,
-                       'required'       =>  true,
-                       'by_reference'   =>  false,
-                       'delete_empty'   =>  true,
-                       'attr'         => ['class' => "profil-horiz",],
-                       'entry_options' =>['text_fields' => $text_fields]
-                    ])
-                    ->getForm();
+
+        // TODO - mettre dans un objet Form ?
+        // ceci est "presque" un copié-collé de VersionController:modifierCollaborateursAction !
+        
+        $collaborateur_form = $this->ff
+                                   ->createNamedBuilder('form_projet', FormType::class, [
+                                       'individus' => $this->prepareCollaborateurs($version, $sj, $sval)
+                                   ])
+                                   ->add('individus', CollectionType::class, [
+                                       'entry_type'   =>  IndividuFormType::class,
+                                       'label'        =>  false,
+                                       'allow_add'    =>  true,
+                                       'allow_delete' =>  true,
+                                       'prototype'    =>  true,
+                                       'required'     =>  true,
+                                       'by_reference' =>  false,
+                                       'delete_empty' =>  true,
+                                       'attr'         => ['class' => "profil-horiz"],
+                                       'entry_options' =>['text_fields' => $text_fields,'srv_noms' => $sr->getNoms()],
+                                   ])
+                                   ->getForm();
+        return $collaborateur_form;
     }
 }

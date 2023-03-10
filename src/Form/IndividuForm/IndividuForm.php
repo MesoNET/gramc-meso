@@ -38,9 +38,12 @@ use Doctrine\ORM\EntityManager;
 /**************************************************************************
  * Cette classe (qui ne dérive PAS de form !) est utilisée par l'écran des collaborateurs
  * A chaque ligne du tableau correspond un IndividuForm
+ * TODO - elle devrait s'appeler IndividuData
  ************************************************************************/
 class IndividuForm
 {
+    // Un tableau associatif, indexé par les noms de serveurs
+    protected $logins = [];
     protected $logint;
     protected $loginb;
     protected $delt;
@@ -57,8 +60,12 @@ class IndividuForm
     protected $etablissement;
     protected $id;
 
-    public function __construct(Individu $individu = null)
+    public function __construct(private array $srv_noms = [], Individu $individu = null)
     {
+        foreach ($srv_noms as $n)
+        {
+            $this->logins[$n] = false;
+        }
         $this->delt = false;
         $this->delb = false;
         $this->deleted = false;
@@ -94,6 +101,20 @@ class IndividuForm
         return $output;
     }
 
+    public function getLogins(): array
+    {
+        return $this->logins;
+    }
+    public function setLogins(array $logins): self
+    {
+        $this->logins = [];
+        foreach ($logins as $k => $l)
+        {
+            $this->logins[$k] = empty($l) ? false : true;
+        }
+        return $this;
+    }
+    
     public function getLogint()
     {
         return $this->logint;

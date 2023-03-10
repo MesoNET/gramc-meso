@@ -26,6 +26,8 @@ namespace App\GramcServices;
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
 use App\Entity\Serveur;
+use App\Entity\Projet;
+use App\Entity\Individu;
 
 use App\Utils\Functions;
 
@@ -118,14 +120,31 @@ class ServiceUsers
         return [ 'loginname' => $rvl[0], 'serveur' => $rvl[1]];
     }
 
-    /************************************************
-     * Renvoie la liste des serveurs connus
-     *********************************************************************/
-    public function getServeurs() : array
+    /*********************************************************
+     * Renvoie UN user et UN SEUL. Si le user n'existe pas on le crée
+     ***********************************************************/
+    public function getUser(Individu $i, Projet $p, Serveur $s): User
     {
         $em = $this->em;
-        return $em->getRepository(Serveur::class)->findAll();
+        $users = $em->getRepository(User::class)->findBy(['individu' => $i, 'projet' => $p, 'serveur' => $s]);
+        if (count($users) == 0)
+        {
+            $u = new User();
+            $u->setIndividu($i);
+            $u->setProjet($p);
+            $u->setServeur($s);
+            $em->persist($u);
+            $em->flush($u);
+        }
+        elseif (count($users) == 1)
+        {
+            $u = $users[0];
+        }
+        else
+        {
+            throw $this->sj->throwException("ServiceUsers:getUser findBy renvoie " . count($users) . " objets " . "$i - $p - $s");
+        }
+        return $u;
     }
-    
     
 } // class

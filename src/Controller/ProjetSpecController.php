@@ -49,6 +49,7 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
+use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 use App\GramcServices\GramcGraf\CalculTous;
@@ -106,6 +107,7 @@ class ProjetSpecController extends AbstractController
         private ServiceProjets $sp,
         private ServiceSessions $ss,
         private ServiceUsers $su,
+        private ServiceServeurs $sr,
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
@@ -134,7 +136,8 @@ class ProjetSpecController extends AbstractController
         $sm                  = $this->sm;
         $ss                  = $this->ss;
         $sp                  = $this->sp;
-        $su                  = $this->su;
+        //$su                  = $this->su;
+        $sr                  = $this->sr;
         $token               = $this->token;
         $sid                 = $this->sid;
         $em                  = $this->em;
@@ -310,7 +313,7 @@ class ProjetSpecController extends AbstractController
                 'projets_collab' => $projets_collab,
                 'projets_resp'   => $projets_resp,
                 'projets_term'   => $projets_term,
-                'serveurs'       => $su->getServeurs(),
+                'serveurs'       => $sr->getServeurs(),
                 'menu'           => $menu,
                 ]
         );

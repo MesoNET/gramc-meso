@@ -41,6 +41,7 @@ class Serveur
     public function __construct()
     {
         $this->ressource = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -58,6 +59,13 @@ class Serveur
      * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="serveur", cascade={"persist"})
      */
     private $ressource;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     */
+    private $user;
 
     /**
      * @var desc
@@ -105,13 +113,12 @@ class Serveur
      *
      * @return Serveur
      */
-    public function addRessource(\App\Entity\Serveur $serveur): self
+    public function addRessource(\App\Entity\Ressource $ressource): self
     {
-        if (! $this->serveur->contains($serveur))
+        if (! $this->ressource->contains($ressource))
         {
-            $this->serveur[] = $serveur;
+            $this->ressource[] = $ressource;
         }
-
         return $this;
     }
 
@@ -134,6 +141,43 @@ class Serveur
     public function getRessource()
     {
         return $this->ressource;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Serveur
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**
