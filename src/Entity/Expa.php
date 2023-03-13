@@ -49,7 +49,7 @@ class Expa
     /**
      * @var \App\Entity\Expertise
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Expertise")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Expertise",inversedBy="expa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id", referencedColumnName="id")
      * })
@@ -59,7 +59,7 @@ class Expa
     /**
      * @var \App\Entity\Ressource
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource",inversedBy="expa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
      * })

@@ -55,7 +55,7 @@ class User
     /**
      * @var \App\Entity\Serveur
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur", inversedBy="user" )
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="serveur", referencedColumnName="nom")
      * })
@@ -65,7 +65,7 @@ class User
     /**
      * @var \App\Entity\Individu
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="user")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu")
      * })
@@ -75,7 +75,7 @@ class User
     /**
      * @var \App\Entity\Projet
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="user")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="projet", referencedColumnName="id_projet")
      * })
@@ -144,7 +144,7 @@ class User
      * @var \App\Entity\Clessh
      *
      * ORM\Column(name="id_clessh", type="integer", nullable=true)
-     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh",inversedBy="user")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_clessh", referencedColumnName="id")
      * })

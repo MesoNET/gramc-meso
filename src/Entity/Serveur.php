@@ -63,7 +63,7 @@ class Serveur
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="serveur", cascade={"persist"})
      */
     private $user;
 

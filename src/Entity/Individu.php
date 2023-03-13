@@ -153,7 +153,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Projet
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Statut")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Statut",inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_statut", referencedColumnName="id_statut")
      * })
@@ -179,7 +179,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Laboratoire
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",cascade={"persist"},inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_labo", referencedColumnName="id_labo")
      * })
@@ -189,7 +189,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Etablissement
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement", inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_etab", referencedColumnName="id_etab")
      * })
@@ -237,7 +237,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="individu", cascade={"persist"})
      */
     private $user;
 

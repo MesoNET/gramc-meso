@@ -54,7 +54,7 @@ class Ressource
     /**
      * @var \App\Entity\Serveur
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur",inversedBy="ressource")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_serveur", referencedColumnName="nom")
      * })

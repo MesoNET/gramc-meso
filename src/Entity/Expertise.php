@@ -131,7 +131,7 @@ class Expertise
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Version", inversedBy="expertise")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
      * })
@@ -141,7 +141,7 @@ class Expertise
     /**
      * @var \App\Entity\Individu
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="expertise")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_expert", referencedColumnName="id_individu")
      * })

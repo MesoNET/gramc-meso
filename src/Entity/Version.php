@@ -261,7 +261,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Thematique
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Thematique")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Thematique", inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="prj_id_thematique", referencedColumnName="id_thematique")
      * })
@@ -272,7 +272,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Rattachement
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rattachement")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Rattachement", inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="prj_id_rattachement", referencedColumnName="id_rattachement")
      * })
@@ -282,7 +282,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Session
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Session")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Session",inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_session", referencedColumnName="id_session")
      * })
@@ -300,7 +300,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Projet
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", cascade={"persist"},inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet", nullable=true )
      * })
@@ -345,14 +345,14 @@ class Version implements Demande
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
+     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
      */
     private $versionDerniere;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
+     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
      */
     private $versionActive;
 

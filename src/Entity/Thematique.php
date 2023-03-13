@@ -63,7 +63,7 @@ class Thematique
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Individu", inversedBy="idThematique")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Individu", inversedBy="thematique")
      * @ORM\JoinTable(name="thematiqueExpert",
      *   joinColumns={
      *     @ORM\JoinColumn(name="id_thematique", referencedColumnName="id_thematique")
@@ -78,7 +78,7 @@ class Thematique
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="thematique")
+     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="prjThematique")
      */
     private $version;
 

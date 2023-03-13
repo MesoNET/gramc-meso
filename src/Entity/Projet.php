@@ -100,7 +100,7 @@ class Projet
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version")
+     * @ORM\OneToOne(targetEntity="App\Entity\Version",inversedBy="versionActive")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_veract", referencedColumnName="id_version", onDelete="SET NULL", nullable=true)
      * })
@@ -113,7 +113,7 @@ class Projet
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Version")
+     * @ORM\OneToOne(targetEntity="App\Entity\Version", inversedBy="versionDerniere")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_verder", referencedColumnName="id_version", onDelete="SET NULL", nullable=true )
      * })
@@ -159,7 +159,7 @@ class Projet
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="projet", cascade={"persist"})
      */
     private $user;
 

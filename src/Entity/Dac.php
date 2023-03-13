@@ -49,7 +49,7 @@ class Dac
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="dac")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
      * })
@@ -59,7 +59,7 @@ class Dac
     /**
      * @var \App\Entity\Ressource
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dac")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
      * })
