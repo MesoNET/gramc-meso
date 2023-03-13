@@ -31,4 +31,12 @@ namespace App\Repository;
  * repository methods below.
  */
 class RessourceRepository extends \Doctrine\ORM\EntityRepository
-{}
+{    function findAllSorted()
+    {
+        $dql = 'SELECT r FROM App:ressource r ORDER BY r.nom';
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
+    
+}
