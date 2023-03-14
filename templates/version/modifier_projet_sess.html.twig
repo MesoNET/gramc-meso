@@ -63,7 +63,7 @@
     {% if 'code_nom' in todo %}<a href="#form_codeNom" class="gerer_onglets">Nom du logiciel</a><br>{% endif %}
     {% if 'code_licence' in todo %}<a href="#form_codeLicence" class="gerer_onglets">Licence du logiciel</a><br>{% endif %}
     {% if 'genci' in todo %}<a href="#form_genci" class="gerer_onglets">Heures sur les centres nationaux</a><br>{% endif %}
-
+    {% if 'ressources' in todo %}Demander des ressources ({% for form in ressource_form.children.ressource.children %}<a href="#tab_{{form.vars.data.ressource.nom}}">{{form.vars.data.ressource.nom}}</a> {%endfor %})<br>{% endif %}
     {% if 'prj_justif_renouv' in todo %}<a href="#form_prjJustifRenouv" class="gerer_onglets">Pourquoi une nouvelle version ?</a><br>{% endif %}
     {% if 'collabs' in todo %}
         <a href="#liste_des_collaborateurs" class="gerer_onglets">Liste des collaborateurs</a><br>{% endif %}

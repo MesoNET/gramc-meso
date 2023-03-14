@@ -906,11 +906,19 @@ class VersionSpecController extends AbstractController
         if ($version->getPrjTitre() == null) {
             $todo[] = 'prj_titre';
         }
-        // Il faut demander des heures soit au Criann soit à l'Uft, soit aux deux
-        if ($version->getDemHeuresCriann() == 0 && $version->getDemHeuresUft() == 0) {
-            $todo[] = 'dem_heures_criann';
-            $todo[] = 'dem_heures_uft';
+        // Il faut qu'au moins une ressource ait une demande non nulle
+        $dacs = $version->getDac();
+        $dem = false;
+        foreach ($dacs as $d)
+        {
+            if ($d->getDemande() != 0)
+            {
+                $dem = true;
+                break;
+            }
         }
+        if ($dem == false)$todo[] = 'ressources';
+        
         if ($version->getPrjThematique() == null) {
             $todo[] = 'prj_id_thematique';
         }

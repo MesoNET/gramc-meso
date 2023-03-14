@@ -1,8 +1,8 @@
 {# ################################################################################## #}
 {# LES FORMULAIRES DES RESSOURCES ! #}
 
-{% for form in ressource_form.children.ressource.children %}
 
+{% for form in ressource_form.children.ressource.children %}
 <div id="tab_{{form.vars.data.ressource.nom}}" class="onglet">
 
     <h2>{{form.vars.data.ressource.nom}}</h2>
@@ -19,5 +19,4 @@
     </div>
 
 </div>
-
 {% endfor %}

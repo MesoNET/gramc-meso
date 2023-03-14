@@ -177,6 +177,7 @@ class ServiceVersions
             $dac->setVersion($version);
             $dac->setRessource($r);
             $em->persist($dac);
+            $version->addDac($dac);
         }
         $em->flush();
 
@@ -1268,7 +1269,7 @@ class ServiceVersions
      * 
      * Validation du formulaire des collaborateurs - Retourne true/false
      *
-     * params = Retour de $sv->prepareCollaborateurs
+     * params = $individu_forms: Retour de $sv->prepareCollaborateurs
      *          $definitif = Si false, on fait une validation minimale
      ***********************************************************************/
     public function validateIndividuForms(array $individu_forms, $definitif = false) : bool
@@ -1283,9 +1284,11 @@ class ServiceVersions
             // On ne teste pas la validité des collaborateurs supprimés !
             if ($individu_form->getDeleted()) continue;
 
-            // Tiens, un login !
-            if ($individu_form->getLogint() || $individu_form->getLoginb()) {
-                $one_login = true;
+            // teste s'il y a au moins un login
+            if ($one_login == false)
+            {
+                $logins = $individu_form->getLogins();
+                $one_login = in_array(true,$logins);
             }
 
             // nom, prénom vides sur un nouveau collaborateur !
