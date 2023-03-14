@@ -59,7 +59,7 @@ class FormationVersion
     /**
      * @var \App\Entity\Formation
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Formation")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Formation",inversedBy="formationVersion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_formation", referencedColumnName="id", onDelete="CASCADE")
      * })

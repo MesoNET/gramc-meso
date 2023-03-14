@@ -44,7 +44,7 @@ class Thematique
     /**
     * @var \App\Entity\MetaThematique
     *
-    * @ORM\ManyToOne(targetEntity="App\Entity\MetaThematique")
+    * @ORM\ManyToOne(targetEntity="App\Entity\MetaThematique", inversedBy="thematique")
     * @ORM\JoinColumns({
     *   @ORM\JoinColumn(name="id_meta_thematique", referencedColumnName="id_meta_thematique")
     * })
