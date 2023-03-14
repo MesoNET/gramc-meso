@@ -343,14 +343,14 @@ class Version implements Demande
     private $formationVersion;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \App\Entity\Version
      *
      * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
      */
     private $versionDerniere;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \App\Entity\Version
      *
      * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
      */
@@ -376,8 +376,6 @@ class Version implements Demande
         $this->dac                  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise            = new \Doctrine\Common\Collections\ArrayCollection();
         $this->formationVersion     = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->versionDerniere      = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->versionActive        = new \Doctrine\Common\Collections\ArrayCollection();
         $this->etatVersion          = Etat::EDITION_DEMANDE;
     }
 
