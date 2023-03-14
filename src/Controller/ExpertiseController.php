@@ -56,6 +56,7 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceExpertises;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceExperts\ServiceExperts;
@@ -99,6 +100,7 @@ class ExpertiseController extends AbstractController
         private ServiceMenus $sm,
         private GramcDate $grdt,
         private ServiceVersions $sv,
+        private ServiceExpertises $sexp,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
         private Projet4Workflow $p4w,
@@ -608,6 +610,7 @@ class ExpertiseController extends AbstractController
         $ac = $this->ac;
         $grdt = $this->grdt;
         $sval = $this->vl;
+        $sexp = $this->sexp;
         $token = $this->token;
         $em = $this->em;
 
@@ -776,6 +779,10 @@ class ExpertiseController extends AbstractController
                      ->add('validation', HiddenType::class, [ 'data' => 1 ]);
         }            
 
+        $ressource_form = $sexp->getRessourceForm($version);
+        $ressource_form->handleRequest($request);
+
+/*        
         // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREALE)
         // Par défaut on attribue les heures demandées
         if ($expertise->getNbHeuresAttUft() == 0)
@@ -794,7 +801,7 @@ class ExpertiseController extends AbstractController
         {
             $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, ]);
         }
-
+*/
         // En session B mais SEULEMENT POUR LES PROJETS DE SESSION, on propose une attribution spéciale pour heures d'été
         if ( $session_type && $projet_type == Projet::PROJET_SESS)
         {
@@ -954,6 +961,7 @@ class ExpertiseController extends AbstractController
                 'msg_explain'       => $msg_explain,
                 'version'           => $expertise->getVersion(),
                 'edit_form'         => $editForm->createView(),
+                'ressource_form'    => $ressource_form->createView(),
                 'anneePrec'         => $anneePrec,
                 'anneeCour'         => $anneeCour,
                 'session'           => $session,

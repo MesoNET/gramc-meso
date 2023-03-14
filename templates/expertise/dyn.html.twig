@@ -14,8 +14,6 @@
                 <th>&nbsp;</th>
                 <th>Thématique</th>
                 <th>Titre</th>
-                <th title="Demandes d'heures sur Turpan">Turpan</th>
-                <th title="Demandes d'heures sur Boreale">Boreale</th>
                 <th>Responsable</th>
                 <th>Valideur en cours</th>
             </tr>
@@ -33,8 +31,6 @@
                         </a></td>
                     <td>{{ expertise.version.prjthematique }}</td>
                     <td>{{ expertise.version.prjtitre }}</td>
-                    <td>{{ expertise.version.demHeuresUft }}</td>
-                    <td>{{ expertise.version.demHeuresCriann }}</td>
                     <td>{{ expertise.version.responsable }}</td>
                     <td>{% if expertise.expert == null %}<em>pourquoi pas vous ?</em>{% else %}{{ expertise.expert }}{% endif %}</td>
                 </tr>

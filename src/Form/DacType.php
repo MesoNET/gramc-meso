@@ -36,7 +36,17 @@ class DacType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('demande', IntegerType::class,['label' => $options['label'] ]);
+        // Formulaire de demande de ressources
+        if ($options['attribution'] == false)
+        {
+            $builder->add('demande', IntegerType::class,['label' => $options['label'] ]);
+        }
+        
+        // Formulaire d'attribution de ressources
+        else
+        {
+            $builder->add('attribution', IntegerType::class,['label' => $options['label'] ]);
+        }
     }
 
     /**
@@ -46,7 +56,8 @@ class DacType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'App\Entity\Dac',
-            'label' => 'toto'
+            'label' => 'toto',
+            'attribution' => false,
         ));
     }
 

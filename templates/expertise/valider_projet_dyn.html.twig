@@ -27,14 +27,12 @@
                     </strong>
                 </td>
             </tr>
+            {% for d in version.dac %}
             <tr>
-                <th>Heures attribuées sur TURPAN</th>
-                <td>{{ expertise.nbHeuresAttUft}}</td>
+                <th>Ressources attribuées sur {{ d.ressource.nom}}</th>
+                <td>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</td>
             </tr>
-            <tr>
-                <th>Heures attribuées sur BOREALE</th>
-                <td>{{ expertise.nbHeuresAttCriann}}</td>
-            </tr>
+            {% endfor %}
             <tr>
                 <th>Commentaire interne</th>
                 <td>{{ expertise.commentaireInterne }}</td>
