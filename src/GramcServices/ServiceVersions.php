@@ -82,6 +82,7 @@ class ServiceVersions
                                 private $resp_peut_modif_collabs,
                                 private ServiceJournal $sj,
                                 private ServiceServeurs $sr,
+                                private ServiceRessources $sroc,
                                 private ServiceUsers $su,
                                 private ServiceInvitations $sid,
                                 private ValidatorInterface $vl,
@@ -93,6 +94,93 @@ class ServiceVersions
                                 )
     {
         $this->attrib_seuil_a = intval($this->attrib_seuil_a);
+    }
+
+    /****************
+     * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
+     *    - Création de la version
+     *    - Création des Dac associés
+     *    - Si nécessaire, création des User associés
+     *
+     * Params: $projet le projet associé 
+     *    
+     * Retourne: La nouvelle version
+     * 
+     ************************************************/
+
+    public function creerVersion(Projet $projet): Version
+    {
+        $su = $this->su;
+        $sr = $this->sr;
+        $sroc = $this->sroc;
+        $token = $this->tok->getToken();
+        $em = $this->em;
+
+        $session = null; // A virer
+        $version = new Version();
+        $version->setEtatVersion(Etat::EDITION_DEMANDE);
+        // setProjet fixe aussi le type de la version (cf getVersionType())
+        // important car le type du projet peut changer (en théorie))
+        // En pratique PROJET_DYN est le SEUL TYPE supporté
+        $version->setProjet($projet);
+        $type = $projet->getTypeProjet();
+        if ($type == Projet::PROJET_DYN)
+        {
+            $version->setNbVersion("01");
+            $version->setIdVersion("01" . $projet->getIdProjet());
+        }
+        else
+        {
+            $version->setSession($session);
+            $version->setNbVersion("01");
+            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
+        }
+
+        // Le laboratoire associé est celui du responsable
+        $moi = $token->getUser();
+        $this->setLaboResponsable($version, $moi);
+
+        // Ecriture de la version dans la BD
+        $em->persist($version);
+        $em->flush($version);
+
+        // La dernière version est fixée par l'EventListener
+        // TODO - mais ici cela ne fonctionne pas
+        $projet->setVersionDerniere($version);
+        $em->persist( $projet);
+        $em->flush($projet);
+
+        // Affectation de l'utilisateur connecté en tant que responsable
+        $cv = new CollaborateurVersion($moi);
+        $cv->setVersion($version);
+        $cv->setResponsable(true);
+        $cv->setDeleted(false);
+        
+        // Ecriture de collaborateurVersion dans la BD
+        $em->persist($cv);
+        $em->flush();
+
+        // Création de nouveaux User pour le responsable (1 User par serveur)
+        // NOTE - En pratique ils seront créés seulement lors de la première version
+        //        car pour un utilisateur donné il n'y a qu'un user/serveur, même avec plusieurs versions
+        $serveurs = $sr->getServeurs();
+        foreach ($serveurs as $s)
+        {
+            $su->getUser($moi, $projet, $s);
+        }
+
+        // Création de nouveaux Dac (1 Dac par ressource)
+        $ressources = $sroc->getRessources();
+        foreach ($ressources as $r)
+        {
+            $dac = new Dac();
+            $dac->setVersion($version);
+            $dac->setRessource($r);
+            $em->persist($dac);
+        }
+        $em->flush();
+
+        return $version;
     }
 
     /*********
@@ -754,28 +842,6 @@ class ServiceVersions
             $version->setPrjLLabo(Functions::string_conversion($labo));
         } else {
             $this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Le nouveau responsable " . $individu . " ne fait partie d'aucun laboratoire");
-        }
-    }
-
-    /*************************************************************
-     * Efface les données liées à une version de projet
-     *
-     *  - Les fichiers img_* et *.pdf du répertoire des figures
-     *  - Le fichier de signatures s'il existe
-     *  - N'EFFACE PAS LE RAPPORT D'ACTIVITE !
-     *    cf. ServiceProjets pour cela
-     *************************************************************/
-    public function effacerDonnees(Version $version): void
-    {
-        // Les figures et les doc attachés
-        $img_dir = $this->imageDir($version);
-        array_map('unlink', glob("$img_dir/img*"));
-        array_map('unlink', glob("$img_dir/*.pdf"));
-
-        // Les signatures
-        $fiche = $this->getSigne($version);
-        if ( $fiche != null) {
-            unlink($fiche);
         }
     }
 

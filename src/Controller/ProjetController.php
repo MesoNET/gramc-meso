@@ -51,6 +51,7 @@ use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
 use App\GramcServices\ServiceServeurs;
+use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 use App\GramcServices\GramcGraf\CalculTous;
@@ -108,6 +109,7 @@ class ProjetController extends AbstractController
         private ServiceSessions $ss,
         private ServiceUsers $su,
         private ServiceServeurs $sr,
+        private ServiceRessources $sroc,
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
@@ -1298,6 +1300,7 @@ class ProjetController extends AbstractController
      * @Route("/nouveau/{type}", name="nouveau_projet", methods={"GET","POST"})
      * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
+     * TODO - Passer nouveau dans ServiceProjets !
      *
      */
     public function nouveauAction(Request $request, $type): Response
@@ -1309,6 +1312,7 @@ class ProjetController extends AbstractController
         $sv = $this->sv;
         $sj = $this->sj;
         $sr = $this->sr;
+        $sroc = $this->sroc;
         $su = $this->su;
         $grdt = $this->grdt;
         $token = $this->tok->getToken();
@@ -1325,73 +1329,10 @@ class ProjetController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de créer un nouveau projet parce que $raison");
         }
 
-        $session  = $ss -> getSessionCourante();
-        $prefixes = $this->getParameter('prj_prefix');
-        if (!isset($prefixes[$type]) || $prefixes[$type]==="") {
-            $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Pas de préfixe pour le type $type. Voir le paramètre prj_prefix");
-            return $this->redirectToRoute('accueil');
-        }
-
-        // Création du projet
-        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
-        $projet = new Projet($type);
-        $projet->setIdProjet($sp->NextProjetId($annee, $type));
-        $projet->setNepasterminer(false);
-        $projet->setEtatProjet(Etat::RENOUVELABLE);
-
-        // Ecriture du projet dans la BD
-        $em->persist($projet);
-        $em->flush();
-
-        // Création de la première version
-        $version = new Version();
-
-        // setProjet fixe aussi le type de la version (cf getVersionType())
-        // important car le type du projet peut changer !
-        $version->setProjet($projet);
-        if ($type == Projet::PROJET_DYN)
-        {
-            $version->setNbVersion("01");
-            $version->setIdVersion("01" . $projet->getIdProjet());
-        }
-        else
-        {
-            $version->setSession($session);
-            $version->setNbVersion("01");
-            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
-        }
+        // Projet dynamique = SEUL type de projets supporté actuellement
+        $projet = $sp->creerProjet(Projet::PROJET_DYN);
+        $version = $projet->getVersionDerniere();
         
-        $sv->setLaboResponsable($version, $token->getUser());
-
-        $version->setEtatVersion(Etat::EDITION_DEMANDE);
-
-        // Ecriture de la version dans la BD
-        $em->persist($version);
-        $em->flush();
-
-        // La dernière version est fixée par l'EventListener
-        // $projet->setVersionDerniere($version);
-        // $em->persist( $projet);
-        // $em->flush();
-
-        // Affectation de l'utilisateur connecté en tant que responsable
-        $moi = $token->getUser();
-        $cv = new CollaborateurVersion($moi);
-        $cv->setVersion($version);
-        $cv->setResponsable(true);
-        $cv->setDeleted(false);
-        
-        // Ecriture de collaborateurVersion dans la BD
-        $em->persist($cv);
-        $em->flush();
-
-        // Création de nouveaux User (1 User par serveur !)
-        $serveurs = $sr->getServeurs();
-        foreach ($serveurs as $s)
-        {
-            $su->getUser($moi, $projet, $s);
-        }
-
         return $this->redirectToRoute('modifier_version', [ 'id' => $version->getIdVersion() ]);
     }
 

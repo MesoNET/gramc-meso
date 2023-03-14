@@ -72,6 +72,165 @@ class ServiceProjets
     }
 
 
+    /****************
+     * Création d'un nouveau projet, c'est-à-dire:
+     *    - Création du projet
+     *    - Création d'une première version
+     *
+     * params: Le type de projet
+     * Retourne: Le nouveau projet
+     * 
+     ************************************************/
+    public function creerProjet(int $type) : Projet
+    {
+        $sv = $this->sv;
+        $grdt = $this->grdt;
+        $em = $this->em;
+        
+        // Création du projet        
+        $session = null; // TODO - Virer les sessions !
+        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
+
+        $projet = new Projet($type);
+        $projet->setIdProjet($this->nextProjetId($annee, $type));
+        $projet->setNepasterminer(false); // TODO - A virer
+        $projet->setEtatProjet(Etat::RENOUVELABLE);
+
+        // Ecriture du projet dans la BD
+        $em->persist($projet);
+        $em->flush();
+
+        // Création de la première version
+        $version = $sv->creerVersion($projet);
+
+        return $projet;
+
+      
+    }
+    /****************
+     * Suppression d'un projet, en commençant par supprimer les objets User
+     * Cette fonction est privée car elle avant de supprimer un projet on doit supprimer
+     * les versions associées
+     *
+     * Params: $p Le projet à supprimer
+     ************************************************/
+    private function supprimerProjet(Projet $projet) : void
+    {
+        $em = $this->em;
+
+        // Supprimer les User
+        $users = $projet->getUser();
+        foreach ($users as $u)
+        {
+            $projet->removeUser($u);
+            $em->remove($u);
+        }
+        $em->flush();
+
+        // Supprimer le projet
+        $em->remove($projet);
+        $em->flush();
+    }
+
+    /****************
+     * Suppression d'une version
+     *    - Suppression des Dac associés
+     *    - Suppression de la version
+     *
+     * Params: $projet le projet associé 
+     *    
+     * Retourne: La nouvelle version
+     * 
+     ************************************************/
+
+    public function supprimerVersion(Version $version): void
+    {
+        $sj = $this->sj;
+        $em = $this->em;
+        
+        // Suppression des dac associés
+         foreach ($version->getDac() as $dac)
+        {
+            $em->remove($dac);
+        }
+       
+        // Suppression des collaborateurs
+        foreach ($version->getCollaborateurVersion() as $collaborateurVersion)
+        {
+            $em->remove($collaborateurVersion);
+        }
+
+        // Suppression des demandes de formation
+        foreach ($version->getFormationVersion() as $formationVersion)
+        {
+            $em->remove($formationVersion);
+        }
+        
+        // Suppression des expertises éventuelles
+        $expertises = $version->getExpertise();
+        foreach ($expertises as $expertise)
+        {
+            $em->remove($expertise);
+        }
+
+        // TODO - Suppression des rallonges
+        
+        // Ne devrait pas arriver !
+        $projet = $version->getProjet();
+        if ($projet == null)
+        {
+            $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $idVersion . " sans projet supprimée");
+        }
+        else
+        {
+            //$projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => $idProjet]);
+
+            // On met le champ version derniere a NULL
+            $projet->setVersionDerniere(null);
+            $em -> persist($projet);
+            //$em->flush();
+        }
+
+        // suppression des fichiers liés à la version
+        $this->effacerDonnees($version);
+
+        // On supprime la version
+        // Du coup la versionDerniere est mise à jour par l'EventListener
+        $em->remove($version);
+        $em->flush();
+
+        // Si pas d'autre version, on supprime le projet
+        if ($projet != null && $projet->getVersion() != null && count($projet->getVersion()) == 0)
+        {
+            $this->supprimerProjet($projet);
+        }
+    }
+
+    /*************************************************************
+     * Efface les données liées à une version de projet
+     *
+     *  - Les fichiers img_* et *.pdf du répertoire des figures
+     *  - Le fichier de signatures s'il existe
+     *  - N'EFFACE PAS LE RAPPORT D'ACTIVITE !
+     *    cf. ServiceProjets pour cela
+     *  TODO - Rendre cette fonction privée, et pour cela modifier la commande Rgpd
+     *************************************************************/
+    public function effacerDonnees(Version $version): void
+    {
+        $sv = $this->sv;
+        
+        // Les figures et les doc attachés
+        $img_dir = $sv->imageDir($version);
+        array_map('unlink', glob("$img_dir/img*"));
+        array_map('unlink', glob("$img_dir/*.pdf"));
+
+        // Les signatures
+        $fiche = $sv->getSigne($version);
+        if ( $fiche != null) {
+            unlink($fiche);
+        }
+    }
+
     /**************
      * Calcule le prochain id de projet, à partir des projets existants
      *
@@ -82,7 +241,7 @@ class ServiceProjets
      * Return: Le nouvel id, ou null en cas d'erreur
      *
      ***************/
-    public function NextProjetId($annee, $type): string
+    private function nextProjetId($annee, $type): string
     {
         if (intval($annee) >= 2000) {
             $annee = $annee - 2000;

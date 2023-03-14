@@ -33,11 +33,14 @@ use App\Entity\CollaborateurVersion;
 use App\Entity\RapportActivite;
 use App\Entity\Rattachement;
 use App\Entity\Formation;
+use App\Entity\Dac;
 
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceRessources;
+
 use App\GramcServices\ServiceForms;
 use App\GramcServices\GramcDate;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
@@ -99,6 +102,7 @@ class VersionSpecController extends AbstractController
         private ServiceMenus $sm,
         private ServiceSessions $ss,
         private ServiceVersions $sv,
+        private ServiceRessources $sroc,
         private ServiceForms $sf,
         private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
@@ -667,6 +671,7 @@ class VersionSpecController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
+        $sroc = $this->sroc;
         $dyn_duree = $this->dyn_duree;
         $dyn_duree_post = $this->dyn_duree_post;
         $projet_workflow = $this->pw4;
@@ -723,7 +728,7 @@ class VersionSpecController extends AbstractController
 
         $nb = $version->getNbVersion();
         $nb = $this->__incrNbVersion($nb);
-        
+
         $new_version->setNbVersion($nb);
         $new_version->setIdVersion($nb . $projet->getIdProjet());
         $new_version->setProjet($projet);
@@ -733,36 +738,26 @@ class VersionSpecController extends AbstractController
 
         // Nouveaux collaborateurVersions
         $collaborateurVersions = $version->getCollaborateurVersion();
-        foreach ($collaborateurVersions as $collaborateurVersion) {
-            
-            // ne pas reprendre un collaborateur sans login et marqué comme supprimé
-            // Attention un collaborateurVersion avec login = false mais loginname renseigné signifie que le compte
-            // n'a pas encore été détruit: dans ce cas on le reprend !
-            if ($collaborateurVersion->getDeleted() &&
-                $collaborateurVersion->getClogin() === false &&
-                $collaborateurVersion->getLoginname() === null ) continue;
+        foreach ($collaborateurVersions as $collaborateurVersion)
+        {
+            // ne pas reprendre un collaborateur marqué comme supprimé
+            if ($collaborateurVersion->getDeleted()) continue;
 
-            $newCollaborateurVersion    = clone  $collaborateurVersion;
-
-            // Les users connectés au collaborateurVersion connectés au nouveau cv
-            /*
-            $users = $collaborateurVersion->getUser();
-            foreach ($users as $u)
-            {
-                $newCollaborateurVersion->addUser($u);
-                $u->addCollaborateurVersion($newCollaborateurVersion);
-                $em->persist($newCollaborateurVersion);
-                $em->persist($u);
-            }
-            
+            $newCollaborateurVersion = clone $collaborateurVersion;
             $newCollaborateurVersion->setVersion($new_version);
             $em->persist($newCollaborateurVersion);
-            */
         }
+        $em->flush();
 
-        // Remettre à false Nepasterminer qui n'a pas trop de sens ici
-        //$projet->setNepasterminer(false);
-        $em->persist($projet);
+        // Nouveaux dac (1 par ressource)
+        $ressources = $sroc->getRessources();
+        foreach ($ressources as $r)
+        {
+            $dac = new Dac();
+            $dac->setVersion($version);
+            $dac->setRessource($r);
+            $em->persist($dac);
+        }
         $em->flush();
 
         // images: On reprend les images "img_expose" de la version précédente
