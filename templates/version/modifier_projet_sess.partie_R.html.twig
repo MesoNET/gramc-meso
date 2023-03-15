@@ -8,7 +8,9 @@
     <h2>{{form.vars.data.ressource.nom}}</h2>
 
     <div class="information ok">
-        {{ form.vars.data.ressource.desc }}
+        <p>{{ form.vars.data.ressource.desc|raw|nl2br }}</p>
+        {% if form.vars.data.ressource.docurl != null %}<p><strong>Documentation technique</strong>: <a href="{{form.vars.data.ressource.docurl}}">{{form.vars.data.ressource.docurl}}</a></p>{% endif %}
+        
     </div>
 
     <div class="inputs">
