@@ -69,13 +69,6 @@ class Ressource
     private $dac;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Expa", mappedBy="ressource", cascade={"persist"})
-     */
-    private $expa;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=20)
@@ -198,43 +191,6 @@ class Ressource
     public function getDac()
     {
         return $this->dac;
-    }
-
-    /**
-     * Add expa
-     *
-     * @param \App\Entity\Expa $expa
-     *
-     * @return Version
-     */
-    public function addExpa(\App\Entity\Expa $expa): self
-    {
-        if (! $this->expa->contains($expa))
-        {
-            $this->expa[] = $expa;
-        }
-        return $this;
-    }
-
-    /**
-     * Remove expa
-     *
-     * @param \App\Entity\Expa $expa
-     */
-    public function removeExpa(\App\Entity\Expa $expa): self
-    {
-        $this->expa->removeElement($expa);
-        return $this;
-    }
-
-    /**
-     * Get expa
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getExpa()
-    {
-        return $this->expa;
     }
 
     /**
