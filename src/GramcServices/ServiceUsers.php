@@ -29,6 +29,8 @@ use App\Entity\Serveur;
 use App\Entity\Projet;
 use App\Entity\Individu;
 
+use App\GramcServices\ServiceServeurs;
+
 use App\Utils\Functions;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,7 +41,7 @@ use Doctrine\ORM\EntityManagerInterface;
  *************************************************************/
 class ServiceUsers
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private ServiceServeurs $sr, private EntityManagerInterface $em)
     {}
 
     /******************************************
@@ -54,44 +56,44 @@ class ServiceUsers
     public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv=null, bool $long = false): array
     {
         $em = $this->em;
+        $sr = $this->sr;
         
+        $serveurs = $sr->getServeurs();
         $loginnames3 = [];
         if ($cv != null)
         {
-            $users = $cv->getUser();
-            foreach ( $users as $u)
+            foreach ( $serveurs as $s)
             {
-                $s = $u->getServeur()->getNom();
-                //if ($s=='BOREALE') dd($u);
-                $loginnames3[$s]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
-                $loginnames3[$s]['login'] = $u->getLogin();
-                if ($long && $loginnames3[$s]['nom']!='nologin') $loginnames3[$s]['nom'] .= '@'.$s;
+                $u = $this->getUser($cv->getCollaborateur(), $cv->getVersion()->getProjet(), $s);
+                $sn = $s->getNom();
+                
+                $loginnames3[$sn]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
+                $loginnames3[$sn]['login'] = $u->getLogin();
+                if ($long && $loginnames3[$sn]['nom']!='nologin') $loginnames3[$sn]['nom'] .= '@'.$sn;
                 $clessh = $u->getClessh();
                 if ($clessh === null)
                 {
-                    $loginnames3[$s]['clessh'] = null;
+                    $loginnames3[$sn]['clessh'] = null;
                 }
                 else
                 {
-                    $loginnames3[$s]['clessh']['idCle'] = $u->getClessh()->getId();
-                    $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
-                    $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
-                    $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
-                    $loginnames3[$s]['clessh']['deploy'] = $u->getDeply();
+                    $loginnames3[$sn]['clessh']['idCle'] = $u->getClessh()->getId();
+                    $loginnames3[$sn]['clessh']['nom'] = $u->getClessh()->getNom();
+                    $loginnames3[$sn]['clessh']['pub'] = $u->getClessh()->getPub();
+                    $loginnames3[$sn]['clessh']['rvk'] = $u->getClessh()->getRvk();
+                    $loginnames3[$sn]['clessh']['deploy'] = $u->getDeply();
                 }
-                $loginnames3[$s]['userid'] = $u->getId();
+                $loginnames3[$sn]['userid'] = $u->getId();
             }
         }
         else
         {
-            // est-ce bien utile ?
-            $serveurs = $em->getRepository(Serveur::class)->findAll();
-            foreach ($serveurs as $srv)
+            foreach ($serveurs as $s)
             {
-                $s = $srv->getNom();
-                $loginnames3[$s]['nom'] = 'nologin';
-                $loginnames3[$s]['login'] = false;
-                $loginnames3[$s]['clessh'] = null;
+                $sn = $s->getNom();
+                $loginnames3[$sn]['nom'] = 'nologin';
+                $loginnames3[$sn]['login'] = false;
+                $loginnames3[$sn]['clessh'] = null;
             }
         }
 
@@ -133,6 +135,7 @@ class ServiceUsers
             $u->setIndividu($i);
             $u->setProjet($p);
             $u->setServeur($s);
+            $p->addUser($u);
             $em->persist($u);
             $em->flush($u);
         }
