@@ -83,21 +83,6 @@ class User
     private $projet;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\CollaborateurVersion", inversedBy="user")
-     * @ORM\JoinTable(name="CollaborateurVersionUser",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_collaborateurversion", referencedColumnName="id")
-     *   }
-     * )
-     */
-    private $collaborateurversion;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="login", type="boolean", nullable=false, options={"comment":"login sur le serveur lié"}))
@@ -170,7 +155,6 @@ class User
     {
         $this->password  = null;
         $this->passexpir = null;
-        $this->collaborateurversion = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -395,43 +379,6 @@ class User
     public function getClessh()
     {
         return $this->clessh;
-    }
-
-    /**
-     * Add collaborateurversion
-     *
-     * @param \App\Entity\CollaborateurVersion $cv
-     *
-     * @return User
-     */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): self
-    {
-        if (! $this->collaborateurversion->contains($cv)) {
-            $this->collaborateurversion[] = $cv;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove collaborateurversion
-     *
-     * @param \App\Entity\CollaborateurVersion $cv
-     */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): self
-    {
-        $this->CollaborateurVersion->removeElement($cv);
-        return $this;
-    }
-
-    /**
-     * Get collaborateurversion
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCollaborateurVersion(): \Doctrine\Common\Collections\Collection
-    {
-        return $this->collaborateurversion;
     }
 
     /**

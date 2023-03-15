@@ -142,13 +142,6 @@ class CollaborateurVersion
      */
     private $collaborateur;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="collaborateurversion")
-     */
-    private $user;
-
     public function __toString()
     {
         $output = '{';
@@ -178,7 +171,6 @@ class CollaborateurVersion
         $this->delb = false;
         
         $this->responsable = false;
-        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
 
         if ($individu != null) {
             $this->statut = $individu->getStatut();
@@ -465,44 +457,4 @@ class CollaborateurVersion
     {
         return $this->collaborateur;
     }
-
-   /**
-     * Add user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return CollaborateurVersion
-     */
-    public function addUser(\App\Entity\User $user): self
-    {
-        if ( ! $this->user->contains($user))
-        {
-            $this->user[] = $user;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove user
-     *
-     * @param \App\Entity\User $user
-     */
-    public function removeUser(\App\Entity\User $user): self
-    {
-        $this->user->removeElement($user);
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUser(): \Doctrine\Common\Collections\Collection
-    {
-        return $this->user;
-    }
-
-
 }

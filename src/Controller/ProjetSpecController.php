@@ -313,7 +313,6 @@ class ProjetSpecController extends AbstractController
                 'projets_collab' => $projets_collab,
                 'projets_resp'   => $projets_resp,
                 'projets_term'   => $projets_term,
-                'serveurs'       => $sr->getServeurs(),
                 'menu'           => $menu,
                 ]
         );

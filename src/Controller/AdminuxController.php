@@ -245,61 +245,94 @@ class AdminuxController extends AbstractController
             return new Response(json_encode(['KO' => $error ]));
         }
 
-        $versions = $projet->getVersion();
-        $i=0;
-        foreach ($versions as $version)
+        $u = $su->getUser($individu, $projet, $serveur);
+        if ( $u->getLogin() == false)
         {
-            // $version->getIdVersion()."\n";
-            if ($version->getEtatVersion() == Etat::ACTIF             ||
-                $version->getEtatVersion() == Etat::ACTIF_TEST        ||
-                $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                $version->getEtatVersion() == Etat::EN_ATTENTE
-              )
-            {
-              foreach ($version->getCollaborateurVersion() as $cv)
-              {
-                  $collaborateur  =  $cv->getCollaborateur() ;
-                  if ($collaborateur != null && $collaborateur->isEqualTo($individu))
-                  {
-                      $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      foreach ($cv->getUser() as $u)
-                      {                     
-                          if ($serveur === $u->getServeur())
-                          {
-                              if ( $u->getLogin() == false)
-                              {
-                                  $msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
-                                  $sj->warningMessage("AdminUxController::setloginnameAction - $msg");
-                                  return new Response(json_encode(['KO' => $msg]));
-                              }
-                              if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
-                              {
-                                  $msg = "Commencez par appeler clearloginname";
-                                  $sj->warningMessage("AdminUxController::setloginnameAction - $msg ");
-                                  return new Response(json_encode(['KO' => $msg]));
-                              }
+            $msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
+            $sj->warningMessage("AdminUxController::setloginnameAction - $msg");
+            return new Response(json_encode(['KO' => $msg]));
+        }
+        if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
+        {
+            $msg = "Commencez par appeler clearloginname";
+            $sj->warningMessage("AdminUxController::setloginnameAction - $msg ");
+            return new Response(json_encode(['KO' => $msg]));
+        }
+
+        // Maintenant on peut positionner le nom de login
+        $u->setLoginname($loginname_p['loginname']);
+        $em->persist($u);
+        try
+        {
+            $em->flush();
+        }
+        catch (\Exception $e)
+        {
+            $msg = "Exception $e";
+            // ne marche pas car on est dans un traitement d'exception de $em
+            //$sj -> warningMessage("AdminUxController::setloginnameAction $e");
+            return new Response(json_encode(['KO - Erreur de base de données (nom de login dupliqué ?)']));
+        }
+
+        $sj -> infoMessage(__METHOD__ . "user $u modifié");
+        return new Response(json_encode('OK'));
+
+
+            //$versions = $projet->getVersion();
+        //$i=0;
+        //foreach ($versions as $version)
+        //{
+            //// $version->getIdVersion()."\n";
+            //if ($version->getEtatVersion() == Etat::ACTIF             ||
+                //$version->getEtatVersion() == Etat::ACTIF_TEST        ||
+                //$version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
+                //$version->getEtatVersion() == Etat::EN_ATTENTE
+              //)
+            //{
+              //foreach ($version->getCollaborateurVersion() as $cv)
+              //{
+                  //$collaborateur  =  $cv->getCollaborateur() ;
+                  //if ($collaborateur != null && $collaborateur->isEqualTo($individu))
+                  //{
+                      //$user = $em->getRepository(User::class)->findOneByLoginname($loginname);
+                      //foreach ($cv->getUser() as $u)
+                      //{                     
+                          //if ($serveur === $u->getServeur())
+                          //{
+                              //if ( $u->getLogin() == false)
+                              //{
+                                  //$msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
+                                  //$sj->warningMessage("AdminUxController::setloginnameAction - $msg");
+                                  //return new Response(json_encode(['KO' => $msg]));
+                              //}
+                              //if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
+                              //{
+                                  //$msg = "Commencez par appeler clearloginname";
+                                  //$sj->warningMessage("AdminUxController::setloginnameAction - $msg ");
+                                  //return new Response(json_encode(['KO' => $msg]));
+                              //}
                               
-                              $u->setLoginname($loginname_p['loginname']);
-                              $em->persist($u);
-                              $em->flush();
-                              $i += 1;
-                              break; // Sortir de la boucle sur les cv
-                          }
-                      }
-                  }
-               }
-            }
-        }
-        if ($i > 0 )
-        {
-            $sj -> infoMessage(__METHOD__ . "$i versions modifiées");
-            return new Response(json_encode(['OK' => "$i versions modifiees"]));
-        }
-        else
-        {
-            $sj->warningMessage("AdminUxController::setloginnameAction - Mauvais projet ou mauvais idIndividu !");
-            return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
-        }
+                              //$u->setLoginname($loginname_p['loginname']);
+                              //$em->persist($u);
+                              //$em->flush();
+                              //$i += 1;
+                              //break; // Sortir de la boucle sur les cv
+                          //}
+                      //}
+                  //}
+               //}
+            //}
+        //}
+        //if ($i > 0 )
+        //{
+            //$sj -> infoMessage(__METHOD__ . "$i versions modifiées");
+            //return new Response(json_encode(['OK' => "$i versions modifiees"]));
+        //}
+        //else
+        //{
+            //$sj->warningMessage("AdminUxController::setloginnameAction - Mauvais projet ou mauvais idIndividu !");
+            //return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
+        //}
     }
 
     /**
@@ -1348,8 +1381,6 @@ class AdminuxController extends AbstractController
                             $nom        = $collaborateur->getNom();
                             $idIndividu = $collaborateur->getIdIndividu();
                             $mail       = $collaborateur->getMail();
-                            //$logint = $cv->getLogint();
-                            //$loginb = $cv->getLoginb();
                             $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
                             $output[] =   [
                                     'idIndividu' => $idIndividu,
@@ -1357,8 +1388,6 @@ class AdminuxController extends AbstractController
                                     'mail' => $mail,
                                     'prenom' => $prenom,
                                     'nom' => $nom,
-                                    //'logint' => $logint,
-                                    //'loginb' => $loginb,
                                     'loginnames' => $loginnames,
                             ];
                         }

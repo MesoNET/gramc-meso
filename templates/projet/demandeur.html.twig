@@ -67,9 +67,9 @@
             {% endif %}
         </td>
 
-        <td>{% if item.projet.versionactive == null %}TERMINE{% else %}{{ item.projet.versionactive.limitdate|date('d-m-Y')}}{% endif %}</td>
+        <td>{% if item.projet.versionactive == null %} - {% else %}{{ item.projet.versionactive.limitdate|date('d-m-Y')}}{% endif %}</td>
 
-        {% if noconso==false %}
+        {% if false %}
             <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
                 {% if item.cv != null %}
                     {#{{ gramcconsomacros.affiche_conso(item.projet.idProjet, item.loginnames) }} #}
@@ -81,6 +81,16 @@
                 {% endif %}
             </td>
             <input id="conso_{{ item.projet.idProjet }}" value="{{ item.conso |number_format(1)}}" type="hidden">
+        {% endif %}
+
+        {% if item.projet.versionactive != null %}
+        {% for d in item.projet.versionactive.dac %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >{{ d.consommation }}</td>
+        {% endfor %}
+        {% else %}
+        {% for r in serviceRessources.getressources %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >-</td>
+        {% endfor %}
         {% endif %}
     </tr>
 
@@ -176,10 +186,11 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}{% for s in serveurs|sort %}<th>Id {{s}}</th>{% endfor %}{% endif %}
+            {% if noconso==false %}{% for s in serviceServeurs.getserveurs %}<th>Id {{s.nom}}</th>{% endfor %}{% endif %}
             <th>Titre</th>
             <th>Fin</th>
-            {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
+            {% if false %}<th colspan="2">Consommation</th>{% endif %}
+            {% for r in serviceRessources.getressources %}<th title="Consommation">C {{r}}</th>{% endfor %}
         </tr>
     </thead>
 
@@ -214,7 +225,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}{% for s in serveurs|sort %}<th>Id {{s}}</th>{% endfor %}{% endif %}
+            {% if noconso==false %}{% for s in serviceServeurs %}<th>Id {{s}}</th>{% endfor %}{% endif %}
             <th>Titre</th>
             <th>Fin</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
