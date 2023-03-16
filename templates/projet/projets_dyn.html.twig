@@ -77,8 +77,10 @@
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">Début</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">fin</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Fiche projet: activate to sort column ascending">Fiche projet</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr TURPAN: activate to sort column ascending" title="Heures attribuées sur TURPAN">TURPAN</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr BOREALE: activate to sort column ascending" title="Heures attribuées sur BOREALE">BOREALE</th>
+                        {% for r in serviceRessources.getRessources %}
+                            <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr {{r}}: activate to sort column ascending" title="Heures attribuées sur {{r}}">{{r}}</th>
+                        {% endfor %}
+
                     </tr>
                 </thead>
     
@@ -159,8 +161,9 @@
                             -
                             {% endif %}
                         </td>
-                        <td>{{ item.version.attrheuresuft }}</td>
-                        <td>{{ item.version.attrheurescriann }}</td>
+                        {% for r in serviceRessources.getressources %}
+                        <td>{{ item.dacs[r.nom].attribution }}</td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                </tbody>

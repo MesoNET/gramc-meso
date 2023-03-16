@@ -1157,6 +1157,7 @@ class ProjetController extends AbstractController
         //$projets = $em->getRepository(Projet::class)->findAll();
         $sj = $this->sj;
         $sp = $this->sp;
+        $sroc = $this->sroc;
 
         foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
             $etat_projet[$e] = 0;
@@ -1189,12 +1190,17 @@ class ProjetController extends AbstractController
 
             $etat_projet[$metaetat] += 1;
 
-            
+            $dacs=[];
+            foreach ($version->getDac() as $d)
+            {
+                $dacs[$d->getRessource()->getNom()] = $d;
+            }
             $data[] = [
                     'projet'       => $projet,
                     'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
                     'metaetat'     => $metaetat,
                     'version'      => $version,
+                    'dacs'         => $dacs,
                     'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
                     'count'        => $count,
                     'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
