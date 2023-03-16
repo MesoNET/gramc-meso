@@ -43,10 +43,10 @@ class ServeurType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:' ])
-            ->add('desc', TextType::class, ['required' => true, 'label' => 'Description :' ])
+            ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:', 'disabled' => $options['modifier']])
+            ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :' ])
             ->add('admname', TextType::class,
-                  ['required' => true, 'label' => 'Nom d\'utilisateur pour l\'API *:' ]);
+                  ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :']);
 
         if ($options['modifier'] == true) {
             $builder

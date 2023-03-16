@@ -25,7 +25,10 @@
 namespace App\Controller;
 
 use App\Entity\Serveur;
+use App\Entity\Projet;
+
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceUsers;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -44,7 +47,10 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class ServeurController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private ServiceJournal $sj, private EntityManagerInterface $em) {}
+    public function __construct(private AuthorizationCheckerInterface $ac,
+                                private ServiceJournal $sj,
+                                private ServiceUsers $su,
+                                private EntityManagerInterface $em) {}
 
     /**
      * @Route("/gerer",name="gerer_serveurs", methods={"GET"} )
@@ -76,6 +82,9 @@ class ServeurController extends AbstractController
      */
     public function ajouterAction(Request $request): Response
     {
+        $su = $this->su;
+        $em = $this->em;
+        
         $serveur = new serveur();
         $form = $this->createForm('App\Form\ServeurType', $serveur, ['ajouter' => true ]);
         $form->handleRequest($request);
@@ -83,8 +92,36 @@ class ServeurController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->em;
             $em->persist($serveur);
-            $em->flush($serveur);
+            $ok = true;
+            try
+            {
+                $em->flush($serveur);
+            }
+            catch (\Exception $e)
+            {
+                $ok = false;
+                $request->getSession()->getFlashbag()->add("flash erreur", "Le serveur n'a pas été créé (nom du serveur ou de l'utilisateur API ?");
+            }
 
+            if ($ok)
+            {
+                // Créer les User pour les collaborateurs et versions active ou dernière des projets en état RENOUVELABLE
+                $projets = $em->getRepository(Projet::class)->findNonTermines();
+                foreach ($projets as $p)
+                {
+                    $versions = [];
+                    if ($p->getVersionDerniere() != null) $versions[] = $p->getVersionDerniere();
+                    if ($p->getVersionActive() != null) $versions[] = $p->getVersionActive();
+                    foreach ($versions as $v)
+                    {
+                        foreach ($v->getCollaborateurVersion() as $cv)
+                        {
+                            // Création du User si pas encore fait !
+                            $su->getUser($cv->getCollaborateur(),$p,$serveur);
+                        }                        
+                    }
+                }
+            }
             return $this->redirectToRoute('gerer_serveurs');
         }
 
@@ -112,11 +149,20 @@ class ServeurController extends AbstractController
      */
     public function modifierAction(Request $request, Serveur $serveur): Response
     {
+        $em = $this->em;
         $editForm = $this->createForm('App\Form\ServeurType', $serveur, ['modifier' => true ]);
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->em->flush();
+        if ($editForm->isSubmitted() && $editForm->isValid())
+        {
+            try
+            {
+                $em->flush();
+            }
+            catch (\Exception $e)
+            {
+                $request->getSession()->getFlashbag()->add("flash erreur", "Le serveur n'a pas été modifié (nom api ?)");
+            }
 
             return $this->redirectToRoute('gerer_serveurs');
         }
@@ -147,6 +193,9 @@ class ServeurController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
 
+        $request->getSession()->getFlashbag()->add("flash erreur", "Fonctionnalité non implémentée");
+        return $this->redirectToRoute('gerer_serveurs');
+        
         try
         {
             $em->remove($serveur);

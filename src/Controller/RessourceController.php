@@ -25,7 +25,11 @@
 namespace App\Controller;
 
 use App\Entity\Ressource;
+use App\Entity\Projet;
+use App\Entity\Dac;
+
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceDacs;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -45,7 +49,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class RessourceController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private ServiceJournal $sj, private EntityManagerInterface $em) {}
+    public function __construct(private AuthorizationCheckerInterface $ac, private ServiceDacs $sd, private ServiceJournal $sj, private EntityManagerInterface $em) {}
 
     /**
      * @Route("/gerer",name="gerer_ressources", methods={"GET"} )
@@ -77,7 +81,9 @@ class RessourceController extends AbstractController
      */
     public function ajouterAction(Request $request): Response
     {
+        $sd = $this->sd;
         $em = $this->em;
+
         $ressource = new ressource();
         $form = $this->createForm('App\Form\RessourceType', $ressource, ['ajouter' => true ]);
         $form->handleRequest($request);
@@ -86,6 +92,19 @@ class RessourceController extends AbstractController
             $em = $this->em;
             $em->persist($ressource);
             $em->flush($ressource);
+
+            // Créer les User pour les versions active ou dernière des projets en état RENOUVELABLE
+            $projets = $em->getRepository(Projet::class)->findNonTermines();
+            foreach ($projets as $p)
+            {
+                $versions = [];
+                if ($p->getVersionDerniere() != null) $versions[] = $p->getVersionDerniere();
+                if ($p->getVersionActive() != null) $versions[] = $p->getVersionActive();
+                foreach ($versions as $v)
+                {
+                    $sd->getDac($v,$ressource);
+                }
+            }
 
             return $this->redirectToRoute('gerer_ressources');
         }

@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Serveur
  *
- * @ORM\Table(name="serveur", options={"collation"="utf8mb4_general_ci"})
+ * @ORM\Table(name="serveur", options={"collation"="utf8mb4_general_ci"}, uniqueConstraints={@ORM\UniqueConstraint(name="admname", columns={"admname"})})
  * @ORM\Entity(repositoryClass="App\Repository\ServeurRepository")
 
  */
@@ -71,7 +71,7 @@ class Serveur
      * @var desc
      *
      * Attention desc est un nom réservé !
-     * @ORM\Column(name="descr", type="string", length=20, options={"default":""})
+     * @ORM\Column(name="descr", type="string", length=200, nullable=true, options={"default":""})
      * 
      */
     private $desc;
@@ -79,7 +79,7 @@ class Serveur
     /**
      * @var admname
      *
-     * @ORM\Column(name="admname", type="string", length=20, options={"comment":"username symfony pour l'api"}) )
+     * @ORM\Column(name="admname", type="string", length=20, nullable=true, options={"comment":"username symfony pour l'api"}) )
      * 
      */
     private $admname;

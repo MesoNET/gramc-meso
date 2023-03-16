@@ -151,84 +151,28 @@ class InitRessources extends Command
 
             foreach ($v->getCollaborateurVersion() as $cv)
             {
-                $srvrs = [];
-                foreach ($cv->getUser() as $u)
-                {
-                   $srvrs[] = $u->getServeur();
-                   if ($u->getServeur()->getNom() === 'TURPAN')
-                   {
-                       $u->setLogin($cv->getLogint());
-                   }
-                   else
-                   {
-                       $u->setLogin($cv->getLoginb());
-                   }
-                   $u->setProjet($cv->getVersion()->getProjet());
-                   $u->setIndividu($cv->getCollaborateur());
-                   $em->persist($u);
-                   try
-                   {
-                       $em->flush();
-                       echo "OK1   - $v - " . $cv->getCollaborateur() . " - " . $u->getServeur() . "\n";
-                   }
-                   catch ( \Exception $e )
-                   {
-                       echo "OUPS1 - $v - " . $cv->getCollaborateur() . " - " . $u->getServeur() . "\n";
-                   }
-                }
-                if ( ! in_array($s_boreale,$srvrs))
-                {
-                    $ub = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_boreale);
-                    //$cv->addUser($ub);
-                    //$ub->addCollaborateurVersion($cv);
-                    $ub->setLogin($cv->getLoginb());
-                    $em->persist($ub);
-                    //$em->persist($cv);
-                    try
-                    {
-                        $em->flush();
-                        echo "OK2   - $v - " . $cv->getCollaborateur() . " - $s_boreale \n";
-
-                    }
-                    catch ( \Exception $e )
-                    {
-                        echo "OUPS2 - $v - " . $cv->getCollaborateur() . " - $s_boreale \n";
-                    }
-                }
-                if ( ! in_array($s_turpan,$srvrs))
-                {
-                    $ut = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_turpan);
-                    //$cv->addUser($ut);
-                    //$ut->addCollaborateurVersion($cv);
-                    $ut->setLogin($cv->getLogint());
-                    $em->persist($ut);
-                    //$em->persist($cv);
-                    try
-                    {
-                        $em->flush();
-                        echo "OK3   - $v - " . $cv->getCollaborateur() . " - $s_turpan \n";
-
-                    }
-                    catch ( \Exception $e )
-                    {
-                        echo "OUPS3 - $v - " . $cv->getCollaborateur() . " - $s_turpan \n";
-                    }
-                }
+                $ub = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_boreale);
+                $ub->setLogin($cv->getLoginb());
+                $ut = $su->getUser($cv->getCollaborateur(),$v->getProjet(),$s_turpan);
+                $ut->setLogin($cv->getLogint());
+                $em->flush();
             }
-            // nb de cv avec demande de compte sur turpan/boreale:
-            $tmp = $em->getRepository(CollaborateurVersion::class)->findBy( [ 'logint' => 1 ]);
-            $nb_cv_logint = count($tmp);
-
-            $tmp = $em->getRepository(CollaborateurVersion::class)->findBy( [ 'loginb' => 1 ]);
-            $nb_cv_loginb = count($tmp);
-
-            // nb de user avec demande de login turpan/boreale:
-            $tmp = $em->getRepository(User::class)->findBy( [ 'login' => 1,'serveur' => $s_turpan ] );
-            $nb_user_login_turpan = count($tmp);
-
-            $tmp = $em->getRepository(User::class)->findBy( [ 'login' => 1,'serveur' => $s_boreale ]);
-            $nb_user_login_boreale = count($tmp);
         }
+
+        // nb de cv avec demande de compte sur turpan/boreale:
+        $tmp = $em->getRepository(CollaborateurVersion::class)->findBy( [ 'logint' => 1 ]);
+        $nb_cv_logint = count($tmp);
+
+        $tmp = $em->getRepository(CollaborateurVersion::class)->findBy( [ 'loginb' => 1 ]);
+        $nb_cv_loginb = count($tmp);
+
+        // nb de user avec demande de login turpan/boreale:
+        $tmp = $em->getRepository(User::class)->findBy( [ 'login' => 1,'serveur' => $s_turpan ] );
+        $nb_user_login_turpan = count($tmp);
+
+        $tmp = $em->getRepository(User::class)->findBy( [ 'login' => 1,'serveur' => $s_boreale ]);
+        $nb_user_login_boreale = count($tmp);
+        
         echo "VERIFICATIONS\n";
         echo "nb_cv_logint          = $nb_cv_logint\n";
         echo "nb_user_login_turpan  = $nb_user_login_turpan\n";
