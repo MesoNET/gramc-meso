@@ -45,26 +45,38 @@ class ServiceRessources
 {
     public function __construct(private EntityManagerInterface $em){}
 
-    /* Renvoie la liste de tous les noms de ressources, triée en ordre alphabétique */
+    /* Renvoie la liste de tous les noms complets de ressources, triée en ordre alphabétique */
     public function getNoms(): array
     {
         $ressources = $this->getRessources();
         $noms = [];
         foreach ($ressources as $r)
         {
-            $noms[] = $r->getNom();
+            $noms[] = $this->getNomComplet($r);
         }
         return $noms;
     }
 
     /***********************************************************
-     * Renvoie la liste des ressources connues, en ordre alphabétique par rapport au nom
+     * Renvoie la liste des ressources connues, en ordre alphabétique par rapport au nom de serveur puis de ressource
      *********************************************************************/
     public function getRessources() : array
     {
         $em = $this->em;
         return $em->getRepository(Ressource::class)->findAllsorted();
     }
-    
-}
 
+    /**********************************************************************
+     * Renvoie le nom complet de la ressource, c-à-d: nom-du-serveur nom-de-la-ressource
+     ****************************************************************************************/
+    public function getNomComplet(Ressource $ressource, $sep=' ') : string
+    {
+        $serveur = $ressource->getServeur();
+        $nc = ($serveur === null) ? "null" : $serveur->getNom();
+        if ($ressource->getNom() !== null)
+        {
+            $nc = $nc . $sep . $ressource->getNom();
+        }
+        return $nc;
+    }
+}

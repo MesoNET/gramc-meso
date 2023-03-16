@@ -71,7 +71,7 @@ class Ressource
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=20)
+     * @ORM\Column(name="nom", type="string", length=8, nullable=true options={"comment":"optionnel, voir la fonction ServiceRessources::getNomComplet"})
      * 
      */
     private $nom;
@@ -209,7 +209,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setNom(string $nom): Self
+    public function setNom(?string $nom): Self
     {
         $this->nom = $nom;
         return $this;
@@ -327,6 +327,13 @@ class Ressource
 
     public function __toString(): string
     {
-        return $this->getNom();
+        if ($this->getNom() === null)
+        {
+            return '';
+        }
+        else
+        {
+            return $this->getNom();
+        }
     }
 }

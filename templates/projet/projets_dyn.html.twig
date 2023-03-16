@@ -75,7 +75,7 @@
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">Début</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">fin</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Fiche projet: activate to sort column ascending">Fiche projet</th>
-                        {% for r in serviceRessources.getRessources %}
+                        {% for r in serviceRessources.getNoms %}
                             <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr {{r}}: activate to sort column ascending" title="Heures attribuées sur {{r}}">{{r}}</th>
                         {% endfor %}
 

@@ -190,7 +190,7 @@ passwd
             <th>Titre</th>
             <th>Fin</th>
             {% if false %}<th colspan="2">Consommation</th>{% endif %}
-            {% for r in serviceRessources.getressources %}<th title="Consommation">C {{r}}</th>{% endfor %}
+            {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
         </tr>
     </thead>
 

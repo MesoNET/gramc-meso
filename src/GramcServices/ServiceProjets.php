@@ -511,7 +511,7 @@ class ServiceProjets
             $c = count($noms) - 1;
             foreach ($v->getDac() as $dac)
             {
-                $nr = $dac->getRessource()->getNom();
+                $nr = $sroc->getNomComplet($dac->getRessource());
                 $p['demande'][$nr] = $dac->getDemande();
                 $p['attribution'][$nr] = $dac->getAttribution();
                 $total[$type]['demande'][$nr] += $dac->getDemande();

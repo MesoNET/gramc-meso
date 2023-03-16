@@ -503,10 +503,10 @@
 
     {% if pdf is defined %}
         <div class="details">
-            <h3>{{d.ressource.nom}}</h3>
+            <h3>{{serviceRessources.getnomcomplet(d.ressource)}}</h3>
     {% else %}
         <details>
-            <summary>{{icones.plus_summary}}{{icones.trait_summary}}{{d.ressource.nom}}</summary>
+            <summary>{{icones.plus_summary}}{{icones.trait_summary}}{{serviceRessources.getnomcomplet(d.ressource)}}</summary>
     {% endif %}
         <div class="chapitre">
             <table class="table_vertical">

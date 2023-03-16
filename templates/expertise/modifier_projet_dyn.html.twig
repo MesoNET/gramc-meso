@@ -142,7 +142,7 @@
         {% for form in ressource_form.children.ressource.children %}
             <div class="input">
                 <div>
-                    <h4>Attribution de la ressource {{form.vars.data.ressource.nom}}</h4>
+                    <h4>Attribution de la ressource {{serviceRessources.getnomcomplet(form.vars.data.ressource)}}</h4>
                     <small>Pour les 12 prochains mois</small>
                 </div>
                 {{ form_widget(form.attribution) }}&nbsp;<strong>{{ form.vars.data.ressource.unite }}</strong>

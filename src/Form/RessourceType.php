@@ -63,7 +63,7 @@ class RessourceType extends AbstractType
                     'attr' => ['style' => 'width:20em'],
                     ]
                 )
-            ->add('nom', TextType::class, ['required' => true, 'label' => 'nom de la ressource *:' ])
+            ->add('nom', TextType::class, ['required' => false, 'label' => 'nom de la ressource (optionnel, 8 char max):', 'attr' => [ 'maxlength' => 8] ])
             ->add('desc', TextAreaType::class, ['required' => true, 'label' => 'Description (balises html ok):', 'attr' => ['rows' => '5', 'cols' => '50' ] ])
             ->add('docUrl', TextType::class, ['required' => false, 'label' => 'URL vers la doc :', 'attr' => ['size' => '40' ] ])
             ->add('unite', TextType::class, ['required' => false, 'label' => 'Unité :' ])
