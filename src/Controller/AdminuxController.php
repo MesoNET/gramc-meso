@@ -34,6 +34,7 @@ use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
 use App\Entity\Serveur;
+use App\Entity\Ressource;
 use App\Entity\Compta;
 use App\Entity\Clessh;
 use App\Entity\Param;
@@ -98,6 +99,10 @@ class AdminuxController extends AbstractController
     
     public function UpdateComptaBatchAction(Request $request): Response
     {
+
+        /****** NON IMPLEMENTE ACTUELLEMENT ********/
+        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
+
         $em = $this->em;
         $sj = $this->sj;
         
@@ -168,6 +173,99 @@ class AdminuxController extends AbstractController
         $sj -> infoMessage(__METHOD__ . "Compta mise à jour");
         return $this->render('consommation/conso_update_batch.html.twig');
     }
+
+    /**
+     * Met à jour la consommation pour un projet donné
+     *
+     * @Route("/projet/setconso", name="set_conso", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     */
+
+    // exemple: curl --netrc -X POST -d '{ "projet": "M1234", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
+    public function setconsoAction(Request $request, LoggerInterface $lg): Response
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        $su = $this->su;
+
+        if ($this->getParameter('noconso')==true) {
+            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
+        }
+
+        $content  = json_decode($request->getContent(), true);
+        if ($content == null) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de données");
+            return new Response(json_encode(['KO' => 'Pas de données']));
+        }
+        if (empty($content['projet'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de projet");
+            return new Response(json_encode(['KO' => 'Pas de projet']));
+        } else {
+            $idProjet = $content['projet'];
+        }
+        if (empty($content['ressource'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
+            return new Response(json_encode(['KO' => 'Pas de ressource']));
+        } else {
+            $nom_ressource = $content['ressource'];
+        }
+        if (empty($content['conso'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
+            return new Response(json_encode(['KO' => 'Pas de conso']));
+        } else {
+            $conso = $content['conso'];
+        }
+
+        $error = [];
+        $projet      = $em->getRepository(Projet::class)->find($idProjet);
+        if ($projet == null) {
+            $error[]    =   'No Projet ' . $idProjet;
+        }
+
+        $version = $projet->getVersionActive();
+        if ($version == null)
+        {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de version active pour $projet");
+            return new Response(json_encode(['KO' => 'Pas de version active']));
+        }
+
+        $ressources = $em->getRepository(Ressource::class)->findBy(['nom' =>$nom_ressource]);
+        $serveur = null;
+        if (count($ressources) == 0) {
+            $error[]    =   'No ressource ' . $nom_ressource;
+        }
+        else
+        {
+            $ressource = $ressources[0];
+            $serveur = $ressource->getServeur();
+        }
+
+        // On vérifie que le user connecté est bien autorisé à agir sur le serveur de cette ressource
+        if ($serveur != null && ! $this->checkUser($serveur))
+        {
+           $error[] = 'ACCES INTERDIT A ' . $ressource; 
+        }
+
+        if ($error != []) {
+            $sj->errorMessage("AdminUxController::setloginnameAction - " . print_r($error, true));
+            return new Response(json_encode(['KO' => $error ]));
+        }
+
+        // C'est OK - On positionne la conso
+        $dacs = $version->getdac();
+        foreach ($dacs as $d)
+        {
+            if ($d->getRessource() === $ressource)
+            {
+                $d->setConsommation(intval($conso));
+                $em->flush();
+            }
+        }
+
+        $sj -> infoMessage(__METHOD__ . "conso ajustée pour $projet");
+        return new Response(json_encode('OK'));
+    }   
 
     ///////////////////////////////////////////////////////////////////////////////
 
