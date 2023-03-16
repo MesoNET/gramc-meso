@@ -48,7 +48,7 @@ class ServiceRessources
     /* Renvoie la liste de tous les noms de ressources, triée en ordre alphabétique */
     public function getNoms(): array
     {
-        $serveurs = $this->getRessources();
+        $ressources = $this->getRessources();
         $noms = [];
         foreach ($ressources as $r)
         {

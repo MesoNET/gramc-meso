@@ -63,6 +63,7 @@ class ServiceProjets
         private ServiceVersions $sv,
         private ServiceSessions $ss,
         private ServiceJournal $sj,
+        private ServiceRessources $sroc,
         private LoggerInterface $log,
         private AuthorizationCheckerInterface $sac,
         private TokenStorageInterface $tok,
@@ -443,6 +444,7 @@ class ServiceProjets
      ********************/
     public function projetsDynParAnnee($annee=0, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
     {
+        $sroc = $this->sroc;
         $em = $this->em;
         
         // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
@@ -454,18 +456,22 @@ class ServiceProjets
 
         $total = [];
         $total[$type] = [];
-
         $total[$type]['prj'] = 0;  // Nombre de projets
+        $total[$type]['demande'] = []; // Heures demandées par ressource
+        $total[$type]['attribution'] = []; // Heures attribuées par ressource
 
-        $total[$type]['demHeuresUft']  = 0;  // Heures demandées par Uft
-        $total[$type]['attrHeuresUft'] = 0;  // Heures attribuées à Uft
-        $total[$type]['demHeuresCriann']  = 0;  // Heures demandées par Criann
-        $total[$type]['attrHeuresCriann'] = 0;  // Heures attribuées à Criann
+        $noms = $sroc->getNoms();
+        foreach ($noms as $nr)
+        {
+            $total[$type]['demande'][$nr] = 0;
+            $total[$type]['attribution'][$nr] = 0;
+        }
 
-        $repart[$type] = [];
-        $repart[$type]['tt'] = 0; // Boreale + Turpan
-        $repart[$type]['tf'] = 0; // Boreale
-        $repart[$type]['ft'] = 0; // Turpan
+        $repartition[$type] = []; // Répartition des attributions entre les ressources
+        for ($i=0; $i<2**count($noms);$i++)
+        {
+            $repartition[$type][$i] = 0;
+        }
         
         // Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
 
@@ -478,8 +484,11 @@ class ServiceProjets
         $projets= [];
 
         // Boucle sur les versions
-        foreach ($versions as $v) {
+        foreach ($versions as $v)
+        {
             $p_id = $v->getProjet()->getIdProjet();
+
+            // Projet déjà créé
             if (isset($projets[$p_id]))
             {
                 $p = $projets[$p_id];
@@ -488,61 +497,49 @@ class ServiceProjets
             {
                 $p = [];
                 $total[$type]['prj'] += 1;
-                $p['demHeuresUft'] = 0;
-                $p['attrHeuresUft'] = 0;
-                $p['demHeuresCriann'] = 0;
-                $p['attrHeuresCriann'] = 0;
+                foreach($noms as $nr)
+                {
+                    $p['demande'][$nr] = 0;
+                    $p['attribution'][$nr] = 0;
+                }
                 $p['p'] = $v->getProjet();
                 $p['v'] = $v;
                 $p['metaetat'] = $this->getMetaEtat($p['p']);
             }
 
-            // En cas de changement de responsable, donc de labo au cours de l'année, on ne considère QUE
-            // la version la plus récente
-            $p['labo']     = $v->getLabo();
-            $p['resp']     = $v->getResponsable();
-
-            $p['demHeuresUft'] += $v->getDemHeuresUft();
-            $p['attrHeuresUft'] += $v->getAttrHeuresUft();
-            $p['demHeuresCriann'] += $v->getDemHeuresCriann();
-            $p['attrHeuresCriann'] += $v->getAttrHeuresCriann();
-
-            $total[$type]['demHeuresUft'] += $p['demHeuresUft'];
-            $total[$type]['demHeuresCriann'] += $p['demHeuresCriann'];
-            $total[$type]['attrHeuresUft'] += $p['attrHeuresUft'];
-            $total[$type]['attrHeuresCriann'] += $p['attrHeuresCriann'];
-
-            if ($p['attrHeuresUft']*$p['attrHeuresCriann'])
+            $repkey = 0;
+            $c = count($noms) - 1;
+            foreach ($v->getDac() as $dac)
             {
-                $repart[$type]['tt'] += 1;
+                $nr = $dac->getRessource()->getNom();
+                $p['demande'][$nr] = $dac->getDemande();
+                $p['attribution'][$nr] = $dac->getAttribution();
+                $total[$type]['demande'][$nr] += $dac->getDemande();
+                $total[$type]['attribution'][$nr] += $dac->getAttribution();
             }
-            elseif ($p['attrHeuresUft'])
-            {
-                $repart[$type]['ft'] += 1;
-            }
-            else
-            {
-                $repart[$type]['tf'] += 1;
-            }
-
-            // La Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
-
-            // $this->ppa_conso($p, $annee);
-            
-            //$total['consoHeuresP'] += $p['c'];
-            //$total[$type]['consoHeuresCPU'] += $p['c'] - $p['g'];
-            //$total[$type]['consoHeuresGPU'] += $p['g'];
-            //$total[$type]['sondVolDonnPerm']+= intval($v->getSondVolDonnPerm());
-            //$total[$type]['consoVolDonnPerm']+= $p['stk_c'];
-            //$total[$type]['quotaVolDonnPerm']+= $p['stk_q'];
-            
            $projets[$p_id] = $p;
         }
 
-        $rt = &$repart[$type];
-        arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord'
-        while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
-        return [$projets,$total, $repart];
+        // Calcul de la répartition
+        foreach ($projets as $p)
+        {
+            $c = count($noms) - 1;
+            $repkey = 0;
+            foreach($noms as $nr)
+            {
+                if ( $p['attribution'][$nr] != 0)
+                {
+                    $repkey += 2 ** $c;
+                }
+                $c -= 1;
+            }
+            $repartition[$type][$repkey] += 1;
+        }
+            
+        //$rt = &$repart[$type];
+        //arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord
+        //while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
+        return [$projets,$total, $repartition];
     }
 
     /*********************************
