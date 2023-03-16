@@ -431,23 +431,6 @@ class VersionSpecController extends AbstractController
     {
     }
 
-    // AJETER
-    /* Les champs de la partie VI */
-    private function modifierType1PartieVI(Version $version, &$form): void
-    {
-        $em = $this->em;
-        $form
-            ->add('demHeuresUft', IntegerType::class, [ 'required'       => false ]);
-    }
-
-    /* Les champs de la partie VII */
-    private function modifierType1PartieVII(Version $version, &$form): void
-    {
-        $em = $this->em;
-        $form
-            ->add('demHeuresCriann', IntegerType::class, [ 'required'       => false ]);
-    }
-
     /*
      * Appelée par modifierAction pour les projets de type 3 (PROJET_FIL => PROJET_TEST)
      *
@@ -712,10 +695,10 @@ class VersionSpecController extends AbstractController
             $new_version->setPrjGenciDari('');
             $new_version->setPrjGenciHeures(0);
             $new_version->setPrjGenciMachines('');
-            $new_version->setDemHeuresUft(0);
-            $new_version->setDemHeuresCriann(0);
-            $new_version->setAttrHeuresUft(0);
-            $new_version->setAttrHeuresCriann(0);
+            //$new_version->setDemHeuresUft(0);
+            //$new_version->setDemHeuresCriann(0);
+            //$new_version->setAttrHeuresUft(0);
+            //$new_version->setAttrHeuresCriann(0);
             $new_version->setStartDate($grdt);
 
             // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire

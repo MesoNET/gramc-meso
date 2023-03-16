@@ -592,9 +592,9 @@ class AdminuxController extends AbstractController
         $sp    = $this->sp;
         $em    = $this->em;
 
-        $attr  = $v->getAttrHeuresTotal();
-        $attrUft = $v->getAttrHeuresUft();
-        $attrCriann = $v->getAttrHeuresCriann();
+        //$attr  = $v->getAttrHeuresTotal();
+        //$attrUft = $v->getAttrHeuresUft();
+        //$attrCriann = $v->getAttrHeuresCriann();
 
         $session = $v->getSession();
         $id_session = '';
@@ -913,8 +913,8 @@ class AdminuxController extends AbstractController
             //}
 
             // A JETER
-            $attrUft = $v->getAttrHeuresUft();
-            $attrCriann = $v->getAttrHeuresCriann();
+            //$attrUft = $v->getAttrHeuresUft();
+            //$attrCriann = $v->getAttrHeuresCriann();
             // FIN A JETER
             
             // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions

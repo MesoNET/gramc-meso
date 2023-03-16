@@ -782,26 +782,6 @@ class ExpertiseController extends AbstractController
         $ressource_form = $sexp->getRessourceForm($version);
         $ressource_form->handleRequest($request);
 
-/*        
-        // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREALE)
-        // Par défaut on attribue les heures demandées
-        if ($expertise->getNbHeuresAttUft() == 0)
-        {
-            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresUft(), ]);
-        }
-        else
-        {
-            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, ]);
-        }
-        if ($expertise->getNbHeuresAttCriann() == 0)
-        {
-            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresCriann(), ]);
-        }
-        else
-        {
-            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, ]);
-        }
-*/
         // En session B mais SEULEMENT POUR LES PROJETS DE SESSION, on propose une attribution spéciale pour heures d'été
         if ( $session_type && $projet_type == Projet::PROJET_SESS)
         {
@@ -1045,8 +1025,8 @@ class ExpertiseController extends AbstractController
             $version = $expertise->getVersion();
             if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT'))
             {
-                $version->setAttrHeuresUft($expertise->getNbHeuresAttUft());
-                $version->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
+                //$version->setAttrHeuresUft($expertise->getNbHeuresAttUft());
+                //$version->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
                 $version->setAttrAccept($expertise->getValidation());
 
                 // On fixe la date de début à la date de validation
