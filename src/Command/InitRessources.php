@@ -111,7 +111,6 @@ class InitRessources extends Command
         // Les ressources
         $r_boreale = new Ressource();
         $r_boreale->setServeur($s_boreale);
-        $r_boreale->setNom('BOREALE');
         $r_boreale->setDesc("L’intérêt de la machine Boreale réside dans l’utilisation de ses cartes vectorielles NEC SX-Aurora TSUBASA (Vector Engine). Boréale dispose de 9 noeuds de calcul biprocesseurs x86 dotés chacun de 8 Vector Engines. Plus d’informations sur la documentation technique du calculateur: https://services.criann.fr/services/hpc/mesonet-project/.\nLe nombre d’heures que vous demandez correspond au nombre d’heures d’utilisation des Vector Engines.\nExemple: 1 heure sur 4 VE comptera pour 4 heures.");
         $r_boreale->setDocUrl("https://services.criann.fr/services/hpc/mesonet-project/");
         $r_boreale->setUnite('h');
@@ -120,7 +119,6 @@ class InitRessources extends Command
 
         $r_turpan = new Ressource();
         $r_turpan->setServeur($s_turpan);
-        $r_turpan->setNom('TURPAN');
         $r_turpan->setDesc("Cette machine comprend 15 Nœuds de calcul monoprocesseurs ARM Ampere de 80 coeurs et deux GPUs Nvidia Ampere (soit 1200 coeurs et 30 GPUs)\n\nEgalement disponible un noeud de visualisation Intel x86\n\nLe stockage est constitué de 10 SSD de 3.8Tb et 60 disques durs de 8Tb");
         $r_turpan->setDocUrl("");
         $r_turpan->setUnite('h');

@@ -28,8 +28,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",columns={"serveur","loginname"}),
- *                                            @ORM\UniqueConstraint(name="i_p_s", columns={"individu", "projet", "serveur"})})
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",columns={"id_serveur","loginname"}),
+ *                                            @ORM\UniqueConstraint(name="i_p_s", columns={"id_individu", "id_projet", "id_serveur"})})
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
@@ -57,7 +57,7 @@ class User
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Serveur", inversedBy="user" )
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="serveur", referencedColumnName="nom")
+     *   @ORM\JoinColumn(name="id_serveur", referencedColumnName="nom")
      * })
      */
     private $serveur;
@@ -67,7 +67,7 @@ class User
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="user")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu")
+     *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
      * })
      */
     private $individu;
@@ -77,7 +77,7 @@ class User
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="user")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="projet", referencedColumnName="id_projet")
+     *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet")
      * })
      */
     private $projet;

@@ -71,7 +71,7 @@ class Ressource
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=8, nullable=true options={"comment":"optionnel, voir la fonction ServiceRessources::getNomComplet"})
+     * @ORM\Column(name="nom", type="string", length=8, nullable=true, options={"comment":"optionnel, voir la fonction ServiceRessources::getNomComplet"})
      * 
      */
     private $nom;
