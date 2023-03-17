@@ -43,6 +43,7 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
+use App\GramcServices\ServiceRessources;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
@@ -79,6 +80,7 @@ class AdminuxController extends AbstractController
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceUsers $su,
+        private ServiceRessources $sroc,
         private Cron $cr,
         private TokenStorageInterface $tok,
         private EntityManagerInterface $em
@@ -182,11 +184,12 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // exemple: curl --netrc -X POST -d '{ "projet": "M1234", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
+    // exemple: curl --netrc -X POST -d '{ "projet": "M1234", serveur": "TURPAN", conso": "10345" }'https://.../adminux/projet/setconso
     public function setconsoAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
         $sj = $this->sj;
+        $sroc = $this->sroc;
         $su = $this->su;
 
         if ($this->getParameter('noconso')==true) {
@@ -204,11 +207,18 @@ class AdminuxController extends AbstractController
         } else {
             $idProjet = $content['projet'];
         }
-        if (empty($content['ressource'])) {
-            $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
-            return new Response(json_encode(['KO' => 'Pas de ressource']));
+        if (empty($content['serveur'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de serveur");
+            return new Response(json_encode(['KO' => 'Pas de serveur']));
         } else {
-            $nom_ressource = $content['ressource'];
+            $nomServeur = $content['serveur'];
+        }
+        if (empty($content['ressource'])) {
+            $nomRessource = null;
+            $nomComplet = $nomServeur;
+        } else {
+            $nomRessource = $content['ressource'];
+            $nomComplet = $nomServeur . ' ' . $nomRessource;
         }
         if (empty($content['conso'])) {
             $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
@@ -218,37 +228,51 @@ class AdminuxController extends AbstractController
         }
 
         $error = [];
-        $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
-            $error[]    =   'No Projet ' . $idProjet;
-        }
-
-        $version = $projet->getVersionActive();
-        if ($version == null)
+        $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $nomServeur]);
+        if ($serveur == null)
         {
-            $sj->errorMessage("AdminUxController::setconsoAction - Pas de version active pour $projet");
-            return new Response(json_encode(['KO' => 'Pas de version active']));
+           $error[] = 'No serveur ' . $nomServeur;
         }
 
-        $ressources = $em->getRepository(Ressource::class)->findBy(['nom' =>$nom_ressource]);
-        $serveur = null;
-        if (count($ressources) == 0) {
-            $error[]    =   'No ressource ' . $nom_ressource;
-        }
-        else
+        // Pas de requêtes actuellement pour trouver une ressource avec son nom complet
+        $ressources = $sroc->getRessources();
+        $ressource = null;
+        foreach ($ressources as $r)
         {
-            $ressource = $ressources[0];
-            $serveur = $ressource->getServeur();
+            if ($sroc->getnomComplet($r) === $nomComplet)
+            {
+                $ressource = $r;
+                break;
+            }
         }
 
+        if ($ressource === null)
+        {
+            $error[] = 'No ressource ' . $nomComplet;
+        }
+        
         // On vérifie que le user connecté est bien autorisé à agir sur le serveur de cette ressource
         if ($serveur != null && ! $this->checkUser($serveur))
         {
            $error[] = 'ACCES INTERDIT A ' . $ressource; 
         }
 
+        $projet = $em->getRepository(Projet::class)->find($idProjet);
+        if ($projet === null) {
+            $error[]    =   'No Projet ' . $idProjet;
+        }
+        else
+        {
+            $version = $projet->getVersionActive();
+            if ($version == null)
+            {
+                $sj->errorMessage("AdminUxController::setconsoAction - Pas de version active pour $projet");
+                return new Response(json_encode(['KO' => 'Pas de version active']));
+            }
+        }
+
         if ($error != []) {
-            $sj->errorMessage("AdminUxController::setloginnameAction - " . print_r($error, true));
+            $sj->errorMessage("AdminUxController::setConsoAction - " . print_r($error, true));
             return new Response(json_encode(['KO' => $error ]));
         }
 
@@ -687,8 +711,9 @@ class AdminuxController extends AbstractController
 
     private function __getVersionInfo($v, bool $long): array
     {
-        $sp    = $this->sp;
-        $em    = $this->em;
+        $sp = $this->sp;
+        $sroc = $this->sroc;
+        $em = $this->em;
 
         //$attr  = $v->getAttrHeuresTotal();
         //$attrUft = $v->getAttrHeuresUft();
@@ -759,7 +784,7 @@ class AdminuxController extends AbstractController
             $d['attribution'] = $dac->getAttribution();
             $d['demande'] = $dac->getDemande();
             $d['consommation'] = $dac->getConsommation();
-            $ressources[$dac->getRessource()->getNom()] = $d;
+            $ressources[$sroc->getNomComplet($dac->getRessource())] = $d;
         }
         $r['ressources'] = $ressources;
 
