@@ -6,7 +6,6 @@ package Classes <<Frame>> {
 
     together {
         class Expertise
-        class Expa
         class Ressource
         class Dac
         class Version
@@ -85,17 +84,9 @@ package Classes <<Frame>> {
         - string commentaireExterne
         - string commentaireInterne
         
-        - int nbHeuresAttUft
-        - int nbHeuresAttCriann
-        - int nbHeuresAttRomeo
-        
         - bool validation
         - bool definitif
         + getValidation()
-    }
-
-    class Expa <<Attributions>> {
-        - int attribution
     }
 
     class Clessh <<Trousseau de clés>> {
@@ -161,8 +152,7 @@ package Classes <<Frame>> {
     
     Expertise "1" -- "1" Individu
     Expertise "1" -- "1" Version
-    Expertise "1" o-- "r" Expa
-    Ressource "1" -- "0..n" Expa
+    Expertise "1" o-- "r" Dac
     
     User "0..n" --o "1" Clessh
     User "0..n" -- "1" Serveur
