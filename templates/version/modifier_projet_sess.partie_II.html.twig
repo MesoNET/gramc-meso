@@ -1,7 +1,9 @@
 {% import "default/macros.html.twig" as gramcmacros %}
 {% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
 
-<div id="tab2" class="onglet"><br><br>
+<div id="tab{{numtab}}" class="onglet">
+    <br>
+    <br>
     <h2>Description scientifique du projet de recherche</h2>
 
      {% if fichier_attache == true %}

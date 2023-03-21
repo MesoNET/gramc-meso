@@ -63,7 +63,7 @@
     {% if 'genci' in todo %}<a href="#form_genci" class="gerer_onglets">Heures sur les centres nationaux</a><br>{% endif %}
     {% if 'ressources' in todo %}
         Demander des ressources ({% for form in ressource_form.children.ressource.children %}
-        <a href="#{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}">
+        <a href="#{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}" class="gerer_onglets" >
             {{serviceRessources.getnomcomplet(form.vars.data.ressource)}}
         </a>
         {%endfor %})
@@ -83,15 +83,16 @@
 <div id="onglets" >
 
 <nav id="menu_formulaire">
+  {% set numtab=1 %}
   <ul id="ul_formulaire" >
     <li >
-        <a href="#tab1">Présentation</a>
+        <a href="#tab{{numtab}}">Présentation</a>{% set numtab = numtab + 1 %}
     </li>
     <li >
-        <a href="#tab2">La science</a>
+        <a href="#tab{{numtab}}">La science</a>{% set numtab = numtab + 1 %}
     </li>
     <li>
-        <a href="#tab3">La technique</a>
+        <a href="#tab{{numtab}}">La technique</a>{% set numtab = numtab + 1 %}
     </li>
     {# TODO - VIRER DEFINITIVEMENT tab4 - Ici ça merdouille #}
     {% if nodata == false %}
@@ -101,26 +102,31 @@
     {% endif %}
     
     <li>
-        <a href="#tab4">Formation</a>
+        <a href="#tab{{numtab}}">Formation</a>{% set numtab = numtab+1 %}
     </li>
 
     {% for ress_form in ressource_form.children.ressource.children %}
         <li>
-            <a href="#tab_{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource,'-')}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>
+            <a href="#tab{{numtab}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>{% set numtab = numtab+1 %}
         </li>
     {% endfor %}
   </ul>
 </nav>
 
+{% set numtab=1 %}
 {% include('version/modifier_projet_sess.partie_I.html.twig') %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_II.html.twig') %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_III.html.twig') %}
 {% if nodata == false %}
 {% include('version/modifier_projet_sess.partie_IV.html.twig') %}
 {% endif %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_V.html.twig') %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_R.html.twig') %}
-
+{# ATTENTION - numtab n'est plus utilisable maintenant car partie_R l'a modifié ! #}
 
 {# ################################################################################## #}
 
