@@ -40,6 +40,7 @@ use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceRessources;
+use App\GramcServices\ServiceDacs;
 
 use App\GramcServices\ServiceForms;
 use App\GramcServices\GramcDate;
@@ -103,6 +104,7 @@ class VersionSpecController extends AbstractController
         private ServiceSessions $ss,
         private ServiceVersions $sv,
         private ServiceRessources $sroc,
+        private ServiceDacs $sdac,
         private ServiceForms $sf,
         private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
@@ -654,6 +656,7 @@ class VersionSpecController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
+        $sdac = $this->sdac;
         $sroc = $this->sroc;
         $dyn_duree = $this->dyn_duree;
         $dyn_duree_post = $this->dyn_duree_post;
@@ -736,12 +739,8 @@ class VersionSpecController extends AbstractController
         $ressources = $sroc->getRessources();
         foreach ($ressources as $r)
         {
-            $dac = new Dac();
-            $dac->setVersion($version);
-            $dac->setRessource($r);
-            $em->persist($dac);
+            $sdac->getDac($new_version,$r);
         }
-        $em->flush();
 
         // images: On reprend les images "img_expose" de la version précédente
         //         On ne REPREND PAS les images "img_justif_renou" !!!
