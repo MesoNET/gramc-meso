@@ -56,14 +56,14 @@ class Serveur
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="id_serveur", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="serveur", cascade={"persist"})
      */
     private $ressource;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="id_serveur", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="serveur", cascade={"persist"})
      */
     private $user;
 
