@@ -62,7 +62,20 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         self::INGENIEUR   => 'Ingénieur'
         ];
 
-    /////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @var \DateTime
@@ -140,7 +153,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Projet
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Statut")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Statut",inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_statut", referencedColumnName="id_statut")
      * })
@@ -166,7 +179,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Laboratoire
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",cascade={"persist"},inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_labo", referencedColumnName="id_labo")
      * })
@@ -176,7 +189,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \App\Entity\Etablissement
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement", inversedBy="individu")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_etab", referencedColumnName="id_etab")
      * })
@@ -220,6 +233,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="collaborateur")
      */
     private $collaborateurVersion;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="individu", cascade={"persist"})
+     */
+    private $user;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -336,21 +356,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set creationStamp
@@ -890,6 +895,45 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getCollaborateurVersion()
     {
         return $this->collaborateurVersion;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Individu
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Individu
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**

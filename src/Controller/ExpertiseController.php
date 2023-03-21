@@ -56,6 +56,7 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceExpertises;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceExperts\ServiceExperts;
@@ -99,6 +100,7 @@ class ExpertiseController extends AbstractController
         private ServiceMenus $sm,
         private GramcDate $grdt,
         private ServiceVersions $sv,
+        private ServiceExpertises $sexp,
         private ServiceExperts $se,
         private ProjetWorkflow $pw,
         private Projet4Workflow $p4w,
@@ -608,6 +610,7 @@ class ExpertiseController extends AbstractController
         $ac = $this->ac;
         $grdt = $this->grdt;
         $sval = $this->vl;
+        $sexp = $this->sexp;
         $token = $this->token;
         $em = $this->em;
 
@@ -776,24 +779,8 @@ class ExpertiseController extends AbstractController
                      ->add('validation', HiddenType::class, [ 'data' => 1 ]);
         }            
 
-        // PROVISOIRE - UFT ET CRIANN (SOIT TURPAN ET BOREALE)
-        // Par défaut on attribue les heures demandées
-        if ($expertise->getNbHeuresAttUft() == 0)
-        {
-            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresUft(), ]);
-        }
-        else
-        {
-            $editForm->add('nbHeuresAttUft', IntegerType::class, ['required'  =>  false, ]);
-        }
-        if ($expertise->getNbHeuresAttCriann() == 0)
-        {
-            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, 'data' => $version->getDemHeuresCriann(), ]);
-        }
-        else
-        {
-            $editForm->add('nbHeuresAttCriann', IntegerType::class, ['required'  =>  false, ]);
-        }
+        $ressource_form = $sexp->getRessourceForm($version);
+        $ressource_form->handleRequest($request);
 
         // En session B mais SEULEMENT POUR LES PROJETS DE SESSION, on propose une attribution spéciale pour heures d'été
         if ( $session_type && $projet_type == Projet::PROJET_SESS)
@@ -954,6 +941,7 @@ class ExpertiseController extends AbstractController
                 'msg_explain'       => $msg_explain,
                 'version'           => $expertise->getVersion(),
                 'edit_form'         => $editForm->createView(),
+                'ressource_form'    => $ressource_form->createView(),
                 'anneePrec'         => $anneePrec,
                 'anneeCour'         => $anneeCour,
                 'session'           => $session,
@@ -1037,8 +1025,8 @@ class ExpertiseController extends AbstractController
             $version = $expertise->getVersion();
             if ($max_expertises_nb==1 || $ac->isGranted('ROLE_PRESIDENT'))
             {
-                $version->setAttrHeuresUft($expertise->getNbHeuresAttUft());
-                $version->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
+                //$version->setAttrHeuresUft($expertise->getNbHeuresAttUft());
+                //$version->setAttrHeuresCriann($expertise->getNbHeuresAttCriann());
                 $version->setAttrAccept($expertise->getValidation());
 
                 // On fixe la date de début à la date de validation

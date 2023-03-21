@@ -50,22 +50,22 @@
 
                 <tbody class="collection-tbody">
                 {% set rowNum = 0 %}
-                {% for rows in form %}
-                    {% if rows.vars.data.responsable is defined and rows.vars.data.responsable %} {# accès à la donnée via PHP #}
+                {% for row in form %}
+                    {% if row.vars.data.responsable is defined and row.vars.data.responsable %}
                         {% set resp = 'resp' %}{% else %}{% set resp = '' %}
                     {% endif %}
-                    {% if rows.vars.data.deleted is defined and rows.vars.data.deleted %} {# accès à la donnée via PHP #}
+                    {% if row.vars.data.deleted is defined and row.vars.data.deleted %}
                         {% set suppr = 'suppr' %}{% else %}{% set suppr = '' %}
                     {% endif %}
                    <tr>
                         {% set fieldNum = 1 %}
-                        {% for row in rows %}
-                            {% if "hidden"  not in row.vars.block_prefixes.1 %} {# important pour tester le type du champs #}
+                        {% for col in row %}
+                            {% if "hidden"  not in col.vars.block_prefixes.1 %} {# important pour tester le type du champs #}
                             <td class="collection-tbody-old  {{resp}} {{suppr}}">
                             {% else %}
                             <td style="display:NONE">
                             {% endif %}
-                                {{ form_widget(row) }}
+                                {{ form_widget(col) }}
                             </td>
                         {% endfor %}
                     </tr>

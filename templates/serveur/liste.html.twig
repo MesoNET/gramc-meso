@@ -1,0 +1,41 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block body %}
+<section style="stroke:black">
+    <h1>Serveurs enregistrés dans gramc</h1>
+
+    {{ gramcmacros.menu(menu) }}
+    
+    <table id="serveurs" >
+    <thead>
+        <tr>
+            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Nom</th><th>Description</th><th>Nom API</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in serveurs %}
+        <tr>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td>
+                <a class="suppression" href="{{ path('supprimer_serveur',{'id' : s.nom }) }}" title="Supprimer">
+                {{ icones.supprimer }}
+                </a>
+            </td>
+            <td>
+                <a class="modification" href="{{ path('modifier_serveur',{'id' : s.nom }) }}" title="Modifier le serveur">
+                {{ icones.modifier }}
+                </a>
+            </td>
+            {% endif %}
+            <td>{{ s.nom }}
+            <td> {{ s.desc }}</td>
+            <td>{{ s.admname }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</section>
+
+{% endblock body  %}

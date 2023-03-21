@@ -1,0 +1,46 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block body %}
+<section style="stroke:black">
+    <h1>Ressources enregistrées dans gramc</h1>
+
+    {{ gramcmacros.menu(menu) }}
+    
+    <table id="resources" >
+    <thead>
+        <tr>
+            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}
+            <th>Serveur</th><th>Nom</th><th>Description</th><th>Documentation</th><th>Valeur max</th><th>Unité</th><th>CO<sub>2</sub><br><small>g/unité/h</small></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in ressources %}
+        <tr>
+            {% if is_granted('ROLE_ADMIN') %}
+            <td>
+                <a class="suppression" href="{{ path('supprimer_ressource',{'id' : r.id }) }}" title="Supprimer">
+                {{ icones.supprimer }}
+                </a>
+            </td>
+            <td>
+                <a class="modification" href="{{ path('modifier_ressource',{'id' : r.id }) }}" title="Modifier la ressource">
+                {{ icones.modifier }}
+                </a>
+            </td>
+            {% endif %}
+            <td>{{ r.serveur }}</td>
+            <td>{{ r.nom }}
+            <td> {{ gramcmacros.tronquer_chaine_2(r.desc) }}</td>
+            <td> {{ gramcmacros.tronquer_chaine_2(r.docurl,15) }}</td>
+            <td> {{ r.maxDem }}</td>
+            <td> {{ r.unite }}</td>
+            <td> {{ r.co2}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</section>
+
+{% endblock body  %}

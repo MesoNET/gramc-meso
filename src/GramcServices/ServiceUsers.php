@@ -25,6 +25,12 @@ namespace App\GramcServices;
 
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
+use App\Entity\Serveur;
+use App\Entity\Projet;
+use App\Entity\Individu;
+
+use App\GramcServices\ServiceServeurs;
+
 use App\Utils\Functions;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,7 +41,7 @@ use Doctrine\ORM\EntityManagerInterface;
  *************************************************************/
 class ServiceUsers
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private ServiceServeurs $sr, private EntityManagerInterface $em)
     {}
 
     /******************************************
@@ -47,35 +53,51 @@ class ServiceUsers
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deploy'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv, bool $long = false): array
+    public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv=null, bool $long = false): array
     {
         $em = $this->em;
+        $sr = $this->sr;
         
-        $users = $cv->getUser();
+        $serveurs = $sr->getServeurs();
         $loginnames3 = [];
-        foreach ( $users as $u)
+        if ($cv != null)
         {
-            $s = $u->getServeur()->getNom();
-            $loginnames3[$s]['nom'] = $u->getLoginname();
-            if ($long) $loginnames3[$s]['nom'] .= '@'.$s;
-            $clessh = $u->getClessh();
-            if ($clessh === null)
+            foreach ( $serveurs as $s)
             {
-                $loginnames3[$s]['clessh'] = null;
+                $u = $this->getUser($cv->getCollaborateur(), $cv->getVersion()->getProjet(), $s);
+                $sn = $s->getNom();
+                
+                $loginnames3[$sn]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
+                $loginnames3[$sn]['login'] = $u->getLogin();
+                if ($long && $loginnames3[$sn]['nom']!='nologin') $loginnames3[$sn]['nom'] .= '@'.$sn;
+                $clessh = $u->getClessh();
+                if ($clessh === null)
+                {
+                    $loginnames3[$sn]['clessh'] = null;
+                }
+                else
+                {
+                    $loginnames3[$sn]['clessh']['idCle'] = $u->getClessh()->getId();
+                    $loginnames3[$sn]['clessh']['nom'] = $u->getClessh()->getNom();
+                    $loginnames3[$sn]['clessh']['pub'] = $u->getClessh()->getPub();
+                    $loginnames3[$sn]['clessh']['rvk'] = $u->getClessh()->getRvk();
+                    $loginnames3[$sn]['clessh']['deploy'] = $u->getDeply();
+                }
+                $loginnames3[$sn]['userid'] = $u->getId();
             }
-            else
-            {
-                $loginnames3[$s]['clessh']['idCle'] = $u->getClessh()->getId();
-                $loginnames3[$s]['clessh']['nom'] = $u->getClessh()->getNom();
-                $loginnames3[$s]['clessh']['pub'] = $u->getClessh()->getPub();
-                $loginnames3[$s]['clessh']['rvk'] = $u->getClessh()->getRvk();
-                $loginnames3[$s]['clessh']['deploy'] = $u->getDeply();
-            }
-            $loginnames3[$s]['userid'] = $u->getId();
         }
-        
-        if (!array_key_exists('TURPAN', $loginnames3)) $loginnames3['TURPAN']['nom'] = 'nologin';
-        if (!array_key_exists('BOREALE', $loginnames3)) $loginnames3['BOREALE']['nom'] = 'nologin';
+        else
+        {
+            foreach ($serveurs as $s)
+            {
+                $sn = $s->getNom();
+                $loginnames3[$sn]['nom'] = 'nologin';
+                $loginnames3[$sn]['login'] = false;
+                $loginnames3[$sn]['clessh'] = null;
+            }
+        }
+
+        //dd($loginnames3);
         return $loginnames3;
     }
 
@@ -98,6 +120,34 @@ class ServiceUsers
             throw new \Exception (__METHOD__ . ":" . __LINE__ . " $u n'est pas de la forme alice@serveur");
         }
         return [ 'loginname' => $rvl[0], 'serveur' => $rvl[1]];
+    }
+
+    /*********************************************************
+     * Renvoie UN user et UN SEUL. Si le user n'existe pas on le crée
+     ***********************************************************/
+    public function getUser(Individu $i, Projet $p, Serveur $s): User
+    {
+        $em = $this->em;
+        $users = $em->getRepository(User::class)->findBy(['individu' => $i, 'projet' => $p, 'serveur' => $s]);
+        if (count($users) == 0)
+        {
+            $u = new User();
+            $u->setIndividu($i);
+            $u->setProjet($p);
+            $u->setServeur($s);
+            $p->addUser($u);
+            $em->persist($u);
+            $em->flush($u);
+        }
+        elseif (count($users) == 1)
+        {
+            $u = $users[0];
+        }
+        else
+        {
+            throw $this->sj->throwException("ServiceUsers:getUser findBy renvoie " . count($users) . " objets " . "$i - $p - $s");
+        }
+        return $u;
     }
     
 } // class

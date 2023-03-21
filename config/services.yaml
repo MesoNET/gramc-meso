@@ -144,6 +144,7 @@ services:
     # Formulaires, validateurs, securité
     App\Form\:
         resource: '../src/Form/*'
+        exclude: '../src/Form/IndividuForm/*'
         tags: ["form.type"]
 
     App\Form\IndividuFormType:
@@ -193,4 +194,7 @@ services:
 
     App\Command\InitLimitDate:
         arguments: [ "%dyn_duree%" ]
+        tags: ["console.command"]
+
+    App\Command\InitRessources:
         tags: ["console.command"]

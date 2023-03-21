@@ -875,6 +875,42 @@ class ServiceMenus
         return $menu;
     }
 
+    public function gererServeurs(int $priorite=self::HPRIO):array
+    {
+        $menu['name']       =   'gerer_serveurs';
+        $menu['commentaire']=   "Gérer la liste des serveurs";
+        $menu['lien']       =   "Serveurs";
+        $menu['icone']      =   "indefinit";
+
+        if ($this->ac->isGranted('ROLE_OBS')) {
+            $menu['ok'] = true;
+        } else {
+            $menu['ok'] = false;
+            $menu['raison'] = "Vous devez être au moins un observateur pour accéder à cette page";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
+    public function gererResources(int $priorite=self::HPRIO):array
+    {
+        $menu['name']       =   'gerer_ressources';
+        $menu['commentaire']=   "Gérer la liste des ressources";
+        $menu['lien']       =   "Ressources";
+        $menu['icone']      =   "indefinit";
+
+        if ($this->ac->isGranted('ROLE_OBS')) {
+            $menu['ok'] = true;
+        } else {
+            $menu['ok'] = false;
+            $menu['raison'] = "Vous devez être au moins un observateur pour accéder à cette page";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
     //////////////////////////////////////
 
     public function gererThematiques(int $priorite=self::HPRIO):array

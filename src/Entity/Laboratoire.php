@@ -38,6 +38,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Laboratoire
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="numero_labo", type="integer", nullable=false)
@@ -73,6 +82,13 @@ class Laboratoire
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="labo")
+     */
+    private $collaborateurVersion;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="\App\Entity\Individu", mappedBy="labo")
      */
     private $individu;
@@ -93,14 +109,6 @@ class Laboratoire
     public function getId():int
     {
         return $this->getIdLabo();
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -183,6 +191,44 @@ class Laboratoire
     public function getIdLabo()
     {
         return $this->idLabo;
+    }
+
+    /**
+     * Add collaborateurVersion
+     *
+     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
+     *
+     * @return Laboratoire
+     */
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    {
+        if ( ! $this->collaborateurVersion->contains($collaborateurVersion))
+        {
+            $this->collaborateurVersion[] = $collaborateurVersion;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove collaborateurVersion
+     *
+     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
+     */
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    {
+        $this->collaborateurVersion->removeElement($collaborateurVersion);
+        return $this;
+    }
+
+    /**
+     * Get collaborateurVersion
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCollaborateurVersion()
+    {
+        return $this->collaborateurVersion;
     }
 
     /**

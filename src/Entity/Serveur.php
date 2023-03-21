@@ -29,11 +29,21 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Serveur
  *
- * @ORM\Table(name="serveur", indexes={@ORM\Index(name="nom", columns={"nom"})})
- * @ORM\Entity
+ * @ORM\Table(name="serveur", options={"collation"="utf8mb4_general_ci"}, uniqueConstraints={@ORM\UniqueConstraint(name="admname", columns={"admname"})})
+ * @ORM\Entity(repositoryClass="App\Repository\ServeurRepository")
+
  */
 class Serveur
 {
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ressource = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     /**
      * @var string
      *
@@ -44,17 +54,32 @@ class Serveur
     private $nom;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="id_serveur", cascade={"persist"})
+     */
+    private $ressource;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="id_serveur", cascade={"persist"})
+     */
+    private $user;
+
+    /**
      * @var desc
      *
-     * @ORM\Column(name="desc", type="string", length=200)
+     * Attention desc est un nom réservé !
+     * @ORM\Column(name="descr", type="string", length=200, nullable=true, options={"default":""})
      * 
      */
     private $desc;
 
     /**
-     * @var desc
+     * @var admname
      *
-     * @ORM\Column(name="admname", type="string", length=20 )
+     * @ORM\Column(name="admname", type="string", length=20, nullable=true, options={"comment":"username symfony pour l'api"}) )
      * 
      */
     private $admname;
@@ -64,7 +89,7 @@ class Serveur
      *
      * @return string
      */
-    public function getNom(): string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -82,11 +107,85 @@ class Serveur
     }
 
     /**
+     * Add ressource
+     *
+     * @param \App\Entity\Ressource $ressource
+     *
+     * @return Serveur
+     */
+    public function addRessource(\App\Entity\Ressource $ressource): self
+    {
+        if (! $this->ressource->contains($ressource))
+        {
+            $this->ressource[] = $ressource;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove resource
+     *
+     * @param \App\Entity\Ressource $ressource
+     */
+    public function removeRessource(\App\Entity\Ressource $ressource): self
+    {
+        $this->ressource->removeElement($ressource);
+        return $this;
+    }
+
+    /**
+     * Get ressource
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRessource()
+    {
+        return $this->ressource;
+    }
+
+    /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Serveur
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * Get desc
      *
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc(): ?string
     {
         return $this->desc;
     }
@@ -108,7 +207,7 @@ class Serveur
      *
      * @return string
      */
-    public function getAdmname(): string
+    public function getAdmname(): ?string
     {
         return $this->admname;
     }

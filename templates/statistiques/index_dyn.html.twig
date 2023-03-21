@@ -31,24 +31,30 @@
 
     <p class="centrage">En <span class="engros">{{ annee }}</span>, il y avait <span class="engros">{{ total.dyn.prj }}</span> projets dynamiques</p>
 
-    {% if (repart.dyn|length > 0) %}
+    {% if (repartition.dyn|length > 0) %}
     <table class="pdyn_synt">
         <thead>
-        <tr>
-            <th title="BOREALE">BO</th>
-            <th title="TURPAN">TU</th>
-            <th title="Nombre de projets">Nb</th>
-        </tr>
+            <tr>
+                {% for r in serviceRessources.getnoms %}
+                <th title="{{r}}" style="width: 2ex; writing-mode:vertical-rl">{{r}}</th>
+                {% endfor %}
+                <th title="Nombre de projets" style="width: 1em">Nb</th>
+            </tr>
         <thead>
         <tbody>
-        {% for k,n in repart.dyn %}
+
+        {% set cols = serviceRessources.getnoms|length %}
+        {% for k,n in repartition.dyn %}
             {% if n != 0 %}
                 <tr>
-                    {% set cols = k|split('') %}
-                    {% for c in cols %}
-                    <td>{% if (c=='t') %}&#x23fa{% else %}&nbsp; {% endif %}</td>
+                    {% set p = 2 ** (cols-1) %}
+                    {% set ki = k %}
+                    {% for c in 1..cols %}
+                        <td style="width: 2ex;writing-mode:vertical-rl">{% if ki>=p %}&nbsp;&nbsp;&nbsp;&#x23fa{% else %}.{% endif %}</td>
+                        {% set ki = ki % p %}
+                        {% set p = p // 2 %}
                     {% endfor %}
-                    <td>{{repart.dyn[k]}}</td>
+                    <td>{{n}}</td>
                 </tr>
             {% endif %}
         {% endfor %}

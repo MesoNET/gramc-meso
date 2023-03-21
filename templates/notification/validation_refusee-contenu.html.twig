@@ -7,7 +7,10 @@ Son adresse: {{ object.responsable.mail  |raw }}
 
 ATTENTION - Aucun mail automatique n'a été envoyé !
 
-Le nombre d'heures demandées était : {{ object.demHeuresUft  |raw }} (TURPAN) et {{ object.demHeuresCriann  |raw }} (BOREALE)
+{% for dac in object.dac %}
+Ressources demandées  sur {{ dac.ressource.nom }}: {{ dac.demande }} {{ dac.ressource.unite }}
+{% endfor %}
+
 URL du projet                      : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}
 
 Commentaire de validation :

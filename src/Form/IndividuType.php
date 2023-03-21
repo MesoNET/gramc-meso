@@ -34,8 +34,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Individu;
 use App\Entity\Laboratoire;
@@ -43,15 +44,9 @@ use App\Entity\Etablissement;
 use App\Entity\Statut;
 use App\Entity\Thematique;
 
-//use App\App;
-
-use Doctrine\ORM\EntityManagerInterface;
-
 class IndividuType extends AbstractType
 {
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
         $this -> em = $em;
     }

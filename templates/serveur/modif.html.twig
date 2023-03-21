@@ -1,0 +1,33 @@
+{% extends 'default/base.html.twig' %}
+
+{% block body %}
+<section>
+<h2>Modification d'un serveur</h2>
+    {% import "default/macros.html.twig" as gramcmacros %}
+
+    {{ form_start(edit_form) }}
+    <table>
+        <tr>
+            <th>{{ form_label(edit_form.nom) }}</th>
+            <td>{{ form_widget(edit_form.nom) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(edit_form.desc) }}</th>
+            <td>{{ form_widget(edit_form.desc) }}</td>
+        </tr>
+        <tr>
+            <th>{{ form_label(edit_form.admname) }}</th>
+            <td>{{ form_widget(edit_form.admname) }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td class="inputrond submitdyn">{{ form_widget(edit_form.submit) }}{{ form_widget(edit_form.reset) }}</td>
+        </tr>    
+    </table>
+    {{ form_end(edit_form) }}
+
+    {{ gramcmacros.menu(menu) }}
+
+</section>
+
+{% endblock body %}

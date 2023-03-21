@@ -63,6 +63,7 @@ class ServiceProjets
         private ServiceVersions $sv,
         private ServiceSessions $ss,
         private ServiceJournal $sj,
+        private ServiceRessources $sroc,
         private LoggerInterface $log,
         private AuthorizationCheckerInterface $sac,
         private TokenStorageInterface $tok,
@@ -71,6 +72,165 @@ class ServiceProjets
         $this->token = $tok->getToken();
     }
 
+
+    /****************
+     * Création d'un nouveau projet, c'est-à-dire:
+     *    - Création du projet
+     *    - Création d'une première version
+     *
+     * params: Le type de projet
+     * Retourne: Le nouveau projet
+     * 
+     ************************************************/
+    public function creerProjet(int $type) : Projet
+    {
+        $sv = $this->sv;
+        $grdt = $this->grdt;
+        $em = $this->em;
+        
+        // Création du projet        
+        $session = null; // TODO - Virer les sessions !
+        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
+
+        $projet = new Projet($type);
+        $projet->setIdProjet($this->nextProjetId($annee, $type));
+        $projet->setNepasterminer(false); // TODO - A virer
+        $projet->setEtatProjet(Etat::RENOUVELABLE);
+
+        // Ecriture du projet dans la BD
+        $em->persist($projet);
+        $em->flush();
+
+        // Création de la première version
+        $version = $sv->creerVersion($projet);
+
+        return $projet;
+
+      
+    }
+    /****************
+     * Suppression d'un projet, en commençant par supprimer les objets User
+     * Cette fonction est privée car elle avant de supprimer un projet on doit supprimer
+     * les versions associées
+     *
+     * Params: $p Le projet à supprimer
+     ************************************************/
+    private function supprimerProjet(Projet $projet) : void
+    {
+        $em = $this->em;
+
+        // Supprimer les User
+        $users = $projet->getUser();
+        foreach ($users as $u)
+        {
+            $projet->removeUser($u);
+            $em->remove($u);
+        }
+        $em->flush();
+
+        // Supprimer le projet
+        $em->remove($projet);
+        $em->flush();
+    }
+
+    /****************
+     * Suppression d'une version
+     *    - Suppression des Dac associés
+     *    - Suppression de la version
+     *
+     * Params: $projet le projet associé 
+     *    
+     * Retourne: La nouvelle version
+     * 
+     ************************************************/
+
+    public function supprimerVersion(Version $version): void
+    {
+        $sj = $this->sj;
+        $em = $this->em;
+        
+        // Suppression des dac associés
+         foreach ($version->getDac() as $dac)
+        {
+            $em->remove($dac);
+        }
+       
+        // Suppression des collaborateurs
+        foreach ($version->getCollaborateurVersion() as $collaborateurVersion)
+        {
+            $em->remove($collaborateurVersion);
+        }
+
+        // Suppression des demandes de formation
+        foreach ($version->getFormationVersion() as $formationVersion)
+        {
+            $em->remove($formationVersion);
+        }
+        
+        // Suppression des expertises éventuelles
+        $expertises = $version->getExpertise();
+        foreach ($expertises as $expertise)
+        {
+            $em->remove($expertise);
+        }
+
+        // TODO - Suppression des rallonges
+        
+        // Ne devrait pas arriver !
+        $projet = $version->getProjet();
+        if ($projet == null)
+        {
+            $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $idVersion . " sans projet supprimée");
+        }
+        else
+        {
+            //$projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => $idProjet]);
+
+            // On met le champ version derniere a NULL
+            $projet->setVersionDerniere(null);
+            $em -> persist($projet);
+            //$em->flush();
+        }
+
+        // suppression des fichiers liés à la version
+        $this->effacerDonnees($version);
+
+        // On supprime la version
+        // Du coup la versionDerniere est mise à jour par l'EventListener
+        $em->remove($version);
+        $em->flush();
+
+        // Si pas d'autre version, on supprime le projet
+        if ($projet != null && $projet->getVersion() != null && count($projet->getVersion()) == 0)
+        {
+            $this->supprimerProjet($projet);
+        }
+    }
+
+    /*************************************************************
+     * Efface les données liées à une version de projet
+     *
+     *  - Les fichiers img_* et *.pdf du répertoire des figures
+     *  - Le fichier de signatures s'il existe
+     *  - N'EFFACE PAS LE RAPPORT D'ACTIVITE !
+     *    cf. ServiceProjets pour cela
+     *  TODO - Rendre cette fonction privée, et pour cela modifier la commande Rgpd
+     *************************************************************/
+    public function effacerDonnees(Version $version): void
+    {
+        $sv = $this->sv;
+        
+        // Les figures et les doc attachés
+        $img_dir = $sv->imageDir($version);
+        array_map('unlink', glob("$img_dir/img*"));
+        array_map('unlink', glob("$img_dir/*.pdf"));
+
+        // Les signatures
+        $fiche = $sv->getSigne($version);
+        if ( $fiche != null) {
+            unlink($fiche);
+        }
+    }
 
     /**************
      * Calcule le prochain id de projet, à partir des projets existants
@@ -82,7 +242,7 @@ class ServiceProjets
      * Return: Le nouvel id, ou null en cas d'erreur
      *
      ***************/
-    public function NextProjetId($annee, $type): string
+    private function nextProjetId($annee, $type): string
     {
         if (intval($annee) >= 2000) {
             $annee = $annee - 2000;
@@ -284,6 +444,7 @@ class ServiceProjets
      ********************/
     public function projetsDynParAnnee($annee=0, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
     {
+        $sroc = $this->sroc;
         $em = $this->em;
         
         // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
@@ -295,18 +456,22 @@ class ServiceProjets
 
         $total = [];
         $total[$type] = [];
-
         $total[$type]['prj'] = 0;  // Nombre de projets
+        $total[$type]['demande'] = []; // Heures demandées par ressource
+        $total[$type]['attribution'] = []; // Heures attribuées par ressource
 
-        $total[$type]['demHeuresUft']  = 0;  // Heures demandées par Uft
-        $total[$type]['attrHeuresUft'] = 0;  // Heures attribuées à Uft
-        $total[$type]['demHeuresCriann']  = 0;  // Heures demandées par Criann
-        $total[$type]['attrHeuresCriann'] = 0;  // Heures attribuées à Criann
+        $noms = $sroc->getNoms();
+        foreach ($noms as $nr)
+        {
+            $total[$type]['demande'][$nr] = 0;
+            $total[$type]['attribution'][$nr] = 0;
+        }
 
-        $repart[$type] = [];
-        $repart[$type]['tt'] = 0; // Boreale + Turpan
-        $repart[$type]['tf'] = 0; // Boreale
-        $repart[$type]['ft'] = 0; // Turpan
+        $repartition[$type] = []; // Répartition des attributions entre les ressources
+        for ($i=0; $i<2**count($noms);$i++)
+        {
+            $repartition[$type][$i] = 0;
+        }
         
         // Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
 
@@ -319,8 +484,11 @@ class ServiceProjets
         $projets= [];
 
         // Boucle sur les versions
-        foreach ($versions as $v) {
+        foreach ($versions as $v)
+        {
             $p_id = $v->getProjet()->getIdProjet();
+
+            // Projet déjà créé
             if (isset($projets[$p_id]))
             {
                 $p = $projets[$p_id];
@@ -329,61 +497,49 @@ class ServiceProjets
             {
                 $p = [];
                 $total[$type]['prj'] += 1;
-                $p['demHeuresUft'] = 0;
-                $p['attrHeuresUft'] = 0;
-                $p['demHeuresCriann'] = 0;
-                $p['attrHeuresCriann'] = 0;
+                foreach($noms as $nr)
+                {
+                    $p['demande'][$nr] = 0;
+                    $p['attribution'][$nr] = 0;
+                }
                 $p['p'] = $v->getProjet();
                 $p['v'] = $v;
                 $p['metaetat'] = $this->getMetaEtat($p['p']);
             }
 
-            // En cas de changement de responsable, donc de labo au cours de l'année, on ne considère QUE
-            // la version la plus récente
-            $p['labo']     = $v->getLabo();
-            $p['resp']     = $v->getResponsable();
-
-            $p['demHeuresUft'] += $v->getDemHeuresUft();
-            $p['attrHeuresUft'] += $v->getAttrHeuresUft();
-            $p['demHeuresCriann'] += $v->getDemHeuresCriann();
-            $p['attrHeuresCriann'] += $v->getAttrHeuresCriann();
-
-            $total[$type]['demHeuresUft'] += $p['demHeuresUft'];
-            $total[$type]['demHeuresCriann'] += $p['demHeuresCriann'];
-            $total[$type]['attrHeuresUft'] += $p['attrHeuresUft'];
-            $total[$type]['attrHeuresCriann'] += $p['attrHeuresCriann'];
-
-            if ($p['attrHeuresUft']*$p['attrHeuresCriann'])
+            $repkey = 0;
+            $c = count($noms) - 1;
+            foreach ($v->getDac() as $dac)
             {
-                $repart[$type]['tt'] += 1;
+                $nr = $sroc->getNomComplet($dac->getRessource());
+                $p['demande'][$nr] = $dac->getDemande();
+                $p['attribution'][$nr] = $dac->getAttribution();
+                $total[$type]['demande'][$nr] += $dac->getDemande();
+                $total[$type]['attribution'][$nr] += $dac->getAttribution();
             }
-            elseif ($p['attrHeuresUft'])
-            {
-                $repart[$type]['ft'] += 1;
-            }
-            else
-            {
-                $repart[$type]['tf'] += 1;
-            }
-
-            // La Conso - PAS PRISE EN COMPTE POUR L'INSTANT !
-
-            // $this->ppa_conso($p, $annee);
-            
-            //$total['consoHeuresP'] += $p['c'];
-            //$total[$type]['consoHeuresCPU'] += $p['c'] - $p['g'];
-            //$total[$type]['consoHeuresGPU'] += $p['g'];
-            //$total[$type]['sondVolDonnPerm']+= intval($v->getSondVolDonnPerm());
-            //$total[$type]['consoVolDonnPerm']+= $p['stk_c'];
-            //$total[$type]['quotaVolDonnPerm']+= $p['stk_q'];
-            
            $projets[$p_id] = $p;
         }
 
-        $rt = &$repart[$type];
-        arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord'
-        while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
-        return [$projets,$total, $repart];
+        // Calcul de la répartition
+        foreach ($projets as $p)
+        {
+            $c = count($noms) - 1;
+            $repkey = 0;
+            foreach($noms as $nr)
+            {
+                if ( $p['attribution'][$nr] != 0)
+                {
+                    $repkey += 2 ** $c;
+                }
+                $c -= 1;
+            }
+            $repartition[$type][$repkey] += 1;
+        }
+            
+        //$rt = &$repart[$type];
+        //arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord
+        //while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
+        return [$projets,$total, $repartition];
     }
 
     /*********************************

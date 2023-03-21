@@ -192,15 +192,15 @@ class StatistiquesController extends AbstractController
         $annee= $data['annee'];
         $request->getSession()->set('statistiques_annee',$annee);
 
-        $menu[] = $sm->statistiquesLaboratoire();
-        $menu[] = $sm->statistiquesEtablissement($annee);
-        $menu[] = $sm->statistiquesThematique($annee);
+        //$menu[] = $sm->statistiquesLaboratoire();
+        //$menu[] = $sm->statistiquesEtablissement($annee);
+        //$menu[] = $sm->statistiquesThematique($annee);
         //$menu[] = $sm->statistiquesMetathematique($annee);
         //$menu[] = $sm->statistiquesRattachement($annee);
-        $menu[] = $sm->statistiquesCollaborateur($annee);
-        $menu[] = $sm->statistiquesRepartition();
+        //$menu[] = $sm->statistiquesCollaborateur($annee);
+        //$menu[] = $sm->statistiquesRepartition();
 
-        [$projets, $total, $repart] = $this->sp->projetsDynParAnnee($annee);
+        [$projets, $total, $repartition] = $this->sp->projetsDynParAnnee($annee);
 
         $num_projets = count($projets);
 
@@ -209,9 +209,9 @@ class StatistiquesController extends AbstractController
             [
                 'form' => $data['form']->createView(),
                 'annee' => $annee,
-                'menu' => $menu,
+                //'menu' => $menu,
                 'total' => $total,
-                'repart' => $repart
+                'repartition' => $repartition
             ]
         );
     }
