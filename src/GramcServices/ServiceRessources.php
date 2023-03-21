@@ -54,6 +54,7 @@ class ServiceRessources
         {
             $noms[] = $this->getNomComplet($r);
         }
+        sort($noms);
         return $noms;
     }
 

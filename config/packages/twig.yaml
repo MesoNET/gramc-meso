@@ -12,6 +12,7 @@ twig:
        serviceUsers: '@App\GramcServices\ServiceUsers'
        serviceServeurs: '@App\GramcServices\ServiceServeurs'
        serviceRessources: '@App\GramcServices\ServiceRessources'
+       serviceDacs: '@App\GramcServices\ServiceDacs'
        mailadmin: '%mailadmin%'
        mailsupport: '%mailsupport%'
        mesoc: '%mesoc%'
