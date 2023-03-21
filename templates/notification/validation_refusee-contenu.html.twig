@@ -8,7 +8,7 @@ Son adresse: {{ object.responsable.mail  |raw }}
 ATTENTION - Aucun mail automatique n'a été envoyé !
 
 {% for dac in object.dac %}
-Ressources demandées  sur {{ dac.ressource.nom }}: {{ dac.demande }} {{ dac.ressource.unite }}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.demande }} {{ dac.ressource.unite }}
 {% endfor %}
 
 URL du projet                      : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}
