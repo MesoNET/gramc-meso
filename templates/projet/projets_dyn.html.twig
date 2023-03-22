@@ -101,11 +101,11 @@
                         #}
                         <td>
                             {% if( item.metaetat == 'expertise') %}
-                            <a class="arriere" href="{{ path('back_version', { 'id': item.version.idVersion }) }}" title="Revenir en édition">
+                            <a class="arriere" href="{{ path('back_version', { 'id': item.projet.idProjet }) }}" title="Revenir en édition">
                                 {{ icones.back(25, 25) }}
                             </a>
                             {% elseif( item.metaetat == 'edition') %}
-                            <a href="{{ path('fwd_version', { 'id': item.version.idVersion }) }}" title="Envoyer pour expertise">
+                            <a href="{{ path('fwd_version', { 'id': item.projet.idProjet }) }}" title="Envoyer pour expertise">
                                 {{ icones.forward(25,25) }}
                             </a>
                             {% else %}
@@ -160,7 +160,7 @@
                             {% endif %}
                         </td>
                         {% for r in serviceRessources.getressources %}
-                        <td>{{ item.dacs[r.nom].attribution }}</td>
+                        <td>{% if serviceRessources.nomcomplet(r) in item.dacs|keys %}{#serviceRessources.nomcomplet(r) #}{{ item.dacs[serviceRessources.nomcomplet(r)].attribution }}{% else %} &nbsp;-&nbsp;{% endif %} </td>
                         {% endfor %}
                     </tr>
                     {% endfor %}
