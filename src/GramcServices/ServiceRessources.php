@@ -54,17 +54,25 @@ class ServiceRessources
         {
             $noms[] = $this->getNomComplet($r);
         }
-        sort($noms);
         return $noms;
     }
 
     /***********************************************************
-     * Renvoie la liste des ressources connues, en ordre alphabétique par rapport au nom de serveur puis de ressource
+     * Renvoie la liste des ressources connues,
+     * en ordre alphabétique par rapport au nom complet de ressource
      *********************************************************************/
     public function getRessources() : array
     {
         $em = $this->em;
-        return $em->getRepository(Ressource::class)->findAllsorted();
+        $ressources = $em->getRepository(Ressource::class)->findAll();
+
+        uasort($ressources, function($a, $b){
+            if ($a === $b) {
+                return 0;
+            }
+            return $this->getNomComplet($a) < $this->getNomComplet($b) ? -1 : 1;
+        });
+        return $ressources;
     }
 
     /**********************************************************************
