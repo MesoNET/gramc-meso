@@ -7,7 +7,7 @@
     {% if clessh|length > 0 %}
         <div id="choix_cle_ssh">
             {{ form_start(form) }}
-                 {{ form_widget(form.cgu) }} <strong>j'ai lu et approuvé les <a href="{{serveur_cgu}}">Conditions Générales d'Attribution de {{ serveur_nom }}</a> </strong><br>
+                 {{ form_widget(form.cgu) }} <strong>j'ai lu et approuvé les <a href="{{serveur_cgu}}">Conditions Générales d'Utilisation de {{ serveur_nom }}</a> </strong><br>
                 {% form_theme form 'foundation_5_layout.html.twig' %}
                 {{ form_widget(form.clessh) }}
                 <span class="inputrond submitdyn" >
