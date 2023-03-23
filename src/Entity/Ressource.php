@@ -297,7 +297,7 @@ class Ressource
      * @param int
      * @return Ressource
      */
-    public function setMaxDem(int $maxDem): Self
+    public function setMaxDem(?int $maxDem): Self
     {
         $this->maxDem = $maxDem;
         return $this;
