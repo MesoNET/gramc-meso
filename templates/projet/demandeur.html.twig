@@ -74,23 +74,11 @@
             {% else %} TERMINE
             {% endif %}
         </td>
-        {% if noconso==false %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
-                {% if item.cv != null %}
-                    {#{{ gramcconsomacros.affiche_conso(item.projet.idProjet, item.loginnames) }} #}
-    
-                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}"
-                    data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'cv': item.cv.id })) }}">
-                        {{ icones.consommation }}
-                    </div>
-                {% endif %}
-            </td>
-            <input id="conso_{{ item.projet.idProjet }}" value="{{ item.conso |number_format(1)}}" type="hidden">
-        {% endif %}
-
+ 
         {% if item.projet.versionactive != null %}
-        {% for d in item.projet.versionactive.dac %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >{{ d.consommation }}</td>
+        {% set dacs = serviceDacs.getDacsByNr(item.projet.versionactive) %}
+        {% for nr in dacs|keys|sort %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >{{ dacs[nr].consommation }}</td>
         {% endfor %}
         {% else %}
         {% for r in serviceRessources.getressources %}

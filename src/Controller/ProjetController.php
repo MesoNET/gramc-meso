@@ -360,10 +360,13 @@ class ProjetController extends AbstractController
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function backAction(Version $version, Request $request): Response
+    public function backAction(Projet $projet, Request $request): Response
     {
         $se = $this->se;
         $em = $this->em;
+
+        // On travaille sur la DERNIERE version du projet, sinon rien !
+        $version = $projet->getVersionDerniere();
         if ($version->getTypeVersion() == Projet::PROJET_DYN)
         {
             $workflow = $this->pw4;
@@ -376,11 +379,20 @@ class ProjetController extends AbstractController
         if ($request->isMethod('POST'))
         {
             $confirmation = $request->request->get('confirmation');
-
             if ($confirmation == 'OUI') {
                 if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet()))
                 {
-                    $workflow->execute(Signal::CLK_ARR, $version->getProjet());
+                    $rtn = $workflow->execute(Signal::CLK_ARR, $version->getProjet());
+                    if ($rtn == true)
+                    {
+                        $request->getSession()->getFlashbag()->add("flash info","Projet $projet revenu en édition");
+                    }
+                    else
+                    {
+                        $request->getSession()->getFlashbag()->add("flash erreur","Le projet $projet n'a pas pu revenir en édition.");
+                        $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet $projet n'a pas pu revenir en édition.");
+                    }
+
                     // Supprime toutes les expertises
                     $expertises = $version->getExpertise()->toArray();
                     $em = $this->em;
@@ -390,9 +402,7 @@ class ProjetController extends AbstractController
                     $em->flush();
                 }
             }
-            // TODO - Il faudrait mettre l'url de départ dans la session php
             return $this->redirectToRoute('projet_dynamique');
-            //return $this->redirectToRoute('projet_session');
         }
         else
         {
@@ -413,10 +423,13 @@ class ProjetController extends AbstractController
      * @Route("/{id}/fwd", name="fwd_version", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function fwdAction(Version $version, Request $request, LoggerInterface $lg): Response
+    public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
         $se = $this->se;
         $em = $this->em;
+
+        // On travaille sur la DERNIERE version du projet, sinon rien !
+        $version = $projet->getVersionDerniere();
         if ($version->getTypeVersion() == Projet::PROJET_DYN)
         {
             $workflow = $this->pw4;
@@ -430,16 +443,25 @@ class ProjetController extends AbstractController
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                if ($workflow->canExecute(Signal::CLK_VAL_DEM, $version->getProjet())) {
-                    $workflow->execute(Signal::CLK_VAL_DEM, $version->getProjet());
-
+                if ($workflow->canExecute(Signal::CLK_VAL_DEM, $version->getProjet()))
+                {
                     // Crée une nouvelle expertise avec proposition d'experts
                     $se->newExpertiseIfPossible($version);
+
+                    // Avance du workflow
+                    $rtn = $workflow->execute(Signal::CLK_VAL_DEM, $projet);
+                    if ($rtn == true)
+                    {
+                        $request->getSession()->getFlashbag()->add("flash info","Projet $projet envoyé en validation");
+                    }
+                    else
+                    {
+                        $request->getSession()->getFlashbag()->add("flash erreur","Le projet $projet n'a pas pu être envoyé en validation.");
+                        $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet $projet n'a pas pu être envoyé en validation.");
+                    }
                 }
             }
-            // TODO - Il faudrait mettre l'url de départ dans la session php
             return $this->redirectToRoute('projet_dynamique');
-            //return $this->redirectToRoute('projet_session');
         }
         else
         {
@@ -1193,7 +1215,7 @@ class ProjetController extends AbstractController
             $dacs=[];
             foreach ($version->getDac() as $d)
             {
-                $dacs[$d->getRessource()->getNom()] = $d;
+                $dacs[$sroc->getNomComplet($d->getRessource())] = $d;
             }
             $data[] = [
                     'projet'       => $projet,

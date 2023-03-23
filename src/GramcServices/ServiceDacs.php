@@ -44,7 +44,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class ServiceDacs
 {
-    public function __construct(private EntityManagerInterface $em){}
+    public function __construct(private ServiceRessources $sr, private EntityManagerInterface $em){}
 
     /*********************************************************
      * Renvoie UN dac et UN SEUL. Si le dac n'existe pas on le crée
@@ -72,5 +72,22 @@ class ServiceDacs
         }
         return $d;
     }
+    /***********************************************
+     * Renvoie les dacs correspondant à la version, dans un hash indexé par
+     * le nom complet de la ressource associée
+     *******************************************************/
+    public function getDacsByNr(Version $v): array
+    {
+        $sr = $this->sr;
+        
+        $dacs=[];
+        $vdacs = $v->getDac();
+        foreach ($vdacs as $dac)
+        {
+            $k = $sr->getNomComplet($dac->getRessource(),'_');
+            $dacs[$k] = $dac;
+        }
+        ksort($dacs);
+        return $dacs;
+    }
 }
-

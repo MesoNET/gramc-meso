@@ -11,6 +11,7 @@
 
 {% import "default/macros.html.twig" as gramcmacros %}
 
+{% if publications|length > 0 %}
 <div>
     <table  class="projet" id="publis_projet" >
     <thead>
@@ -40,7 +41,11 @@
     
     </table>
 </div>
-    
+{% else %}
+    <div class="information attention">
+        Pas de publication renseignée pour ce projet
+    </div>
+{% endif %}
 </section>
           
 {% endblock body  %}

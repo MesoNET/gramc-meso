@@ -1,7 +1,7 @@
 {% import "default/macros.html.twig" as gramcmacros %}
 {% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
 
-<div id="tab1" class="onglet">
+<div id="tab{{numtab}}" class="onglet">{% set numtab = numtab + 1 %}
     <br><br>
     <h2>Présentation générale</h2>
 

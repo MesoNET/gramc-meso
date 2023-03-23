@@ -5,9 +5,9 @@ La validation du projet {{ object.projet |raw }} (resp {{ object.responsable |ra
 La demande a été {% if( object.expertise[0].validation == true ) %}ACCEPTÉE{% else %}REFUSÉE{% endif %}.
 
 {% for dac in object.dac %}
-Ressources demandées  sur {{ dac.ressource.nom }}: {{ dac.demande }} {{ dac.ressource.unite }}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.demande }} {{ dac.ressource.unite }}
+Ressources attribuées sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.attribution }} {{ dac.ressource.unite }}
 
-Ressources attribuées sur {{ dac.ressource.nom }}: {{ dac.attribution }} {{ dac.ressource.unite }}
 {% endfor %}
 
 URL du projet                     : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}

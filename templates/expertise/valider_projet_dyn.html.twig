@@ -29,7 +29,7 @@
             </tr>
             {% for d in version.dac %}
             <tr>
-                <th>Ressources attribuées sur {{ d.ressource.nom}}</th>
+                <th>Ressources attribuées sur {{ serviceRessources.nomcomplet(d.ressource)}}</th>
                 <td>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</td>
             </tr>
             {% endfor %}
