@@ -230,7 +230,7 @@ class Publication
      *
      * @return Publication
      */
-    public function addProjet(\App\Entity\Projet $projet)
+    public function addProjet(\App\Entity\Projet $projet): self
     {
         if (! $this->projet->contains($projet)) {
             $this->projet[] = $projet;
@@ -244,9 +244,10 @@ class Publication
      *
      * @param \App\Entity\Projet $projet
      */
-    public function removeProjet(\App\Entity\Projet $projet)
+    public function removeProjet(\App\Entity\Projet $projet): self
     {
         $this->projet->removeElement($projet);
+        return $this;
     }
 
     /**

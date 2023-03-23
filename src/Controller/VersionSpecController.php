@@ -33,11 +33,15 @@ use App\Entity\CollaborateurVersion;
 use App\Entity\RapportActivite;
 use App\Entity\Rattachement;
 use App\Entity\Formation;
+use App\Entity\Dac;
 
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceRessources;
+use App\GramcServices\ServiceDacs;
+
 use App\GramcServices\ServiceForms;
 use App\GramcServices\GramcDate;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
@@ -99,6 +103,8 @@ class VersionSpecController extends AbstractController
         private ServiceMenus $sm,
         private ServiceSessions $ss,
         private ServiceVersions $sv,
+        private ServiceRessources $sroc,
+        private ServiceDacs $sdac,
         private ServiceForms $sf,
         private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
@@ -175,7 +181,22 @@ class VersionSpecController extends AbstractController
 
         // NOTE - $validated peut éventuellement modifier $formation_forms afin de le rendre valide
         $validated = $sv->validateFormationForms($formation_forms);
+
         $sv->handleFormationForms($data['formation'], $version);
+
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $sv->getRessourceForm($version);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+
+        // NOTE - On met à zéro les demandes qui sont invalides
+        $validated = $sv->validateRessourceForms($ressource_forms); // ne sert à rien, renvoie toujours true
+        if (! $validated)
+        {
+            $message = "Erreur dans une de vos demandes,elle a été mise à 0";
+            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+        }
         
         // FORMULAIRE DES COLLABORATEURS
         $collaborateur_form = $sv->getCollaborateurForm($version);
@@ -201,20 +222,22 @@ class VersionSpecController extends AbstractController
             }
         }
 
-        //dd($formation_form, $collaborateur_form);
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $sv->getRessourceform($version);
+        $ressource_form->handleRequest($request);
         
         // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET... ou pas
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_SESS:
             case Projet::PROJET_DYN:
-            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             case Projet::PROJET_TEST:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             case Projet::PROJET_FIL:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form);
+            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
     
             default:
                $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
@@ -232,7 +255,8 @@ class VersionSpecController extends AbstractController
     private function modifierType1(Request $request,
                                    Version $version,
                                    FormInterface $collaborateur_form,
-                                   FormInterface $formation_form
+                                   FormInterface $formation_form,
+                                   FormInterface $ressource_form
                                    ): Response
     {
         $sj = $this->sj;
@@ -250,8 +274,6 @@ class VersionSpecController extends AbstractController
             $this->modifierType1PartieIV($version, $form_builder);
         }
         $nb_form = 0;
-        $this->modifierType1PartieVI($version, $form_builder, $nb_form);
-        $this->modifierType1PartieVII($version, $form_builder, $nb_form);
 
         $form_builder
             ->add('fermer', SubmitType::class)
@@ -309,6 +331,7 @@ class VersionSpecController extends AbstractController
                 'img_justif_renou' => $img_justif_renou,
                 'collaborateur_form' => $collaborateur_form->createView(),
                 'formation_form' => $formation_form->createView(),
+                'ressource_form' => $ressource_form->createView(),
                 'todo'          => static::versionValidate($version, $sj, $em, $sval, $this->getParameter('nodata')),
                 'nb_form'       => $nb_form
             ]
@@ -410,22 +433,6 @@ class VersionSpecController extends AbstractController
     {
     }
 
-    /* Les champs de la partie VI */
-    private function modifierType1PartieVI(Version $version, &$form): void
-    {
-        $em = $this->em;
-        $form
-            ->add('demHeuresUft', IntegerType::class, [ 'required'       => false ]);
-    }
-
-    /* Les champs de la partie VII */
-    private function modifierType1PartieVII(Version $version, &$form): void
-    {
-        $em = $this->em;
-        $form
-            ->add('demHeuresCriann', IntegerType::class, [ 'required'       => false ]);
-    }
-
     /*
      * Appelée par modifierAction pour les projets de type 3 (PROJET_FIL => PROJET_TEST)
      *
@@ -437,7 +444,8 @@ class VersionSpecController extends AbstractController
     private function modifierType3( Request $request,
                                     Version $version,
                                     FormInterface $collaborateur_form,
-                                    FormInterface $formation_form
+                                    FormInterface $formation_form,
+                                    FormInterface $ressource_form
                                     ): Response
     {
         $sj = $this->sj;
@@ -648,6 +656,8 @@ class VersionSpecController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
+        $sdac = $this->sdac;
+        $sroc = $this->sroc;
         $dyn_duree = $this->dyn_duree;
         $dyn_duree_post = $this->dyn_duree_post;
         $projet_workflow = $this->pw4;
@@ -688,10 +698,10 @@ class VersionSpecController extends AbstractController
             $new_version->setPrjGenciDari('');
             $new_version->setPrjGenciHeures(0);
             $new_version->setPrjGenciMachines('');
-            $new_version->setDemHeuresUft(0);
-            $new_version->setDemHeuresCriann(0);
-            $new_version->setAttrHeuresUft(0);
-            $new_version->setAttrHeuresCriann(0);
+            //$new_version->setDemHeuresUft(0);
+            //$new_version->setDemHeuresCriann(0);
+            //$new_version->setAttrHeuresUft(0);
+            //$new_version->setAttrHeuresCriann(0);
             $new_version->setStartDate($grdt);
 
             // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire
@@ -704,7 +714,7 @@ class VersionSpecController extends AbstractController
 
         $nb = $version->getNbVersion();
         $nb = $this->__incrNbVersion($nb);
-        
+
         $new_version->setNbVersion($nb);
         $new_version->setIdVersion($nb . $projet->getIdProjet());
         $new_version->setProjet($projet);
@@ -714,35 +724,23 @@ class VersionSpecController extends AbstractController
 
         // Nouveaux collaborateurVersions
         $collaborateurVersions = $version->getCollaborateurVersion();
-        foreach ($collaborateurVersions as $collaborateurVersion) {
-            
-            // ne pas reprendre un collaborateur sans login et marqué comme supprimé
-            // Attention un collaborateurVersion avec login = false mais loginname renseigné signifie que le compte
-            // n'a pas encore été détruit: dans ce cas on le reprend !
-            if ($collaborateurVersion->getDeleted() &&
-                $collaborateurVersion->getClogin() === false &&
-                $collaborateurVersion->getLoginname() === null ) continue;
+        foreach ($collaborateurVersions as $collaborateurVersion)
+        {
+            // ne pas reprendre un collaborateur marqué comme supprimé
+            if ($collaborateurVersion->getDeleted()) continue;
 
-            $newCollaborateurVersion    = clone  $collaborateurVersion;
-
-            // Les users connectés au collaborateurVersion connectés au nouveau cv
-            $users = $collaborateurVersion->getUser();
-            foreach ($users as $u)
-            {
-                $newCollaborateurVersion->addUser($u);
-                $u->addCollaborateurVersion($newCollaborateurVersion);
-                $em->persist($newCollaborateurVersion);
-                $em->persist($u);
-            }
-            
+            $newCollaborateurVersion = clone $collaborateurVersion;
             $newCollaborateurVersion->setVersion($new_version);
             $em->persist($newCollaborateurVersion);
         }
-
-        // Remettre à false Nepasterminer qui n'a pas trop de sens ici
-        //$projet->setNepasterminer(false);
-        $em->persist($projet);
         $em->flush();
+
+        // Nouveaux dac (1 par ressource)
+        $ressources = $sroc->getRessources();
+        foreach ($ressources as $r)
+        {
+            $sdac->getDac($new_version,$r);
+        }
 
         // images: On reprend les images "img_expose" de la version précédente
         //         On ne REPREND PAS les images "img_justif_renou" !!!
@@ -890,11 +888,19 @@ class VersionSpecController extends AbstractController
         if ($version->getPrjTitre() == null) {
             $todo[] = 'prj_titre';
         }
-        // Il faut demander des heures soit au Criann soit à l'Uft, soit aux deux
-        if ($version->getDemHeuresCriann() == 0 && $version->getDemHeuresUft() == 0) {
-            $todo[] = 'dem_heures_criann';
-            $todo[] = 'dem_heures_uft';
+        // Il faut qu'au moins une ressource ait une demande non nulle
+        $dacs = $version->getDac();
+        $dem = false;
+        foreach ($dacs as $d)
+        {
+            if ($d->getDemande() != 0)
+            {
+                $dem = true;
+                break;
+            }
         }
+        if ($dem == false)$todo[] = 'ressources';
+        
         if ($version->getPrjThematique() == null) {
             $todo[] = 'prj_id_thematique';
         }

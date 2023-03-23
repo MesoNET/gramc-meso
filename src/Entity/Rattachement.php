@@ -53,7 +53,7 @@ class Rattachement
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Individu", inversedBy="idRattachement")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Individu", inversedBy="rattachement")
      * @ORM\JoinTable(name="rattachementExpert",
      *   joinColumns={
      *     @ORM\JoinColumn(name="id_rattachement", referencedColumnName="id_rattachement")
@@ -68,7 +68,7 @@ class Rattachement
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="rattachement")
+     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="prjRattachement")
      */
     private $version;
 
@@ -138,7 +138,7 @@ class Rattachement
      *
      * @return Rattachement
      */
-    public function addExpert(\App\Entity\Individu $expert)
+    public function addExpert(\App\Entity\Individu $expert): self
     {
         if (! $this->expert->contains($expert)) {
             $this->expert[] = $expert;
@@ -152,9 +152,10 @@ class Rattachement
      *
      * @param \App\Entity\Individu $expert
      */
-    public function removeExpert(\App\Entity\Individu $expert)
+    public function removeExpert(\App\Entity\Individu $expert): self
     {
         $this->expert->removeElement($expert);
+        return $this;
     }
 
     /**
@@ -174,9 +175,12 @@ class Rattachement
      *
      * @return Rattachement
      */
-    public function addVersion(\App\Entity\Version $version)
+    public function addVersion(\App\Entity\Version $version): self
     {
-        $this->version[] = $version;
+        if (! $this->version->contains($version))
+        {
+            $this->version[] = $version;
+        }
 
         return $this;
     }
@@ -186,9 +190,10 @@ class Rattachement
      *
      * @param \App\Entity\Version $version
      */
-    public function removeVersion(\App\Entity\Version $version)
+    public function removeVersion(\App\Entity\Version $version): self
     {
         $this->version->removeElement($version);
+        return $this;
     }
 
     /**

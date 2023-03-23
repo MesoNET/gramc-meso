@@ -30,6 +30,7 @@ use App\Entity\Session;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Formation;
 use App\Entity\User;
+use App\Entity\Serveur;
 use App\Entity\Thematique;
 use App\Entity\Rattachement;
 use App\Entity\Expertise;
@@ -49,6 +50,8 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
+use App\GramcServices\ServiceServeurs;
+use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
 use App\GramcServices\GramcGraf\CalculTous;
@@ -105,6 +108,8 @@ class ProjetController extends AbstractController
         private ServiceProjets $sp,
         private ServiceSessions $ss,
         private ServiceUsers $su,
+        private ServiceServeurs $sr,
+        private ServiceRessources $sroc,
         private Calcul $gcl,
         private Stockage $gstk,
         private CalculTous $gall,
@@ -355,10 +360,13 @@ class ProjetController extends AbstractController
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function backAction(Version $version, Request $request): Response
+    public function backAction(Projet $projet, Request $request): Response
     {
         $se = $this->se;
         $em = $this->em;
+
+        // On travaille sur la DERNIERE version du projet, sinon rien !
+        $version = $projet->getVersionDerniere();
         if ($version->getTypeVersion() == Projet::PROJET_DYN)
         {
             $workflow = $this->pw4;
@@ -371,11 +379,20 @@ class ProjetController extends AbstractController
         if ($request->isMethod('POST'))
         {
             $confirmation = $request->request->get('confirmation');
-
             if ($confirmation == 'OUI') {
                 if ($workflow->canExecute(Signal::CLK_ARR, $version->getProjet()))
                 {
-                    $workflow->execute(Signal::CLK_ARR, $version->getProjet());
+                    $rtn = $workflow->execute(Signal::CLK_ARR, $version->getProjet());
+                    if ($rtn == true)
+                    {
+                        $request->getSession()->getFlashbag()->add("flash info","Projet $projet revenu en édition");
+                    }
+                    else
+                    {
+                        $request->getSession()->getFlashbag()->add("flash erreur","Le projet $projet n'a pas pu revenir en édition.");
+                        $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet $projet n'a pas pu revenir en édition.");
+                    }
+
                     // Supprime toutes les expertises
                     $expertises = $version->getExpertise()->toArray();
                     $em = $this->em;
@@ -385,9 +402,7 @@ class ProjetController extends AbstractController
                     $em->flush();
                 }
             }
-            // TODO - Il faudrait mettre l'url de départ dans la session php
             return $this->redirectToRoute('projet_dynamique');
-            //return $this->redirectToRoute('projet_session');
         }
         else
         {
@@ -408,10 +423,13 @@ class ProjetController extends AbstractController
      * @Route("/{id}/fwd", name="fwd_version", methods={"GET","POST"})
      * Method({"GET","POST"})
      */
-    public function fwdAction(Version $version, Request $request, LoggerInterface $lg): Response
+    public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
         $se = $this->se;
         $em = $this->em;
+
+        // On travaille sur la DERNIERE version du projet, sinon rien !
+        $version = $projet->getVersionDerniere();
         if ($version->getTypeVersion() == Projet::PROJET_DYN)
         {
             $workflow = $this->pw4;
@@ -425,16 +443,25 @@ class ProjetController extends AbstractController
             $confirmation = $request->request->get('confirmation');
 
             if ($confirmation == 'OUI') {
-                if ($workflow->canExecute(Signal::CLK_VAL_DEM, $version->getProjet())) {
-                    $workflow->execute(Signal::CLK_VAL_DEM, $version->getProjet());
-
+                if ($workflow->canExecute(Signal::CLK_VAL_DEM, $version->getProjet()))
+                {
                     // Crée une nouvelle expertise avec proposition d'experts
                     $se->newExpertiseIfPossible($version);
+
+                    // Avance du workflow
+                    $rtn = $workflow->execute(Signal::CLK_VAL_DEM, $projet);
+                    if ($rtn == true)
+                    {
+                        $request->getSession()->getFlashbag()->add("flash info","Projet $projet envoyé en validation");
+                    }
+                    else
+                    {
+                        $request->getSession()->getFlashbag()->add("flash erreur","Le projet $projet n'a pas pu être envoyé en validation.");
+                        $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet $projet n'a pas pu être envoyé en validation.");
+                    }
                 }
             }
-            // TODO - Il faudrait mettre l'url de départ dans la session php
             return $this->redirectToRoute('projet_dynamique');
-            //return $this->redirectToRoute('projet_session');
         }
         else
         {
@@ -1152,6 +1179,7 @@ class ProjetController extends AbstractController
         //$projets = $em->getRepository(Projet::class)->findAll();
         $sj = $this->sj;
         $sp = $this->sp;
+        $sroc = $this->sroc;
 
         foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
             $etat_projet[$e] = 0;
@@ -1184,12 +1212,17 @@ class ProjetController extends AbstractController
 
             $etat_projet[$metaetat] += 1;
 
-            
+            $dacs=[];
+            foreach ($version->getDac() as $d)
+            {
+                $dacs[$sroc->getNomComplet($d->getRessource())] = $d;
+            }
             $data[] = [
                     'projet'       => $projet,
                     'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
                     'metaetat'     => $metaetat,
                     'version'      => $version,
+                    'dacs'         => $dacs,
                     'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
                     'count'        => $count,
                     'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
@@ -1295,6 +1328,7 @@ class ProjetController extends AbstractController
      * @Route("/nouveau/{type}", name="nouveau_projet", methods={"GET","POST"})
      * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
+     * TODO - Passer nouveau dans ServiceProjets !
      *
      */
     public function nouveauAction(Request $request, $type): Response
@@ -1305,6 +1339,9 @@ class ProjetController extends AbstractController
         $sp = $this->sp;
         $sv = $this->sv;
         $sj = $this->sj;
+        $sr = $this->sr;
+        $sroc = $this->sroc;
+        $su = $this->su;
         $grdt = $this->grdt;
         $token = $this->tok->getToken();
         $em = $this->em;
@@ -1320,66 +1357,10 @@ class ProjetController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de créer un nouveau projet parce que $raison");
         }
 
-        $session  = $ss -> getSessionCourante();
-        $prefixes = $this->getParameter('prj_prefix');
-        if (!isset($prefixes[$type]) || $prefixes[$type]==="") {
-            $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Pas de préfixe pour le type $type. Voir le paramètre prj_prefix");
-            return $this->redirectToRoute('accueil');
-        }
-
-        // Création du projet
-        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
-        $projet = new Projet($type);
-        $projet->setIdProjet($sp->NextProjetId($annee, $type));
-        $projet->setNepasterminer(false);
-        $projet->setEtatProjet(Etat::RENOUVELABLE);
-
-        // Ecriture du projet dans la BD
-        $em->persist($projet);
-        $em->flush();
-
-        // Création de la première version
-        $version = new Version();
-
-        // setProjet fixe aussi le type de la version (cf getVersionType())
-        // important car le type du projet peut changer !
-        $version->setProjet($projet);
-        if ($type == Projet::PROJET_DYN)
-        {
-            $version->setNbVersion("01");
-            $version->setIdVersion("01" . $projet->getIdProjet());
-        }
-        else
-        {
-            $version->setSession($session);
-            $version->setNbVersion("01");
-            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
-        }
+        // Projet dynamique = SEUL type de projets supporté actuellement
+        $projet = $sp->creerProjet(Projet::PROJET_DYN);
+        $version = $projet->getVersionDerniere();
         
-        $sv->setLaboResponsable($version, $token->getUser());
-
-        $version->setEtatVersion(Etat::EDITION_DEMANDE);
-
-        // Ecriture de la version dans la BD
-        $em->persist($version);
-        $em->flush();
-
-        // La dernière version est fixée par l'EventListener
-        // $projet->setVersionDerniere($version);
-        // $em->persist( $projet);
-        // $em->flush();
-
-        // Affectation de l'utilisateur connecté en tant que responsable
-        $moi = $token->getUser();
-        $collaborateurVersion = new CollaborateurVersion($moi);
-        $collaborateurVersion->setVersion($version);
-        $collaborateurVersion->setResponsable(true);
-        $collaborateurVersion->setDeleted(false);
-        
-        // Ecriture de collaborateurVersion dans la BD
-        $em->persist($collaborateurVersion);
-        $em->flush();
-
         return $this->redirectToRoute('modifier_version', [ 'id' => $version->getIdVersion() ]);
     }
 

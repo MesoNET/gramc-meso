@@ -105,7 +105,7 @@ class CollaborateurVersion
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="collaborateurVersion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version", onDelete="CASCADE")
      * })
@@ -115,7 +115,7 @@ class CollaborateurVersion
     /**
      * @var \App\Entity\Laboratoire
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",inversedBy="collaborateurVersion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_coll_labo", referencedColumnName="id_labo")
      * })
@@ -125,7 +125,7 @@ class CollaborateurVersion
     /**
      * @var \App\Entity\Etablissement
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement",inversedBy="collaborateurVersion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_coll_etab", referencedColumnName="id_etab")
      * })
@@ -135,19 +135,12 @@ class CollaborateurVersion
     /**
      * @var \App\Entity\Individu
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="collaborateurVersion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_collaborateur", referencedColumnName="id_individu")
      * })
      */
     private $collaborateur;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="collaborateurversion")
-     */
-    private $user;
 
     public function __toString()
     {
@@ -178,7 +171,6 @@ class CollaborateurVersion
         $this->delb = false;
         
         $this->responsable = false;
-        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
 
         if ($individu != null) {
             $this->statut = $individu->getStatut();
@@ -461,44 +453,8 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Individu
      */
-    public function getCollaborateur()
+    public function getCollaborateur(): Individu
     {
         return $this->collaborateur;
     }
-
-   /**
-     * Add user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return CollaborateurVersion
-     */
-    public function addUser(\App\Entity\User $user): CollaborateurVersion
-    {
-        $this->user[] = $user;
-
-        return $this;
-    }
-
-    /**
-     * Remove user
-     *
-     * @param \App\Entity\User $user
-     */
-    public function removeUser(\App\Entity\User $user): void
-    {
-        $this->user->removeElement($user);
-    }
-
-    /**
-     * Get user
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUser(): \Doctrine\Common\Collections\Collection
-    {
-        return $this->user;
-    }
-
-
 }

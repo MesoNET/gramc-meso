@@ -12,6 +12,8 @@
 
 
 {% macro ligne_projet(item) %}
+{#{dump(item.loginnames)}#}
+
 {% if item.cpt_rall + 1 > 1 %}
     <tr class="rallonge">
     {% else %}
@@ -31,19 +33,17 @@
         <td>{{ item.projet.idProjet }}</td>
         
         {% if noconso==false %}
-            {% for s in ['TURPAN','BOREALE'] %}
+            {% for s in item.loginnames|keys|sort %}
                 <td rowspan="{{ item.cpt_rall + 1 }}">
-                    {# {{dump(item.loginnames)}} #}
-    
-                    {% if item.loginnames[s]['nom'] == 'nologin' %}
-                        -
-                        {% if item.loginnames[s]['login'] %} <span title="Votre compte n'est pas encore créé">{{ icones.attention(20,20) }}</span> {% endif %}
-                    {% else %}
-                         <tt>{{item.loginnames[s]['nom'] }}</tt> - 
+                    {% if item.loginnames[s]['login'] %}
+                        {% if item.loginnames[s]['nom'] != 'nologin' %}
+                            <tt>{{ item.loginnames[s]['nom'] }}</tt>
+                        {% endif %}
+                        - 
                         {% if item.loginnames[s]['clessh'] != null %}
                             <tt>{{ item.loginnames[s]['clessh'].nom }}</tt>
                             {% if not item.loginnames[s]['clessh']['deploy'] and not item.loginnames[s]['clessh'].rvk %}
-                                <span title="Vous pourrez vous connecter lorsque votre clé sera déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
+                                <span title="Vous pourrez vous connecter lorsque votre compte sera créé et votre clé déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
                             {% endif %}
                             {% if item.loginnames[s]['clessh'].rvk %}
                                 <span title="PROBLEME DE SECURITE - VOTRE CLE A ETE REVOQUEE">{{ icones.attention(20,20) }}</span>
@@ -51,8 +51,10 @@
                             <span title="Changer de clé ssh"><a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
                         {% else %}
                             <span title="Vous devez choisir une clé avant de vous connecter">{{ icones.attention(20,20) }}<a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
-                        {% endif %} 
-                    {% endif %}
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif%}
                 </td>
             {% endfor %}
         {% endif %}
@@ -72,18 +74,16 @@
             {% else %} TERMINE
             {% endif %}
         </td>
-        {% if noconso==false %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
-                {% if item.cv != null %}
-                    {#{{ gramcconsomacros.affiche_conso(item.projet.idProjet, item.loginnames) }} #}
-    
-                    <div alt="Evolution de la consommation" class="conso"  id="bconso_{{ item.projet.idProjet }}"
-                    data-href="{{ absolute_url(path('projet_conso', { 'id': item.projet.idProjet, 'cv': item.cv.id })) }}">
-    -                   {{ icones.consommation }}
-    -               </div>
-                {% endif %}
-            </td>
-            <input id="conso_{{ item.projet.idProjet }}" value="{{ item.conso |number_format(1)}}" type="hidden">
+ 
+        {% if item.projet.versionactive != null %}
+        {% set dacs = serviceDacs.getDacsByNr(item.projet.versionactive) %}
+        {% for nr in dacs|keys|sort %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >{{ dacs[nr].consommation }}</td>
+        {% endfor %}
+        {% else %}
+        {% for r in serviceRessources.getressources %}
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >-</td>
+        {% endfor %}
         {% endif %}
     </tr>
 
@@ -179,10 +179,11 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
+            {% if noconso==false %}{% for s in serviceServeurs.getserveurs %}<th>Id {{s.nom}}</th>{% endfor %}{% endif %}
             <th>Titre</th>
             <th>Fin</th>
-            {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
+            {% if false %}<th colspan="2">Consommation</th>{% endif %}
+            {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
         </tr>
     </thead>
 
@@ -217,7 +218,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% if noconso==false %}<th>Id TURPAN</th><th>id BOREALE</th>{% endif %}
+            {% if noconso==false %}{% for s in serviceServeurs %}<th>Id {{s}}</th>{% endfor %}{% endif %}
             <th>Titre</th>
             <th>Fin</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}

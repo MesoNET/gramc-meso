@@ -3,8 +3,10 @@ Votre demande de ressources pour {{mesoc}} a bien été reçue.
 
 {% if object.session != null %} Numéro de session         : {{  object.session |raw }} {% endif %}
 Votre numéro de projet      : {{ object.projet |raw }}
-Heures demandées sur turpan : {{ object.demHeuresUft |raw }}
-Heures demandées sur Boreale: {{ object.demHeuresCriann |raw }}
+
+{% for dac in object.dac %}
+Ressources demandées sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.demande }} {{ dac.ressource.unite }}
+{% endfor %}
 
 Vous pouvez retrouver votre projet sur la page suivante :
 {{ absolute_url( path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}

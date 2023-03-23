@@ -261,7 +261,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Thematique
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Thematique")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Thematique", inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="prj_id_thematique", referencedColumnName="id_thematique")
      * })
@@ -272,7 +272,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Rattachement
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rattachement")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Rattachement", inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="prj_id_rattachement", referencedColumnName="id_rattachement")
      * })
@@ -282,7 +282,7 @@ class Version implements Demande
     /**
      * @var \App\Entity\Session
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Session")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Session",inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_session", referencedColumnName="id_session")
      * })
@@ -300,24 +300,12 @@ class Version implements Demande
     /**
      * @var \App\Entity\Projet
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", cascade={"persist"},inversedBy="version")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet", nullable=true )
      * })
      */
     private $projet;
-
-    /**
-    * @
-    * ORM\PostUpdate
-    */
-    //public function setVersionActive()
-    //// on ne sait pas si cela marche parce que l'on ne s'en sert pas
-    //{
-    //    if ($this->etatVersion == Etat::ACTIF && $this->projet != null) {
-    //        $this->projet->setVersionActive($this);
-    //    }
-    //}
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -336,6 +324,13 @@ class Version implements Demande
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Dac", mappedBy="version", cascade={"persist"})
+     */
+    private $dac;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="version", cascade={"persist"} )
      */
     private $expertise;
@@ -348,16 +343,16 @@ class Version implements Demande
     private $formationVersion;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \App\Entity\Version
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
+     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
      */
     private $versionDerniere;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \App\Entity\Version
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
+     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
      */
     private $versionActive;
 
@@ -378,10 +373,9 @@ class Version implements Demande
     {
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rallonge             = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->dac                  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise            = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->formation            = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->versionDerniere      = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->versionActive        = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->formationVersion     = new \Doctrine\Common\Collections\ArrayCollection();
         $this->etatVersion          = Etat::EDITION_DEMANDE;
     }
 
@@ -1280,9 +1274,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
-        $this->collaborateurVersion[] = $collaborateurVersion;
+        if (! $this->collaborateurVersion->contains($collaborateurVersion))
+        {
+            $this->collaborateurVersion[] = $collaborateurVersion;
+        }
 
         return $this;
     }
@@ -1292,9 +1289,10 @@ class Version implements Demande
      *
      * @param \App\Entity\CollaborateurVersion $collaborateurVersion
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion)
+    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+        return $this;
     }
 
     /**
@@ -1314,9 +1312,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addRallonge(\App\Entity\Rallonge $rallonge)
+    public function addRallonge(\App\Entity\Rallonge $rallonge): self
     {
-        $this->rallonge[] = $rallonge;
+        if (! $this->rallonge->contains($rallonge))
+        {
+            $this->rallonge[] = $rallonge;
+        }
 
         return $this;
     }
@@ -1326,9 +1327,10 @@ class Version implements Demande
      *
      * @param \App\Entity\Rallonge $rallonge
      */
-    public function removeRallonge(\App\Entity\Rallonge $rallonge)
+    public function removeRallonge(\App\Entity\Rallonge $rallonge): self
     {
         $this->rallonge->removeElement($rallonge);
+        return $this;
     }
 
     /**
@@ -1341,6 +1343,43 @@ class Version implements Demande
         return $this->rallonge;
     }
 
+    /**
+     * Add dac
+     *
+     * @param \App\Entity\Dac $dac
+     *
+     * @return Version
+     */
+    public function addDac(\App\Entity\Dac $dac): self
+    {
+        if (! $this->dac->contains($dac))
+        {
+            $this->dac[] = $dac;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove dac
+     *
+     * @param \App\Entity\Dac $dac
+     */
+    public function removeDac(\App\Entity\Dac $dac): self
+    {
+        $this->dac->removeElement($dac);
+        return $this;
+    }
+
+    /**
+     * Get dac
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDac()
+    {
+        return $this->dac;
+    }
+
     // Expertise
 
     /**
@@ -1350,9 +1389,12 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addExpertise(\App\Entity\Expertise $expertise)
+    public function addExpertise(\App\Entity\Expertise $expertise): self
     {
-        $this->expertise[] = $expertise;
+        if (! $this->expertise->contains($expertise))
+        {
+            $this->expertise[] = $expertise;
+        }
 
         return $this;
     }
@@ -1362,9 +1404,10 @@ class Version implements Demande
      *
      * @param \App\Entity\Expertise $expertise
      */
-    public function removeExpertise(\App\Entity\Expertise $expertise)
+    public function removeExpertise(\App\Entity\Expertise $expertise): self
     {
         $this->expertise->removeElement($expertise);
+        return $this;
     }
 
     /**
@@ -1386,7 +1429,7 @@ class Version implements Demande
      *
      * @return Version
      */
-    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion): self
     {
         if (! $this->formationVersion->contains($formationVersion))
         {
@@ -1401,11 +1444,12 @@ class Version implements Demande
      *
      * @param \App\Entity\FormationVersion $formationVersion
      */
-    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion)
+    public function removeFormationVersion(\App\Entity\FormationVersion $formationVersion): self
     {
         if ($this->formationVersion->contains($formationVersion))
         {
             $this->formationVersion->removeElement($formationVersion);
+            return $this;
         }
     }
 

@@ -207,7 +207,7 @@ class PublicationController extends AbstractController
 
     /**
      * @Route("/{id}/consulter",name="consulter_publications", methods={"GET"} )
-     * @Security("is_granted('ROLE_EXPERT')")
+     * @Security("is_granted('ROLE_VALIDEUR')")
      */
     public function consulterAction(Projet $projet, Request $request): Response
     {

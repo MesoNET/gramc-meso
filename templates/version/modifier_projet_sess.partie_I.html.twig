@@ -1,7 +1,7 @@
 {% import "default/macros.html.twig" as gramcmacros %}
 {% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
 
-<div id="tab1" class="onglet">
+<div id="tab{{numtab}}" class="onglet">{% set numtab = numtab + 1 %}
     <br><br>
     <h2>Présentation générale</h2>
 
@@ -84,7 +84,7 @@
         <p><strong>NOTE - </strong> Il <em>n'est pas nécessaire</em> de déclarer ici les personnes qui collaborent au projet
         mais qui ne demandent pas d'accès aux services de calcul ou de données</p>
 
-        <p><strong>NOTE - </strong> Il <em>au moins une personne</em> doit avoir un login !</p>
+        <p><strong>NOTE - </strong> <em>Au moins une personne</em> doit avoir un login !</p>
     {% endif %}
     </div>
 

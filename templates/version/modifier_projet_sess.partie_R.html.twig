@@ -1,0 +1,25 @@
+{# ################################################################################## #}
+{# LES FORMULAIRES DES RESSOURCES ! #}
+
+
+{% for form in ressource_form.children.ressource.children %}
+<div id="tab{{numtab}}" class="onglet">{% set numtab = numtab + 1 %}
+
+    <h2>{{serviceRessources.getnomcomplet(form.vars.data.ressource)}}</h2>
+
+    <div class="information ok">
+        <p>{{ form.vars.data.ressource.desc|raw|nl2br }}</p>
+        {% if form.vars.data.ressource.docurl != null %}
+        <p><strong>Documentation technique</strong>: <a href="{{form.vars.data.ressource.docurl}}">{{form.vars.data.ressource.docurl}}</a></p>
+        {% endif %}
+    </div>
+
+    <div class="inputs"  id="{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}" >
+        <div class="input">
+        <strong>{{ form.vars.data.ressource.unite }}:</strong>
+        {{ form_widget( form.demande) }}
+        </div>
+    </div>
+
+</div>
+{% endfor %}

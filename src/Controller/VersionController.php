@@ -36,6 +36,7 @@ use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
@@ -106,6 +107,7 @@ class VersionController extends AbstractController
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
+        private ServiceServeurs $sr,
         private ServiceSessions $ss,
         private ServiceForms $sf,
         private GramcDate $sd,
@@ -199,15 +201,17 @@ class VersionController extends AbstractController
     /**
      * Supprimer version (en base de données et dans le répertoire data)
      *
-     * @Route("/{id}/supprimer/{rtn}", defaults= {"rtn" = "X" }, name="version_supprimer",methods={"GET"} )
+     *   Route("/{id}/supprimer/{rtn}", defaults= {"rtn" = "X" }, name="version_supprimer",methods={"GET"} )
+     * @Route("/{id}/supprimer", name="version_supprimer",methods={"GET"} )
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
-    public function supprimerAction(Version $version, $rtn): Response
+    public function supprimerAction(Version $version): Response
     {
         $em = $this->em;
         $sm = $this->sm;
         $sv = $this->sv;
+        $sp = $this->sp;
         $sj = $this->sj;
 
         // ACL
@@ -216,64 +220,9 @@ class VersionController extends AbstractController
                 " parce que : " . $sm->modifierVersion($version)['raison']);
         }
 
-        $etat = $version->getEtatVersion();
-        $idProjet = null;
-        $idVersion = null;
-        if ($version->getProjet() == null) {
-            $idProjet = null;
-            $idVersion = $version->getIdVersion();
-        } else {
-            $idProjet   =  $version->getProjet()->getIdProjet();
-        }
-
-
-        if ($etat == Etat::EDITION_DEMANDE || $etat == Etat::EDITION_TEST) {
-            // Suppression des collaborateurs
-            foreach ($version->getCollaborateurVersion() as $collaborateurVersion) {
-                $em->remove($collaborateurVersion);
-            }
-
-            // Suppression des expertises éventuelles
-            $expertises = $version->getExpertise();
-            foreach ($expertises as $expertise) {
-                $em->remove($expertise);
-            }
-
-            $em->flush();
-        }
-
-        if ($idProjet == null) {
-            $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $idVersion . " sans projet supprimée");
-        } else {
-            $projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => $idProjet]);
-
-            // On met le champ version derniere a NULL
-            $projet->setVersionDerniere(null);
-            $em -> persist($projet);
-            $em->flush();
-
-            // On supprime la version
-            // Du coup la versionDerniere est mise à jour par l'EventListener
-            $em->remove($version);
-            $em->flush();
-
-            // Si pas d'autre version, on supprime le projet
-            if ($projet != null && $projet->getVersion() != null && count($projet->getVersion()) == 0) {
-                $em->remove($projet);
-                $em->flush();
-            }
-        }
-
-        // suppression des fichiers liés à la version
-        $sv->effacerDonnees($version);
+        $sp->supprimerVersion($version);
         
-        //return $this->redirectToRoute( 'projet_accueil' );
-        // Il faudrait plutôt revenir là d'où on vient !
-        if ($rtn == "X") {
-            return $this->redirectToRoute('projet_accueil');
-        } else {
-            return $this->redirectToRoute($rtn);
-        }
+        return $this->redirectToRoute('projet_accueil');
     }
 
     /**
@@ -620,6 +569,7 @@ class VersionController extends AbstractController
         $sj = $this->sj;
         $sval= $this->vl;
         $sv = $this->sv;
+        $sr = $this->sr;
         $em = $this->em;
 
 
@@ -633,6 +583,7 @@ class VersionController extends AbstractController
         {
             $text_fields = false;
         }
+
         $collaborateur_form = $this->ff
                                    ->createNamedBuilder('form_projet', FormType::class, [
                                        'individus' => $sv->prepareCollaborateurs($version, $sj, $sval)
@@ -647,7 +598,8 @@ class VersionController extends AbstractController
                                        'by_reference' =>  false,
                                        'delete_empty' =>  true,
                                        'attr'         => ['class' => "profil-horiz"],
-                                       'entry_options' =>['text_fields' => $text_fields]
+                                       'entry_options' =>['text_fields' => $text_fields,'srv_noms' => $sr->getnoms()],
+                                       //'prototype_options' =>['text_fields' => $text_fields,'srv_noms' => $srv_noms],
                                    ])
                                    ->add('submit', SubmitType::class, [
                                         'label' => 'Sauvegarder',

@@ -66,16 +66,13 @@ class UserController extends AbstractController
     public function modifAction(Request $request, User $user): Response
     {
         $em = $this->em;
-        $cv = $user->getCollaborateurVersion();
         
-        if (count($cv) == 0)
+        if ($user == null)
         {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " ERREUR INTERNE: User $user - Pas de CollaborateurVersion associé ");
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . " ERREUR INTERNE: User null");
         }
 
-        // TODO - Normalement tous les CollaborateurVersion associés à ce User pointent vers le MEME individu
-        //        Comment vérifier ça ?
-        $individu = $cv[0]->getCollaborateur();
+        $individu = $user->getIndividu();
         $clessh = $em->getRepository(Clessh::class)->findBy(['individu' => $individu, 'rvk' => false]);
 
         $old_clessh = $user->getClessh();

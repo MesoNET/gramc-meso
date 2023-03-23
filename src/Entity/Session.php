@@ -312,9 +312,12 @@ class Session
      *
      * @return Session
      */
-    public function addVersion(\App\Entity\Version $version)
+    public function addVersion(\App\Entity\Version $version): self
     {
-        $this->version[] = $version;
+        if (! $this->version->contains($version))
+        {
+            $this->version[] = $version;
+        }
 
         return $this;
     }
@@ -324,9 +327,10 @@ class Session
      *
      * @param \App\Entity\Version $version
      */
-    public function removeVersion(\App\Entity\Version $version)
+    public function removeVersion(\App\Entity\Version $version): self
     {
         $this->version->removeElement($version);
+        return $this;
     }
 
     /**

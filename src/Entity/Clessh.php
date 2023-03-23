@@ -60,7 +60,7 @@ class Clessh
      * @var \App\Entity\Individu
      *
      * ORM\Column(name="id_individu", type="integer")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="clessh")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
      * })
@@ -151,9 +151,12 @@ class Clessh
      *
      * @return clessh
      */
-    public function adduser(\App\Entity\User $user)
+    public function adduser(\App\Entity\User $user): self
     {
-        $this->user[] = $user;
+        if ( ! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
         return $this;
     }
 
@@ -164,7 +167,7 @@ class Clessh
      *
      * @return clessh
      */
-    public function removeUser(\App\Entity\User $user)
+    public function removeUser(\App\Entity\User $user): self
     {
         $this->user->removeElement($user);
         return $this;

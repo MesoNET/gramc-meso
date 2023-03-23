@@ -4,8 +4,11 @@ La validation de votre projet {{ object.projet.idProjet  |raw }} a été effectu
 
 Cette demande a été acceptée.
 
-Le nombre d'heures demandées  est : {{ object.demHeuresUft |raw }} (TURPAN) et {{ object.demHeuresCriann |raw }} (BOREALE)
-Le nombre d'heures attribuées est : {{ object.expertise[0].nbHeuresAttUft |raw }} (TURPAN) et {{ object.expertise[0].nbHeuresAttCriann |raw }} (BOREALE)
+{% for dac in object.dac %}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.demande }} {{ dac.ressource.unite }}
+Ressources attribuées sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.attribution }} {{ dac.ressource.unite }}
+
+{% endfor %}
 
 Commentaire de l'expert :
 {{ object.expertise[0].commentaireExterne |raw }}

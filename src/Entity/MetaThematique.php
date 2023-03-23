@@ -115,9 +115,12 @@ class MetaThematique
      *
      * @return MetaThematique
      */
-    public function addThematique(\App\Entity\Thematique $thematique)
+    public function addThematique(\App\Entity\Thematique $thematique): self
     {
-        $this->thematique[] = $thematique;
+        if (! $this->thematique->contains($thematique))
+        {
+            $this->thematique[] = $thematique;
+        }
 
         return $this;
     }
@@ -127,9 +130,10 @@ class MetaThematique
      *
      * @param \App\Entity\Thematique $thematique
      */
-    public function removeThematique(\App\Entity\Thematique $thematique)
+    public function removeThematique(\App\Entity\Thematique $thematique): self
     {
         $this->thematique->removeElement($thematique);
+        return $this;
     }
 
     /**

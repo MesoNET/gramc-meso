@@ -55,15 +55,20 @@
     Les champs ci-dessous <strong>doivent être complétés</strong> avant que vous puissiez envoyer votre projet en expertise.<br>
 
     {% if 'prj_titre' in todo %}<a href="#form_prjTitre" class="gerer_onglets">titre du projet</a><br>{% endif %}
-    {% if 'dem_heures_criann' in todo %}<a href="#form_demHeuresCriann" class="gerer_onglets">Nombre d'heures demandées sur Boreale</a><br>{% endif %}
-    {% if 'dem_heures_uft' in todo %}<a href="#form_demHeuresUft" class="gerer_onglets">Nombre d'heures demandées sur Turpan</a><br>{% endif %}
     {% if 'dem_heures' in todo %}<a href="#form_demHeures" class="gerer_onglets">Nombre d'heures demandées</a><br>{% endif %}
     {% if 'prj_id_thematique' in todo %}<a href="#form_prjThematique" class="gerer_onglets">Choix d'une thématique</a><br>{% endif %}
     {% if 'prj_expose' in todo %}<a href="#form_prjExpose" class="gerer_onglets">Exposé scientifique</a><br>{% endif %}
     {% if 'code_nom' in todo %}<a href="#form_codeNom" class="gerer_onglets">Nom du logiciel</a><br>{% endif %}
     {% if 'code_licence' in todo %}<a href="#form_codeLicence" class="gerer_onglets">Licence du logiciel</a><br>{% endif %}
     {% if 'genci' in todo %}<a href="#form_genci" class="gerer_onglets">Heures sur les centres nationaux</a><br>{% endif %}
-
+    {% if 'ressources' in todo %}
+        Demander des ressources ({% for form in ressource_form.children.ressource.children %}
+        <a href="#{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}" class="gerer_onglets" >
+            {{serviceRessources.getnomcomplet(form.vars.data.ressource)}}
+        </a>
+        {%endfor %})
+        <br>
+    {% endif %}
     {% if 'prj_justif_renouv' in todo %}<a href="#form_prjJustifRenouv" class="gerer_onglets">Pourquoi une nouvelle version ?</a><br>{% endif %}
     {% if 'collabs' in todo %}
         <a href="#liste_des_collaborateurs" class="gerer_onglets">Liste des collaborateurs</a><br>{% endif %}
@@ -78,15 +83,16 @@
 <div id="onglets" >
 
 <nav id="menu_formulaire">
+  {% set numtab=1 %}
   <ul id="ul_formulaire" >
     <li >
-        <a href="#tab1">Présentation</a>
+        <a href="#tab{{numtab}}">Présentation</a>{% set numtab = numtab + 1 %}
     </li>
     <li >
-        <a href="#tab2">La science</a>
+        <a href="#tab{{numtab}}">La science</a>{% set numtab = numtab + 1 %}
     </li>
     <li>
-        <a href="#tab3">La technique</a>
+        <a href="#tab{{numtab}}">La technique</a>{% set numtab = numtab + 1 %}
     </li>
     {# TODO - VIRER DEFINITIVEMENT tab4 - Ici ça merdouille #}
     {% if nodata == false %}
@@ -94,27 +100,33 @@
         <a href="#tab4">Les données</a>
     </li>
     {% endif %}
-    <li >
-        <a href="#tab4">Formation</a>
-    </li>
+    
     <li>
-        <a href="#tab5">TURPAN</a>
+        <a href="#tab{{numtab}}">Formation</a>{% set numtab = numtab+1 %}
     </li>
-    <li>
-        <a href="#tab6">BOREALE</a>
-    </li>
+
+    {% for ress_form in ressource_form.children.ressource.children %}
+        <li>
+            <a href="#tab{{numtab}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>{% set numtab = numtab+1 %}
+        </li>
+    {% endfor %}
   </ul>
 </nav>
 
+{% set numtab=1 %}
 {% include('version/modifier_projet_sess.partie_I.html.twig') %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_II.html.twig') %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_III.html.twig') %}
 {% if nodata == false %}
 {% include('version/modifier_projet_sess.partie_IV.html.twig') %}
 {% endif %}
+{% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_V.html.twig') %}
-{% include('version/modifier_projet_sess.partie_VI.html.twig') %}
-{% include('version/modifier_projet_sess.partie_VII.html.twig') %}
+{% set numtab = numtab + 1 %}
+{% include('version/modifier_projet_sess.partie_R.html.twig') %}
+{# ATTENTION - numtab n'est plus utilisable maintenant car partie_R l'a modifié ! #}
 
 {# ################################################################################## #}
 

@@ -294,9 +294,12 @@ class ServiceExperts
 
         // S'il y a déjà une expertise on ne fait rien
         // Sinon on la crée et on appelle le programme d'affectation automatique des experts
-        if (count($version->getExpertise()) > 0) {
+        if (count($version->getExpertise()) > 0)
+        {
             $sj->noticeMessage(__METHOD__ . ":" . __LINE__ . " Expertise de la version " . $version . " existe déjà");
-        } else {
+        }
+        else
+        {
             $expertise = new Expertise();
             $expertise->setVersion($version);
 

@@ -3,6 +3,17 @@
 title =Les principales entités de gramc-meso0\nLe code se trouve dans src/Entity
 
 package Classes <<Frame>> {
+
+    together {
+        class Expertise
+        class Ressource
+        class Dac
+        class Version
+        class Serveur
+        class User
+    }
+    
+
     class Projet {
         - int typeProjet
         - int etatProjet
@@ -55,8 +66,6 @@ package Classes <<Frame>> {
         - string labo
         - string statut
         - string etablissement
-        - bool login
-        - bool clogin
     }
 
     class FormationVersion <<Demandes de formation>>{
@@ -74,10 +83,6 @@ package Classes <<Frame>> {
     class Expertise <<Décisions des valideurs>> {
         - string commentaireExterne
         - string commentaireInterne
-        
-        - int nbHeuresAttUft
-        - int nbHeuresAttCriann
-        - int nbHeuresAttRomeo
         
         - bool validation
         - bool definitif
@@ -104,14 +109,19 @@ package Classes <<Frame>> {
     class Serveur {
         - string nom
         - string desc
+        - string admname
     }
     
     class User <<Comptes sur un serveur>> {
         - string loginname
+        - bool login
+        - bool CGU
+        - bool dply
         + getLoginName()
     }
 
     class Ressource {
+        - string nom
         - string desc
         - string unite
         - int maxDem
@@ -119,13 +129,12 @@ package Classes <<Frame>> {
     }
 
     class Dac <<Demande, Attribution, Consommation>> {
-        - string justification
         - int demande
         - int attribution
         - int consommation
         - string groupname
     }
-    
+
     Projet  "1" o-- "1..v" Version
     Individu "1" o-- "0..n" CollaborateurVersion
     Individu "1" o-- "0..n" Sso
@@ -143,9 +152,12 @@ package Classes <<Frame>> {
     
     Expertise "1" -- "1" Individu
     Expertise "1" -- "1" Version
-    CollaborateurVersion "v"  -- "s" User
-
+    Expertise "1" o-- "r" Dac
+    
     User "0..n" --o "1" Clessh
+    User "0..n" -- "1" Serveur
+    User "0..n" -- "1" Projet
+    User "0..s*p" -- "1" Individu
     
     Serveur "1" o-- "0..n" Ressource: r ressources s serveurs
     Ressource "1" o-- "0..n" Dac
@@ -181,10 +193,6 @@ package Rôles <<Frame>> {
 ROLE_OBS --> ROLE_DEMANDEUR
 ROLE_ADMIN --> ROLE_OBS
 ROLE_SYSADMIN --> ROLE_OBS
-ROLE_VALID --> ROLE_DEMANDEUR
-ROLE_EXPERT --> ROLE_DEMANDEUR
-ROLE_PRESIDENT --> ROLE_EXPERT
-class ROLE_EXPERT <<Inutilisé>>
-class ROLE_PRESIDENT <<Inutilisé>>
+ROLE_VALIDEUR --> ROLE_DEMANDEUR
 }
 @enduml

@@ -28,9 +28,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",
- *                         columns={"serveur","loginname"})},
- *                         indexes={@ORM\Index(name="loginname", columns={"serveur","loginname"})})
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",columns={"id_serveur","loginname"}),
+ *                                            @ORM\UniqueConstraint(name="i_p_s", columns={"id_individu", "id_projet", "id_serveur"})})
+ *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User
@@ -48,34 +48,46 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="loginname", type="string",length=20 )
+     * @ORM\Column(name="loginname", nullable=true, type="string",length=20 )
      */
     private $loginname;
 
     /**
      * @var \App\Entity\Serveur
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur", inversedBy="user" )
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="serveur", referencedColumnName="nom")
+     *   @ORM\JoinColumn(name="id_serveur", referencedColumnName="nom")
      * })
      */
     private $serveur;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \App\Entity\Individu
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\CollaborateurVersion", inversedBy="user")
-     * @ORM\JoinTable(name="CollaborateurVersionUser",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_collaborateurversion", referencedColumnName="id")
-     *   }
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="user")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
+     * })
      */
-    private $collaborateurversion;
+    private $individu;
+
+    /**
+     * @var \App\Entity\Projet
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="user")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet")
+     * })
+     */
+    private $projet;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="login", type="boolean", nullable=false, options={"comment":"login sur le serveur lié"}))
+     */
+    private $login = false;
 
     /**
      * @var string
@@ -117,7 +129,7 @@ class User
      * @var \App\Entity\Clessh
      *
      * ORM\Column(name="id_clessh", type="integer", nullable=true)
-     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh",inversedBy="user")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_clessh", referencedColumnName="id")
      * })
@@ -143,7 +155,6 @@ class User
     {
         $this->password  = null;
         $this->passexpir = null;
-        $this->collaborateurversion = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -202,6 +213,54 @@ class User
     public function getServeur(): \App\Entity\Serveur
     {
         return $this->serveur;
+    }
+
+    /**
+     * Set individu
+     *
+     * @param \App\Entity\Individu $individu
+     *
+     * @return User
+     */
+    public function setIndividu(\App\Entity\Individu $individu): self
+    {
+        $this->individu = $individu;
+
+        return $this;
+    }
+
+    /**
+     * Get individu
+     *
+     * @return \App\Entity\Individu
+     */
+    public function getIndividu(): \App\Entity\Individu
+    {
+        return $this->individu;
+    }
+
+    /**
+     * Set projet
+     *
+     * @param \App\Entity\Projet $projet
+     *
+     * @return User
+     */
+    public function setProjet(\App\Entity\Projet $projet): self
+    {
+        $this->projet = $projet;
+
+        return $this;
+    }
+
+    /**
+     * Get projet
+     *
+     * @return \App\Entity\Projet
+     */
+    public function getProjet(): \App\Entity\Projet
+    {
+        return $this->projet;
     }
 
     /**
@@ -323,39 +382,27 @@ class User
     }
 
     /**
-     * Add collaborateurversion
+     * Set login
      *
-     * @param \App\Entity\CollaborateurVersion $cv
+     * @param boolean $login
      *
      * @return User
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): User
+    public function setLogin(bool $login): Self
     {
-        if (! $this->collaborateurversion->contains($cv)) {
-            $this->collaborateurversion[] = $cv;
-        }
+        $this->login = $login;
 
         return $this;
     }
 
     /**
-     * Remove collaborateurversion
+     * Get login
      *
-     * @param \App\Entity\CollaborateurVersion $cv
+     * @return boolean
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $cv): void
+    public function getLogin(): bool
     {
-        $this->CollaborateurVersion->removeElement($cv);
-    }
-
-    /**
-     * Get collaborateurversion
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCollaborateurVersion(): \Doctrine\Common\Collections\Collection
-    {
-        return $this->collaborateurversion;
+        return $this->login;
     }
 
     /**

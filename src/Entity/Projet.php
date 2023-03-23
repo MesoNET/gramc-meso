@@ -61,6 +61,19 @@ class Projet
     ];
 
     /**
+     * Constructor
+     */
+    public function __construct($type)
+    {
+        $this->publi = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->version = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rapportActivite = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->etatProjet = Etat::EDITION_DEMANDE;
+        $this->typeProjet = $type;
+    }
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="etat_projet", type="integer", nullable=false)
@@ -87,7 +100,7 @@ class Projet
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version")
+     * @ORM\OneToOne(targetEntity="App\Entity\Version",inversedBy="versionActive")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_veract", referencedColumnName="id_version", onDelete="SET NULL", nullable=true)
      * })
@@ -100,7 +113,7 @@ class Projet
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Version")
+     * @ORM\OneToOne(targetEntity="App\Entity\Version", inversedBy="versionDerniere")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_verder", referencedColumnName="id_version", onDelete="SET NULL", nullable=true )
      * })
@@ -146,6 +159,13 @@ class Projet
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
+     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="projet", cascade={"persist"})
+     */
+    private $user;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="\App\Entity\RapportActivite", mappedBy="projet")
      */
     private $rapportActivite;
@@ -164,18 +184,6 @@ class Projet
     public function __toString()
     {
         return $this->getIdProjet();
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct($type)
-    {
-        $this->publi        = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->version      = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rapportActivite = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->etatProjet   = Etat::EDITION_DEMANDE;
-        $this->typeProjet   = $type;
     }
 
     /**
@@ -353,7 +361,7 @@ class Projet
      *
      * @return Projet
      */
-    public function addPubli(\App\Entity\Publication $publi)
+    public function addPubli(\App\Entity\Publication $publi): self
     {
         if (! $this->publi->contains($publi)) {
             $this->publi[] = $publi;
@@ -367,9 +375,10 @@ class Projet
      *
      * @param \App\Entity\Publication $publi
      */
-    public function removePubli(\App\Entity\Publication $publi)
+    public function removePubli(\App\Entity\Publication $publi): self
     {
         $this->publi->removeElement($publi);
+        return $this;
     }
 
     /**
@@ -389,9 +398,12 @@ class Projet
      *
      * @return Projet
      */
-    public function addVersion(\App\Entity\Version $version)
+    public function addVersion(\App\Entity\Version $version): self
     {
-        $this->version[] = $version;
+        if (! $this->version->contains($version))
+        {
+            $this->version[] = $version;
+        }
 
         return $this;
     }
@@ -401,9 +413,10 @@ class Projet
      *
      * @param \App\Entity\Version $version
      */
-    public function removeVersion(\App\Entity\Version $version)
+    public function removeVersion(\App\Entity\Version $version): self
     {
         $this->version->removeElement($version);
+        return $this;
     }
 
     /**
@@ -417,15 +430,57 @@ class Projet
     }
 
     /**
+     * Add user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Projet
+     */
+    public function addUser(\App\Entity\User $user): self
+    {
+        if (! $this->user->contains($user))
+        {
+            $this->user[] = $user;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param \App\Entity\User $user
+     *
+     * @return Projet
+     */
+    public function removeUser(\App\Entity\User $user): self
+    {
+        $this->user->removeElement($user);
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * Add rapportActivite
      *
      * @param \App\Entity\RapportActivite $rapportActivite
      *
      * @return Projet
      */
-    public function addRapportActivite(\App\Entity\RapportActivite $rapportActivite)
+    public function addRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
     {
-        $this->rapportActivite[] = $rapportActivite;
+        if (! $this->rapportActivite->contains($rapportActivite))
+        {
+            $this->rapportActivite[] = $rapportActivite;
+        }
 
         return $this;
     }
@@ -435,9 +490,10 @@ class Projet
      *
      * @param \App\Entity\RapportActivite $rapportActivite
      */
-    public function removeRapportActivite(\App\Entity\RapportActivite $rapportActivite)
+    public function removeRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
     {
         $this->rapportActivite->removeElement($rapportActivite);
+        return $this;
     }
 
     /**
