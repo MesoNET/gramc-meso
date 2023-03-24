@@ -1754,16 +1754,18 @@ class AdminuxController extends AbstractController
             foreach ($users as $u)
             {
                 $r_u = [];
-                $c_cv = $u->getCollaborateurVersion();
-                if (empty($c_cv)) continue;   // oups ne devrait jamais arriver !
-                $l = count($c_cv);
-                $cv = $c_cv[$l-1];
-                $r_u['individu'] = $cv->getCollaborateur()->getPrenom() . " " . $cv->getCollaborateur()->getNom();
-                $r_u['idIndividu'] = $cv->getCollaborateur()->getIdIndividu();
-                $r_u['mail'] = $cv->getCollaborateur()->getMail();
+                //$c_cv = $u->getCollaborateurVersion();
+                //if (empty($c_cv)) continue;   // oups ne devrait jamais arriver !
+                //$l = count($c_cv);
+                //$cv = $c_cv[$l-1];
+                $individu = $u->getIndividu();
+                if ($individu === null) continue; // oups ne devrait jamais arriver !
+                $r_u['individu'] = $individu->getPrenom() . " " . $individu->getNom();
+                $r_u['idIndividu'] = $individu->getIdIndividu();
+                $r_u['mail'] = $individu->getMail();
                 $r_u['loginname'] = $su->getLoginname($u);
                 $r_u['deploy'] = $u->getDeply();
-                $r_u['projet'] = $cv->getVersion()->getProjet()->getIdProjet();
+                $r_u['projet'] = $u->getProjet()->getIdProjet();
                 $r_users[] = $r_u;
             }
             $r_c['users'] = $r_users;
