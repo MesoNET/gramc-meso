@@ -929,6 +929,8 @@ class AdminuxController extends AbstractController
      *             '{ "projet" : null,     "session" : "20A"}' -> Toutes les versions de la session 20A
      *
      *             '{ "projet" : "P01234", "session" : "20A"}' -> La version 20AP01234
+     *             ou
+     *             '{ "version" : "01M22022" }' -> La version 01M22022
      * 
      * Version "longue" - Le paramètre "long" provoque l'envoi de données supplémentaires concernant la ou les versions:
      * -----------------------------------------------------------------------------------------------------------------
@@ -974,12 +976,14 @@ class AdminuxController extends AbstractController
         {
             $id_projet = null;
             $id_session= null;
+            $id_version = null;
             $long = false;
         }
         else
         {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
             $id_session = (isset($content['session']))? $content['session']: null;
+            $id_version = (isset($content['version']))? $content['version']: null;
             $long = (isset($content['long']))? $content['long']: false;
         }
 
@@ -989,8 +993,16 @@ class AdminuxController extends AbstractController
         }
         
         $v_tmp = [];
+
+        // Une version particulière
+        if ( $id_version != null)
+        {
+            $version = $em->getRepository(Version::class)->find($id_version);
+            $v_tmp[] = $version;
+        }
+        
         // Tous les projets actifs
-        if ($id_projet == null && $id_session == null)
+        elseif ($id_projet == null && $id_session == null)
         {
             if ($nosession == false)
             {
@@ -1024,9 +1036,9 @@ class AdminuxController extends AbstractController
         // Une version particulière
         else
         {
-            $projet = $em->getRepository(Projet::class)->find($id_projet);
-            $sess  = $em->getRepository(Session::class)->find($id_session);
-            $v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
+            //$projet = $em->getRepository(Projet::class)->find($id_projet);
+            //$sess  = $em->getRepository(Session::class)->find($id_session);
+            //$v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
         }
 
         // SEULEMENT si session n'est pas spécifié: On ne garde que les versions actives... ou presque actives
