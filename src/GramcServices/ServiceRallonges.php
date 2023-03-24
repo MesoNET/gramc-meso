@@ -229,7 +229,7 @@ class ServiceRallonges
      * $ressource_forms = Tableau contenant un formulaire par ressource
      * $version        = La version considérée
      ****************************************************************/
-    public function handleRessourceForms(array $ressource_forms, Version $rallonge): void
+/*    public function handleRessourceForms(array $ressource_forms, Version $rallonge): void
     {
         $em   = $this->em;
         $sj   = $this->sj;
@@ -243,5 +243,5 @@ class ServiceRallonges
         }
         $em->persist($rallonge);
         $em->flush();
-    }
+    }*/
 }

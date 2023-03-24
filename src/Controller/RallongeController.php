@@ -283,6 +283,14 @@ class RallongeController extends AbstractController
         $data = $ressource_form->getData();
         $ressource_forms = $data['ressource'];
 
+        // NOTE - On met à zéro les demandes qui sont invalides
+        $validated = $srg->validateRessourceForms($ressource_forms);
+        if (! $validated)
+        {
+            $message = "Erreur dans une de vos demandes, elle a été mise à 0";
+            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+        }
+ 
         $editForm = $this->createFormBuilder($rallonge)
             ->add('prjJustifRallonge', TextAreaType::class, [ 'required'       =>  false ])
             ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer' ])

@@ -56,12 +56,7 @@
             { 'attr': { 'class': 'compteur', 'rows' : 6, 'cols' : 70 } }) }}
         </div>
 
-        {# Les boutons pour enregistrer / fermer #}
-        {{ panneau_enregistrer.panneau_enregistrer(edit_form,false) }}
-
     </div>
-
-    {{ form_end(edit_form) }}
 
     {% for form in ressource_form.children.ressource.children %}
         <h2>{{serviceRessources.getnomcomplet(form.vars.data.ressource)}}</h2>
@@ -80,6 +75,11 @@
             </div>
         </div>
     {% endfor %}
+
+    {# Les boutons pour enregistrer / fermer #}
+    {{ panneau_enregistrer.panneau_enregistrer(edit_form,false) }}
+
+    {{ form_end(edit_form) }}
 
 </section>
 
