@@ -22,21 +22,37 @@
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
-namespace App\Interfaces;
+namespace App\GramcServices\Workflow\Rallonge4;
 
-// Interface Demande:
-//      Une demande peut être soit une version, soit une rallonge
-//
-interface Demande
+use App\GramcServices\Workflow\Transition;
+
+use App\Utils\Functions;
+use App\GramcServices\Etat;
+use App\GramcServices\Signal;
+use App\Entity\Rallonge;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
+
+class Rallonge4Transition extends Transition
 {
-//    public function getAttrHeures();
-//    public function getDemHeures();
-    public function getId();
-    public function getEtat();
-    public function getMetaEtat();
-//    public function getExperts();
+    ////////////////////////////////////////////////////
 
-//    public function setAttrHeures($attrHeures);
-//    public function setDemHeures($demHeures);
-    public function setEtat($etat);
+    public function canExecute(object $rallonge): bool {
+        $rallonge instanceof Rallonge || throw new \InvalidArgumentException();
+        return true;
+    }
+
+    ///////////////////////////////////////////////////////
+
+    public function execute(object $rallonge): bool
+    {
+        $rallonge instanceof Rallonge || throw new \InvalidArgumentException();
+        
+        // Change l'état de la rallonge
+        $this->changeEtat($rallonge);
+
+        // Envoyer les notifications
+        $this->sendNotif($rallonge);
+
+        return true;
+    }
 }

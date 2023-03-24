@@ -1744,19 +1744,23 @@ class ServiceMenus
         $version = $this->sp->versionActive($projet);
         $max_rall= $this->max_rall;
 
-        if ($version == null) {
+        if ($version == null)
+        {
             $menu['raison']         =   "Le projet " . $projet . " n'est pas actif !";
-        } elseif ($this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet)) != null) {
+        }
+        elseif ($this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet)) != null)
+        {
             $menu['raison']         =   "Une autre rallonge du projet " . $projet . " est déjà en cours de traitement !";
         }
-        elseif (count($version->getRallonge()) >= $max_rall) {
+        elseif (count($version->getRallonge()) >= $max_rall)
+        {
             $menu['raison']         =   "Pas plus de $max_rall rallonges par session !";
         }
-        //elseif( $version->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE )
-        //    $menu['raison']         =   "Un renouvellement du projet " . $projet . " est déjà accepté !";
-        elseif ($this->ac->isGranted('ROLE_ADMIN')) {
+        //elseif ($this->ac->isGranted('ROLE_ADMIN'))
+        else
+        {
             $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez créer une nouvelle rallonge !";
+            $menu['commentaire']    =   "Pour demander des ressources supplémentaires";
         }
 
         $this->__prio($menu, $priorite);

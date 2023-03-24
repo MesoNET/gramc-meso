@@ -53,31 +53,6 @@ class Rallonge implements Demande
     private $etatRallonge;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures", type="integer", nullable=true)
-     * @Assert\GreaterThan(0,message="Vous devez demander des heures.")
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas demander un nombre d'heures négatif.")
-     */
-    private $demHeures;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures_gpu", type="integer", nullable=true)
-     * @Assert\GreaterThan(0,message="Vous devez demander des heures.")
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas demander un nombre d'heures négatif.")
-     */
-    private $demHeuresGpu;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="attr_heures", type="integer", nullable=true)
-     */
-    private $attrHeures;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="prj_justif_rallonge", type="text", length=65535, nullable=true)
@@ -90,7 +65,7 @@ class Rallonge implements Demande
      *
      * @ORM\Column(name="attr_accept", type="boolean", nullable=false)
      */
-    private $attrAccept = '1';
+    private $attrAccept = '0';
 
     /**
      * @var string
@@ -110,16 +85,6 @@ class Rallonge implements Demande
      * })
      */
     private $version;
-
-    ////////////////////////////////////////////////////////
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att", type="integer", nullable=true)
-     * @Assert\GreaterThanOrEqual(value = 0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.", groups={"expertise","president"})
-     */
-    private $nbHeuresAtt;
 
     /**
      * @var string
@@ -155,14 +120,22 @@ class Rallonge implements Demande
      */
     private $expert;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Dar", mappedBy="rallonge", cascade={"persist"})
+     */
+    private $dar;
 
     /////////
 
     /**
-    * @ORM\PostLoad
+    * @
+    * ORM\PostLoad
     *
     * TODO - Ce truc est une bidouille immonde à supprimer ASAP
     */
+    /*
     public function convert()
     {
         if ($this->getEtatRallonge() == Etat::ACTIF && $this->getAttrHeures() == null) {
@@ -170,7 +143,7 @@ class Rallonge implements Demande
             //Functions::infoMessage(__METHOD__ . ':' . __LINE__ . ' Fixture partielle de Rallonge ' . $this->getIdRallonge() );
         }
     }
-
+*/
     ////////////////////////////////////////////////////////
 
     /**
@@ -178,10 +151,8 @@ class Rallonge implements Demande
      */
     public function __construct()
     {
-        // $this->majStamp             =   new \DateTime("now");
+        $this->dar                  = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
-
 
     /////////////////////////////////////////////////////////////////////////////
 
@@ -225,78 +196,6 @@ class Rallonge implements Demande
     public function getEtatRallonge()
     {
         return $this->etatRallonge;
-    }
-
-    /**
-     * Set demHeures
-     *
-     * @param integer $demHeures
-     *
-     * @return Rallonge
-     */
-    public function setDemHeures($demHeures)
-    {
-        $this->demHeures = $demHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeures
-     *
-     * @return integer
-     */
-    public function getDemHeures()
-    {
-        return $this->demHeures;
-    }
-
-    /**
-     * Set demHeuresGpu
-     *
-     * @param integer $demHeuresGpu
-     *
-     * @return Rallonge
-     */
-    public function setDemHeuresGpu($demHeuresGpu)
-    {
-        $this->demHeuresGpu = $demHeuresGpu;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeuresGpu
-     *
-     * @return integer
-     */
-    public function getDemHeuresGpu()
-    {
-        return $this->demHeuresGpu;
-    }
-
-    /**
-     * Set attrHeures
-     *
-     * @param integer $attrHeures
-     *
-     * @return Rallonge
-     */
-    public function setAttrHeures($attrHeures)
-    {
-        $this->attrHeures = $attrHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get attrHeures
-     *
-     * @return integer
-     */
-    public function getAttrHeures()
-    {
-        return $this->attrHeures;
     }
 
     /**
@@ -395,32 +294,41 @@ class Rallonge implements Demande
         return $this->version;
     }
 
-    /////////////////////////////////////////////////////////////////////
-
-
-
     /**
-     * Set nbHeuresAtt
+     * Add dar
      *
-     * @param integer $nbHeuresAtt
+     * @param \App\Entity\Dar $dar
      *
-     * @return Rallonge
+     * @return Version
      */
-    public function setNbHeuresAtt($nbHeuresAtt)
+    public function addDar(\App\Entity\Dar $dar): self
     {
-        $this->nbHeuresAtt = $nbHeuresAtt;
-
+        if (! $this->dar->contains($dar))
+        {
+            $this->dar[] = $dar;
+        }
         return $this;
     }
 
     /**
-     * Get nbHeuresAtt
+     * Remove dar
      *
-     * @return integer
+     * @param \App\Entity\Dar $dar
      */
-    public function getNbHeuresAtt()
+    public function removeDar(\App\Entity\Dar $dar): self
     {
-        return $this->nbHeuresAtt;
+        $this->dar->removeElement($dar);
+        return $this;
+    }
+
+    /**
+     * Get dar
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDar()
+    {
+        return $this->dar;
     }
 
     /**

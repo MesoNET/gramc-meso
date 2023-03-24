@@ -29,7 +29,7 @@ use App\Utils\Functions;
 use App\Utils\Etat;
 use App\Utils\Signal;
 use App\Entity\Version;
-use App\GramcServices\Workflow\Rallonge\RallongeWorkflow;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 
 class Version4Transition extends Transition
@@ -54,7 +54,7 @@ class Version4Transition extends Transition
         if (Transition::FAST == false && $this->getPropageSignal()) {
             $rallonges = $version->getRallonge();
             if ($rallonges != null) {
-                $workflow = new RallongeWorkflow($this->sn, $this->sj, $this->ss, $this->em);
+                $workflow = new Rallonge4Workflow($this->sn, $this->sj, $this->ss, $this->em);
                 foreach ($rallonges as $rallonge) {
                     $rtn = $rtn && $workflow->canExecute($this->getSignal(), $rallonge);
                 }
@@ -89,7 +89,7 @@ class Version4Transition extends Transition
             $rallonges = $version->getRallonge();
 
             if (count($rallonges) > 0) {
-                $workflow = new RallongeWorkflow($this->sn, $this->sj, $this->ss, $this->em);
+                $workflow = new Rallonge4Workflow($this->sn, $this->sj, $this->ss, $this->em);
 
                 // Propage le signal à toutes les rallonges qui dépendent de cette version
                 foreach ($rallonges as $rallonge) {

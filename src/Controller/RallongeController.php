@@ -39,6 +39,7 @@ use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceRallonges;
 use App\GramcServices\Workflow\Rallonge\RallongeWorkflow;
 use App\GramcServices\Etat;
 use App\GramcServices\Signal;
@@ -76,6 +77,7 @@ class RallongeController extends AbstractController
         private ServiceSessions $ss,
         private ServiceExpertsRallonge $sr,
         private ServiceVersions $sv,
+        private ServiceRallonges $srg,
         private RallongeWorkflow $rw,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
@@ -149,15 +151,18 @@ class RallongeController extends AbstractController
      * Creates a new rallonge entity.
      *
      * @Route("/{id}/creation", name="nouvelle_rallonge", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @ Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
         $sm = $this->sm;
         $ss = $this->ss;
-        $sj = $this->sj;
         $sp = $this->sp;
+
+        $sj = $this->sj;
+        $srg = $this->srg;
         $em = $this->em;
 
         // ACL
@@ -165,27 +170,9 @@ class RallongeController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de créer une nouvelle rallonge pour le projet" . $projet .
                 " parce que : " . $sm->nouvelleRallonge($projet)['raison']);
         }
-        //return new Response( Functions::show( $em->getRepository(Rallonge::class)->findRallongesOuvertes($projet)   ) );
-
+        
         $version  = $sp->versionActive($projet);
-
-        $rallonge = new Rallonge();
-        $rallonge->setVersion($version);
-        $rallonge->setObjectState(Etat::CREE_ATTENTE);
-
-        $session = $ss->getSessionCourante();
-
-        $count   = count($version->getRallonge()) + 1;
-        $rallonge->setIdRallonge($version->getIdVersion() . 'R' . $count);
-
-        $workflow = $this->rw;
-        $rtn      = $workflow->execute(Signal::CLK_DEMANDE, $rallonge);
-        if ($rtn == false) {
-            $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Impossible d'envoyer le signal CLK_DEMANDE à la rallonge " . $rallonge);
-            $request->getSession()->getFlashbag()->add("flash erreur","Rallonge créée, mais responsable probablement pas notifié - Veuillez vérifier");
-        }
-
-        Functions::sauvegarder($rallonge, $em, $lg);
+        $rallonge = $srg->creerRallonge($version);
 
         $request->getSession()->getFlashbag()->add("flash info","Rallonge créée, responsable notifié");
         return $this->redirectToRoute('consulter_version', ['id' => $projet->getIdProjet(), 'version' => $version->getId()]);
@@ -281,6 +268,7 @@ class RallongeController extends AbstractController
         $sm = $this->sm;
         $sj = $this->sj;
         $sval = $this->vl;
+        $srg = $this->srg;
         $em = $this->em;
 
         // ACL
@@ -289,8 +277,13 @@ class RallongeController extends AbstractController
                 " parce que : " . $sm->modifierRallonge($rallonge)['raison']);
         }
 
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $srg->getRessourceForm($rallonge);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+
         $editForm = $this->createFormBuilder($rallonge)
-            ->add('demHeures', IntegerType::class, [ 'required'       =>  false ])
             ->add('prjJustifRallonge', TextAreaType::class, [ 'required'       =>  false ])
             ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer' ])
             ->add('fermer', SubmitType::class, ['label' => 'Fermer' ])
@@ -322,6 +315,7 @@ class RallongeController extends AbstractController
             'projet'    => $projet,
             'session'   => $session,
             'edit_form' => $editForm->createView(),
+            'ressource_form' => $ressource_form->createView(),
             'erreurs'   => $erreurs,
         ]
         );

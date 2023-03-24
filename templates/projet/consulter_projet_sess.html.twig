@@ -575,6 +575,7 @@
 
     <div class="chapitre">
 
+        <h4>Demande initiale</h4>
         {% for expertise in version.expertise %}
         <table class="table_vertical">
             <tbody>
@@ -606,12 +607,16 @@
         <table class="table_vertical">
             <tbody>
             {% for r in version.rallonge %}
-                <tr>
-                    <th>Nombre d'heures demandées</th>
-                    <td>{{  r.demHeures|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td></tr><tr>
-                    <th>Nombre d'heures attribuées</th>
-                    <td>{{  r.nbHeuresAtt|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
-                </tr>
+                {% for d in r.dar %}
+                    <tr>
+                        <th>Demande pour {{serviceRessources.getnomcomplet(d.ressource)}} ({{d.ressource.unite}})</th>
+                        <td>{{ (d.demande)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                    <tr>
+                        <th>Attribution pour {{serviceRessources.getnomcomplet(d.ressource)}} ({{d.ressource.unite}})</th>
+                        <td>{{ (d.attribution)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                {% endfor %}
                 {% if is_granted('ROLE_ADMIN') or version.isExpertDe(app.user) %}
                 <tr>
                     <th>Commentaire pour le responsable</th>
@@ -620,7 +625,8 @@
                 <tr>
                     <th>Commentaire pour le comité</th>
                     <td>{{ r.commentaireInterne | e | nl2br}}</td>
-                </tr>{% else %}
+                </tr>
+                {% else %}
                 <tr>
                     <th style="witdh: 15em">Commentaire</th>
                     <td>{{ r.commentaireExterne | e | nl2br}}</td>

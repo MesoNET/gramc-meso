@@ -14,16 +14,14 @@
 
 <section id="section_modifierProjet">
 
-    <h1>Demande de rallonge pour le projet {{ projet }} (session {{ session }})</h1>
+    <h1>Demande de rallonge pour le projet {{ projet }}</h1>
 
     <div class="information">
         <h2>A savoir...</h2>
-            <p>La demande de rallonge est soumise à <strong>expertise</strong> par le Comité d'Attribution et
-            <strong>validation</strong> par le Président du Comité d'Attribution. Cette demande doit être dûment explicitée et argumentée.</p>
-
-            <p>Par ailleurs: <ol>
-            <li>Les heures sont comptées en heures monoprocesseur.</li>
-            <li>Elles viennent en <strong>supplément</strong> des heures qui vous ont déjà été attribuées</li></ol></p>
+            <p>La demande de rallonge doit être <strong>validée</strong> par Mesonet</p>
+            <p>Les ressources demandées viennent en <strong>supplément</strong> des ressources qui vous ont déjà été attribuées,
+            elles expirent à la date de fin du projet.
+            </p>
     </div>
 
     <div class="information attention">
@@ -45,10 +43,10 @@
     {{ form_start(edit_form) }}
 
     <div class="inputs">
-        <div class="input">
+{#      <div class="input">
         {{ form_label( edit_form.demHeures, "Nombre d'heures demandées") }}
         {{ form_widget( edit_form.demHeures) }}
-        </div>
+        </div>  #}
 
         <div class="textarea">
                 <h4 id="prj_justif_rallonge">Justification scientifique (environ 2000 caractères)<br>
@@ -64,6 +62,24 @@
     </div>
 
     {{ form_end(edit_form) }}
+
+    {% for form in ressource_form.children.ressource.children %}
+        <h2>{{serviceRessources.getnomcomplet(form.vars.data.ressource)}}</h2>
+    
+        <div class="information ok">
+            <p>{{ form.vars.data.ressource.desc|raw|nl2br }}</p>
+            {% if form.vars.data.ressource.docurl != null %}
+            <br><p><strong>Documentation technique</strong>: <a href="{{form.vars.data.ressource.docurl}}">{{form.vars.data.ressource.docurl}}</a></p>
+            {% endif %}
+        </div>
+    
+        <div class="inputs"  id="{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}" >
+            <div class="input">
+            <strong>{{ form.vars.data.ressource.unite }}:</strong>
+            {{ form_widget( form.demande) }}
+            </div>
+        </div>
+    {% endfor %}
 
 </section>
 

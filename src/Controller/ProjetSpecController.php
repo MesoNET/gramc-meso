@@ -615,6 +615,7 @@ class ProjetSpecController extends AbstractController
             $menu[] = $sm->nouvelleRallonge($projet);
         }*/
 
+        $menu[] = $sm->nouvelleRallonge($projet);
         $menu[] = $sm->renouvelerVersion($version);
         $menu[] = $sm->modifierVersion($version);
         $menu[] = $sm->envoyerEnExpertise($version);
