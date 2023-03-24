@@ -747,6 +747,34 @@ class AdminuxController extends AbstractController
         $r['idVersion']       = $v->getIdVersion();
         $r['etatVersion']     = $v->getEtatVersion();
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
+
+        if ($v->getStartDate() === null)
+        {
+            $r['startDate'] = null;
+        }
+        else
+        {
+            $r['startDate'] = $v->getStartDate()->format('Y-m-d');
+        }
+        
+        if ($v->getEndDate() === null)
+        {
+            $r['endDate'] = null;
+        }
+        else
+        {
+            $r['endDate'] = $v->getEndDate()->format('Y-m-d');
+        }
+        
+        if ($v->getLimitDate() === null)
+        {
+            $r['limitDate'] = null;
+        }
+        else
+        {
+            $r['limitDate'] = $v->getLimitDate()->format('Y-m-d');
+        }
+        
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
         //$r['attrHeures']      = $attr;
