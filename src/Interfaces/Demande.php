@@ -33,7 +33,7 @@ interface Demande
 //    public function getDemHeures();
     public function getId();
     public function getEtat();
-    public function getMetaEtat();
+//    public function getMetaEtat();
 //    public function getExperts();
 
 //    public function setAttrHeures($attrHeures);

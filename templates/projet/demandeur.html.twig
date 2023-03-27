@@ -90,10 +90,10 @@
     {% set num_rallonge = 1 %}
     {% for rallonge in item.rallonges %}
     <tr>
-        <td>{{ gramcmacros.metagraph(rallonge.getMetaEtat()) }}</td>
+        <td>{{ gramcmacros.metagraph(serviceRallonges.getMetaEtat(rallonge)) }}</td>
         <td>
-            <a href="{{ path('rallonge_consulter', { 'id': rallonge.idRallonge })}}"
-            {% if rallonge.getMetaEtat() == 'EDITION' %}
+            <a href="{{ path('consulter_rallonge', { 'id': rallonge.idRallonge })}}"
+            {% if serviceRallonges.getMetaEtat(rallonge) == 'EDITION' %}
                 title="Consulter cette rallonge" >
                 {{ icones.modifier }}
 

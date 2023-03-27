@@ -798,6 +798,25 @@ class ServiceMenus
         return $menu;
     }
 
+    public function rallongesDyn(int $priorite=self::HPRIO):array
+    {
+        $menu['name']   =   'rallonge_dynamique';
+        $menu['commentaire']    =   "Toutes les rallonges de projets dynamiques";
+        $menu['lien']           =   "Rallonges de projets dynamiques";
+        $menu['icone']          =   "annee";
+
+
+        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            $menu['ok'] = true;
+        } else {
+            $menu['ok'] = false;
+            $menu['raison'] = "Vous devez être un administrateur ou président pour accéder à cette page";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
     //////////////////////////////////////
 
     public function lireJournal(int $priorite=self::HPRIO):array

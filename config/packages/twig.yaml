@@ -8,6 +8,7 @@ twig:
     globals:
        infos: '@App\GramcServices\ServiceInfos'
        serviceVersions: '@App\GramcServices\ServiceVersions'
+       serviceRallonges: '@App\GramcServices\ServiceRallonges'
        serviceProjets: '@App\GramcServices\ServiceProjets'
        serviceUsers: '@App\GramcServices\ServiceUsers'
        serviceServeurs: '@App\GramcServices\ServiceServeurs'

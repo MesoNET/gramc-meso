@@ -37,6 +37,7 @@ use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceExperts\ServiceExpertsRallonge;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceRallonges;
@@ -74,6 +75,7 @@ class RallongeController extends AbstractController
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
+        private ServiceRessources $sroc,
         private ServiceSessions $ss,
         private ServiceExpertsRallonge $sr,
         private ServiceVersions $sv,
@@ -83,6 +85,56 @@ class RallongeController extends AbstractController
         private ValidatorInterface $vl,
         private EntityManagerInterface $em
     ) {}
+
+    /**
+     * Rallonges dynamiques
+     *
+     * @Route("/dynamiques", name="rallonge_dynamique", methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_OBS')")
+     */
+    public function rallongesDynamiquesAction(): Response
+    {
+        $em = $this->em;
+        //$projets = $em->getRepository(Projet::class)->findAll();
+        $sj = $this->sj;
+        $sp = $this->sp;
+        $sroc = $this->sroc;
+
+/*
+        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
+            $etat_projet[$e] = 0;
+        }
+*/
+        // On récupère toutes les rallonges des projets dynamiques de cette année
+        // Avec des informations statistiques
+        $rallonges = $sp->rallongesDynParAnnee();
+        $data = [];
+        //$collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
+        //$versionRepository              = $em->getRepository(Version::class);
+        //$projetRepository               = $em->getRepository(Projet::class);
+
+        foreach ($rallonges as $r)
+        {
+            $dars = [];
+            foreach ($r->getDar() as $d)
+            {
+                $dars[$sroc->getNomComplet($d->getRessource())] = $d;
+            }
+            $data[] = [
+                        'rallonge' => $r,
+                        'dars' => $dars
+            ];
+        }
+        //dd($data);
+        return $this->render(
+            'rallonge/rallonges_dyn.html.twig',
+            [
+            //'etat_projet' => $etat_projet,
+            'data' => $data
+            ]
+        );
+    }
 
     /**
      * A partir d'une rallonge, renvoie version, projet, session
@@ -224,7 +276,7 @@ class RallongeController extends AbstractController
     /**
      * Displays a form to edit an existing rallonge entity.
      *
-     * @Route("/{id}/consulter", name="rallonge_consulter", methods={"GET"})
+     * @Route("/{id}/consulter", name="consulter_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -305,7 +357,7 @@ class RallongeController extends AbstractController
         if ($editForm->isSubmitted()) {
             
             if ($editForm->get('annuler')->isClicked()) {
-                return $this->redirectToRoute('rallonge_consulter', [ 'id' => $rallonge->getIdRallonge() ]);
+                return $this->redirectToRoute('consulter_rallonge', [ 'id' => $rallonge->getIdRallonge() ]);
             }
             
             $erreurs = Functions::dataError($sval, $rallonge);
@@ -313,7 +365,7 @@ class RallongeController extends AbstractController
             $request->getSession()->getFlashbag()->add("flash info","Rallonge enregistrée");
 
             if ($editForm->get('fermer')->isClicked()) {
-                return $this->redirectToRoute('rallonge_consulter', [ 'id' => $rallonge->getIdRallonge() ]);
+                return $this->redirectToRoute('consulter_rallonge', [ 'id' => $rallonge->getIdRallonge() ]);
             }
         }
         return $this->render(

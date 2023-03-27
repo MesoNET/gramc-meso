@@ -503,30 +503,6 @@ class Rallonge implements Demande
         }
     }
 
-    //////////////////////////////
-    // TODO - Mettre cette fonction dans ServiceRallonge
-    public function getMetaEtat()
-    {
-        $etat = $this->getEtatRallonge();
-        if ($etat    ==  Etat::EDITION_DEMANDE) {
-            return  'EDITION';
-        } elseif ($etat    ==  Etat::EDITION_EXPERTISE) {
-            return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::DESAFFECTE) {
-            return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::EN_ATTENTE) {
-            return  'ATTENTE';
-        } elseif ($etat == Etat::ANNULE ) {
-            return 'TERMINE';
-        } elseif ($this->getAttrAccept() == true) {
-            return  'ACCEPTE';
-        } elseif ($this->getAttrAccept() == false) {
-            return  'REFUSE';
-        } else {
-            return '';
-        }
-    }
-
     //////////////
 
     public function getLibelleEtatRallonge()

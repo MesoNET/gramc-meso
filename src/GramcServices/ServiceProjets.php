@@ -433,8 +433,6 @@ class ServiceProjets
     /***********
      * Renvoie la liste des projets dynamiques qui ont une version en cours cette année
      * $annee      = Année - int, soit 0 (défaut) soit >2000 (ex. 2022)
-     * $isRecup... = Non utilisé, pour la compatibilité avec ProjetsParAnnee
-     * $sess_lbl   = Non utilisé, pour la compatibilité avec ProjetsParAnnee
      *
      * Return: un tableau de trois tableaux:
      *         - Le tableau des projets
@@ -442,7 +440,7 @@ class ServiceProjets
      *         - Le tableau de la répartition entre les ressources
      *
      ********************/
-    public function projetsDynParAnnee($annee=0, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
+    public function projetsDynParAnnee($annee=0): array
     {
         $sroc = $this->sroc;
         $em = $this->em;
@@ -540,6 +538,36 @@ class ServiceProjets
         //arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord
         //while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
         return [$projets,$total, $repartition];
+    }
+
+    /***********
+     * Renvoie la liste des rallonges de projets dynamiques associées à une version en cours cette année
+     * $annee      = Année - int, soit 0 (défaut) soit >2000 (ex. 2022)
+     *
+     * Return: le tableau des rallonges
+     *
+     ********************/
+    public function rallongesDynParAnnee($annee=0): array
+    {
+        $sroc = $this->sroc;
+        $em = $this->em;
+        
+        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
+        // (nombre de projets, heures demandées etc)
+        //$a_filtrer = [ Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE ];
+
+        // Les versions qui ont été actives une partie de l'année
+        // Elles sont triées selon la date de démarrage (les plus récentes en dernier)
+        $versions = $this->getVersionsDynParAnnee($annee);
+
+        // Pour chaque version, les rallonges associées à cette version, quelque soit son état
+        $rallonges = [];
+        foreach ($versions as $v)
+        {
+            $rallonges = array_merge($rallonges, iterator_to_array($v->getRallonge()));
+        }
+
+        return $rallonges;
     }
 
     /*********************************
