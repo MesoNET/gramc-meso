@@ -151,6 +151,10 @@ class ServiceRallonges
         {
             return  'ATTENTE';
         }
+        elseif ($etat === Etat::REFUSE)
+        {
+            return  'REFUSE';
+        }
         elseif ($etat === Etat::ANNULE )
         {
             return 'TERMINE';

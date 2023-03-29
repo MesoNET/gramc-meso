@@ -75,7 +75,7 @@ class Rallonge4Workflow extends Workflow
                       'A' => 'rallonge_validation_pour_admin' ]
                 ),
                 Signal::CLK_VAL_EXP_KO  =>  new Rallonge4Transition(
-                    Etat::TERMINE,
+                    Etat::REFUSE,
                     Signal::CLK_VAL_EXP_KO,
                     [ 'V' => 'rallonge_validation_refusee',
                       'A' => 'rallonge_validation_pour_admin' ]
@@ -100,6 +100,12 @@ class Rallonge4Workflow extends Workflow
                 [
                 Signal::CLK_FERM         => new NoTransition(0,0)
                 ]
-            );
+                )
+            ->addState(
+                Etat::REFUSE,
+                [
+                Signal::CLK_FERM         => new NoTransition(0,0)
+                ]
+                );
     }
 }

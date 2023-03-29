@@ -1832,7 +1832,7 @@ class ServiceMenus
         } elseif ($rallonge->getEtatRallonge() == Etat::ANNULE) {
             $menu['raison']     =   "Cette rallonge a été annulée";
         } elseif ($rallonge->getEtatRallonge() != Etat::EDITION_DEMANDE) {
-            $menu['raison']     =   "Cette rallonge a déjà été envoyée en expertise";
+            $menu['raison']     =   "Cette rallonge a déjà été envoyée en validation";
         } elseif ($this->ac->isGranted('ROLE_ADMIN')) {
             $menu['ok']             =   true;
             $menu['commentaire']    =   "Vous pouvez modifier la demande en tant qu'administrateur !";
@@ -1855,8 +1855,8 @@ class ServiceMenus
         $menu['name']        = 'avant_envoyer_rallonge';
         $menu['param']       = $rallonge->getIdRallonge();
         $menu['icone']       = 'envoyer';
-        $menu['lien']        = "Envoyer en expertise";
-        $menu['commentaire'] = "Vous ne pouvez pas envoyer cette demande en expertise";
+        $menu['lien']        = "Envoyer en validation";
+        $menu['commentaire'] = "Vous ne pouvez pas envoyer cette rallonge en validation";
         $menu['ok']          = false;
         $menu['raison']      = "raison inconnue";
         $user                = $this->token->getUser();

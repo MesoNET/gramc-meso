@@ -751,9 +751,24 @@ class ExpertiseController extends AbstractController
                 return $this->redirectToRoute($redirect_to_route);
             }
 
-            // Bouton ENVOYER --> Vérification des champs non renseignés puis demande de confirmation
+            // Bouton ENVOYER --> Vérification des champs non renseignés
+            //                    Si refus, on met toutes les attributions à zéro
+            //                    Puis demande de confirmation
             if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs == null)
             {
+                if ($expertise->getValidation() == false)
+                {
+                    if ($expRallonge)
+                    {
+                        $dars = $ressource_form->getData()['ressource'];
+                        foreach ($dars as $d)
+                        {
+                            $em->persist($d);
+                            $d->setAttribution(0);
+                        }
+                        $em->flush();
+                    }
+                }
                 return $this->redirectToRoute('expertise_validation', [ 'id' => $expertise->getId() ]);
             }
         }
