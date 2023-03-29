@@ -1760,7 +1760,8 @@ class ServiceMenus
 
         $version = $this->sp->versionActive($projet);
         $max_rall= $this->max_rall;
-        $rallonges = $this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet));
+        $rallonges = null;
+        $rallonges = $this->em->getRepository(Rallonge::class)->findRallongesOuvertes($version);
 
         // S'il y a une rallonge en cours de traitement on renvoie l'utilisateur dessus !'
 

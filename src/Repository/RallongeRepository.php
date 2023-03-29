@@ -59,7 +59,7 @@ class RallongeRepository extends \Doctrine\ORM\EntityRepository
         return $rallonges;
     }
 
-    public function findRallongesOuvertes(Version $version): ?array
+    public function findRallongesOuvertes(?Version $version): ?array
     {
         if ($version == null) {
             return [];

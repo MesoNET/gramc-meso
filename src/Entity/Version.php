@@ -1704,35 +1704,39 @@ class Version implements Demande
     // Ne sert que pour l'affichage des états de version
     public function getMetaEtat()
     {
-        $etat_version   =   $this->getEtatVersion();
+        $etat = $this->getEtatVersion();
 
-        if ($etat_version == Etat::ACTIF)
+        if ($etat === Etat::ACTIF)
         {
             return 'ACTIF';
         }
-        elseif ($etat_version == Etat::ACTIF_R)
+        elseif ($etat === Etat::ACTIF_R)
         {
             return 'A RENOUVELER';
         }
-        elseif ($etat_version == Etat::NOUVELLE_VERSION_DEMANDEE)
+        elseif ($etat === Etat::NOUVELLE_VERSION_DEMANDEE)
         {
             return 'PRESQUE TERMINE';
         }
-        elseif ($etat_version == Etat::ANNULE)
+        elseif ($etat === Etat::ANNULE)
         {
             return 'ANNULE';
         }
-        elseif ($etat_version == Etat::EDITION_DEMANDE)
+        elseif ($etat === Etat::EDITION_DEMANDE)
         {
             return 'EDITION';
         }
-        elseif ($etat_version == Etat::EDITION_EXPERTISE)
+        elseif ($etat === Etat::EDITION_EXPERTISE)
         {
             return 'VALIDATION';
         }
-        elseif ($etat_version == Etat::TERMINE)
+        elseif ($etat === Etat::TERMINE)
         {
             return 'TERMINE';
+        }
+        elseif ($etat === Etat::REFUSE)
+        {
+            return 'REFUSE';
         }
         return 'INCONNU';
     }

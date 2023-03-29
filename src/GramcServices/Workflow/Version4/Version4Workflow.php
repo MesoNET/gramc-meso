@@ -73,7 +73,7 @@ class Version4Workflow extends Workflow
                       'A' => 'validation_pour_admin' ]
                 ),
                 Signal::CLK_VAL_EXP_KO  => new Version4Transition(
-                    Etat::TERMINE,
+                    Etat::REFUSE,
                     Signal::CLK_VAL_EXP_KO,
                     [ 'V' => 'validation_refusee',
                       'A' => 'validation_pour_admin' ]

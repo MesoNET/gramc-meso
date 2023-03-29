@@ -768,6 +768,16 @@ class ExpertiseController extends AbstractController
                         }
                         $em->flush();
                     }
+                    else
+                    {
+                        $dacs = $ressource_form->getData()['ressource'];
+                        foreach ($dacs as $d)
+                        {
+                            $em->persist($d);
+                            $d->setAttribution(0);
+                        }
+                        $em->flush();
+                    }
                 }
                 return $this->redirectToRoute('expertise_validation', [ 'id' => $expertise->getId() ]);
             }
@@ -910,20 +920,26 @@ class ExpertiseController extends AbstractController
     {
         $sj = $this->sj;
         $em = $this->em;
+        $sp = $this->sp;
         $workflow = $this->p4w;
+        $dyn_duree = $this->dyn_duree;
+        $grdt = $this->grdt;
 
         // On fixe les dates de début à la date de validation
         // On fixe la date limite à la à la date de validation + 1 an
+        $projet = $expertise->getVersion()->getProjet();
         $version->setStartDate($grdt->getNew());
         $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
         $projet->setLimitDate($version->getLimitDate());
+        if ( $version->getEtatVersion() === Etat::REFUSE)
+        {
+            $version->setEndDate($grdt->getNew());
+        }
 
         // Si la version active existe, on positionne sa date de fin
-        $projet = $expertise->getVersion()->getProjet();
         $veract = $projet->getVersionActive();
         if ($veract != null)
         {
-            $grdt = $this->grdt;
             $veract->setEndDate($grdt);
             $em->persist($veract);
         }
