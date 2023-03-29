@@ -757,7 +757,7 @@ class VersionController extends AbstractController
                 $version->setCGU(true);
                 Functions::sauvegarder($version, $em, $lg);
 
-                // Crée une nouvelle expertise avec proposition d'experts
+                // Crée une nouvelle expertise
                 $se->newExpertiseIfPossible($version);
 
                 // Avance du workflow

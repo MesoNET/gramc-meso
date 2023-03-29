@@ -32,6 +32,13 @@ use App\Interfaces\Demande;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+/*
+ * TODO - Utiliser l'héritage pour faire hériter Veriosn et Rallonge d'une même classe
+ *        cf. https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/inheritance-mapping.html
+ *        Pas le temps / pas le recul alors on travaille salement
+ *        Emmanuel, 27/3/23
+ *
+ ************************************************************/
 /**
  * Rallonge
  *
@@ -151,7 +158,9 @@ class Rallonge implements Demande
      */
     public function __construct()
     {
-        $this->dar                  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->dar = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
+
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -168,7 +177,48 @@ class Rallonge implements Demande
 
     ////////////////////////////////////////////////////////////////////////////
 
+    // Expertise
 
+    /**
+     * Add expertise
+     *
+     * @param \App\Entity\Expertise $expertise
+     *
+     * @return Rallonge
+     */
+    public function addExpertise(\App\Entity\Expertise $expertise): self
+    {
+        if (! $this->expertise->contains($expertise))
+        {
+            $this->expertise[] = $expertise;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove expertise
+     *
+     * @param \App\Entity\Expertise $expertise
+     * 
+     * @return Rallonge
+     * 
+     */
+    public function removeExpertise(\App\Entity\Expertise $expertise): self
+    {
+        $this->expertise->removeElement($expertise);
+        return $this;
+    }
+
+    /**
+     * Get expertise
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExpertise()
+    {
+        return $this->expertise;
+    }
 
     /**
      * Set etatRallonge
@@ -402,6 +452,13 @@ class Rallonge implements Demande
     {
         return $this->validation;
     }
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="rallonge", cascade={"persist"} )
+     */
+    private $expertise;
 
     /**
      * Set expert

@@ -9,6 +9,7 @@ package Classes <<Frame>> {
         class Ressource
         class Dac
         class Version
+        class Ressource
         class Serveur
         class User
     }
@@ -164,8 +165,8 @@ package Classes <<Frame>> {
     Rallonge "1" o-- "r"  Dar
     
     Expertise "1" -- "1" Individu
-    Expertise "1" -- "1" Version
-    Expertise "1" o-- "r" Dac
+    Expertise "1" -- "0..1" Version
+    Expertise "1" -- "0..1" Rallonge
     
     User "0..n" --o "1" Clessh
     User "0..n" -- "1" Serveur

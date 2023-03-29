@@ -1,0 +1,22 @@
+Bonjour
+
+La validation de la rallonge {{ object |raw }} (resp {{ object.version.responsable |raw }}) a été correctement envoyée.
+
+La demande a été {% if( object.expertise[0].validation == true ) %}ACCEPTÉE{% else %}REFUSÉE{% endif %}.
+
+{% for dar in object.dar %}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dar.ressource) }}: {{ dar.demande }} {{ dar.ressource.unite }}
+Ressources attribuées sur {{ serviceRessources.nomComplet(dar.ressource) }}: {{ dar.attribution }} {{ dar.ressource.unite }}
+
+{% endfor %}
+
+URL du projet                     : {{ absolute_url(path('consulter_rallonge', { 'id' : object.idrallonge })) |raw }}
+
+Votre commentaire :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Votre commentaire à destination de {{mesoc}}:
+{{ object.expertise[0].commentaireInterne |raw }}
+
+Cordialement,
+L'équipe {{mesoc}}

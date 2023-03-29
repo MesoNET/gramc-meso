@@ -26,6 +26,7 @@ namespace App\GramcServices\ServiceExperts;
 
 use App\Entity\Projet;
 use App\Entity\Version;
+use App\Entity\Rallonge;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Expertise;
@@ -280,11 +281,13 @@ class ServiceExperts
     }
 
     /**
-     * Si pas déjà fait, crée une expertise et fait une proposition automatique d'experts pour un projet
-     * param = $version
+     * Si pas déjà fait, crée une expertise pour un rallonge ou une version
+     *
+     * NOTE - beurk cf. note sur l'héritage dans les entités Version ou Rallonge
+     * param = $version ou $rallonge
      *
      *********/
-    public function newExpertiseIfPossible(Version $version): void
+    public function newExpertiseIfPossible(Version|Rallonge $objet): void
     {
         $pe1 = $this->pe1;
         $pe2 = $this->pe2;
@@ -294,33 +297,22 @@ class ServiceExperts
 
         // S'il y a déjà une expertise on ne fait rien
         // Sinon on la crée et on appelle le programme d'affectation automatique des experts
-        if (count($version->getExpertise()) > 0)
+        if (count($objet->getExpertise()) > 0)
         {
-            $sj->noticeMessage(__METHOD__ . ":" . __LINE__ . " Expertise de la version " . $version . " existe déjà");
+            $sj->noticeMessage(__METHOD__ . ":" . __LINE__ . " Expertise de " . $objet . " existe déjà");
         }
         else
         {
             $expertise = new Expertise();
-            $expertise->setVersion($version);
+            if ($objet instanceof Version)
+            {
+                $expertise->setVersion($objet);
+            }
+            else
+            {
+                $expertise->setRallonge($objet);
+            }
 
-            // Attention, l'algorithme de proposition des experts dépend du type de projet
-            $projet = $version->getProjet();
-            if ($projet -> getTypeProjet() == Projet::PROJET_TEST || $projet->getTypeProjet() == Projet::PROJET_FIL)
-            {
-                $prop_expert = $pe2;
-            }
-            elseif ($projet -> getTypeProjet() == Projet::PROJET_DYN)
-            {
-                $prop_expert = null;
-            }
-            $expert = null;
-            if ($prop_expert != null)
-            {
-                $expert = $prop_expert->getProposition($version);
-            }
-            if ($expert != null) {
-                $expertise->setExpert($expert);
-            }
             Functions::sauvegarder($expertise, $em, $lg);
         }
     }

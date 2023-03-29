@@ -10,7 +10,7 @@
     <table id="HORS_THEM" class="projet">
     <thead>
             <tr>
-                <th>Projet</th>
+                <th>Version/Rallonge</th>
                 <th>&nbsp;</th>
                 <th>Thématique</th>
                 <th>Titre</th>
@@ -20,18 +20,26 @@
         </thead>
         <tbody>
         {% for expertise in expertises %}
+
+            {# SOIT expertise.version SOIT expertise.rallonge DOIT est null #}
+            {% if expertise.rallonge %}
+                {% set version=expertise.rallonge.version %}
+            {% else %}
+                {% set version=expertise.version %}
+            {% endif %}
+
             {% if( expertise.expert == true) %}
                 <tr class="gras" >
             {% else %}
                 <tr class="leger" >
             {% endif %}
-                    <td>{{ expertise.version.projet }}</td>
+                    <td>{{ expertise.version }}{{ expertise.rallonge }}</td>
                     <td><a href="{{ path('expertise_modifier', { 'id' : expertise.id } ) }}">
                             {{ icones.modifier }}
                         </a></td>
-                    <td>{{ expertise.version.prjthematique }}</td>
-                    <td>{{ expertise.version.prjtitre }}</td>
-                    <td>{{ expertise.version.responsable }}</td>
+                    <td>{{ version.prjthematique }}</td>
+                    <td>{{ version.prjtitre }}</td>
+                    <td>{{ version.responsable }}</td>
                     <td>{% if expertise.expert == null %}<em>pourquoi pas vous ?</em>{% else %}{{ expertise.expert }}{% endif %}</td>
                 </tr>
         {% endfor %}

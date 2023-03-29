@@ -1,0 +1,17 @@
+Bonjour {{ object.version.responsable  |raw }},
+
+La validation de votre rallonge {{ object.idRallonge  |raw }} a été effectuée.
+
+Cette demande a été acceptée.
+
+{% for dar in object.dar %}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dar.ressource) }}: {{ dar.demande }} {{ dar.ressource.unite }}
+Ressources attribuées sur {{ serviceRessources.nomComplet(dar.ressource) }}: {{ dar.attribution }} {{ dar.ressource.unite }}
+
+{% endfor %}
+
+Commentaire de l'expert :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Cordialement,
+l'équipe {{mesoc}}

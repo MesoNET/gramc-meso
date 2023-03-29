@@ -37,11 +37,12 @@ use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceExperts\ServiceExpertsRallonge;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceRallonges;
-use App\GramcServices\Workflow\Rallonge\RallongeWorkflow;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 use App\GramcServices\Etat;
 use App\GramcServices\Signal;
 use App\Utils\Functions;
@@ -75,12 +76,13 @@ class RallongeController extends AbstractController
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
+        private ServiceExperts $se,
         private ServiceRessources $sroc,
         private ServiceSessions $ss,
         private ServiceExpertsRallonge $sr,
         private ServiceVersions $sv,
         private ServiceRallonges $srg,
-        private RallongeWorkflow $rw,
+        private Rallonge4Workflow $rw,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private EntityManagerInterface $em
@@ -445,7 +447,7 @@ class RallongeController extends AbstractController
 
             // Bouton ENVOYER
             if ($editForm->get('envoyer')->isClicked() && $erreurs == null) {
-                return $this->redirectToRoute('rallonge_envoyer_president', [ 'id' => $rallonge->getId() ]);
+                return $this->redirectToRoute('envoyer_rallonge_president', [ 'id' => $rallonge->getId() ]);
             }
 
             // Bouton ENREGISTRER
@@ -548,7 +550,7 @@ class RallongeController extends AbstractController
     
                 // Bouton ENVOYER
                 if ($editForm->get('envoyer')->isClicked() && $erreurs == null) {
-                    return $this->redirectToRoute('rallonge_envoyer_responsable', [ 'id' => $rallonge->getId() ]);
+                    return $this->redirectToRoute('envoyer_rallonge_responsable', [ 'id' => $rallonge->getId() ]);
                 }
     
                 // Bouton ENREGISTRER
@@ -574,7 +576,7 @@ class RallongeController extends AbstractController
     /**
      * Affiche un écran de confirmation, et si OK envoie l'expertise au président
      * 
-     * @Route("/{id}/envoyer_president", name="rallonge_envoyer_president", methods={"GET","POST"})
+     * @Route("/{id}/envoyer_president", name="envoyer_rallonge_president", methods={"GET","POST"})
      * @Security("is_granted('ROLE_EXPERT')")
      * Method("GET")
      */
@@ -656,7 +658,7 @@ class RallongeController extends AbstractController
      *
      * TODO - VIRER CETTE FONCTION
      *
-     * @Route("/{id}/avant_envoyer", name="avant_rallonge_envoyer", methods={"GET"})
+     * @Route("/{id}/avant_envoyer", name="avant_envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -687,9 +689,9 @@ class RallongeController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing rallonge entity.
+     * Envoi d'une rallonge en expertise
      *
-     * @Route("/{id}/envoyer", name="rallonge_envoyer", methods={"GET"})
+     * @Route("/{id}/envoyer", name="envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -697,6 +699,7 @@ class RallongeController extends AbstractController
     {
         $sm = $this->sm;
         $sj = $this->sj;
+        $se = $this->se;
         $sval = $this->vl;
 
         // ACL
@@ -708,18 +711,34 @@ class RallongeController extends AbstractController
         $erreurs = Functions::dataError($sval, $rallonge);
         $workflow = $this->rw;
 
-        if ($erreurs != null) {
+        if ($erreurs != null)
+        {
             $sj->warningMessage(__METHOD__ . ":" . __LINE__ ." L'envoi à l'expert de la rallonge " . $rallonge . " refusé à cause des erreurs !");
-            return $this->redirectToRoute('avant_rallonge_envoyer', [ 'id' => $rallonge->getId() ]);
-        } elseif (! $workflow->canExecute(Signal::CLK_VAL_DEM, $rallonge)) {
+            return $this->redirectToRoute('avant_envoyer_rallonge', [ 'id' => $rallonge->getId() ]);
+        }
+        elseif (! $workflow->canExecute(Signal::CLK_VAL_DEM, $rallonge))
+        {
             $sj->warningMessage(__METHOD__ . ":" . __LINE__ ." L'envoi à l'expert de la rallonge " . $rallonge .
                 " refusé par le workflow, la rallonge est dans l'état " . Etat::getLibelle($rallonge->getEtatRallonge()));
-            return $this->redirectToRoute('avant_rallonge_envoyer', [ 'id' => $rallonge->getId() ]);
+            return $this->redirectToRoute('avant_envoyer_rallonge', [ 'id' => $rallonge->getId() ]);
         }
 
-        $workflow->execute(Signal::CLK_VAL_DEM, $rallonge);
+        // Crée une nouvelle expertise
+        $se->newExpertiseIfPossible($rallonge);
 
-        [ $version, $projet, $session ] = $this->getVerProjSess($rallonge);
+        $rtn = $workflow->execute(Signal::CLK_VAL_DEM, $rallonge);
+
+        if ($rtn == true)
+        {
+            $request->getSession()->getFlashbag()->add("flash info","Votre rallonge nous a été envoyée. Vous allez recevoir un courriel de confirmation.");
+        }
+        else
+        {
+            $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " La rallonge " . $rallonge->getIdRallonge() . " n'a pas pu etre envoyée en validation.");
+            $request->getSession()->getFlashbag()->add("flash erreur","Votre rallonge n'a pas pu être envoyée en validation. Merci de vous rapprocher du support");
+        }
+
+         [ $version, $projet, $session ] = $this->getVerProjSess($rallonge);
 
         return $this->render(
             'rallonge/envoyer.html.twig',
@@ -734,7 +753,7 @@ class RallongeController extends AbstractController
     /**
      * Displays a form to edit an existing rallonge entity.
      *
-     * @Route("/{id}/envoyerResponsable", name="rallonge_envoyer_responsable", methods={"GET","POST"})
+     * @Route("/{id}/envoyerResponsable", name="envoyer_rallonge_responsable", methods={"GET","POST"})
      * @Security("is_granted('ROLE_PRESIDENT')")
      * Method("GET")
      */

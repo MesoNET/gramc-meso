@@ -1842,7 +1842,7 @@ class ServiceMenus
 
     public function envoyerEnExpertiseRallonge(Rallonge $rallonge, int $priorite=self::HPRIO):array
     {
-        $menu['name']        = 'avant_rallonge_envoyer';
+        $menu['name']        = 'avant_envoyer_rallonge';
         $menu['param']       = $rallonge->getIdRallonge();
         $menu['icone']       = 'envoyer';
         $menu['lien']        = "Envoyer en expertise";

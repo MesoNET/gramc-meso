@@ -12,22 +12,22 @@
     <table class="projet">
         <tbody>
             <tr>
-                <th>Numéro de projet</th>
-                <td>{{ version.projet }}</td>
+                <th>Rallonge</th>
+                <td>{{ rallonge }}</td>
             </tr>
             <tr>
                 <th>Validation</th>
                 <td>
                     <strong>
                         {% if( expertise.validation == 0 ) %}
-                        REFUSER ET FERMER LE PROJET
+                        REFUSER LA RALLONGE 
                         {% elseif( expertise.validation == 1 ) %}
                         ACCEPTER
                         {% endif %}
                     </strong>
                 </td>
             </tr>
-            {% for d in version.dac %}
+            {% for d in rallonge.dar %}
             <tr>
                 <th>Ressources attribuées sur {{ serviceRessources.nomcomplet(d.ressource)}}</th>
                 <td>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</td>
@@ -46,10 +46,6 @@
 
     <div class="information ok notifications">
         <h2>Notifications</h2>
-{#        <p>Si le projet est <strong>accepté</strong>,
-        un courriel sera envoyé au responsable de projet avec votre commentaire<br>
-        <p>Si le projet est <strong>refusé</strong>, le président du comité d'attribution devra prendre contact avec l'utilisateur.</p>
-#}
         <p>Un courriel sera envoyé au responsable de projet avec votre décision et votre commentaire</p>
     </div>
 

@@ -29,6 +29,14 @@ use App\GramcServices\Etat;
 use App\Utils\Functions;
 use App\Interfaces\Demande;
 
+/*
+ * TODO - Utiliser l'héritage pour faire hériter Veriosn et Rallonge d'une même classe
+ *        cf. https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/inheritance-mapping.html
+ *        Pas le temps / pas le recul alors on travaille salement
+ *        Emmanuel, 27/3/23
+ *
+ ************************************************************/
+
 /**
  * Version
  *

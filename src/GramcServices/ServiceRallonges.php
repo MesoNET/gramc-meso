@@ -135,21 +135,28 @@ class ServiceRallonges
     public function getMetaEtat(Rallonge $r): string
     {
         $etat = $r->getEtatRallonge();
-        if ($etat    ==  Etat::EDITION_DEMANDE) {
-            return  'EDITION';
-        } elseif ($etat    ==  Etat::EDITION_EXPERTISE) {
+        if ($etat === Etat::EDITION_DEMANDE)
+        {
+            return 'EDITION';
+        }
+        elseif ($etat === Etat::EDITION_EXPERTISE)
+        {
             return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::DESAFFECTE) {
-            return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::EN_ATTENTE) {
-            return  'ATTENTE';
-        } elseif ($etat == Etat::ANNULE ) {
-            return 'TERMINE';
-        } elseif ($this->getAttrAccept() == true) {
+        }
+        elseif ($etat === Etat::ACTIF)
+        {
             return  'ACCEPTE';
-        } elseif ($this->getAttrAccept() == false) {
-            return  'REFUSE';
-        } else {
+        }
+        elseif ($etat === Etat::EN_ATTENTE)
+        {
+            return  'ATTENTE';
+        }
+        elseif ($etat === Etat::ANNULE )
+        {
+            return 'TERMINE';
+        }
+        else
+        {
             return '';
         }
     }

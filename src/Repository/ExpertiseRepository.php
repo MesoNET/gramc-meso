@@ -114,16 +114,26 @@ class ExpertiseRepository extends \Doctrine\ORM\EntityRepository
     }
 
     // Les expertises liées à un projet dynamique en état EDITION_EXPERTISE
-    public function findExpertisesDyn()
+    // NOTE - Je fais deux requêtes dql, pour gérer versions ET rallonges
+    public function findExpertisesDyn(): array
     {
-        $dql = "SELECT e FROM App:Expertise e";
-        $dql .= " INNER JOIN App:Version v WITH e.version = v ";
-        $dql .= " WHERE v.etatVersion = :edition_expertise";
-         return $this->getEntityManager()
-         ->createQuery($dql)
-         ->setParameter('edition_expertise', Etat::EDITION_EXPERTISE)
-         ->getResult();
-       
+        $dqlv = "SELECT e FROM App:Expertise e";
+        $dqlv .= " INNER JOIN App:Version v WITH e.version = v ";
+        $dqlv .= " WHERE v.etatVersion = :edition_expertise";
+        $v = $this->getEntityManager()
+                 ->createQuery($dqlv)
+                 ->setParameter('edition_expertise', Etat::EDITION_EXPERTISE)
+                 ->getResult();
+
+        $dqlr = "SELECT e FROM App:Expertise e";
+        $dqlr .= " INNER JOIN App:Rallonge r WITH e.rallonge = r ";
+        $dqlr .= " WHERE r.etatRallonge = :edition_expertise";
+        $r = $this->getEntityManager()
+                 ->createQuery($dqlr)
+                 ->setParameter('edition_expertise', Etat::EDITION_EXPERTISE)
+                 ->getResult();
+
+        return array_merge($v,$r);
         
     }
     // Renvoie toutes les expertises sur une version donnée, SAUF celle de $expert
