@@ -513,11 +513,11 @@
                 <tbody>
                     <tr>
                         <th>Demande ({{d.ressource.unite}})</th>
-                        <td>{{ (d.demande)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                        <td>{{ serviceDacs.getDemandeConsolidee(d)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                     </tr>
                     <tr>
                         <th>Attribution ({{d.ressource.unite}})</th>
-                        <td>{{ (d.attribution)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                        <td>{{ serviceDacs.getAttributionConsolidee(d)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                     </tr>
                     {# if noconso == false #}
                     {% if false %}

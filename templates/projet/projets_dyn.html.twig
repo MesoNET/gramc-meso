@@ -160,7 +160,7 @@
                             {% endif %}
                         </td>
                         {% for r in serviceRessources.getressources %}
-                        <td>{% if serviceRessources.nomcomplet(r) in item.dacs|keys %}{#serviceRessources.nomcomplet(r) #}{{ item.dacs[serviceRessources.nomcomplet(r)].attribution }}{% else %} &nbsp;-&nbsp;{% endif %} </td>
+                        <td>{% if serviceRessources.nomcomplet(r) in item.dacs|keys %}{#serviceRessources.nomcomplet(r) #}{{ serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) }}{% else %} &nbsp;-&nbsp;{% endif %} </td>
                         {% endfor %}
                     </tr>
                     {% endfor %}

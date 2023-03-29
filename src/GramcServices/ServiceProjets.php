@@ -62,6 +62,7 @@ class ServiceProjets
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceSessions $ss,
+        private ServiceDacs $sdac,
         private ServiceJournal $sj,
         private ServiceRessources $sroc,
         private LoggerInterface $log,
@@ -443,6 +444,7 @@ class ServiceProjets
     public function projetsDynParAnnee($annee=0): array
     {
         $sroc = $this->sroc;
+        $sdac = $this->sdac;
         $em = $this->em;
         
         // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
@@ -510,12 +512,12 @@ class ServiceProjets
             foreach ($v->getDac() as $dac)
             {
                 $nr = $sroc->getNomComplet($dac->getRessource());
-                $p['demande'][$nr] = $dac->getDemande();
-                $p['attribution'][$nr] = $dac->getAttribution();
-                $total[$type]['demande'][$nr] += $dac->getDemande();
-                $total[$type]['attribution'][$nr] += $dac->getAttribution();
+                $p['demande'][$nr] = $sdac->getDemandeConsolidee($dac);
+                $p['attribution'][$nr] = $sdac->getAttributionConsolidee($dac);
+                $total[$type]['demande'][$nr] += $p['demande'][$nr];
+                $total[$type]['attribution'][$nr] += $p['attribution'][$nr];
             }
-           $projets[$p_id] = $p;
+            $projets[$p_id] = $p;
         }
 
         // Calcul de la répartition

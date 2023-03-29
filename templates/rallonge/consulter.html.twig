@@ -16,7 +16,12 @@
 
 <section>
 
-    <h1>Demande de rallonge pour le projet {{ projet }} (session {{ session }})</h1>
+    <h2>Demande de rallonge pour le projet {{ projet }} ({{ rallonge }})
+    <br>
+    <small>
+        <em>{{ serviceRallonges.getMetaEtat(rallonge) }} </em>
+    </small>
+    </h2>
 
     <table class="table_vertical">
         <tbody>

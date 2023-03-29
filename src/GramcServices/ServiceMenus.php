@@ -1752,8 +1752,6 @@ class ServiceMenus
     {
         $sp = $this->sp;
 
-        $menu['name']        = 'nouvelle_rallonge';
-        $menu['param']       = $projet->getIdProjet();
         $menu['lien']        = "Rallonge";
         $menu['commentaire'] = "Vous ne pouvez pas créer une nouvelle rallonge";
         $menu['ok']          = false;
@@ -1762,24 +1760,36 @@ class ServiceMenus
 
         $version = $this->sp->versionActive($projet);
         $max_rall= $this->max_rall;
+        $rallonges = $this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet));
+
+        // S'il y a une rallonge en cours de traitement on renvoie l'utilisateur dessus !'
 
         if ($version == null)
         {
-            $menu['raison']         =   "Le projet " . $projet . " n'est pas actif !";
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['raison'] = "Le projet " . $projet . " n'est pas actif !";
+            $menu['param'] = $projet->getIdProjet();;
         }
-        elseif ($this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet)) != null)
+        elseif (!empty($rallonges))
         {
-            $menu['raison']         =   "Une autre rallonge du projet " . $projet . " est déjà en cours de traitement !";
+            $menu['ok'] = true;
+            $menu['name'] = 'consulter_rallonge';
+            $menu['param'] = $rallonges[0]->getIdRallonge();
+            $menu['commentaire'] = "Aller vers la rallonge en cours de traitement";
+            
         }
         elseif (count($version->getRallonge()) >= $max_rall)
         {
-            $menu['raison']         =   "Pas plus de $max_rall rallonges par session !";
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['param'] = $projet->getIdProjet();;
+            $menu['raison'] = "Pas plus de $max_rall rallonges par session !";
         }
-        //elseif ($this->ac->isGranted('ROLE_ADMIN'))
         else
         {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Pour demander des ressources supplémentaires";
+            $menu['ok'] = true;
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['param'] = $projet->getIdProjet();;
+            $menu['commentaire'] = "Demander des ressources supplémentaires";
         }
 
         $this->__prio($menu, $priorite);

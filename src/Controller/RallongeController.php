@@ -229,7 +229,7 @@ class RallongeController extends AbstractController
         $rallonge = $srg->creerRallonge($version);
 
         $request->getSession()->getFlashbag()->add("flash info","Rallonge créée, responsable notifié");
-        return $this->redirectToRoute('consulter_version', ['id' => $projet->getIdProjet(), 'version' => $version->getId()]);
+        return $this->redirectToRoute('consulter_rallonge', ['id' => $rallonge]);
     }
 
     /**
