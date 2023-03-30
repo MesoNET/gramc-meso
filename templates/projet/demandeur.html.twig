@@ -105,9 +105,9 @@
         </td>
         <td>
             {% if num_rallonge == 1 %}
-                <strong>Rallonge</strong>
+                <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension</span></strong>
             {% else %}
-                <strong>Rallonge {{ num_rallonge }}</strong>
+                <strong><span title="ou demande au fil de l'eau, ou rallonge">Rallonge {{ num_rallonge }}</span></strong>
             {% endif %}
         </td>
         {% set num_rallonge = num_rallonge + 1 %}
