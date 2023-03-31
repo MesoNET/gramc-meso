@@ -1919,4 +1919,23 @@ class ServiceProjets
          }
          return $vnt;
      }
+
+    /***********************************************
+     * Renvoie true s'il y a des choses non acquittées sur ce projet,
+     * c-à-d si au moins une des ressources n'est pas acquittée
+     * Renvoie false si tout est acquitté
+     *******************************************************/
+    public function getTodofConsolide(Projet $projet):bool
+    {
+        $sdac = $this->sdac;
+        
+        $version = $projet->getVersionActive();
+        if ($version ===null) return false;
+
+        foreach ($version->getDac() as $dac)
+        {
+            if ($sdac->getTodofConsolide($dac)) return true;
+        }
+        return false;
+    }
 }

@@ -46,6 +46,16 @@ class Rallonge4Transition extends Transition
     public function execute(object $rallonge): bool
     {
         $rallonge instanceof Rallonge || throw new \InvalidArgumentException();
+
+        // Si on passe en état ACTIF, on signale aux hébergeurs qu'ils ont des choses à faire
+        // Pas besoin de sauvegarder ce sera fait par changeEtat
+        if ($this->getetat() === Etat::ACTIF)
+        {
+            foreach ($rallonge->getDar() as $d)
+            {
+                if ($d->getAttribution() > 0) $d->setTodof(true);
+            }
+        }
         
         // Change l'état de la rallonge
         $this->changeEtat($rallonge);

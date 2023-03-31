@@ -112,7 +112,11 @@
                                 &nbsp;
                             {% endif %}
                         </td>
-                        <td>{{ item.projet.idProjet }}</td>
+                        <td>{% if serviceProjets.getTodofConsolide(item.projet) %}
+                                <span title="Une attribution n'a pas été prise en compte par le centre hébergeur">{{icones.attention(20,20)}}</span>
+                            {%endif%}
+                            {{ item.projet.idProjet }}
+                        </td>
                         <td>
                             <a href="{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}" title="Consulter le projet">
                                 {{icones.details}}
@@ -160,7 +164,16 @@
                             {% endif %}
                         </td>
                         {% for r in serviceRessources.getressources %}
-                        <td>{% if serviceRessources.nomcomplet(r) in item.dacs|keys %}{#serviceRessources.nomcomplet(r) #}{{ serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) }}{% else %} &nbsp;-&nbsp;{% endif %} </td>
+                        <td>{% if serviceRessources.nomcomplet(r) in item.dacs|keys %}
+                                {% if serviceDacs.getTodofConsolide(item.dacs[serviceRessources.nomcomplet(r)]) %}
+                                    <span title="Cette attribution n'a pas été prise en compte par le centre hébergeur">
+                                        {{icones.attention(20,20)}}
+                                    </span>
+                                {%endif%}                                
+                                {{ serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) }}
+                            {% else %}
+                                &nbsp;-&nbsp;
+                            {% endif %} </td>
                         {% endfor %}
                     </tr>
                     {% endfor %}

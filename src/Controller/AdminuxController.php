@@ -29,6 +29,7 @@ use App\GramcServices\Etat;
 
 use App\Entity\Projet;
 use App\Entity\Version;
+use App\Entity\Rallonge;
 use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
@@ -184,7 +185,7 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // exemple: curl --netrc -X POST -d '{ "projet": "M1234", serveur": "TURPAN", conso": "10345" }'https://.../adminux/projet/setconso
+    // exemple: curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
     public function setconsoAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
@@ -192,33 +193,34 @@ class AdminuxController extends AbstractController
         $sroc = $this->sroc;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true) {
+        if ($this->getParameter('noconso')==true)
+        {
             throw new AccessDeniedException("Accès interdit (paramètre noconso)");
         }
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content == null)
+        {
             $sj->errorMessage("AdminUxController::setconsoAction - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
-        if (empty($content['projet'])) {
+        if (empty($content['projet']))
+        {
             $sj->errorMessage("AdminUxController::setconsoAction - Pas de projet");
             return new Response(json_encode(['KO' => 'Pas de projet']));
-        } else {
+        }
+        else
+        {
             $idProjet = $content['projet'];
         }
-        if (empty($content['serveur'])) {
-            $sj->errorMessage("AdminUxController::setconsoAction - Pas de serveur");
-            return new Response(json_encode(['KO' => 'Pas de serveur']));
-        } else {
-            $nomServeur = $content['serveur'];
+        if (empty($content['ressource']))
+        {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
+            return new Response(json_encode(['KO' => 'Pas de ressource']));
         }
-        if (empty($content['ressource'])) {
-            $nomRessource = null;
-            $nomComplet = $nomServeur;
-        } else {
+        else
+        {
             $nomRessource = $content['ressource'];
-            $nomComplet = $nomServeur . ' ' . $nomRessource;
         }
         if (empty($content['conso'])) {
             $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
@@ -228,18 +230,14 @@ class AdminuxController extends AbstractController
         }
 
         $error = [];
-        $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $nomServeur]);
-        if ($serveur == null)
-        {
-           $error[] = 'No serveur ' . $nomServeur;
-        }
 
         // Pas de requêtes actuellement pour trouver une ressource avec son nom complet
+        // Donc on balaie toutes les ressources... qui ne devraient pas être super-nombreuses non plus
         $ressources = $sroc->getRessources();
         $ressource = null;
         foreach ($ressources as $r)
         {
-            if ($sroc->getnomComplet($r) === $nomComplet)
+            if ($sroc->getnomComplet($r) === $nomRessource)
             {
                 $ressource = $r;
                 break;
@@ -248,7 +246,17 @@ class AdminuxController extends AbstractController
 
         if ($ressource === null)
         {
-            $error[] = 'No ressource ' . $nomComplet;
+            $error[] = 'No ressource ' . $nomRessource;
+        }
+
+        if ($ressource !== null)
+        {
+            $serveur = $ressource -> getServeur();
+        }
+        else
+        {
+            $serveur = null;
+            $error[] = 'No serveur ';
         }
         
         // On vérifie que le user connecté est bien autorisé à agir sur le serveur de cette ressource
@@ -258,7 +266,8 @@ class AdminuxController extends AbstractController
         }
 
         $projet = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet === null) {
+        if ($projet === null)
+        {
             $error[]    =   'No Projet ' . $idProjet;
         }
         else
@@ -1970,8 +1979,6 @@ class AdminuxController extends AbstractController
      * @Route("/cron/execute", name="cron_execute", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
-     *
-     *
      */
 
     // curl --netrc -X GET https://.../adminux/cron/execute
@@ -1980,6 +1987,229 @@ class AdminuxController extends AbstractController
         $cr = $this->cr;
         $cr->execute();
         return new Response(json_encode(['OK' => '']));
+    }
+
+    /**
+     *
+     * Envoie la liste des choses à faire, en fonciotn de la valeur des flags 'todof'
+     * 
+     * @Route("/todo/get", name="todo_get", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     */
+    // curl --netrc -X GET https://.../adminux/todo/get
+    public function todoAction(Request $request): response
+    {
+        $em = $this->em;
+        $sp = $this->sp;
+        $sroc = $this->sroc;
+        $sj = $this->sj;
+        //$grdt = $this->grdt;
+        $rep= $em->getRepository(Projet::class);
+
+        $todo = [];
+        $projets = $rep->findNonTermines();
+
+        foreach ($projets as $p)
+        {
+            // TODO (ou pas) -> Projets à supprimer
+            //               -> On ne les traite pas pour l'instant avec gramc-meso
+            //               -> Il faudrait une table supplémentaire (pour les traiter par ressource)
+            $v = $p->getVersionActive();
+            if ($v === null) continue;
+
+            // Y a-t-il une version à traiter ?
+            $data = $this->__getTodo($v->getDac(),$v);
+            if (count($data) !== 0)
+            {
+                $todo[] = $data;
+                continue;
+            }
+
+            // Y a-t-il une rallonge à traiter ?
+            // Attention on ne s'intéresse qu'aux ressources que le user connecté a le droit de traiter
+            foreach ($v->getRallonge() as $r)
+            {
+                $data = $this->__getTodo($r->getDar(),$v,$r);
+                if (count($data) !== 0)
+                {
+                    $todo[] = $data;
+                }
+            }
+        }
+        return new Response(json_encode(['todo' => $todo]));
+    }
+
+    // Renvoie un tableau si on trouve un Dac/dar avec un todof à true
+    // On ne regarde que les ressources accessibles par le user connecté
+    private function __getTodo(\Doctrine\Common\Collections\Collection $dacdars, Version $v, Rallonge $r=null): array
+    {
+        $sroc = $this->sroc;
+        
+        foreach ($dacdars as $d)
+        {
+            $ressource = $d->getRessource();
+            if ($ressource === null)
+            {
+                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - $d - Ressource is null !");
+                continue;
+            }
+            $serveur = $ressource->getServeur();
+            if ($serveur === null)
+            {
+                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - $d - Serveur is null !");
+                continue;
+            }
+            if ( ! $this->checkUser($serveur)) continue;
+
+            $data = [];
+            if ($d->getTodof())
+            {
+                $data['action'] = 'attribution';
+                $data['idProjet'] = $v->getProjet()->getIdProjet();
+                if ($r !== null)
+                {
+                    $data['idRallonge'] = $r->getIdRallonge();
+                }
+                $data['attribution'] = $d->getAttribution();
+                $data['ressource'] = $sroc->getNomComplet($d->getRessource());
+                break;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Signale qu'une action a été réalisée
+     *
+     * @Route("/todo/done", name="todo_done", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Positionne à false le flag todof du projet, ou des dar ou des dac
+     *
+     */
+    // curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN" }' https://.../adminux/todo/done
+    public function setdoneAction(Request $request, LoggerInterface $lg): Response
+    {
+        $em = $this->em;
+        $sj = $this->sj;
+        $su = $this->su;
+        $sroc = $this->sroc;
+
+        $content  = json_decode($request->getContent(), true);
+        if ($content == null) {
+            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
+            return new Response(json_encode(['KO' => 'Pas de données']));
+        }
+        if (empty($content['projet']))
+        {
+            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de projet");
+            return new Response(json_encode(['KO' => 'Pas de nom projet']));
+        }
+        else
+        {
+            $idProjet = $content['projet'];
+        }
+        if (empty($content['ressource']))
+        {
+            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de ressource");
+            return new Response(json_encode(['KO' => 'Pas de ressource']));
+        }
+        else
+        {
+            $nomRessource = $content['ressource'];
+        }
+
+        // Pas de requêtes actuellement pour trouver une ressource avec son nom complet
+        // Donc on balaie toutes les ressources... qui ne devraient pas être super-nombreuses non plus
+        $error = [];
+        $ressources = $sroc->getRessources();
+        $ressource = null;
+        foreach ($ressources as $r)
+        {
+            if ($sroc->getnomComplet($r) === $nomRessource)
+            {
+                $ressource = $r;
+                break;
+            }
+        }
+
+        if ($ressource === null)
+        {
+            $error[] = 'No ressource ' . $nomRessource;
+            $serveur = null;
+        }
+        else
+        {
+            $serveur = $ressource->getServeur();
+        }
+
+        // On vérifie que le user connecté est bien autorisé à agir sur le serveur de cette ressource
+        if ($serveur !== null && ! $this->checkUser($serveur))
+        {
+           $error[] = 'ACCES INTERDIT A ' . $nomRessource; 
+        }
+
+        $projet = $em->getRepository(Projet::class)->find($idProjet);
+        if ($projet === null)
+        {
+            $error[]    =   'No Projet ' . $idProjet;
+        }
+        else
+        {
+            $version = $projet->getVersionActive();
+        }
+
+        if (count($error) === 0)
+        {
+            // La version doit-elle être acquittée ?
+            $todofound = $this->__clrTodof($version->getDac(), $ressource);
+
+            // Sinon, existe-t-il une rallonge non encore acquittée ?
+            if (! $todofound)
+            {
+                foreach ($version->getRallonge() as $r)
+                {
+                    $todofound = $this->__clrTodof($r->getDar(), $ressource);
+                    if ($todofound) break;
+                }
+            }
+
+            // Erreur, il n'y a rien à acquitter !
+            if (! $todofound)
+            {
+                $error[] = "Pas de todo-flag sur le projet $idProjet pour la ressource $nomRessource";
+            }
+        }
+        
+        if ($error != []) {
+            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . print_r($error, true));
+            return new Response(json_encode(['KO' => $error ]));
+        }
+        else
+        {
+            return new Response(json_encode(['OK']));
+        }
+    }
+
+    // Si un des dac/dar a son todof true, on le met à false et on renvoir true
+    private function __clrTodof(\Doctrine\Common\Collections\Collection $dacdars, Ressource $ressource): bool
+    {
+        $em = $this->em;
+        foreach ($dacdars as $d)
+        {
+            if ($d->getRessource() === $ressource)
+            {
+                if ($d->getTodof())
+                {
+                    $d->setTodof(false);
+                    $em->persist($d);
+                    $em->flush();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

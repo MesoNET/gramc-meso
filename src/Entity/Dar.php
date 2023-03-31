@@ -83,6 +83,15 @@ class Dar
     private $attribution = 0;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="todof", type="boolean")
+     */
+     // Le "todo flag": si true, il y a un truc à faire sur la machine !
+
+    private $todof = false;
+
+    /**
      * Get idDar
      *
      * @return integer
@@ -199,5 +208,29 @@ class Dar
     {
         $this->attribution = $attribution;
         return $this;
+    }
+    
+    /**
+     * Set todof
+     *
+     * @param boolean $todof
+     *
+     * @return Version
+     */
+    public function setTodof(bool $todof): Self
+    {
+        $this->todof = $todof;
+
+        return $this;
+    }
+
+    /**
+     * Get todof
+     *
+     * @return boolean
+     */
+    public function getTodof(): bool
+    {
+        return $this->todof;
     }
 }

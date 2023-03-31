@@ -26,8 +26,8 @@ namespace App\GramcServices\Workflow\Version4;
 
 use App\GramcServices\Workflow\Transition;
 use App\Utils\Functions;
-use App\Utils\Etat;
-use App\Utils\Signal;
+use App\GramcServices\Etat;
+use App\GramcServices\Signal;
 use App\Entity\Version;
 use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
@@ -106,6 +106,16 @@ class Version4Transition extends Transition
             $workflow = new ProjetWorkflow($this->sn, $this->sj, $this->ss, $this->em);
             $output   = $workflow->execute($this->getSignal(), $projet);
             $rtn = Functions::merge_return($rtn, $output);
+        }
+
+        // Si on passe en état ACTIF, on signale aux hébergeurs qu'ils ont des choses à faire
+        // Pas besoin de sauvegarder ce sera fait par changeEtat
+        if ($this->getetat() === Etat::ACTIF)
+        {
+            foreach ($version->getDac() as $d)
+            {
+                if ($d->getAttribution() > 0) $d->setTodof(true);
+            }
         }
 
         // Change l'état de la version
