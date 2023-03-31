@@ -1,0 +1,26 @@
+@startuml
+title Etats d'une rallonge\ngramc-meso
+
+EDITION_DEMANDE: Id 2
+EDITION_EXPERTISE: Id 3
+ACTIF: Id 5
+ANNULE: Id 10
+TERMINE: Id 9
+state ACTIF #red
+
+note left of EDITION_DEMANDE: Les demandeurs\nremplissent le formulaire
+note left of EDITION_EXPERTISE: Les valideurs decident
+
+[*]               --> EDITION_DEMANDE
+EDITION_DEMANDE   --> EDITION_EXPERTISE: CLK_VAL_DEM(10)
+EDITION_DEMANDE   --> ANNULE: CLK_FERM (22)
+EDITION_EXPERTISE --> ACTIF: CLK_VAL_EXP_OK (11)
+EDITION_EXPERTISE --> TERMINE: CLK_VAL_EXP_KO (12)
+EDITION_EXPERTISE --> ANNULE: CLK_FERM (22)
+ACTIF             --> ANNULE: CLK_FERM (22)
+TERMINE           --> [*]
+ANNULE            --> [*]
+
+
+@enduml
+

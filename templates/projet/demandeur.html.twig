@@ -78,7 +78,18 @@
         {% if item.projet.versionactive != null %}
         {% set dacs = serviceDacs.getDacsByNr(item.projet.versionactive) %}
         {% for nr in dacs|keys|sort %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >{{ dacs[nr].consommation }}</td>
+            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
+                {% if serviceDacs.getTodofConsolide(dacs[nr]) %}
+                    <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
+                        {{icones.attention(20,20)}}
+                    </span>
+                {%endif%}   
+                <span title="Attribution">{{ dacs[nr].attribution}}</span> - <span title="Consommation">{{ dacs[nr].consommation }}
+                    {% if dacs[nr].consommation > 0 %}
+                        ({{100*dacs[nr].consommation/dacs[nr].attribution}} %)
+                    {% endif %}
+                </span>
+                </td>
         {% endfor %}
         {% else %}
         {% for r in serviceRessources.getressources %}
@@ -90,10 +101,10 @@
     {% set num_rallonge = 1 %}
     {% for rallonge in item.rallonges %}
     <tr>
-        <td>{{ gramcmacros.metagraph(rallonge.getMetaEtat()) }}</td>
+        <td>{{ gramcmacros.metagraph(serviceRallonges.getMetaEtat(rallonge)) }}</td>
         <td>
-            <a href="{{ path('rallonge_consulter', { 'id': rallonge.idRallonge })}}"
-            {% if rallonge.getMetaEtat() == 'EDITION' %}
+            <a href="{{ path('consulter_rallonge', { 'id': rallonge.idRallonge })}}"
+            {% if serviceRallonges.getMetaEtat(rallonge) == 'EDITION' %}
                 title="Consulter cette rallonge" >
                 {{ icones.modifier }}
 
@@ -105,9 +116,9 @@
         </td>
         <td>
             {% if num_rallonge == 1 %}
-                <strong>Rallonge</strong>
+                <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension</span></strong>
             {% else %}
-                <strong>Rallonge {{ num_rallonge }}</strong>
+                <strong><span title="ou demande au fil de l'eau, ou rallonge">Rallonge {{ num_rallonge }}</span></strong>
             {% endif %}
         </td>
         {% set num_rallonge = num_rallonge + 1 %}

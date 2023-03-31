@@ -191,10 +191,10 @@ class VersionSpecController extends AbstractController
         $ressource_forms = $data['ressource'];
 
         // NOTE - On met à zéro les demandes qui sont invalides
-        $validated = $sv->validateRessourceForms($ressource_forms); // ne sert à rien, renvoie toujours true
+        $validated = $sv->validateRessourceForms($ressource_forms);
         if (! $validated)
         {
-            $message = "Erreur dans une de vos demandes,elle a été mise à 0";
+            $message = "Erreur dans une de vos demandes, elle a été mise à 0";
             $request->getSession()->getFlashbag()->add("flash erreur",$message);
         }
         

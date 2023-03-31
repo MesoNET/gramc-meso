@@ -15,7 +15,7 @@
 <section id="expertise">
 
     <div class="top">
-        <h2>Validation du projet {{ version.projet }}</h2>
+        <h2>Validation {% if exprallonge %}de la demande d'extension {{ rallonge }} {% else %}du projet {{ version.projet }}{% endif %}</h2>
         <p>Projet de : <span>{{ version.responsable }} - {{version.acroLaboratoire }}</span></p>
 
         <div class="titre">
@@ -26,10 +26,10 @@
     <div class="information ok">
         <p>Vous pouvez:
             <ul>
-                <li>Accepter ou refuser le projet</li>
+                <li>Accepter ou refuser la demande</li>
                 <li>Entrer un commentaire à destination du responsable du projet</li>
                 <li>Entrer un commentaire à destination des autres valideurs</li>
-                <li>Proposer une attribution (en heures cpu)</li>
+                <li>Proposer une attribution pour chaque ressource proposée</li>
                 <li>Cliquer sur le bouton <strong>Enregistrer</strong> ou <strong>Fermer</strong> pour enregistrer un brouillon de votre argumentaire</li>
                 {% if peut_envoyer %}
                 <li><strong>N'oubliez pas de Cliquer sur le bouton <strong>Envoyer</strong></strong> pour valider définitivement </li>
@@ -54,7 +54,7 @@
     {% endif %}
 
     <div id="menu_expertiser" class="center">
-        <a href="{{ path('consulter_projet', { 'id' : expertise.version.projet.idProjet } ) }}" title="Consulter le projet" target="_blank">
+        <a href="{{ path('consulter_projet', { 'id' : version.projet.idProjet } ) }}" title="Consulter le projet" target="_blank">
             {{icones.details}}
             <p>Projet</p>
         </a>
@@ -110,7 +110,6 @@
 
         <h3>Votre proposition d'attribution</h3>
 
-        {% if commentaireExterne %}
         <div class="input">
             <div>
                 <h4>Validation :</h4>
@@ -119,17 +118,14 @@
                 {{ form_widget(edit_form.validation)  }}
             </div>
         </div>
-        {% endif %}
 
-        {% if commentaireExterne %}
-            <div class="textarea commentaire_externe">
-                <div>
-                    <h4>Commentaire :</h4>
-                    <small>Ce commentaire sera envoyé au responsable du projet</small></th>
-                </div>
-                {{ form_widget(edit_form.commentaireExterne,{ 'attr': { 'class': 'compteur', 'rows' : 10, 'cols' : 100 } }) }}
+        <div class="textarea commentaire_externe">
+            <div>
+                <h4>Commentaire :</h4>
+                <small>Ce commentaire sera envoyé au responsable du projet</small></th>
             </div>
-        {% endif %}
+            {{ form_widget(edit_form.commentaireExterne,{ 'attr': { 'class': 'compteur', 'rows' : 10, 'cols' : 100 } }) }}
+        </div>
 
         <div class="textarea">
             <div>

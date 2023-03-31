@@ -1,0 +1,101 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "projet/terminer.html.twig" as terminermacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block myjavascripts %}
+<script  type="text/javascript" src="{{ asset('js/projets_experts.js') }}" ></script>
+{% endblock myjavascripts %}
+
+{% block body %}
+
+<section id="section_bilans_listes"  style="stroke:black">
+
+    <h2>Rallonges de projets dynamiques</h2>
+
+    {# SUPPRIME PROVISOIREMENT 
+    <div class="formulaire inputrond submitdyn">
+        <form action="{{ path('projet_tous_csv') }}">
+            <input class="telecharger_csv" type="submit" value="Télécharger en csv" />
+        </form>
+    </div>
+    #}
+    
+    <div class="tableaux">
+        <div class="bilan_legende">
+            &nbsp;
+        </div>
+        <div class="liste">
+        <div id="projets_tous_wrapper" class="dataTables_wrapper no-footer">
+            <table id="projets_tous" class="dataTable no-footer" role="grid">
+                <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 69px;" aria-label="Numéro: activate to sort column ascending">N°</th>
+                        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;" aria-label=""></th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Etat: activate to sort column ascending" title="Etat" >E</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Titre: activate to sort column ascending">Titre</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Thématique: activate to sort column ascending">Thématique</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Responsable: activate to sort column ascending">Responsable</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Laboratoire: activate to sort column ascending">Laboratoire</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">Début</th>
+                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">fin</th>
+                        {% for r in serviceRessources.getNoms %}
+                            <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr {{r}}: activate to sort column ascending" title="Heures attribuées sur {{r}}">{{r}}</th>
+                        {% endfor %}
+
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    {% for item in data %}
+                    <tr role="row" class="odd" style="stroke:black">
+                        <td>{{ item.rallonge }}</td>
+                        <td>
+                            <a href="{{ path('consulter_rallonge', { 'id': item.rallonge.idrallonge }) }}" title="Consulter la rallonge">
+                                {{icones.details}}
+                            </a>
+                        </td>
+                        <td class="{{ serviceRallonges.getmetaetat(item.rallonge)|lower }}">
+                            {{ gramcmacros.metagraph(serviceRallonges.getmetaetat(item.rallonge)) }}
+                        </td>
+                        <td>
+                            {{ gramcmacros.afftitre(item.rallonge.version.prjtitre) }}
+                        </td>
+                        {% if( item.rallonge.version.prjThematique != null ) %}
+                        <td class="t{{ item.rallonge.version.prjThematique }}">{{ item.rallonge.version.prjThematique }}
+                        {% else %}
+                        <td>
+                        {% endif %}
+                        </td>
+                        <td>
+                            {% if( item.rallonge.version.responsable != null) %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <a class="sudo" href="{{ path('sudo',  { 'id': item.rallonge.version.responsable.id }) }}?" title="Changer d'identité">
+                                {{icones.sudo(20,20)}}
+                            </a>
+                            {% endif %}
+                            <a href="mailto:{{ item.rallonge.version.responsable.mail }}" title="Envoyer un courriel au responsable à l'adresse {{ item.rallonge.version.responsable.mail }}">
+                                {{icones.mail_send}}
+                            </a>
+                            {{ item.rallonge.version.responsable.prenom }} {{ item.rallonge.version.responsable.nom }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span title="{{ item.rallonge.version.PrjLLabo }}">{{ item.rallonge.version.acroLaboratoire }}</span>
+                        </td>
+                        <td>{% if item.rallonge.version.startdate != null %}{{ item.rallonge.version.startdate|date('Y-m-d')}}{% else %} - {% endif %}</td>
+                        <td>{% if item.rallonge.version.limitdate != null %}{{ item.rallonge.version.limitdate|date('Y-m-d')}}{% else %} - {% endif %}</td>
+                        {% for r in serviceRessources.getressources %}
+                        <td>{% if serviceRessources.nomcomplet(r) in item.dars|keys %}{#serviceRessources.nomcomplet(r) #}{{ item.dars[serviceRessources.nomcomplet(r)].attribution }}{% else %} &nbsp;-&nbsp;{% endif %} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+               </tbody>
+            </table>
+        </div>
+        </div>
+
+    </div>
+    <div id="formulaire_confirmation"></div>
+</section>
+{% endblock %}

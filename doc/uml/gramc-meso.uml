@@ -9,6 +9,7 @@ package Classes <<Frame>> {
         class Ressource
         class Dac
         class Version
+        class Ressource
         class Serveur
         class User
     }
@@ -40,6 +41,12 @@ package Classes <<Frame>> {
         - string codeDependances
         
         + string getIdVersion()
+    }
+
+    class Rallonge <<modif d'une version'>> {
+        - string idRallonge
+        - int etatRallonge
+        - string prjJustifRallonge
     }
     
     class Individu <<Compte sur <b>gramc</b> >>{
@@ -132,7 +139,11 @@ package Classes <<Frame>> {
         - int demande
         - int attribution
         - int consommation
-        - string groupname
+    }
+
+    class Dar <<Demande, Attribution pour Rallonges>> {
+        - int demande
+        - int attribution
     }
 
     Projet  "1" o-- "1..v" Version
@@ -147,12 +158,15 @@ package Classes <<Frame>> {
     Version "0..n" o-- Thématique
     Version "0..n" o-- "0..n" Publication
     Version "1" o-- "r" Dac
+    Version "1" o-- "0..n" Rallonge
     Version "1" o-- "f" FormationVersion
     Formation "1" o-- "0..n" FormationVersion
+
+    Rallonge "1" o-- "r"  Dar
     
     Expertise "1" -- "1" Individu
-    Expertise "1" -- "1" Version
-    Expertise "1" o-- "r" Dac
+    Expertise "1" -- "0..1" Version
+    Expertise "1" -- "0..1" Rallonge
     
     User "0..n" --o "1" Clessh
     User "0..n" -- "1" Serveur
@@ -161,6 +175,7 @@ package Classes <<Frame>> {
     
     Serveur "1" o-- "0..n" Ressource: r ressources s serveurs
     Ressource "1" o-- "0..n" Dac
+    Ressource "1" o-- "0..n" Dar
 
     class Compta <<Données de conso>>{
         - date date;

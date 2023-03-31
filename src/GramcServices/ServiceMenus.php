@@ -798,6 +798,25 @@ class ServiceMenus
         return $menu;
     }
 
+    public function rallongesDyn(int $priorite=self::HPRIO):array
+    {
+        $menu['name']   =   'rallonge_dynamique';
+        $menu['commentaire']    =   "Toutes les demandes d'extension de projets dynamiques";
+        $menu['lien']           =   "Demandes d'extension";
+        $menu['icone']          =   "annee";
+
+
+        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            $menu['ok'] = true;
+        } else {
+            $menu['ok'] = false;
+            $menu['raison'] = "Vous devez être un administrateur ou président pour accéder à cette page";
+        }
+
+        $this->__prio($menu, $priorite);
+        return $menu;
+    }
+
     //////////////////////////////////////
 
     public function lireJournal(int $priorite=self::HPRIO):array
@@ -1733,30 +1752,43 @@ class ServiceMenus
     {
         $sp = $this->sp;
 
-        $menu['name']        = 'nouvelle_rallonge';
-        $menu['param']       = $projet->getIdProjet();
-        $menu['lien']        = "Rallonge";
-        $menu['commentaire'] = "Vous ne pouvez pas créer une nouvelle rallonge";
+        $menu['lien']        = "Extension";
+        $menu['commentaire'] = "Vous ne pouvez pas créer une nouvelle extension";
         $menu['ok']          = false;
-        $menu['raison']      = "Vous n'êtes pas un administrateur";
-
 
         $version = $this->sp->versionActive($projet);
         $max_rall= $this->max_rall;
+        $rallonges = null;
+        $rallonges = $this->em->getRepository(Rallonge::class)->findRallongesOuvertes($version);
 
-        if ($version == null) {
-            $menu['raison']         =   "Le projet " . $projet . " n'est pas actif !";
-        } elseif ($this->em->getRepository(Rallonge::class)->findRallongesOuvertes($sp->versionActive($projet)) != null) {
-            $menu['raison']         =   "Une autre rallonge du projet " . $projet . " est déjà en cours de traitement !";
+        // S'il y a une rallonge en cours de traitement on renvoie l'utilisateur dessus !'
+
+        if ($version == null)
+        {
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['raison'] = "Le projet " . $projet . " n'est pas actif !";
+            $menu['param'] = $projet->getIdProjet();;
         }
-        elseif (count($version->getRallonge()) >= $max_rall) {
-            $menu['raison']         =   "Pas plus de $max_rall rallonges par session !";
+        elseif (!empty($rallonges))
+        {
+            $menu['ok'] = true;
+            $menu['name'] = 'consulter_rallonge';
+            $menu['param'] = $rallonges[0]->getIdRallonge();
+            $menu['commentaire'] = "Aller vers la demande d'extension en cours de traitement";
+            
         }
-        //elseif( $version->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE )
-        //    $menu['raison']         =   "Un renouvellement du projet " . $projet . " est déjà accepté !";
-        elseif ($this->ac->isGranted('ROLE_ADMIN')) {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez créer une nouvelle rallonge !";
+        elseif (count($version->getRallonge()) >= $max_rall)
+        {
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['param'] = $projet->getIdProjet();;
+            $menu['raison'] = "Pas plus de $max_rall demandes d'extension par an !";
+        }
+        else
+        {
+            $menu['ok'] = true;
+            $menu['name'] = 'nouvelle_rallonge';
+            $menu['param'] = $projet->getIdProjet();;
+            $menu['commentaire'] = "Extension (ou demande au fil de l'eau, ou rallonge): Demander des ressources supplémentaires sans modifier la date de fin du projet";
         }
 
         $this->__prio($menu, $priorite);
@@ -1784,7 +1816,7 @@ class ServiceMenus
         }
 
         if ($version == null) {
-            $menu['raison']         =   "Cette rallonge n'est associée à aucun projet !";
+            $menu['raison']         =   "Cette demande n'est associée à aucun projet !";
         }
         //elseif( $version->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE )
         //    $menu['raison']         =   "Un renouvellement du projet " . $projet . " est déjà accepté !";
@@ -1795,11 +1827,11 @@ class ServiceMenus
         } elseif ($version->getEtatVersion() == Etat::ANNULE) {
             $menu['raison']     =   "Votre projet est annulé";
         } elseif ($version->getEtatVersion() == Etat::TERMINE) {
-            $menu['raison']     =   "Votre projet de cette session est déjà terminé";
+            $menu['raison']     =   "Votre projet est déjà terminé";
         } elseif ($rallonge->getEtatRallonge() == Etat::ANNULE) {
-            $menu['raison']     =   "Cette rallonge a été annulée";
+            $menu['raison']     =   "Cette demande a été annulée";
         } elseif ($rallonge->getEtatRallonge() != Etat::EDITION_DEMANDE) {
-            $menu['raison']     =   "Cette rallonge a déjà été envoyée en expertise";
+            $menu['raison']     =   "Cette demande a déjà été envoyée en validation";
         } elseif ($this->ac->isGranted('ROLE_ADMIN')) {
             $menu['ok']             =   true;
             $menu['commentaire']    =   "Vous pouvez modifier la demande en tant qu'administrateur !";
@@ -1819,11 +1851,11 @@ class ServiceMenus
 
     public function envoyerEnExpertiseRallonge(Rallonge $rallonge, int $priorite=self::HPRIO):array
     {
-        $menu['name']        = 'avant_rallonge_envoyer';
+        $menu['name']        = 'avant_envoyer_rallonge';
         $menu['param']       = $rallonge->getIdRallonge();
         $menu['icone']       = 'envoyer';
-        $menu['lien']        = "Envoyer en expertise";
-        $menu['commentaire'] = "Vous ne pouvez pas envoyer cette demande en expertise";
+        $menu['lien']        = "Envoyer en validation";
+        $menu['commentaire'] = "Vous ne pouvez pas envoyer cette demande d'extension en validation";
         $menu['ok']          = false;
         $menu['raison']      = "raison inconnue";
         $user                = $this->token->getUser();
@@ -1837,10 +1869,8 @@ class ServiceMenus
         }
 
         if ($version == null) {
-            $menu['raison']         =   "Cette rallonge n'est associée à aucun projet !";
+            $menu['raison']         =   "Cette demande n'est associée à aucun projet !";
         }
-        //elseif( $version->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE )
-        //    $menu['raison']         =   "Un renouvellement du projet " . $projet . " est déjà accepté !";
         elseif ($version->getProjet() == null) {
             $menu['raison']     =   "Cette version du projet n'est associée à aucun projet";
         } elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE) {
@@ -1848,19 +1878,19 @@ class ServiceMenus
         } elseif ($version->getEtatVersion() == Etat::ANNULE) {
             $menu['raison']     =   "Votre projet est annulé";
         } elseif ($version->getEtatVersion() == Etat::TERMINE) {
-            $menu['raison']     =   "Votre projet de cette session est déjà terminé";
+            $menu['raison']     =   "Votre projet de est déjà terminé";
         } elseif ($rallonge->getEtatRallonge() == Etat::ANNULE) {
-            $menu['raison']     =   "Cette rallonge a été annulée";
+            $menu['raison']     =   "Cette demande a été annulée";
         } elseif ($rallonge->getEtatRallonge() != Etat::EDITION_DEMANDE) {
-            $menu['raison']     =   "Cette rallonge a déjà été envoyée en expertise";
+            $menu['raison']     =   "Cette demande a déjà été envoyée en validation";
         } elseif ($this->ac->isGranted('ROLE_ADMIN')) {
             $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez envoyer cette demande en expertise en tant qu'administrateur !";
+            $menu['commentaire']    =   "Vous pouvez envoyer cette demande en validation en tant qu'administrateur !";
         } elseif ($version->isResponsable($user)) {
-            $menu['commentaire']         =   "Vous pouvez envoyer votre demande en expertise" ;
+            $menu['commentaire']         =   "Vous pouvez envoyer votre demande en validation" ;
             $menu['ok']             =   true;
         } else {
-            $menu['raison']         = "Vous n'avez pas le droit d'envoyer cette demande en expertise, vous n'êtes pas le responsable du projet";
+            $menu['raison']         = "Vous n'avez pas le droit d'envoyer cette demande en validation, vous n'êtes pas le responsable du projet";
         }
 
         $this->__prio($menu, $priorite);
@@ -1872,7 +1902,7 @@ class ServiceMenus
     public function televersementGenerique(int $priorite=self::HPRIO):array
     {
         $menu['name']           =   'televersement_generique';
-        $menu['lien']           =   "Téléversements génériques";
+        $menu['lien']           =   "Téléversements";
         $menu['commentaire']    =   "Téléverser des fiches projet ou des rapports d'activité";
         $menu['ok']             =   false;
         $menu['raison']         =   "Vous n'êtes pas un administrateur";

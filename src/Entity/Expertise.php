@@ -27,6 +27,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 /**
  * Expertise
  *
@@ -130,6 +131,16 @@ class Expertise
      * })
      */
     private $version;
+
+    /**
+     * @var \App\Entity\Rallonge
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge", inversedBy="expertise")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
+     * })
+     */
+    private $rallonge;
 
     /**
      * @var \App\Entity\Individu
@@ -355,7 +366,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setVersion(\App\Entity\Version $idVersion = null)
+    public function setVersion(\App\Entity\Version $idVersion = null): self
     {
         $this->version = $idVersion;
 
@@ -367,9 +378,33 @@ class Expertise
      *
      * @return \App\Entity\Version
      */
-    public function getVersion()
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
+    }
+
+    /**
+     * Set rallonge
+     *
+     * @param \App\Entity\Rallonge $idRallonge
+     *
+     * @return Expertise
+     */
+    public function setRallonge(\App\Entity\Rallonge $idRallonge = null): self
+    {
+        $this->rallonge = $idRallonge;
+
+        return $this;
+    }
+
+    /**
+     * Get rallonge
+     *
+     * @return \App\Entity\Rallonge
+     */
+    public function getRallonge(): ?\App\Entity\Rallonge
+    {
+        return $this->rallonge;
     }
 
     /**

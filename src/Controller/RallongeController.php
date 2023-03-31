@@ -37,9 +37,12 @@ use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceExperts\ServiceExpertsRallonge;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceExperts\ServiceExperts;
+use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
-use App\GramcServices\Workflow\Rallonge\RallongeWorkflow;
+use App\GramcServices\ServiceRallonges;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 use App\GramcServices\Etat;
 use App\GramcServices\Signal;
 use App\Utils\Functions;
@@ -73,14 +76,67 @@ class RallongeController extends AbstractController
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
+        private ServiceExperts $se,
+        private ServiceRessources $sroc,
         private ServiceSessions $ss,
         private ServiceExpertsRallonge $sr,
         private ServiceVersions $sv,
-        private RallongeWorkflow $rw,
+        private ServiceRallonges $srg,
+        private Rallonge4Workflow $rw,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private EntityManagerInterface $em
     ) {}
+
+    /**
+     * Rallonges dynamiques
+     *
+     * @Route("/dynamiques", name="rallonge_dynamique", methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_OBS')")
+     */
+    public function rallongesDynamiquesAction(): Response
+    {
+        $em = $this->em;
+        //$projets = $em->getRepository(Projet::class)->findAll();
+        $sj = $this->sj;
+        $sp = $this->sp;
+        $sroc = $this->sroc;
+
+/*
+        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
+            $etat_projet[$e] = 0;
+        }
+*/
+        // On récupère toutes les rallonges des projets dynamiques de cette année
+        // Avec des informations statistiques
+        $rallonges = $sp->rallongesDynParAnnee();
+        $data = [];
+        //$collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
+        //$versionRepository              = $em->getRepository(Version::class);
+        //$projetRepository               = $em->getRepository(Projet::class);
+
+        foreach ($rallonges as $r)
+        {
+            $dars = [];
+            foreach ($r->getDar() as $d)
+            {
+                $dars[$sroc->getNomComplet($d->getRessource())] = $d;
+            }
+            $data[] = [
+                        'rallonge' => $r,
+                        'dars' => $dars
+            ];
+        }
+        //dd($data);
+        return $this->render(
+            'rallonge/rallonges_dyn.html.twig',
+            [
+            //'etat_projet' => $etat_projet,
+            'data' => $data
+            ]
+        );
+    }
 
     /**
      * A partir d'une rallonge, renvoie version, projet, session
@@ -149,15 +205,18 @@ class RallongeController extends AbstractController
      * Creates a new rallonge entity.
      *
      * @Route("/{id}/creation", name="nouvelle_rallonge", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @ Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
         $sm = $this->sm;
         $ss = $this->ss;
-        $sj = $this->sj;
         $sp = $this->sp;
+
+        $sj = $this->sj;
+        $srg = $this->srg;
         $em = $this->em;
 
         // ACL
@@ -165,30 +224,12 @@ class RallongeController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de créer une nouvelle rallonge pour le projet" . $projet .
                 " parce que : " . $sm->nouvelleRallonge($projet)['raison']);
         }
-        //return new Response( Functions::show( $em->getRepository(Rallonge::class)->findRallongesOuvertes($projet)   ) );
-
+        
         $version  = $sp->versionActive($projet);
-
-        $rallonge = new Rallonge();
-        $rallonge->setVersion($version);
-        $rallonge->setObjectState(Etat::CREE_ATTENTE);
-
-        $session = $ss->getSessionCourante();
-
-        $count   = count($version->getRallonge()) + 1;
-        $rallonge->setIdRallonge($version->getIdVersion() . 'R' . $count);
-
-        $workflow = $this->rw;
-        $rtn      = $workflow->execute(Signal::CLK_DEMANDE, $rallonge);
-        if ($rtn == false) {
-            $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Impossible d'envoyer le signal CLK_DEMANDE à la rallonge " . $rallonge);
-            $request->getSession()->getFlashbag()->add("flash erreur","Rallonge créée, mais responsable probablement pas notifié - Veuillez vérifier");
-        }
-
-        Functions::sauvegarder($rallonge, $em, $lg);
+        $rallonge = $srg->creerRallonge($version);
 
         $request->getSession()->getFlashbag()->add("flash info","Rallonge créée, responsable notifié");
-        return $this->redirectToRoute('consulter_version', ['id' => $projet->getIdProjet(), 'version' => $version->getId()]);
+        return $this->redirectToRoute('consulter_rallonge', ['id' => $rallonge]);
     }
 
     /**
@@ -237,7 +278,7 @@ class RallongeController extends AbstractController
     /**
      * Displays a form to edit an existing rallonge entity.
      *
-     * @Route("/{id}/consulter", name="rallonge_consulter", methods={"GET"})
+     * @Route("/{id}/consulter", name="consulter_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -281,6 +322,7 @@ class RallongeController extends AbstractController
         $sm = $this->sm;
         $sj = $this->sj;
         $sval = $this->vl;
+        $srg = $this->srg;
         $em = $this->em;
 
         // ACL
@@ -289,8 +331,21 @@ class RallongeController extends AbstractController
                 " parce que : " . $sm->modifierRallonge($rallonge)['raison']);
         }
 
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $srg->getRessourceForm($rallonge);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+
+        // NOTE - On met à zéro les demandes qui sont invalides
+        $validated = $srg->validateRessourceForms($ressource_forms);
+        if (! $validated)
+        {
+            $message = "Erreur dans une de vos demandes, elle a été mise à 0";
+            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+        }
+ 
         $editForm = $this->createFormBuilder($rallonge)
-            ->add('demHeures', IntegerType::class, [ 'required'       =>  false ])
             ->add('prjJustifRallonge', TextAreaType::class, [ 'required'       =>  false ])
             ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer' ])
             ->add('fermer', SubmitType::class, ['label' => 'Fermer' ])
@@ -304,7 +359,7 @@ class RallongeController extends AbstractController
         if ($editForm->isSubmitted()) {
             
             if ($editForm->get('annuler')->isClicked()) {
-                return $this->redirectToRoute('rallonge_consulter', [ 'id' => $rallonge->getIdRallonge() ]);
+                return $this->redirectToRoute('consulter_rallonge', [ 'id' => $rallonge->getIdRallonge() ]);
             }
             
             $erreurs = Functions::dataError($sval, $rallonge);
@@ -312,7 +367,7 @@ class RallongeController extends AbstractController
             $request->getSession()->getFlashbag()->add("flash info","Rallonge enregistrée");
 
             if ($editForm->get('fermer')->isClicked()) {
-                return $this->redirectToRoute('rallonge_consulter', [ 'id' => $rallonge->getIdRallonge() ]);
+                return $this->redirectToRoute('consulter_rallonge', [ 'id' => $rallonge->getIdRallonge() ]);
             }
         }
         return $this->render(
@@ -322,6 +377,7 @@ class RallongeController extends AbstractController
             'projet'    => $projet,
             'session'   => $session,
             'edit_form' => $editForm->createView(),
+            'ressource_form' => $ressource_form->createView(),
             'erreurs'   => $erreurs,
         ]
         );
@@ -391,7 +447,7 @@ class RallongeController extends AbstractController
 
             // Bouton ENVOYER
             if ($editForm->get('envoyer')->isClicked() && $erreurs == null) {
-                return $this->redirectToRoute('rallonge_envoyer_president', [ 'id' => $rallonge->getId() ]);
+                return $this->redirectToRoute('envoyer_rallonge_president', [ 'id' => $rallonge->getId() ]);
             }
 
             // Bouton ENREGISTRER
@@ -494,7 +550,7 @@ class RallongeController extends AbstractController
     
                 // Bouton ENVOYER
                 if ($editForm->get('envoyer')->isClicked() && $erreurs == null) {
-                    return $this->redirectToRoute('rallonge_envoyer_responsable', [ 'id' => $rallonge->getId() ]);
+                    return $this->redirectToRoute('envoyer_rallonge_responsable', [ 'id' => $rallonge->getId() ]);
                 }
     
                 // Bouton ENREGISTRER
@@ -520,7 +576,7 @@ class RallongeController extends AbstractController
     /**
      * Affiche un écran de confirmation, et si OK envoie l'expertise au président
      * 
-     * @Route("/{id}/envoyer_president", name="rallonge_envoyer_president", methods={"GET","POST"})
+     * @Route("/{id}/envoyer_president", name="envoyer_rallonge_president", methods={"GET","POST"})
      * @Security("is_granted('ROLE_EXPERT')")
      * Method("GET")
      */
@@ -602,7 +658,7 @@ class RallongeController extends AbstractController
      *
      * TODO - VIRER CETTE FONCTION
      *
-     * @Route("/{id}/avant_envoyer", name="avant_rallonge_envoyer", methods={"GET"})
+     * @Route("/{id}/avant_envoyer", name="avant_envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -633,9 +689,9 @@ class RallongeController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing rallonge entity.
+     * Envoi d'une rallonge en expertise
      *
-     * @Route("/{id}/envoyer", name="rallonge_envoyer", methods={"GET"})
+     * @Route("/{id}/envoyer", name="envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
@@ -643,6 +699,7 @@ class RallongeController extends AbstractController
     {
         $sm = $this->sm;
         $sj = $this->sj;
+        $se = $this->se;
         $sval = $this->vl;
 
         // ACL
@@ -654,18 +711,34 @@ class RallongeController extends AbstractController
         $erreurs = Functions::dataError($sval, $rallonge);
         $workflow = $this->rw;
 
-        if ($erreurs != null) {
+        if ($erreurs != null)
+        {
             $sj->warningMessage(__METHOD__ . ":" . __LINE__ ." L'envoi à l'expert de la rallonge " . $rallonge . " refusé à cause des erreurs !");
-            return $this->redirectToRoute('avant_rallonge_envoyer', [ 'id' => $rallonge->getId() ]);
-        } elseif (! $workflow->canExecute(Signal::CLK_VAL_DEM, $rallonge)) {
+            return $this->redirectToRoute('avant_envoyer_rallonge', [ 'id' => $rallonge->getId() ]);
+        }
+        elseif (! $workflow->canExecute(Signal::CLK_VAL_DEM, $rallonge))
+        {
             $sj->warningMessage(__METHOD__ . ":" . __LINE__ ." L'envoi à l'expert de la rallonge " . $rallonge .
                 " refusé par le workflow, la rallonge est dans l'état " . Etat::getLibelle($rallonge->getEtatRallonge()));
-            return $this->redirectToRoute('avant_rallonge_envoyer', [ 'id' => $rallonge->getId() ]);
+            return $this->redirectToRoute('avant_envoyer_rallonge', [ 'id' => $rallonge->getId() ]);
         }
 
-        $workflow->execute(Signal::CLK_VAL_DEM, $rallonge);
+        // Crée une nouvelle expertise
+        $se->newExpertiseIfPossible($rallonge);
 
-        [ $version, $projet, $session ] = $this->getVerProjSess($rallonge);
+        $rtn = $workflow->execute(Signal::CLK_VAL_DEM, $rallonge);
+
+        if ($rtn == true)
+        {
+            $request->getSession()->getFlashbag()->add("flash info","Votre rallonge nous a été envoyée. Vous allez recevoir un courriel de confirmation.");
+        }
+        else
+        {
+            $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " La rallonge " . $rallonge->getIdRallonge() . " n'a pas pu etre envoyée en validation.");
+            $request->getSession()->getFlashbag()->add("flash erreur","Votre rallonge n'a pas pu être envoyée en validation. Merci de vous rapprocher du support");
+        }
+
+         [ $version, $projet, $session ] = $this->getVerProjSess($rallonge);
 
         return $this->render(
             'rallonge/envoyer.html.twig',
@@ -680,7 +753,7 @@ class RallongeController extends AbstractController
     /**
      * Displays a form to edit an existing rallonge entity.
      *
-     * @Route("/{id}/envoyerResponsable", name="rallonge_envoyer_responsable", methods={"GET","POST"})
+     * @Route("/{id}/envoyerResponsable", name="envoyer_rallonge_responsable", methods={"GET","POST"})
      * @Security("is_granted('ROLE_PRESIDENT')")
      * Method("GET")
      */

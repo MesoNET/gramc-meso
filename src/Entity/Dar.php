@@ -27,39 +27,39 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Dac
+ * Dar
  *
- * Demande, Attribution, consommation
+ * Demande, Attribution pour Rallonges
  * 
- * @ORM\Table(name="dac", options={"collation"="utf8mb4_general_ci"})
+ * @ORM\Table(name="dar", options={"collation"="utf8mb4_general_ci"})
 
  * @ORM\Entity
  */
-class Dac
+class Dar
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="id_dac", type="integer")
+     * @ORM\Column(name="id_dar", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $idDac;
+    private $idDar;
 
     /**
-     * @var \App\Entity\Version
+     * @var \App\Entity\Rallonge
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="dac")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge",inversedBy="dar")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
+     *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
      * })
      */
-    private $version;
+    private $rallonge;
 
     /**
      * @var \App\Entity\Ressource
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dac")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dar")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
      * })
@@ -92,70 +92,54 @@ class Dac
     private $todof = false;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="consommation", type="integer", nullable=false, options={"comment":"consommation, l'unité est celle de la ressource associée"})
-     * 
-     */
-    private $consommation = 0;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="groupname", type="string", nullable=true, options={"comment":"Nom de groupe ou autre objet associé au projet"})
-     * 
-     */
-    private $groupname;
-
-    /**
-     * Get idDac
+     * Get idDar
      *
      * @return integer
      */
-    public function getIdDac(): int
+    public function getIdDar(): int
     {
-        return $this->idDac;
+        return $this->idDar;
     }
 
     public function getId(): int
     {
-        return $this->idDac;
+        return $this->idDar;
     }
 
-    public function __construct(Ressource $ressource = null, Version $version = null)
+    public function __construct(Ressource $ressource = null, Rallonge $rallonge = null)
     {
         if ($ressource != null)
         {
             $this->ressource = $ressource;
         }
-        if ($version != null)
+        if ($rallonge != null)
         {
-            $this->version  =   $version;
+            $this->rallonge = $rallonge;
         }
     }
 
     /**
-     * Set version
+     * Set rallonge
      *
-     * @param \App\Entity\Version $version
+     * @param \App\Entity\Rallonge $rallonge
      *
-     * @return Dac
+     * @return Dar
      */
-    public function setVersion(\App\Entity\Version $version): self
+    public function setRallonge(\App\Entity\Rallonge $rallonge): self
     {
-        $this->version = $version;
+        $this->rallonge = $rallonge;
 
         return $this;
     }
 
     /**
-     * Get version
+     * Get rallonge
      *
-     * @return \App\Entity\Version
+     * @return \App\Entity\Rallonge
      */
-    public function getVersion(): \App\Entity\Version
+    public function getRallonge(): \App\Entity\Rallonge
     {
-        return $this->version;
+        return $this->rallonge;
     }
 
     /**
@@ -163,7 +147,7 @@ class Dac
      *
      * @param \App\Entity\Ressource $ressource
      *
-     * @return Dac
+     * @return Dar
      */
     public function setRessource(\App\Entity\Ressource $ressource): self
     {
@@ -196,7 +180,7 @@ class Dac
      * Set demande
      *
      * @param int
-     * @return Dac
+     * @return Dar
      */
     public function setDemande(int $demande): Self
     {
@@ -218,55 +202,11 @@ class Dac
      * Set attribution
      *
      * @param integer
-     * @return Dac
+     * @return Dar
      */
     public function setAttribution(int $attribution): Self
     {
         $this->attribution = $attribution;
-        return $this;
-    }
-
-    /**
-     * Get consommation
-     *
-     * @return integer
-     */
-    public function getConsommation(): int
-    {
-        return $this->consommation;
-    }
-
-    /**
-     * Set consommation
-     *
-     * @param integer
-     * @return Dac
-     */
-    public function setConsommation(int $consommation): Self
-    {
-        $this->consommation = $consommation;
-        return $this;
-    }
-
-    /**
-     * Get groupname
-     *
-     * @return string
-     */
-    public function getGroupName(): string
-    {
-        return $this->groupname;
-    }
-
-    /**
-     * Set groupname
-     *
-     * @param string
-     * @return Dac
-     */
-    public function setGroupName(string $groupname): Self
-    {
-        $this->unite = $groupname;
         return $this;
     }
     

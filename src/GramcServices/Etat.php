@@ -38,7 +38,8 @@ class Etat
     public const STANDBY                   = 8;
     public const TERMINE                   = 9;
     public const ANNULE                    = 10;
-    public const FIN_ETATS                 = 11;
+    public const REFUSE                    = 11;
+    public const FIN_ETATS                 = 12;
 
     public const EDITION_TEST              = 21;
     public const EXPERTISE_TEST            = 22;
@@ -61,6 +62,7 @@ class Etat
             self::STANDBY                   =>  'STANDBY',
             self::TERMINE                   =>  'TERMINE',
             self::ANNULE                    =>  'ANNULE',
+            self::REFUSE                    =>  'REFUSE',
             self::FIN_ETATS                 =>  'FIN_ETATS',
             self::EDITION_TEST              =>  'EDITION_TEST',
             self::EXPERTISE_TEST            =>  'EXPERTISE_TEST',
