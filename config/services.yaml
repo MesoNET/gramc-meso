@@ -135,6 +135,9 @@ services:
     App\GramcServices\Cron\GramcCronTask\TempsCronTask:
         arguments: [ "%dyn_duree_post%"]
 
+    App\GramcServices\Cron\GramcCronTask\TempsStdbyCronTask:
+        arguments: [ "%dyn_duree_post%"]
+
     App\Controller\VersionSpecController:
         arguments: [ "%dyn_duree%", "%dyn_duree_post%" ]
         

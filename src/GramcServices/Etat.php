@@ -50,6 +50,12 @@ class Etat
     public const RENOUVELABLE              = 41;
     public const NON_RENOUVELABLE          = 42;
 
+    public const J_99                      = 899;
+    public const J_30                      = 830;
+    public const J_15                      = 815;
+    public const J_7                       = 807;
+    public const J_1                       = 801;
+
     public const   LIBELLE_ETAT=
         [
             self::CREE_ATTENTE              =>  'CREE_ATTENTE',

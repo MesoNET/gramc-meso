@@ -27,35 +27,41 @@ namespace App\GramcServices;
 class Signal
 {
     // signaux
-    public const INCONNU           = 0;
-    public const CLK_DEMANDE       = 1;
-    public const DAT_DEB_DEM       = 2;
-    public const DAT_FIN_DEM       = 3;
-    public const CLK_ATTR_PRS      = 5;
+    public const INCONNU          = 0;
+    public const CLK_DEMANDE      = 1;
+    public const DAT_DEB_DEM      = 2;
+    public const DAT_FIN_DEM      = 3;
+    public const CLK_ATTR_PRS     = 5;
 
-    public const CLK_VAL_DEM       = 10;
-    public const CLK_VAL_EXP_OK    = 11;
-    public const CLK_VAL_EXP_KO    = 12;
-    public const CLK_VAL_EXP_CONT  = 13; // ni OK ni KO pour une session B: 0 heures mais on continue l'an prochain
-    public const CLK_ARR           = 14;
-    public const CLK_VAL_PRS       = 15;
+    public const CLK_VAL_DEM      = 10;
+    public const CLK_VAL_EXP_OK   = 11;
+    public const CLK_VAL_EXP_KO   = 12;
+    public const CLK_VAL_EXP_CONT = 13; // ni OK ni KO pour une session B: 0 heures mais on continue l'an prochain
+    public const CLK_ARR          = 14;
+    public const CLK_VAL_PRS      = 15;
 
-    public const CLK_SESS_DEB      = 20;
-    public const CLK_SESS_FIN      = 21;
-    public const CLK_FERM          = 22;
+    public const CLK_SESS_DEB     = 20;
+    public const CLK_SESS_FIN     = 21;
+    public const CLK_FERM         = 22;
 
-    public const DAT_ACTR          = 30;
-    public const FIN_EVENEMENTS    = 32;
+    public const DAT_ACTR         = 30;
+    public const DAT_CAL_99       = 899;
+    public const DAT_CAL_30       = 830;
+    public const DAT_CAL_15       = 815;
+    public const DAT_CAL_7        = 807;
+    public const DAT_CAL_1        = 801;
+    public const DAT_CAL_0        = 800;
+    public const FIN_EVENEMENTS   = 32;
 
     // nouveaux signaux
     // const FERMER_RALLONGE       = 40;
     // const CLK_VAL_EXP_OK_RETARD = 41;
-    public const CLK_TEST              = 42;
-    public const CLK_ERASE             = 43;
+    public const CLK_TEST         = 42;
+    public const CLK_ERASE        = 43;
 
     // signaux rallonge
-    public const CLK_AFFECTER          = 50;
-    public const CLK_DESAFFECTER       = 51;
+    public const CLK_AFFECTER     = 50;
+    public const CLK_DESAFFECTER  = 51;
 
     public const   LIBELLE_SIGNAL  =
     [
@@ -73,6 +79,7 @@ class Signal
         self::CLK_SESS_FIN     => 'CLK_SESS_FIN',
         self::CLK_FERM         => 'CLK_FERM',
         self::CLK_ARR          => 'CLK_ARR',
+        self::DAT_ACTR         => 'DAT_ACTR',
         self::FIN_EVENEMENTS   => 'FIN_EVENEMENTS',
 
         self::CLK_TEST         =>  'CLK_TEST',

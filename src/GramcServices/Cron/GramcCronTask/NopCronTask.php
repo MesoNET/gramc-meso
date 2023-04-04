@@ -10,10 +10,10 @@ use App\GramcServices\Workflow\Version4Workflow\Version4Workflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 
 /*********
- * No oPeration CronTask - Ne fait rien, mais si ça marche on est contents !
+ * No oPeration CronTask - Ne fait rien, mais si ça marche on est content !
  * 
  ****************/
 class NopCronTask extends CronTaskBase
 {
-    public function cronExecute() {}
+    public function cronExecute():void {}
 }
