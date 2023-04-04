@@ -95,8 +95,8 @@ class ServiceProjets
 
         $projet = new Projet($type);
         $projet->setIdProjet($this->nextProjetId($annee, $type));
-        $projet->setNepasterminer(false); // TODO - A virer
         $projet->setEtatProjet(Etat::RENOUVELABLE);
+        $projet->setTetatProjet(Etat::STANDBY);
 
         // Ecriture du projet dans la BD
         $em->persist($projet);
