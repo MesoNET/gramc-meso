@@ -5,6 +5,7 @@ namespace App\GramcServices\Cron;
 use App\GramcServices\Cron\GramcCronTask\NopCronTask;
 use App\GramcServices\Cron\GramcCronTask\OverQuotaCronTask;
 use App\GramcServices\Cron\GramcCronTask\TempsCronTask;
+use App\GramcServices\Cron\GramcCronTask\TempsStdbyCronTask;
 
 
 /***********
@@ -22,10 +23,12 @@ class Cron
 {
     private $taches = [];
     public function __construct(private NopCronTask $nct,
-                                private TempsCronTask $tct)
+                                private TempsCronTask $tct,
+                                private TempsStdbyCronTask $tsct)
     {
         $this->taches[] = $nct;
         $this->taches[] = $tct;
+        $this->taches[] = $tsct;
     }
 
     public function execute()

@@ -43,7 +43,7 @@ package Classes <<Frame>> {
         + string getIdVersion()
     }
 
-    class Rallonge <<modif d'une version'>> {
+    class Rallonge <<modif d'une version>> {
         - string idRallonge
         - int etatRallonge
         - string prjJustifRallonge
@@ -209,5 +209,68 @@ ROLE_OBS --> ROLE_DEMANDEUR
 ROLE_ADMIN --> ROLE_OBS
 ROLE_SYSADMIN --> ROLE_OBS
 ROLE_VALIDEUR --> ROLE_DEMANDEUR
+}
+
+package crontasks <<Frame>> {
+    class Cron {
+        
+    }
+    class CronTaskBase {
+        {abstract} # void cronExecute()
+        
+    }
+    class TempsCronTask <<Passage en STANDBY>> {
+        
+    }
+    class TempsStdbyCronTask <<notifications avant suppression)>> {
+        
+    }
+    TempsCronTask --> CronTaskBase
+    TempsStdbyCronTask --> CronTaskBase
+    CronTaskBase "2" --o "1" Cron
+    
+
+}
+
+package workflows <<Frame>> {
+    class Workflow {
+        # addState(stateConstant, transitionArray)
+        + bool execute(signal, object)
+    }
+    class Transition {
+        {abstract} + bool execute(object)
+    }
+    class State {
+        - stateIdentifier
+        + bool execute(signal, object)
+    }
+    class Projet4Workflow {
+        
+    }
+    class Version4Workflow {
+        
+    }
+    class Version4Transition {
+        
+    }
+    class TProjet4Workflow {
+        
+    }
+    class TProjet4Transition {
+        
+    }
+    
+    Workflow --o State
+    State --o Transition
+    Version4Workflow --> Workflow
+    Version4Transition --> Transition
+    Projet4Workflow --> Workflow
+    Projet4Transition --> Transition
+    TProjet4Workflow --> Workflow
+    TProjet4Transition --> Transition
+    
+    
+note left of Workflow: execute extrait l'état de l'objet (int)\nEn déduit le State\nAppelle execute de ce State
+note left of State: execute déduit la Transition à partir du signal (int)\nAppelle execute de cette Transition 
 }
 @enduml

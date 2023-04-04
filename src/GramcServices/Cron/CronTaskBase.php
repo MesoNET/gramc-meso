@@ -9,6 +9,7 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\Workflow\Version4\Version4Workflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
+use App\GramcServices\Workflow\Projet4\TProjet4Workflow;
 
 
 /********************************************
@@ -20,11 +21,8 @@ abstract class CronTaskBase
     public function __construct(protected EntityManagerInterface $em,
                                 protected ServiceJournal $sj,
                                 protected ServiceProjets $sp,
-                                protected GramcDate $grdt,
-                                protected version4Workflow $v4w,
-                                protected projet4Workflow $p4w)
-                                
+                                protected GramcDate $grdt)
     {}
     
-    abstract public function cronExecute();
+    abstract public function cronExecute(): void;
 }

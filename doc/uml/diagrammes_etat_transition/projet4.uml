@@ -1,6 +1,6 @@
 @startuml
 
-title Etats d'un projet de type M\ngramc-meso
+title Etats d'un projet dynamique\ngramc-meso
 
 RENOUVELABLE: Id 41
 TERMINE: Id 9

@@ -9,6 +9,8 @@ use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\Workflow\Version4\Version4Workflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
+use App\GramcServices\Workflow\Projet4\TProjet4Workflow;
+
 use App\GramcServices\Etat;
 use App\GramcServices\Signal;
 use App\Entity\Projet;
@@ -33,10 +35,10 @@ class TempsCronTask extends CronTaskBase
                                 protected version4Workflow $v4w,
                                 protected projet4Workflow $p4w)
     {
-        parent::__construct($em,$sj,$sp,$grdt,$v4w,$p4w);
+        parent::__construct($em,$sj,$sp,$grdt);
     }
 
-    public function cronExecute() 
+    public function cronExecute() : void
     {
         $em = $this->em;
         $dyn_duree_post = $this->dyn_duree_post;

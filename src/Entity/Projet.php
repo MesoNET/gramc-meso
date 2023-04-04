@@ -171,11 +171,11 @@ class Projet
     private $rapportActivite;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="nepasterminer", type="boolean", nullable=true)
+     * @ORM\Column(name="tetat_projet", type="integer", nullable=true)
      */
-    private $nepasterminer;
+    private $tetatProjet;
 
     public function getId()
     {
@@ -331,27 +331,27 @@ class Projet
     }
 
     /**
-     * Set nepasterminer
+     * Set tetatProjet
      *
-     * @param boolean $nepasterminer
+     * @param integer $tetatProjet
      *
      * @return Projet
      */
-    public function setNepasterminer($nepasterminer)
+    public function setTetatProjet(int $tetatProjet): self
     {
-        $this->nepasterminer = $nepasterminer;
+        $this->tetatProjet = $tetatProjet;
 
         return $this;
     }
 
     /**
-     * Get nepasterminer
+     * Get tetatProjet
      *
-     * @return boolean
+     * @return integer
      */
-    public function getNepasterminer()
+    public function getTetatProjet(): int
     {
-        return $this->nepasterminer;
+        return $this->tetatProjet;
     }
 
     /**
