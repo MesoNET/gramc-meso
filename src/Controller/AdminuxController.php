@@ -222,8 +222,8 @@ class AdminuxController extends AbstractController
         {
             $nomRessource = $content['ressource'];
         }
-        if (empty($content['conso'])) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de ressource");
+        if (! isset($content['conso'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de conso");
             return new Response(json_encode(['KO' => 'Pas de conso']));
         } else {
             $conso = $content['conso'];
@@ -265,10 +265,10 @@ class AdminuxController extends AbstractController
            $error[] = 'ACCES INTERDIT A ' . $ressource; 
         }
 
+        // On vérifie que le projet existe 
         $projet = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet === null)
-        {
-            $error[]    =   'No Projet ' . $idProjet;
+        if ($projet === null) {
+            $error[] = 'No Projet ' . $idProjet;
         }
         else
         {
@@ -280,6 +280,12 @@ class AdminuxController extends AbstractController
             }
         }
 
+        // On vérifie que la conso est >= 0
+        if ($conso < 0)
+        {
+            $error[] = "conso doit être un entier positif ou nul, pas $conso";
+        }
+        
         if ($error != []) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - " . print_r($error, true));
             return new Response(json_encode(['KO' => $error ]));
@@ -756,6 +762,34 @@ class AdminuxController extends AbstractController
         $r['idVersion']       = $v->getIdVersion();
         $r['etatVersion']     = $v->getEtatVersion();
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
+
+        if ($v->getStartDate() === null)
+        {
+            $r['startDate'] = null;
+        }
+        else
+        {
+            $r['startDate'] = $v->getStartDate()->format('Y-m-d');
+        }
+        
+        if ($v->getEndDate() === null)
+        {
+            $r['endDate'] = null;
+        }
+        else
+        {
+            $r['endDate'] = $v->getEndDate()->format('Y-m-d');
+        }
+        
+        if ($v->getLimitDate() === null)
+        {
+            $r['limitDate'] = null;
+        }
+        else
+        {
+            $r['limitDate'] = $v->getLimitDate()->format('Y-m-d');
+        }
+        
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
         //$r['attrHeures']      = $attr;
@@ -910,6 +944,8 @@ class AdminuxController extends AbstractController
      *             '{ "projet" : null,     "session" : "20A"}' -> Toutes les versions de la session 20A
      *
      *             '{ "projet" : "P01234", "session" : "20A"}' -> La version 20AP01234
+     *             ou
+     *             '{ "version" : "01M22022" }' -> La version 01M22022
      * 
      * Version "longue" - Le paramètre "long" provoque l'envoi de données supplémentaires concernant la ou les versions:
      * -----------------------------------------------------------------------------------------------------------------
@@ -955,12 +991,14 @@ class AdminuxController extends AbstractController
         {
             $id_projet = null;
             $id_session= null;
+            $id_version = null;
             $long = false;
         }
         else
         {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
             $id_session = (isset($content['session']))? $content['session']: null;
+            $id_version = (isset($content['version']))? $content['version']: null;
             $long = (isset($content['long']))? $content['long']: false;
         }
 
@@ -970,8 +1008,16 @@ class AdminuxController extends AbstractController
         }
         
         $v_tmp = [];
+
+        // Une version particulière
+        if ( $id_version != null)
+        {
+            $version = $em->getRepository(Version::class)->find($id_version);
+            $v_tmp[] = $version;
+        }
+        
         // Tous les projets actifs
-        if ($id_projet == null && $id_session == null)
+        elseif ($id_projet == null && $id_session == null)
         {
             if ($nosession == false)
             {
@@ -1005,9 +1051,9 @@ class AdminuxController extends AbstractController
         // Une version particulière
         else
         {
-            $projet = $em->getRepository(Projet::class)->find($id_projet);
-            $sess  = $em->getRepository(Session::class)->find($id_session);
-            $v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
+            //$projet = $em->getRepository(Projet::class)->find($id_projet);
+            //$sess  = $em->getRepository(Session::class)->find($id_session);
+            //$v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
         }
 
         // SEULEMENT si session n'est pas spécifié: On ne garde que les versions actives... ou presque actives
@@ -1763,16 +1809,18 @@ class AdminuxController extends AbstractController
             foreach ($users as $u)
             {
                 $r_u = [];
-                $c_cv = $u->getCollaborateurVersion();
-                if (empty($c_cv)) continue;   // oups ne devrait jamais arriver !
-                $l = count($c_cv);
-                $cv = $c_cv[$l-1];
-                $r_u['individu'] = $cv->getCollaborateur()->getPrenom() . " " . $cv->getCollaborateur()->getNom();
-                $r_u['idIndividu'] = $cv->getCollaborateur()->getIdIndividu();
-                $r_u['mail'] = $cv->getCollaborateur()->getMail();
+                //$c_cv = $u->getCollaborateurVersion();
+                //if (empty($c_cv)) continue;   // oups ne devrait jamais arriver !
+                //$l = count($c_cv);
+                //$cv = $c_cv[$l-1];
+                $individu = $u->getIndividu();
+                if ($individu === null) continue; // oups ne devrait jamais arriver !
+                $r_u['individu'] = $individu->getPrenom() . " " . $individu->getNom();
+                $r_u['idIndividu'] = $individu->getIdIndividu();
+                $r_u['mail'] = $individu->getMail();
                 $r_u['loginname'] = $su->getLoginname($u);
                 $r_u['deploy'] = $u->getDeply();
-                $r_u['projet'] = $cv->getVersion()->getProjet()->getIdProjet();
+                $r_u['projet'] = $u->getProjet()->getIdProjet();
                 $r_users[] = $r_u;
             }
             $r_c['users'] = $r_users;
