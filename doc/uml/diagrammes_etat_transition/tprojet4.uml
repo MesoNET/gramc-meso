@@ -1,0 +1,22 @@
+@startuml
+
+title Sous-états "Time" de l'état STANDBY d'un projet dynamique\ngramc-meso
+
+J_99: Id 899
+J_30: Id 830
+J_15: Id 815
+J_7:  Id 807
+J_1:  Id 801
+STANDBY: Id 8
+TERMINE: Id 9
+
+[*]     --> STANDBY
+STANDBY --> J_99: DAT_CAL_99
+J_99    --> J_30: DAT_CAL_30
+J_30    --> J_15: DAT_CAL_15
+J_15    --> J_7: DAT_CAL_7
+J_7     --> J_1: DAT_CAL_1
+J_1     --> TERMINE: DAT_CAL_0
+TERMINE --> [*]
+
+@enduml
