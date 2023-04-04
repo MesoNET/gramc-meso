@@ -220,8 +220,8 @@ class AdminuxController extends AbstractController
             $nomRessource = $content['ressource'];
             $nomComplet = $nomServeur . ' ' . $nomRessource;
         }
-        if (empty($content['conso'])) {
-            $sj->errorMessage("AdminUxController::setconsoAction - Pas de ressource");
+        if (! isset($content['conso'])) {
+            $sj->errorMessage("AdminUxController::setconsoAction - Pas de conso");
             return new Response(json_encode(['KO' => 'Pas de conso']));
         } else {
             $conso = $content['conso'];
@@ -257,9 +257,10 @@ class AdminuxController extends AbstractController
            $error[] = 'ACCES INTERDIT A ' . $ressource; 
         }
 
+        // On vérifie que le projet existe 
         $projet = $em->getRepository(Projet::class)->find($idProjet);
         if ($projet === null) {
-            $error[]    =   'No Projet ' . $idProjet;
+            $error[] = 'No Projet ' . $idProjet;
         }
         else
         {
@@ -271,6 +272,12 @@ class AdminuxController extends AbstractController
             }
         }
 
+        // On vérifie que la conso est >= 0
+        if ($conso < 0)
+        {
+            $error[] = "conso doit être un entier positif ou nul, pas $conso";
+        }
+        
         if ($error != []) {
             $sj->errorMessage("AdminUxController::setConsoAction - " . print_r($error, true));
             return new Response(json_encode(['KO' => $error ]));
