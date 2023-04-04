@@ -67,7 +67,7 @@
             {% endif %}
         </td>
 
-        <td>
+        <td rowspan="{{ item.cpt_rall + 1 }}" >
             {% if item.meta_etat in ['ACCEPTE','NONRENOUVELE' ] %} {{ item.projet.versionactive.limitdate|date('Y-m-d')}}
             {% elseif item.meta_etat in ['EDITION','EXPERTISE' ] %} ??
             {% elseif item.meta_etat in ['STANDBY'] %} STANDBY
