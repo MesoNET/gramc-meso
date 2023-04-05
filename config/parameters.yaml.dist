@@ -57,9 +57,6 @@ parameters:
     #             Unité = Mo
     max_size_doc: 10
     
-    # Suppression de toutes les fonctionnalités liées à la consommation
-    noconso: false
-    
     # Suppression de la notion de rattachement administratif
     norattachement: true
     

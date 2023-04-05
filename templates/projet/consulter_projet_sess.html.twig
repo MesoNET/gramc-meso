@@ -104,7 +104,7 @@
 
             {# cv est null si c'est un valideur ou un admin (et pas un collab) qui le regarde #}
             {# TODO - Mais on devrait avoir accès à la conso du projet dans sa globalité #}
-            {% if noconso == false and cv != null %}
+            {% if cv != null %}
                 <a title="Consommation" alt="Consommation" class="lien_supplementaire conso"  id="bconso_{{ projet }}"
                     data-href="{{ absolute_url(path('projet_conso', { 'id': projet.id, 'cv': cv.id })) }}" >
                     {{ icones.consommation }}
@@ -123,19 +123,6 @@
             </section>
         {% endif %}
     
-        {# if noconso == false #}
-        {% if false %}
-
-            {% set conso     = conso_cpu[0] + conso_gpu[0] %}
-            {% set quota     = conso_cpu[1]                %}
-            {% if  quota != 0 %}
-                {% set consop=100.0*conso/quota %}
-            {% else           %}
-                {% set consop=0                 %}
-            {% endif %}
-
-        {% endif %}
-
 {% if pdf is defined %}
     <div id="I" class="details">
         <h3>Présentation générale</h3>
@@ -145,17 +132,6 @@
 {% endif %}
 
         <div class="chapitre">
-        {# if noconso == false #}
-        {% if false %}
-        {% if conso_gpu[0] > 0 %}
-            <div class="information ok">
-                <p>Les heures gpu sont affichées en heures
-                    <strong>normalisées</strong>
-                </p>
-            </div>
-        {% endif %}
-        {% endif %}
-
         <table class="table_vertical">
             <tbody>
                 <tr>
@@ -172,28 +148,6 @@
                     <tr>
                         <th>Rattachement du projet</th>
                         <td>{{ version.prjRattachement }}</td>
-                    </tr>
-                {% endif %}
-
-                {# if noconso == false #}
-                {% if false %}
-                    <tr>
-                        <th>Quota machine d'heures allouées pour XXX</th>
-                        <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
-                    </tr>
-
-                    <tr>
-                        <th>Nombre d'heures consommées<br>
-                            <span class="petit">depuis le début de XXX</span>
-                        </th>
-                        <td>{{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
-                            {% if(quota!=0) %} 
-                                ({{consop|number_format(1)}} %) 
-                            {% endif %}
-                            {% if conso_gpu[0] != 0 %}
-                                - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
-                            {% endif %}
-                        </td>
                     </tr>
                 {% endif %}
             </tbody>
@@ -446,40 +400,6 @@
                         <th>Attribution ({{d.ressource.unite}})</th>
                         <td>{{ serviceDacs.getAttributionConsolidee(d)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
                     </tr>
-                    {# if noconso == false #}
-                    {% if false %}
-                    {% if version.typeversion != 4 %}
-                    <tr>
-                        <th>Quota machine d'heures allouées pour {{ session.getAnneeSession() + 2000 }}</th>
-                        <td>{{quota|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}}</td>
-                    </tr>
-                    {% endif %}
-    
-                
-                    <tr>
-                        <th>Nombre d'heures consommées<br>
-                            {% if version.typeversion != 4 %}
-                            <span class="petit">depuis le début de {{ session.getAnneeSession() + 2000 }}</span>
-                            {% else %}
-                                <span class="petit">depuis le {{version.startdate}}</span>
-                            {% endif %}
-                            }
-                        </th>
-                        <td>{# {{ version.conso }}
-                            {% if(version.getQuota > 0) %}
-                                ({{ (version.consocalcul * 100 / version.quota) |number_format(1)}} %)
-                            {% endif %}
-                            <br> 
-                            {{ conso|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}
-                            {% if(quota!=0) %} 
-                                ({{consop|number_format(1)}} %) 
-                            {% endif %}
-                            {% if conso_gpu[0] != 0 %}
-                                - cpu={{conso_cpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} gpu={{conso_gpu[0]|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw}} ({{(100*conso_cpu[0]/conso)|number_format(1)}}% {{(100*conso_gpu[0]/conso)|number_format(1)}}%)
-                            {% endif %} #} coucou
-                        </td>
-                    </tr>
-                    {% endif %}
                 </tbody>
             </table>
         </div>

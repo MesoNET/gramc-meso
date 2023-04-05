@@ -109,9 +109,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Forbidden because of parameter noconso");
-        }
         $conso_repository = $em->getRepository(Compta::class);
 
         $putdata = fopen("php://input", "r");
@@ -192,11 +189,6 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $sroc = $this->sroc;
         $su = $this->su;
-
-        if ($this->getParameter('noconso')==true)
-        {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
 
         $content  = json_decode($request->getContent(), true);
         if ($content == null)
@@ -324,10 +316,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
         $su = $this->su;
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
 
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {
@@ -487,12 +475,6 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
-        //$sp = $this->sp;
-        //$rep= $em->getRepository(Projet::class);
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
 
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {
@@ -596,10 +578,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (parametre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {
             $sj->errorMessage("__METHOD__ . ':' . __FILE__ .  - Pas de données");
@@ -675,10 +653,6 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $token = $this->tok->getToken();
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (parametre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
@@ -1535,9 +1509,6 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
         if ($projet == null) {
             $sj->infoMessage(__METHOD__ . " No projet $idProjet");
@@ -1600,10 +1571,6 @@ class AdminuxController extends AbstractController
         }
         else
         {
-            if ($this->getParameter('noconso')==true) {
-                throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-            }
-    
             $annee_courante = $grdt->showYear();
             $sp      = $this->sp;
             $projets = $sp->projetsParAnnee($annee_courante)[0];
@@ -1648,14 +1615,6 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $grdt = $this->grdt;
         $users = $em->getRepository(User::class)->findAll();
         $rusers = [];
@@ -1848,10 +1807,6 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
@@ -1969,10 +1924,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
         $su = $this->su;
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
 
         $content  = json_decode($request->getContent(), true);
         if ($content == null) {

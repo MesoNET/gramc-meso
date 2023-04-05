@@ -188,11 +188,9 @@ class ProjetController extends AbstractController
                     'expert',
                     'heures demandées',
                     'heures attribuées',
+                    'heures consommées'
                     ];
-        if ($this->getParameter('noconso')==false) {
-            $ligne[] = 'heures consommées';
-        }
-        $sortie     .=   join("\t", $ligne) . "\n";
+        $sortie .= join("\t", $ligne) . "\n";
 
         $versions = $em->getRepository(Version::class)->findSessionVersions($session);
         foreach ($versions as $version) {
@@ -213,11 +211,8 @@ class ProjetController extends AbstractController
                     ($version->getResponsable()->getExpert()) ? '*******' : $version->getExpert(),
                     $version->getDemHeures(),
                     $version->getAttrHeures(),
+                    $sp->getConsoCalculVersion($version);
                     ];
-            if ($this->getParameter('noconso')==false) {
-                $ligne[]= $sp->getConsoCalculVersion($version);
-            }
-
             $sortie     .=   join("\t", $ligne) . "\n";
         }
         return Functions::csv($sortie, 'projet_session.csv');
