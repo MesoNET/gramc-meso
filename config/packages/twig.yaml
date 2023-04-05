@@ -1,6 +1,5 @@
 twig:
     paths:
-#       'altermeso/templates': ~
        'templates': ~
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
@@ -28,7 +27,6 @@ twig:
        conso_seuil_2: '%conso_seuil_2%'
        noconso: '%noconso%'
        norattachement: '%norattachement%'
-       nodata: '%nodata%'
        noedition_expertise: '%noedition_expertise%'
        heures_ete: '%heures_ete%'
        prj_prefix: '%prj_prefix%'
@@ -40,7 +38,6 @@ twig:
        max_size_doc: '%max_size_doc%'
        rapport_dactivite: '%rapport_dactivite%'
        fichier_attache: '%fichier_attache%'
-       coll_login: '%coll_login%'
        noinvitation: '%noinvitation%'
        nosession: '%nosession%'
        resp_peut_modif_collabs: '%resp_peut_modif_collabs%'

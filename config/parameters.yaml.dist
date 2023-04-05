@@ -13,6 +13,8 @@ parameters:
     mesoc_attrib: 'https://www.mesonet.fr'
     mesoc_merci: 'https://www.mesonet.fr'
     mesoc_formation: 'https://www.mesonet.fr'
+
+    # TOSO - Dans la B.D. !!!
     serveur_cgu:
        TURPAN: 'https://www.mesonet.fr/turpan/cgu'
        BOREAL: 'https://www.mesonet.fr/boreal/cgu'
@@ -23,10 +25,6 @@ parameters:
     clessh_algos:
        - RSA-2048
        - ED25519-256
-
-    # Si false, on n'affiche pas la case login dans l'écran collaborateurs
-    # La gestion des mots de passe est elle aussi désactivée
-    coll_login: true
 
     # PARAMETRES PAS UTILISES ACTUELLEMENT
     # ====================================
@@ -83,9 +81,6 @@ parameters:
     # Suppression de la notion de rattachement administratif
     norattachement: true
     
-    # Suppression des formulaires concernant les données (stockage et partage)
-    nodata: true
-
     # Si true, le resp de projet peut modifier le profil de ses collaborateurs
     resp_peut_modif_collabs: false
 

@@ -94,17 +94,9 @@
     <li>
         <a href="#tab{{numtab}}">La technique</a>{% set numtab = numtab + 1 %}
     </li>
-    {# TODO - VIRER DEFINITIVEMENT tab4 - Ici ça merdouille #}
-    {% if nodata == false %}
-    <li >
-        <a href="#tab4">Les données</a>
-    </li>
-    {% endif %}
-    
     <li>
         <a href="#tab{{numtab}}">Formation</a>{% set numtab = numtab+1 %}
     </li>
-
     {% for ress_form in ressource_form.children.ressource.children %}
         <li>
             <a href="#tab{{numtab}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>{% set numtab = numtab+1 %}
@@ -119,9 +111,6 @@
 {% include('version/modifier_projet_sess.partie_II.html.twig') %}
 {% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_III.html.twig') %}
-{% if nodata == false %}
-{% include('version/modifier_projet_sess.partie_IV.html.twig') %}
-{% endif %}
 {% set numtab = numtab + 1 %}
 {% include('version/modifier_projet_sess.partie_V.html.twig') %}
 {% set numtab = numtab + 1 %}

@@ -74,8 +74,6 @@ class ServiceVersions
                                 private $rapport_directory,
                                 private $fig_directory,
                                 private $signature_directory,
-                                private $coll_login,
-                                private $nodata,
                                 private $max_fig_width,
                                 private $max_fig_height,
                                 private $max_size_doc,
@@ -1274,7 +1272,6 @@ class ServiceVersions
      ***********************************************************************/
     public function validateIndividuForms(array $individu_forms, $definitif = false) : bool
     {
-        $coll_login = $this->coll_login;
         $resp_peut_modif_collabs = $this->resp_peut_modif_collabs;
         $one_login = false;
 
@@ -1313,11 +1310,8 @@ class ServiceVersions
         }
 
         // Personne n'a de login !
-        // Seulement si $coll_login est true
-        if ($coll_login) {
-            if ($definitif == true && $one_login == false) {
-                return false;
-            }
+        if ($definitif == true && $one_login == false) {
+            return false;
         }
 
         if ($individu_forms != []) {

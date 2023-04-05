@@ -270,9 +270,6 @@ class VersionSpecController extends AbstractController
         $this->modifierType1PartieI($version, $form_builder);
         $this->modifierType1PartieII($version, $form_builder);
         $this->modifierType1PartieIII($version, $form_builder);
-        if ($this->getParameter('nodata')==false) {
-            $this->modifierType1PartieIV($version, $form_builder);
-        }
         $nb_form = 0;
 
         $form_builder
@@ -428,11 +425,6 @@ class VersionSpecController extends AbstractController
         ->add('codeLicence', TextAreaType::class, [ 'required'       =>  false ]);
     }
 
-    /* Les champs de la partie IV */
-    private function modifierType1PartieIV($version, &$form): void
-    {
-    }
-
     /*
      * Appelée par modifierAction pour les projets de type 3 (PROJET_FIL => PROJET_TEST)
      *
@@ -552,84 +544,6 @@ class VersionSpecController extends AbstractController
                 'todo'      => static::versionValidate($version, $sj, $em, $sval),
             ]
         );
-    }
-
-    /**
-     * Demande de partage stockage ou partage des données
-     *
-     * @Route("/{id}/donnees", name="donnees",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"GET", "POST"})
-     */
-    public function donneesAction(Request $request, Version $version): Response
-    {
-        $sm = $this->sm;
-        $sj = $this->sj;
-
-        if ($sm->donnees($version)['ok'] == false) {
-            $sj->throwException("VersionController:donneesAction Bouton donnees inactif " . $version->getIdVersion());
-        }
-
-        /* Si le bouton modifier est actif, on doit impérativement passer par là ! */
-        $modifierVersion_menu = $sm->modifierVersion($version);
-        if ($modifierVersion_menu['ok'] == true) {
-            return $this->redirectToRoute($modifier_version_menu['name'], ['id' => $version, '_fragment' => 'tab4']);
-        }
-
-        $form = $this->createFormBuilder($version);
-        $this->modifierType1PartieIV($version, $form);
-        $form
-            ->add('valider', SubmitType::class)
-            ->add('annuler', SubmitType::class);
-        $form = $form->getForm();
-        $projet =  $version->getProjet();
-        if ($projet != null) {
-            $idProjet   =   $projet->getIdProjet();
-        } else {
-            $sj->errorMessage(__METHOD__ .':' . __LINE__ . " : projet null pour version " . $version->getIdVersion());
-            $idProjet   =   null;
-        }
-
-        // Pour traiter le retour d'une validation du formulaire
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('valider')->isClicked()) {
-                //$sj->debugMessage("Entree dans le traitement du formulaire données");
-                //$this->handleCallistoForms( $form, $version );
-                $em = $this->em;
-                $em->persist($version);
-                $em->flush();
-            }
-            return $this->redirectToRoute('consulter_projet', ['id' => $projet->getIdProjet() ]);
-        }
-        /*
-        if ($callisto_form->get('valider')->isClicked()) {
-            static::handleCallistoForms( $callisto_form, $version );
-        }
-        */
-        // Affichage du formulaire
-        return $this->render(
-            'version/donnees.html.twig',
-            [
-//            'usecase' => $usecase,
-//            'session'   =>  $version->getSession(),
-              'projet' => $projet,
-//            'version'    => $version,
-            'form'       => $form->createView(),
-        ]
-        );
-    }
-
-    ////////// Recupère et traite le retour du formulaire
-    ////////// lié à l'écran données
-    private function handleDonneesForms($form, Version $version): void
-    {
-        $version->setDataMetaDataFormat($form->get('dataMetadataFormat')->getData());
-        $version->setDataNombreDatasets($form->get('dataNombreDatasets')->getData());
-        $version->setDataTailleDatasets($form->get('dataTailleDatasets')->getData());
-        $em = $this->em;
-        $em->persist($version);
-        $em->flush();
     }
 
     /**
@@ -882,7 +796,6 @@ class VersionSpecController extends AbstractController
     {
         $sv = $this->sv;
         $em   = $this->em;
-        $nodata = $this->getParameter('nodata');
 
         $todo   =   [];
         if ($version->getPrjTitre() == null) {

@@ -235,9 +235,9 @@
             <thead>
                 <tr>
                     {# Il y a au moins UN collaborateur (le responsable !) #}
-                    {% if coll_login %}{% for s in serviceServeurs.getServeurs %}
+                    {% for s in serviceServeurs.getServeurs %}
                         <th>{{s}}</th>
-                    {% endfor %}{% endif %}
+                    {% endfor %}
                     <th>Prénom</th>
                     <th>Nom</th>
                     <th>Mail</th>
@@ -251,17 +251,10 @@
                 {% for cv in version.CollaborateurVersion %}
                     {% if not cv.deleted %}
                         <tr style="stroke:black;">
-                            {% if coll_login %}{% for s in serviceServeurs.getServeurs %}
+                            {% for s in serviceServeurs.getServeurs %}
                                 {% set u=serviceUsers.getUser(cv.collaborateur,version.projet,s) %}
                                 <td>{% if u.login %}oui{% else %}-{%endif%}</td>
-                            {%endfor%}{%endif%}
-
-                            {% if nodata==false %}
-                                <td>
-                                    {% if( cv.clogin == true) %}Oui{% else %}Non
-                                    {% endif %}
-                                </td>
-                            {% endif %}
+                            {%endfor%}
 
                             <td>{{ cv.Collaborateur.prenom }}</td>
 
@@ -387,72 +380,6 @@
     </div>
 {% else %}
     </details>
-{% endif %}
-
-{% if nodata == false %}
-
-    {% if pdf is defined %}
-    <div class="details">
-        <h3>Les données</h3>
-    {% else %}
-    <details>
-        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Les données</summary>
-    {% endif %}
-
-        <div class="chapitre">
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Besoin en espace disque permanent (To)</th>
-                    <th>Justification de l'usage de ce stockage</th>
-                    <th>Standard de métadonnées</th>
-                    <th>Nombre de datasets (estimation)</th>
-                    <th>Taille moyenne des datasets (estimation)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                {% if version.sondVolDonnPerm is null %}
-                    <td>-</td>
-                {% else %}
-                    <td>{{ version.sondVolDonnPerm}}</td>
-                {% endif %}
-
-                {% if version.sondJustifDonnPerm is null %}
-                    <td>-</td>
-                {% else %}
-                    <td>{{ version.sondJustifDonnPerm | e | nl2br}}</td>
-                {% endif %}
-
-                {% if version.dataMetaDataFormat is null %}
-                    <td>-</td>
-                {% else %}
-                    <td>{{ version.dataMetaDataFormat}}</td>
-                {% endif %}
-
-                {% if version.dataNombreDatasets is null %}
-                    <td>-</td>
-                {% else %}
-                    <td>{{ version.dataNombreDatasets}}</td>
-                {% endif %}
-
-                {% if version.dataTailleDatasets is null %}
-                    <td>-</td>
-                {% else %}
-                    <td>{{ version.dataTailleDatasets}}</td>
-                {% endif %}
-                </tr>
-            </tbody>
-        </table>
-        <br>
-    </div>
-
-    {% if pdf is defined %}
-    </div>
-    {% else %}
-    </details>
-    {% endif %}
 {% endif %}
 
 {% if pdf is defined %}

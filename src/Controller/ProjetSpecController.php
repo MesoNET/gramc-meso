@@ -442,10 +442,6 @@ class ProjetSpecController extends AbstractController
         $menu[] = $sm->changerResponsable($version);
         $menu[] = $sm->gererPublications($projet);
         $menu[] = $sm->modifierCollaborateurs($version);
-
-        if ($this->getParameter('nodata')==false) {
-            $menu[] = $sm->donnees($version);
-        }
         $menu[] = $sm->telechargerFiche($version);
         $menu[] = $sm->televerserFiche($version);
 

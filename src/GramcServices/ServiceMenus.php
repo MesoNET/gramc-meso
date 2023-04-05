@@ -63,7 +63,6 @@ class ServiceMenus
     
     public function __construct(
         private $max_rall,
-        private $nodata,
         private $nosession,
         private ServiceVersions $sv,
         private ServiceProjets $sp,

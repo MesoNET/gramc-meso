@@ -110,15 +110,13 @@ services:
                     "%rapport_directory%",
                     "%fig_directory%",
                     "%signature_directory%",
-                    "%coll_login%",
-                    "%nodata%",
                     "%max_fig_width%",
                     "%max_fig_height%",
                     "%max_size_doc%",
                     "%resp_peut_modif_collabs%" ]
         
     App\GramcServices\ServiceMenus:
-        arguments: [ "%max_rall%","%nodata%","%nosession%" ]
+        arguments: [ "%max_rall%","%nosession%" ]
         
     App\GramcServices\ServiceNotifications:
         arguments: [ "%mailfrom%","%noedition_expertise%" ]
@@ -149,9 +147,6 @@ services:
         resource: '../src/Form/*'
         exclude: '../src/Form/IndividuForm/*'
         tags: ["form.type"]
-
-    App\Form\IndividuFormType:
-        arguments: [ "%coll_login%", "%nodata%" ]
 
     App\Validator\Constraints\PagesNumberValidator:
         arguments: [ "%max_page_nb%" ]
