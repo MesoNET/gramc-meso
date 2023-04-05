@@ -1173,7 +1173,7 @@ class ProjetController extends AbstractController
      * Method("GET")
      * @Security("is_granted('ROLE_OBS')")
      */
-    public function dynamiquesAction(): Response
+    public function projetsDynamiquesAction(): Response
     {
         $em = $this->em;
         //$projets = $em->getRepository(Projet::class)->findAll();

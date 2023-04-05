@@ -16,27 +16,31 @@
 
 <section>
 
-    <h1>Demande de rallonge pour le projet {{ projet }} (session {{ session }})</h1>
+    <h2>Demande d'<span title="ou demande au file de l'eau, ou rallonge">extension</span> pour le projet {{ projet }} ({{ rallonge }})
+    <br>
+    <small>
+        <em>{{ serviceRallonges.getMetaEtat(rallonge) }} </em>
+    </small>
+    </h2>
 
     <table class="table_vertical">
         <tbody>
-            <tr>
-                {# ce style ici est une verrue je ne sais pas pourquoi elle est nécessaire #}
-                <th style="width:30em">Nombre d'heures demandées</th>
-                <td>{{ rallonge.demHeures }}</td>
-            </tr>
-            <tr>
-                <th>Nombre d'heures attribuées</th>
-                <td>{{ rallonge.attrHeures }}</td>
-            </tr>
-
+            {% for d in rallonge.dar %}
+                <tr>
+                    <th>{{serviceRessources.getnomcomplet(d.ressource)}}: Demande ({{d.ressource.unite}})</th>
+                    <td>{{ (d.demande)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+                <tr>
+                    <th>{{serviceRessources.getnomcomplet(d.ressource)}}: Attribution ({{d.ressource.unite}})</th>
+                    <td>{{ (d.attribution)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                </tr>
+            {% endfor %}
             <tr>
                 <th>Justification scientifique de la demande</th>
                 <td>{{ rallonge.prjJustifRallonge| e | nl2br }}</td>
             </tr>
-
             <tr>
-                <th>Commentaire du président</th>
+                <th>Commentaire du valideur</th>
                 <td>{{ rallonge.commentaireExterne }}</td>
             </tr>
         </tbody>

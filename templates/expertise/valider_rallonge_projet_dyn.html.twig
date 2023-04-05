@@ -1,0 +1,59 @@
+{% extends 'default/base.html.twig' %}
+
+{# ############################################################################################################################ #}
+
+{% block body %}
+
+<section>
+    <h1>Confirmation d'envoi de la validation</h1>
+
+    <div class="information ok">Merci de vérifier votre validation avant envoi définitif</div>
+
+    <table class="projet">
+        <tbody>
+            <tr>
+                <th>Rallonge</th>
+                <td>{{ rallonge }}</td>
+            </tr>
+            <tr>
+                <th>Validation</th>
+                <td>
+                    <strong>
+                        {% if( expertise.validation == 0 ) %}
+                        REFUSER LA RALLONGE 
+                        {% elseif( expertise.validation == 1 ) %}
+                        ACCEPTER
+                        {% endif %}
+                    </strong>
+                </td>
+            </tr>
+            {% for d in rallonge.dar %}
+            <tr>
+                <th>Ressources attribuées sur {{ serviceRessources.nomcomplet(d.ressource)}}</th>
+                <td>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>Commentaire interne</th>
+                <td>{{ expertise.commentaireInterne }}</td>
+            </tr>
+            <tr>
+                <th>Commentaire pour le responsable </th>
+                <td>{{ expertise.commentaireExterne }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="information ok notifications">
+        <h2>Notifications</h2>
+        <p>Un courriel sera envoyé au responsable de projet avec votre décision et votre commentaire</p>
+    </div>
+
+        <div class="information attention inputrond submitdyn" >
+            <strong>Confirmez-vous votre décision ? </strong><br>
+            {{ form_start(edit_form)  }}
+            {{ form_widget(edit_form)  }}
+            {{ form_end(edit_form) }}
+        </div>
+    </section>
+{% endblock %}

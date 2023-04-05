@@ -1156,7 +1156,7 @@ class ServiceVersions
 
     /*********************************
      * 
-     * Validation du formulaire des ressources - Retourne true car toujours valide !
+     * Validation du formulaire des ressources
      *
      * params = Tableau de formulaires
      ***********************************************************************/
@@ -1180,7 +1180,7 @@ class ServiceVersions
      * $ressource_forms = Tableau contenant un formulaire par ressource
      * $version        = La version considérée
      ****************************************************************/
-    public function handleRessourceForms(array $ressource_forms, Version $version): void
+/*    public function handleRessourceForms(array $ressource_forms, Version $version): void
     {
         $em   = $this->em;
         $sj   = $this->sj;
@@ -1195,7 +1195,7 @@ class ServiceVersions
         $em->persist($version);
         $em->flush();
     }
-
+*/
     /*********************************************
      *
      * LES COLLABORATEURS

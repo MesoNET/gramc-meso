@@ -68,7 +68,7 @@ abstract class Workflow
     }
 
     /***********************************************
-     * Renvoie l'état de l'objet $object sous forme numérique (cf. Utils/Etat.php)
+     * Renvoie l'état de l'objet $object sous forme numérique
      ************************************************************************/
     protected function getObjectState(object $object): int
     {
@@ -141,15 +141,15 @@ abstract class Workflow
     }
 
     /**************************************************
-     * Execute la transition $transition_code sur l'object $object
+     * Execute la transition $signal sur l'object $object
      *
-     * params: $transition_code Un signal (entier), cf Utils/Signal.php
+     * params: $signal Un signal (entier), cf Signal.php
      *         $object Un objet sur lequel agit le workflow
      *
      * return: true si l'état est dans le workflow et si la transition est possible
      *         false sinon
      **************************************************************/
-    public function execute(int $transition_code, object $object): bool
+    public function execute(int $signal, object $object): bool
     {
         if ($object == null) {
             $this->sj->warningMessage(__METHOD__ ." on a null object dans " . $this->workflowIdentifier);
@@ -158,10 +158,12 @@ abstract class Workflow
 
         $state = $this->getObjectState($object);
         if ($this->hasState($state)) {
-            return $this->getState($state)->execute($transition_code, $object);
+            return $this->getState($state)->execute($signal, $object);
         }
 
         else {
+            echo __METHOD__ .  ":" . __LINE__ . " état " . Etat::getLibelle($state)
+                    . "(" . $state . ") n'existe pas dans " . $this->getWorkflowIdentifier()."\n";
             $this->sj->warningMessage(__METHOD__ .  ":" . __LINE__ . " état " . Etat::getLibelle($state)
                     . "(" . $state . ") n'existe pas dans " . $this->getWorkflowIdentifier());
             return false;

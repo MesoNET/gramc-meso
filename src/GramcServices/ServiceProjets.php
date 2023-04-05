@@ -62,6 +62,7 @@ class ServiceProjets
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceSessions $ss,
+        private ServiceDacs $sdac,
         private ServiceJournal $sj,
         private ServiceRessources $sroc,
         private LoggerInterface $log,
@@ -94,8 +95,8 @@ class ServiceProjets
 
         $projet = new Projet($type);
         $projet->setIdProjet($this->nextProjetId($annee, $type));
-        $projet->setNepasterminer(false); // TODO - A virer
         $projet->setEtatProjet(Etat::RENOUVELABLE);
+        $projet->setTetatProjet(Etat::STANDBY);
 
         // Ecriture du projet dans la BD
         $em->persist($projet);
@@ -433,8 +434,6 @@ class ServiceProjets
     /***********
      * Renvoie la liste des projets dynamiques qui ont une version en cours cette année
      * $annee      = Année - int, soit 0 (défaut) soit >2000 (ex. 2022)
-     * $isRecup... = Non utilisé, pour la compatibilité avec ProjetsParAnnee
-     * $sess_lbl   = Non utilisé, pour la compatibilité avec ProjetsParAnnee
      *
      * Return: un tableau de trois tableaux:
      *         - Le tableau des projets
@@ -442,9 +441,10 @@ class ServiceProjets
      *         - Le tableau de la répartition entre les ressources
      *
      ********************/
-    public function projetsDynParAnnee($annee=0, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
+    public function projetsDynParAnnee($annee=0): array
     {
         $sroc = $this->sroc;
+        $sdac = $this->sdac;
         $em = $this->em;
         
         // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
@@ -512,12 +512,12 @@ class ServiceProjets
             foreach ($v->getDac() as $dac)
             {
                 $nr = $sroc->getNomComplet($dac->getRessource());
-                $p['demande'][$nr] = $dac->getDemande();
-                $p['attribution'][$nr] = $dac->getAttribution();
-                $total[$type]['demande'][$nr] += $dac->getDemande();
-                $total[$type]['attribution'][$nr] += $dac->getAttribution();
+                $p['demande'][$nr] = $sdac->getDemandeConsolidee($dac);
+                $p['attribution'][$nr] = $sdac->getAttributionConsolidee($dac);
+                $total[$type]['demande'][$nr] += $p['demande'][$nr];
+                $total[$type]['attribution'][$nr] += $p['attribution'][$nr];
             }
-           $projets[$p_id] = $p;
+            $projets[$p_id] = $p;
         }
 
         // Calcul de la répartition
@@ -540,6 +540,36 @@ class ServiceProjets
         //arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord
         //while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
         return [$projets,$total, $repartition];
+    }
+
+    /***********
+     * Renvoie la liste des rallonges de projets dynamiques associées à une version en cours cette année
+     * $annee      = Année - int, soit 0 (défaut) soit >2000 (ex. 2022)
+     *
+     * Return: le tableau des rallonges
+     *
+     ********************/
+    public function rallongesDynParAnnee($annee=0): array
+    {
+        $sroc = $this->sroc;
+        $em = $this->em;
+        
+        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
+        // (nombre de projets, heures demandées etc)
+        //$a_filtrer = [ Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE ];
+
+        // Les versions qui ont été actives une partie de l'année
+        // Elles sont triées selon la date de démarrage (les plus récentes en dernier)
+        $versions = $this->getVersionsDynParAnnee($annee);
+
+        // Pour chaque version, les rallonges associées à cette version, quelque soit son état
+        $rallonges = [];
+        foreach ($versions as $v)
+        {
+            $rallonges = array_merge($rallonges, iterator_to_array($v->getRallonge()));
+        }
+
+        return $rallonges;
     }
 
     /*********************************
@@ -1889,4 +1919,23 @@ class ServiceProjets
          }
          return $vnt;
      }
+
+    /***********************************************
+     * Renvoie true s'il y a des choses non acquittées sur ce projet,
+     * c-à-d si au moins une des ressources n'est pas acquittée
+     * Renvoie false si tout est acquitté
+     *******************************************************/
+    public function getTodofConsolide(Projet $projet):bool
+    {
+        $sdac = $this->sdac;
+        
+        $version = $projet->getVersionActive();
+        if ($version ===null) return false;
+
+        foreach ($version->getDac() as $dac)
+        {
+            if ($sdac->getTodofConsolide($dac)) return true;
+        }
+        return false;
+    }
 }

@@ -90,4 +90,77 @@ class ServiceDacs
         ksort($dacs);
         return $dacs;
     }
+
+    /***********************************************
+     * Renvoie la somme des attributions de la version correspondant à la version et à la ressource
+     * c'est-à-dire l'attribution totale pour une version et une ressource,
+     * en tenant compte de l'attribution initiale et des rallonges actives ou terminées.
+     *******************************************************/
+    public function getAttributionConsolidee(Dac $dac): int
+    {
+        $attribution = $dac->getAttribution();
+        $ressource = $dac->getRessource();
+        $version = $dac->getVersion();
+        foreach ($version->getRallonge() as $rallonge)
+        {
+            if ($rallonge->getEtatRallonge() === Etat::ACTIF || $rallonge->getEtatRallonge() === Etat::TERMINE)
+            {
+                foreach ($rallonge->getDar() as $dar)
+                {
+                    if ($dar->getRessource() === $ressource)
+                    {
+                        $attribution += $dar->getAttribution();
+                    }
+                }
+            }
+        }
+        return $attribution;
+    }
+
+    /***********************************************
+     * Renvoie true si la version ou une de ses rallonges n'est pas acquittée (todof vaut true)
+     * Renvoie false si acquitté
+     *******************************************************/
+    public function getTodofConsolide(Dac $dac):bool
+    {
+        if ($dac->getTodof()) return true;
+
+        $ressource = $dac->getRessource();
+        $version = $dac->getVersion();
+        foreach ($version->getRallonge() as $rallonge)
+        {
+            foreach ($rallonge->getDar() as $dar)
+            {
+                if ($dar->getRessource() === $ressource && $dar->getTodof()) return true;
+            }
+        }
+        return false;
+    }
+
+    /***********************************************
+     * Renvoie la somme des demandes de la version correspondant à la version et à la ressource
+     * c'est-à-dire la demande totale pour une version et une ressource,
+     * en tenant compte de la demande initiale et des rallonges actives ou terminées.
+     *******************************************************/
+    public function getDemandeConsolidee(Dac $dac): int
+    {
+        $demande = $dac->getDemande();
+        $ressource = $dac->getRessource();
+        $version = $dac->getVersion();
+        foreach ($version->getRallonge() as $rallonge)
+        {
+            if ($rallonge->getEtatRallonge() === Etat::ACTIF || $rallonge->getEtatRallonge() === Etat::TERMINE)
+            {
+                foreach ($rallonge->getDar() as $dar)
+                {
+                    if ($dar->getRessource() === $ressource)
+                    {
+                        $demande += $dar->getDemande();
+                    }
+                }
+            }
+        }
+        return $demande;
+    }
+
 }

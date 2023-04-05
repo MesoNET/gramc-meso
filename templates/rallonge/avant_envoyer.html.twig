@@ -13,7 +13,7 @@
             {% endfor %}
         </div>
         <nav><ul><li>
-            <a class="lien_actif" href="{{ path( 'rallonge_consulter', { 'id': rallonge.idRallonge } )}}" title="Retourner à la rallonge">Retourner</a>
+            <a class="lien_actif" href="{{ path( 'consulter_rallonge', { 'id': rallonge.idRallonge } )}}" title="Retourner à la rallonge">Retourner</a>
         </li></ul></nav>
     </section>
     {% else %}
@@ -27,10 +27,10 @@
         <nav>
             <ul>
                 <li>
-                    <a class="lien_actif" href="{{ path( 'rallonge_consulter', { 'id': rallonge.idRallonge } )}}" title="Retourner à la rallonge">ANNULER</a>
+                    <a class="lien_actif" href="{{ path( 'consulter_rallonge', { 'id': rallonge.idRallonge } )}}" title="Retourner à la rallonge">ANNULER</a>
                 </li>
                 <li>
-                    <a class="lien_actif" href="{{ path( 'rallonge_envoyer', { 'id': rallonge.idRallonge } ) }}" title="Envoyer votre demande à l'expert">ENVOYER</a>
+                    <a class="lien_actif" href="{{ path( 'envoyer_rallonge', { 'id': rallonge.idRallonge } ) }}" title="Envoyer votre demande à l'expert">ENVOYER</a>
                 </li>
             </ul>
         </nav>

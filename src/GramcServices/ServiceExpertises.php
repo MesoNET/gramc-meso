@@ -24,8 +24,11 @@
 namespace App\GramcServices;
 
 use App\Entity\Version;
+use App\Entity\Rallonge;
 use App\GramcServices\ServiceVersions;
+use App\GramcServices\ServiceRallonges;
 use App\Form\DacType;
+use App\Form\DarType;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Form;
@@ -44,12 +47,15 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class ServiceExpertises
 {
-    public function __construct(private ServiceVersions $sv, private FormFactoryInterface $ff, private EntityManagerInterface $em){}
+    public function __construct(private ServiceVersions $sv,
+                                private ServiceRallonges $srg,
+                                private FormFactoryInterface $ff,
+                                private EntityManagerInterface $em){}
 
     /********************************************************************
      * Génère et renvoie un form pour modifier les attributions de ressources
      ********************************************************************/
-    public function getRessourceForm(Version $version): FormInterface
+    public function getRessourceFormForVersion(Version $version): FormInterface
     {
         $ff = $this->ff;
         $sv = $this->sv;
@@ -84,5 +90,45 @@ class ServiceExpertises
                    ->getForm();
         return $form;
     }
+
+    /********************************************************************
+     * Génère et renvoie un form pour modifier les attributions de ressources
+     ********************************************************************/
+    public function getRessourceFormForRallonge(Rallonge $rallonge): FormInterface
+    {
+        $ff = $this->ff;
+        $srg= $this->srg;
+
+        $data = $srg->prepareRessources($rallonge);
+
+        // S'il n'y a aucune attribution, on initialise en attribuant ce qui a été demandé
+        $attrib = false;
+        foreach ($data as $dar)
+        {
+            if ($dar->getAttribution() != 0)
+            {
+                $attrib = true;
+                break;
+            }
+        }
+        if ($attrib == false)
+        {
+            foreach ($data as $dar)
+            {
+                $dar->setAttribution($dar->getDemande());
+            }
+        }
+
+        $form = $this->ff
+                   ->createNamedBuilder('form_ressource', FormType::class, [ 'ressource' => $data ])
+                   ->add('ressource', CollectionType::class, [
+                       'entry_type' =>  DarType::class,
+                       'label' =>  true,
+                       'entry_options' =>['attribution' => true ]
+                   ])
+                   ->getForm();
+        return $form;
+    }
+
 }
 

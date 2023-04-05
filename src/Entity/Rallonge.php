@@ -32,6 +32,13 @@ use App\Interfaces\Demande;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+/*
+ * TODO - Utiliser l'héritage pour faire hériter Veriosn et Rallonge d'une même classe
+ *        cf. https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/inheritance-mapping.html
+ *        Pas le temps / pas le recul alors on travaille salement
+ *        Emmanuel, 27/3/23
+ *
+ ************************************************************/
 /**
  * Rallonge
  *
@@ -53,31 +60,6 @@ class Rallonge implements Demande
     private $etatRallonge;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures", type="integer", nullable=true)
-     * @Assert\GreaterThan(0,message="Vous devez demander des heures.")
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas demander un nombre d'heures négatif.")
-     */
-    private $demHeures;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures_gpu", type="integer", nullable=true)
-     * @Assert\GreaterThan(0,message="Vous devez demander des heures.")
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas demander un nombre d'heures négatif.")
-     */
-    private $demHeuresGpu;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="attr_heures", type="integer", nullable=true)
-     */
-    private $attrHeures;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="prj_justif_rallonge", type="text", length=65535, nullable=true)
@@ -90,7 +72,7 @@ class Rallonge implements Demande
      *
      * @ORM\Column(name="attr_accept", type="boolean", nullable=false)
      */
-    private $attrAccept = '1';
+    private $attrAccept = '0';
 
     /**
      * @var string
@@ -110,16 +92,6 @@ class Rallonge implements Demande
      * })
      */
     private $version;
-
-    ////////////////////////////////////////////////////////
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att", type="integer", nullable=true)
-     * @Assert\GreaterThanOrEqual(value = 0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.", groups={"expertise","president"})
-     */
-    private $nbHeuresAtt;
 
     /**
      * @var string
@@ -155,14 +127,22 @@ class Rallonge implements Demande
      */
     private $expert;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Dar", mappedBy="rallonge", cascade={"persist"})
+     */
+    private $dar;
 
     /////////
 
     /**
-    * @ORM\PostLoad
+    * @
+    * ORM\PostLoad
     *
     * TODO - Ce truc est une bidouille immonde à supprimer ASAP
     */
+    /*
     public function convert()
     {
         if ($this->getEtatRallonge() == Etat::ACTIF && $this->getAttrHeures() == null) {
@@ -170,7 +150,7 @@ class Rallonge implements Demande
             //Functions::infoMessage(__METHOD__ . ':' . __LINE__ . ' Fixture partielle de Rallonge ' . $this->getIdRallonge() );
         }
     }
-
+*/
     ////////////////////////////////////////////////////////
 
     /**
@@ -178,10 +158,10 @@ class Rallonge implements Demande
      */
     public function __construct()
     {
-        // $this->majStamp             =   new \DateTime("now");
+        $this->dar = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
+
     }
-
-
 
     /////////////////////////////////////////////////////////////////////////////
 
@@ -197,7 +177,48 @@ class Rallonge implements Demande
 
     ////////////////////////////////////////////////////////////////////////////
 
+    // Expertise
 
+    /**
+     * Add expertise
+     *
+     * @param \App\Entity\Expertise $expertise
+     *
+     * @return Rallonge
+     */
+    public function addExpertise(\App\Entity\Expertise $expertise): self
+    {
+        if (! $this->expertise->contains($expertise))
+        {
+            $this->expertise[] = $expertise;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove expertise
+     *
+     * @param \App\Entity\Expertise $expertise
+     * 
+     * @return Rallonge
+     * 
+     */
+    public function removeExpertise(\App\Entity\Expertise $expertise): self
+    {
+        $this->expertise->removeElement($expertise);
+        return $this;
+    }
+
+    /**
+     * Get expertise
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExpertise()
+    {
+        return $this->expertise;
+    }
 
     /**
      * Set etatRallonge
@@ -225,78 +246,6 @@ class Rallonge implements Demande
     public function getEtatRallonge()
     {
         return $this->etatRallonge;
-    }
-
-    /**
-     * Set demHeures
-     *
-     * @param integer $demHeures
-     *
-     * @return Rallonge
-     */
-    public function setDemHeures($demHeures)
-    {
-        $this->demHeures = $demHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeures
-     *
-     * @return integer
-     */
-    public function getDemHeures()
-    {
-        return $this->demHeures;
-    }
-
-    /**
-     * Set demHeuresGpu
-     *
-     * @param integer $demHeuresGpu
-     *
-     * @return Rallonge
-     */
-    public function setDemHeuresGpu($demHeuresGpu)
-    {
-        $this->demHeuresGpu = $demHeuresGpu;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeuresGpu
-     *
-     * @return integer
-     */
-    public function getDemHeuresGpu()
-    {
-        return $this->demHeuresGpu;
-    }
-
-    /**
-     * Set attrHeures
-     *
-     * @param integer $attrHeures
-     *
-     * @return Rallonge
-     */
-    public function setAttrHeures($attrHeures)
-    {
-        $this->attrHeures = $attrHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get attrHeures
-     *
-     * @return integer
-     */
-    public function getAttrHeures()
-    {
-        return $this->attrHeures;
     }
 
     /**
@@ -395,32 +344,41 @@ class Rallonge implements Demande
         return $this->version;
     }
 
-    /////////////////////////////////////////////////////////////////////
-
-
-
     /**
-     * Set nbHeuresAtt
+     * Add dar
      *
-     * @param integer $nbHeuresAtt
+     * @param \App\Entity\Dar $dar
      *
-     * @return Rallonge
+     * @return Version
      */
-    public function setNbHeuresAtt($nbHeuresAtt)
+    public function addDar(\App\Entity\Dar $dar): self
     {
-        $this->nbHeuresAtt = $nbHeuresAtt;
-
+        if (! $this->dar->contains($dar))
+        {
+            $this->dar[] = $dar;
+        }
         return $this;
     }
 
     /**
-     * Get nbHeuresAtt
+     * Remove dar
      *
-     * @return integer
+     * @param \App\Entity\Dar $dar
      */
-    public function getNbHeuresAtt()
+    public function removeDar(\App\Entity\Dar $dar): self
     {
-        return $this->nbHeuresAtt;
+        $this->dar->removeElement($dar);
+        return $this;
+    }
+
+    /**
+     * Get dar
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDar()
+    {
+        return $this->dar;
     }
 
     /**
@@ -494,6 +452,13 @@ class Rallonge implements Demande
     {
         return $this->validation;
     }
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="rallonge", cascade={"persist"} )
+     */
+    private $expertise;
 
     /**
      * Set expert
@@ -592,30 +557,6 @@ class Rallonge implements Demande
             return [];
         } else {
             return $thematique->getExpert();
-        }
-    }
-
-    //////////////////////////////
-    // TODO - Mettre cette fonction dans ServiceRallonge
-    public function getMetaEtat()
-    {
-        $etat = $this->getEtatRallonge();
-        if ($etat    ==  Etat::EDITION_DEMANDE) {
-            return  'EDITION';
-        } elseif ($etat    ==  Etat::EDITION_EXPERTISE) {
-            return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::DESAFFECTE) {
-            return  'EXPERTISE';
-        } elseif ($etat    ==  Etat::EN_ATTENTE) {
-            return  'ATTENTE';
-        } elseif ($etat == Etat::ANNULE ) {
-            return 'TERMINE';
-        } elseif ($this->getAttrAccept() == true) {
-            return  'ACCEPTE';
-        } elseif ($this->getAttrAccept() == false) {
-            return  'REFUSE';
-        } else {
-            return '';
         }
     }
 

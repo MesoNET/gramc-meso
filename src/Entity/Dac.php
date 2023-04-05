@@ -83,6 +83,15 @@ class Dac
     private $attribution = 0;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="todof", type="boolean")
+     */
+     // Le "todo flag": si true, il y a un truc à faire sur la machine !
+
+    private $todof = false;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="consommation", type="integer", nullable=false, options={"comment":"consommation, l'unité est celle de la ressource associée"})
@@ -259,5 +268,29 @@ class Dac
     {
         $this->unite = $groupname;
         return $this;
+    }
+    
+    /**
+     * Set todof
+     *
+     * @param boolean $todof
+     *
+     * @return Version
+     */
+    public function setTodof(bool $todof): Self
+    {
+        $this->todof = $todof;
+
+        return $this;
+    }
+
+    /**
+     * Get todof
+     *
+     * @return boolean
+     */
+    public function getTodof(): bool
+    {
+        return $this->todof;
     }
 }

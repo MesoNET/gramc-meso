@@ -1,6 +1,6 @@
 @startuml
 
-title Etats d'une version de type M\ngramc-meso0
+title Etats d'une version de type M\ngramc-meso
 
 EDITION_DEMANDE: Id 2
 EDITION_EXPERTISE: Id 3
@@ -20,7 +20,7 @@ EDITION_EXPERTISE --> EDITION_DEMANDE: CLK_ARR(14)
 EDITION_EXPERTISE --> ACTIF: CLK_VAL_EXP_OK (11)
 EDITION_EXPERTISE --> TERMINE: CLK_VAL_EXP_KO (12)
 ACTIF             --> ACTIF_R: DAT_ACTR (30)
-ACTIF_R           --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)\nCLK_FERM (31)
+ACTIF_R           --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)\nCLK_FERM (22)
 ACTIF             --> TERMINE: CLK_VAL_EXP_OK (11)\nCLK_VAL_EXP_KO (12)
 TERMINE           --> [*]
 @enduml

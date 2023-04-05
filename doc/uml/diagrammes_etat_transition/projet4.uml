@@ -1,6 +1,6 @@
 @startuml
 
-title Etats d'un projet de type M\ngramc-meso0
+title Etats d'un projet dynamique\ngramc-meso
 
 RENOUVELABLE: Id 41
 TERMINE: Id 9
@@ -9,6 +9,6 @@ note left of RENOUVELABLE: Le projet peut être renouvelé lorsque le temps sera
 note left of TERMINE: 12 mois après la fin de la dernière version, le projet est définitivement fermé par l'envoi d'un signal CLK_FERM
 
 [*]              --> RENOUVELABLE
-RENOUVELABLE     --> TERMINE: CLK_VAL_EXP_KO(12)\nCLK_FERM (31)
+RENOUVELABLE     --> TERMINE: CLK_VAL_EXP_KO(12)\nCLK_FERM (22)
 TERMINE           --> [*]
 @enduml

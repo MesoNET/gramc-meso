@@ -700,6 +700,7 @@ th .light {
 
 .table_vertical th{
     position: initial;
+    width: 30em;
 }
 
 tbody td{

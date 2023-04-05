@@ -40,6 +40,7 @@ class Ressource
     public function __construct()
     {
         $this->dac = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->dar = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -67,6 +68,13 @@ class Ressource
      * @ORM\OneToMany(targetEntity="\App\Entity\Dac", mappedBy="ressource", cascade={"persist"})
      */
     private $dac;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Dar", mappedBy="ressource", cascade={"persist"})
+     */
+    private $dar;
 
     /**
      * @var string
@@ -191,6 +199,43 @@ class Ressource
     public function getDac()
     {
         return $this->dac;
+    }
+
+    /**
+     * Add dar
+     *
+     * @param \App\Entity\Dar $dar
+     *
+     * @return Version
+     */
+    public function addDar(\App\Entity\Dar $dar): self
+    {
+        if (! $this->dar->contains($dar))
+        {
+            $this->dar[] = $dar;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove dar
+     *
+     * @param \App\Entity\Dar $dar
+     */
+    public function removeDar(\App\Entity\Dar $dar): self
+    {
+        $this->dar->removeElement($dar);
+        return $this;
+    }
+
+    /**
+     * Get dar
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDar()
+    {
+        return $this->dar;
     }
 
     /**

@@ -1,0 +1,24 @@
+Bonjour
+
+La validation de la rallonge {{ object |raw }} a été REFUSÉE.
+
+Nous vous laissons le soin de prendre contact avec {{ object.version.responsable  |raw }}, responsable du projet
+Son adresse: {{ object.version.responsable.mail  |raw }}
+
+ATTENTION - Aucun mail automatique n'a été envoyé !
+
+{% for dar in object.dar %}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dar.ressource) }}: {{ dar.demande }} {{ dar.ressource.unite }}
+{% endfor %}
+
+URL de la rallonge                      : {{ absolute_url(path('consulter_rallonge', { 'id' : object.idRallonge })) |raw }}
+
+Commentaire de validation :
+{{ object.expertise[0].commentaireExterne |raw }}
+
+Commentaire de validation à destination de {{mesoc}} :
+{{ object.expertise[0].commentaireInterne |raw }}
+
+Cordialement,
+gramc
+
