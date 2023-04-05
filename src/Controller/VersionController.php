@@ -302,15 +302,6 @@ class VersionController extends AbstractController
             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version),
         ];
         
-        //$toomuch = $sv->is_demande_toomuch($version->getAttrHeures(),$version->getDemHeures());
-        $toomuch = false;
-/*        if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
-            $version_prec = $version->versionPrecedente();
-            if ($version_prec->getAnneeSession() == $version->getAnneeSession()) {
-                $toomuch  = $sv -> is_demande_toomuch($version_prec->getAttrHeures(), $version->getDemHeures());
-            }
-        } */
-
         $html4pdf =  $this->render(
             'version/pdf.html.twig',
             [
@@ -326,7 +317,6 @@ class VersionController extends AbstractController
             'conso_gpu'          => $sp->getConsoRessource($projet, 'gpu', $version->getAnneeSession()),
             'rapport_1'          => null,
             'rapport'            => null,
-            'toomuch'            => $toomuch
             ]
         );
 

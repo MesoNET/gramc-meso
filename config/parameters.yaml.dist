@@ -28,9 +28,6 @@ parameters:
 
     # PARAMETRES PAS UTILISES ACTUELLEMENT
     # ====================================
-    # Si la demande en session A est supérieure à attrib_seuil_a (en hcpu), on surveille la demande en B
-    attrib_seuil_a: 600000
-    
     # Mécanisme de récupération des heures attribuées mais non consommées en Juin
     # recup_attrib_seuil (hcpu)    = on ne récupère que pour des attributions supérieures à ce seuil
     # recup_conso_seuil (%attrib)  = on ne s'occupe que des projets avec cono inférieure à ce seuil

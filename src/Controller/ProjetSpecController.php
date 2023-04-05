@@ -464,13 +464,6 @@ class ProjetSpecController extends AbstractController
             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)
         ];
         
-        $toomuch = false;
-        if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
-            $version_prec = $version->versionPrecedente();
-            if ($version_prec->getAnneeSession() == $version->getAnneeSession()) {
-                $toomuch  = $sv -> is_demande_toomuch($version_prec->getAttrHeures(), $version->getDemHeures());
-            }
-        }
         $rapport_1 = $sp -> getRapport($projet, $version->getAnneeSession() - 1);
         $rapport   = $sp -> getRapport($projet, $version->getAnneeSession());
 
@@ -500,7 +493,6 @@ class ProjetSpecController extends AbstractController
                 'rapport_1'          => $rapport_1,
                 'rapport'            => $rapport,
                 'document'           => $document,
-                'toomuch'            => $toomuch,
                 'cv'                 => $cv
             ]
         );
@@ -641,16 +633,6 @@ class ProjetSpecController extends AbstractController
             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)
         ];
         
-        //$toomuch = false;
-        //if ($session->getLibelleTypeSession()=='B' && ! $sv->isNouvelle($version)) {
-            //$version_prec = $version->versionPrecedente();
-            //if ($version_prec->getAnneeSession() == $version->getAnneeSession()) {
-                //$toomuch  = $sv -> is_demande_toomuch($version_prec->getAttrHeures(), $version->getDemHeures());
-            //}
-        //}
-        //$rapport_1 = $sp -> getRapport($projet, $version->getAnneeSession() - 1);
-        //$rapport   = $sp -> getRapport($projet, $version->getAnneeSession());
-
         $tmpl = 'projet/consulter_projet_sess.html.twig';
 
         $cv = $em->getRepository(CollaborateurVersion::class)
@@ -673,7 +655,6 @@ class ProjetSpecController extends AbstractController
                 //'rapport_1'          => $rapport_1,
                 //'rapport'            => $rapport,
                 'document' => $document,
-                'toomuch' => false,
                 'cv' => $cv
             ]
         );

@@ -69,7 +69,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class ServiceVersions
 {
     public function __construct(
-                                private $attrib_seuil_a,
                                 private $prj_prefix,
                                 private $rapport_directory,
                                 private $fig_directory,
@@ -89,10 +88,7 @@ class ServiceVersions
                                 private TokenStorageInterface $tok,
                                 private GramcDate $grdt,
                                 private EntityManagerInterface $em
-                                )
-    {
-        $this->attrib_seuil_a = intval($this->attrib_seuil_a);
-    }
+                                ) {}
 
     /****************
      * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
@@ -180,42 +176,6 @@ class ServiceVersions
         $em->flush();
 
         return $version;
-    }
-
-    /*********
-     * Utilisé seulement en session B
-     * renvoie true si l'attribution en A est supérieure à ATTRIB_SEUIL_A et la demande en B supérieure à attr_heures_a / 2
-     *
-     * param  id_version, $attr_heures_a, $attr_heures_b
-     * return true/false
-     *
-     **************************/
-    public function is_demande_toomuch($attr_heures_a, $dem_heures_b): bool
-    {
-        // Si demande en A = 0, no pb (il s'agit d'un nouveau projet apparu en B)
-        if ($attr_heures_a==0) {
-            return false;
-        }
-
-        // Si demande en B supérieure à attribution en A, pb
-        if ($dem_heures_b > $attr_heures_a) {
-            return true;
-        }
-
-        // Si attribution inférieure au seuil, la somme ne doit pas dépasser 1,5 * seuil
-        if ($attr_heures_a < $this->attrib_seuil_a) {
-            if (floatval($dem_heures_b + $attr_heures_a) > $this->attrib_seuil_a * 1.5) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if (intval($dem_heures_b) > (intval($attr_heures_a)/2)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
     }
 
     /************************************
