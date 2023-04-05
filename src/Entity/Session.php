@@ -22,9 +22,15 @@
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
+/****************
+ *
+ * Cette entité héritée de gramc n'est PAS UTILISEE ACTUELLEMENT
+ * On la garde car "ça peut servir", par exemple pour implémenter des sessions d'enseignement
+ * Mais tous les mécanismes concernant les versions, et qui dépendent des sessions, ont été supprimés
+ *
+ ***************************************************/
 namespace App\Entity;
 
-//use App\App;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\GramcServices\Etat;
@@ -108,22 +114,6 @@ class Session
     {
         return $this->getIdSession();
     }
-
-    ///////////////////////////////////////////////////////////////
-
-
-    // SUPPRIME CAR BUGGE ET NON APPELE
-    /**
-    * @ ORM\PostUpdate
-    * @ ORM\PostPersist
-    */
-    //public function clearCacheSessionCourante()
-    //{
-    //   if (getSession()->has('SessionCourante')) {
-    //       getSession()->remove('SessionCourante');
-    //   } // clear cache
-    //}
-    /////////////////////////
 
     /**
      * Constructor
@@ -362,25 +352,6 @@ class Session
         return $heures;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-
-    // pour le workflow symfony
-
-    //public function setLibelleEtat($libelle)
-    //{
-    //    $etat = Etat::getEtat( $libelle );
-//
-    //      if( $etat != null )
-    //          $this->setEtatSession( $etat );
-    //      else
-    //          {
-    //          Functions::warningMessage("libelleEtat de la Session '" . $libelle . "' n'existe pas");
-    //          $this->setEtatSession( null  );
-    //          }
-    //
-    //      return $this;
-    //  }
-
     /***************************************************
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatSession/setEtatSession !
@@ -394,12 +365,6 @@ class Session
         $this->setEtatSession($state);
         return $this;
     }
-
-    //public function getSubWorkflow()        { return new \App\Workflow\ProjetWorkflow(); }
-    //public function getSubObjects()         { return getRepository(Projet::class)->findNonTermines();  }
-
-
-    ///////////////////////////////////////
 
     // type session A ou B
     public function getLibelleTypeSession()

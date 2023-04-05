@@ -982,7 +982,7 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
-        $nosession = $this->getParameter('nosession');
+        $nosession = true;
         
         $versions = [];
 

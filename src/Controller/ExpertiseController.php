@@ -498,7 +498,6 @@ class ExpertiseController extends AbstractController
 
         $mes_thematiques     = $moi->getThematique();
         $expertiseRepository = $em->getRepository(Expertise::class);
-        $session             = $ss->getSessionCourante();
 
         // Les expertises affectées à cet expert
         // On regarde toutes les sessions (il peut y avoir des projets fil de l'eau qui trainent)

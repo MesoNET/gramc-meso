@@ -39,7 +39,6 @@ twig:
        rapport_dactivite: '%rapport_dactivite%'
        fichier_attache: '%fichier_attache%'
        noinvitation: '%noinvitation%'
-       nosession: '%nosession%'
        resp_peut_modif_collabs: '%resp_peut_modif_collabs%'
        clessh_algos: '%clessh_algos%'
        mode_auth: '%mode_auth%'

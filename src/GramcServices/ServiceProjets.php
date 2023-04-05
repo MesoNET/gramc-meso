@@ -401,8 +401,6 @@ class ServiceProjets
       *       Utilise par ProjetController et AdminuxController, et aussi par StatistiquesController
       *
       * Param : $annee
-      *         $isRecupPrintemps (true/false, def=false) -> Calcule les heures récupérables au printemps
-      *         $isRecupAutomne (true/false, def=false)   -> Calcule les heures récupérables à l'Automne
       *
       * Return: [ $projets, $total ] Un tableau de tableaux pour les projets, et les données consolidées
       *

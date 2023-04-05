@@ -658,33 +658,6 @@ class VersionController extends AbstractController
     }
 
     /**
-     * Mettre une pénalité sur une version (en GET par ajax)
-     *
-     * @Route("/{id}/version/{penal}/penalite", name="penal_version",methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function penalAction(Version $idversion, $penal): Response
-    {
-        $data = [];
-        $em = $this->em;
-        $version = $em->getRepository(Version::class)->findOneBy([ 'idVersion' =>  $idversion]);
-        if ($version != null) {
-            if ($penal >= 0) {
-                $data['recuperable'] = 0;
-                $data['penalite' ] = $penal;
-                $version ->setPenalHeures($penal);
-            } else {
-                $data['penalite'] = 0;
-                $data['recuperable' ] = -$penal;
-                $version ->setPenalHeures(0);
-            }
-            $em->persist($version);
-            $em->flush($version);
-        }
-        return new Response(json_encode($data));
-    }
-
-    /**
      * envoyer à l'expert
      *
      * @Route("/{id}/envoyer", name="envoyer_en_expertise",methods={"GET","POST"})

@@ -28,21 +28,6 @@ parameters:
 
     # PARAMETRES PAS UTILISES ACTUELLEMENT
     # ====================================
-    # Mécanisme de récupération des heures attribuées mais non consommées en Juin
-    # recup_attrib_seuil (hcpu)    = on ne récupère que pour des attributions supérieures à ce seuil
-    # recup_conso_seuil (%attrib)  = on ne s'occupe que des projets avec cono inférieure à ce seuil
-    # recup_attrib_quant (%attrib) = partie de l'attribution récupérée
-    recup_attrib_seuil: 300000
-    recup_conso_seuil: 30
-    recup_attrib_quant: 50
-    
-    # La récup est proposée entre les mois de Mai et Août (inclus)...
-    recup_printemps_d: 5
-    recup_printemps_f: 8
-    
-    #...ou entre les mois de Septembre et Octobre pour les heures attribuées pour l'été (Juillet et Août) et non consommées
-    recup_automne_d: '09'
-    recup_automne_f: 10
 
     # En %attribution, permet d'indiquer les projets qui ont bientôt épuisé les quotas (écran projets par année)
     conso_seuil_1: 70
@@ -84,9 +69,6 @@ parameters:
     # Si != 0, le mécanisme des invitations est désactivé
     noinvitation: false
 
-    # Y a-t-il des sessions ?
-    nosession: true
-    
     # Suppression d'une étape dans le workflow des sessions
     # Cette étape est utile si on a un comité d'attribution constitué,
     # car elle vient APRES la réunion: on attend la réunion ET l'entrée du commentaire de session

@@ -842,24 +842,6 @@ class VersionSpecController extends AbstractController
                 || $version->getPrjGenciDari()     == null) {
                 $todo[] = 'genci';
             };
-
-            if ($this->getParameter('nosession')==false)
-            {
-                if ($version->typeSession()  == 'A' ) {
-                    $version_precedente = $version->versionPrecedente();
-                    if ($version_precedente != null) {
-                        $rapportActivite = $em->getRepository(RapportActivite::class)->findOneBy(
-                            [
-                            'projet' => $version_precedente->getProjet(),
-                            'annee' => $version_precedente->getAnneeSession(),
-                        ]
-                        );
-                        if ($rapportActivite == null) {
-                            $todo[] = 'rapport_activite';
-                        }
-                    }
-                }
-            }
         }
 
         if ($version->getProjet()->getTypeProjet()==Projet::PROJET_SESS) {
@@ -879,24 +861,6 @@ class VersionSpecController extends AbstractController
                 || $version->getPrjGenciDari()     == null) {
                 $todo[] = 'genci';
             };
-
-            if ($this->getParameter('nosession')==false)
-            {
-                if ($version->typeSession()  == 'A' ) {
-                    $version_precedente = $version->versionPrecedente();
-                    if ($version_precedente != null) {
-                        $rapportActivite = $em->getRepository(RapportActivite::class)->findOneBy(
-                            [
-                            'projet' => $version_precedente->getProjet(),
-                            'annee' => $version_precedente->getAnneeSession(),
-                        ]
-                        );
-                        if ($rapportActivite == null) {
-                            $todo[] = 'rapport_activite';
-                        }
-                    }
-                }
-            }
         }
 
         // Validation des formulaires des collaborateurs

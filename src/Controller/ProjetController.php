@@ -768,8 +768,8 @@ class ProjetController extends AbstractController
         $data  = $ss->selectAnnee($request); // formulaire
         $annee = $data['annee'];
 
-        $isRecupPrintemps = $grdt->isRecupPrintemps($annee);
-        $isRecupAutomne   = $grdt->isRecupAutomne($annee);
+        $isRecupPrintemps = 0;
+        $isRecupAutomne   = 0;
 
         $sp      = $this->sp;
         $paa     = $sp->projetsParAnnee($annee, $isRecupPrintemps, $isRecupAutomne);

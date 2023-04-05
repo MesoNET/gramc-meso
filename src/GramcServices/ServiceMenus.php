@@ -63,7 +63,6 @@ class ServiceMenus
     
     public function __construct(
         private $max_rall,
-        private $nosession,
         private ServiceVersions $sv,
         private ServiceProjets $sp,
         private ServiceJournal $sj,
@@ -997,7 +996,6 @@ class ServiceMenus
 
     public function changerResponsable(Version $version, int $priorite=self::HPRIO):array
     {
-        $nosession = $this->nosession;
         $menu['name']   =   'changer_responsable';
         $menu['param']  =   $version->getIdVersion();
         $menu['lien']   =   "Nouveau responsable";
@@ -1020,10 +1018,6 @@ class ServiceMenus
             if ($version->getEtatVersion() != Etat::EDITION_DEMANDE)
             {
                 $menu['raison']         = "Commencez par demander le renouvellement du projet !";
-            }
-            elseif ($nosession == false && $session->getEtatSession() != Etat::EDITION_DEMANDE )
-            {
-                $menu['raison']         = "Nous ne sommes pas en période de demandes de ressources";
             }
             elseif ($etatVersion == Etat::EDITION_EXPERTISE || $etatVersion == Etat::EXPERTISE_TEST)
             {
@@ -1052,7 +1046,6 @@ class ServiceMenus
 
     public function modifierVersion(Version $version, int $priorite=self::HPRIO):array
     {
-        $nosession = $this->nosession;
         $menu['name'] = 'modifier_version';
         $menu['param'] = $version->getIdVersion();
         $menu['lien'] = "Modifier";
@@ -1071,11 +1064,6 @@ class ServiceMenus
             $isProjetTest = $version->isProjetTest();
             $isProjetSess = $version->getProjet()->getTypeProjet() === Projet::PROJET_SESS;
     
-            if ($nosession == false && $version->getSession() == null)
-            {
-                $menu['raison'] = "Pas de session attachée à ce projet !";
-                $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
-            }
             if ($etatVersion ==  Etat::EDITION_EXPERTISE) {
                 $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
             } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {

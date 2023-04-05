@@ -140,19 +140,6 @@ class GramcSessionController extends AbstractController
         $menu1[] = $sm->gererIndividu();
         $menu1[] = $sm->gererInvitations();
 
-        $menu2 = [];
-        if ($this->getParameter('nosession')==false)
-        {
-            $menu2[] = $sm->gererSessions();
-            $menu2[] = $sm->bilanSession();
-
-            $menu2[] = $sm->mailToResponsablesRallonge();
-            $menu2[] = $sm->mailToResponsables();
-            $menu2[] = $sm->mailToResponsablesFiche();
-
-            $menu3[] = $sm->projetsSession();
-            $menu3[] = $sm->projetsAnnee();
-        }
         $menu3[] = $sm->projetsDyn();
         $menu3[] = $sm->rallongesDyn();
         $menu3[] = $sm->televersementGenerique();
@@ -179,7 +166,6 @@ class GramcSessionController extends AbstractController
         $menu6[] = $sm->nettoyerRgpd();
 
         return $this->render('default/accueil_admin.html.twig', ['menu1' => $menu1,
-                                                                // 'menu2' => $menu2,
                                                                 'menu3' => $menu3,
                                                                 'menu4' => $menu4,
                                                                 'menu5' => $menu5,
@@ -214,19 +200,6 @@ class GramcSessionController extends AbstractController
         $token = $this->ts->getToken();
         
         $session = null;
-        if ($this->getParameter('nosession')==false)
-        {
-            // Lors de l'installation, aucune session n'existe: redirection
-            // vers l'écran de création de session, le seul qui fonctionne !
-            $session= $ss->getSessionCourante();
-            if ($session == null) {
-                if ($this->ac->isGranted('ROLE_ADMIN')) {
-                    return $this->redirectToRoute('gerer_sessions');
-                }
-                return $this->redirectToRoute('projet_accueil');
-            }
-        }
-
         if ($token != null)
         {
             $individu = $token->getUser();
