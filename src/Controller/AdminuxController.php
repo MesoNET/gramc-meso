@@ -949,7 +949,6 @@ class AdminuxController extends AbstractController
      *                 resume      prjResume
      *                 labo        prjLLabo
      *                 metadonnees dataMetaDataFormat
-     *                 thematique  metathematique (ATTENTION ! PAS la thématique au sens de Calmip, mais la Metathématique)
      *
      * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "session" : "20A" }' https://.../adminux/version/get
      *
@@ -1060,19 +1059,6 @@ class AdminuxController extends AbstractController
         {
             if ($v==null) continue;
             
-            ///////////////$attr  = $v->getAttrHeures() - $v->getPenalHeures();
-            //$attr = 0;
-            //foreach ($v->getRallonge() as $r)
-            //{
-                //$attr += $r->getAttrHeures();
-            //}
-
-            // A JETER
-            //$attrUft = $v->getAttrHeuresUft();
-            //$attrCriann = $v->getAttrHeuresCriann();
-            // FIN A JETER
-            
-            // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
             // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
             if ($v->getsession() != null && $v->getSession()->getTypeSession())
             {
@@ -1096,37 +1082,7 @@ class AdminuxController extends AbstractController
             $r['etatProjet']      = $v->getProjet()->getEtatProjet();
             $r['mail']            = $v->getResponsable()->getMail();
             
-            //$r['attrHeures']      = $attr;
-            // A JETER
-            //$r['attrHeures@TURPAN'] = $attrUft;
-            //$r['attrHeures@BOREALE'] = $attrCriann;
-            // FIN A JETER
-
-            // Conso et quota sur TURPAN et BOREALE
-            //$c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
-            //$c_boreale = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREALE');
-            
-            // A JETER
-            //$r['quota@TURPAN'] = $c_turpan[1];
-            //$r['conso@TURPAN'] = $c_turpan[0];
-            //$r['quota@BOREALE'] = $c_boreale[1];
-            //$r['conso@BOREALE'] = $c_boreale[0];
-            // FIN A JETER
-
-            //if ($long)
-            //{
-                //$r['titre']       = $v->getPrjTitre();
-                //$r['resume']      = $v->getPrjResume();
-                //$r['labo']        = $v->getPrjLLabo();
-                //$r['metadonnees'] = $v->getDataMetaDataFormat();
-                //$r['thematique']  = $v->getAcroMetaThematique();
-            //}
-            
-            // Pour le déboguage
-            // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
-
             $retour[] = $r;
-            //$retour[] = $v->getIdVersion();
         };
 
         // print_r est plus lisible pour le déboguage

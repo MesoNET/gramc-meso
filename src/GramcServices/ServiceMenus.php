@@ -970,26 +970,6 @@ class ServiceMenus
 
     //////////////////////////////////////
 
-    public function gererMetathematiques(int $priorite=self::HPRIO):array
-    {
-        $menu['name']   =   'gerer_metaThematiques';
-        $menu['commentaire']    =   "Gérer la liste des méta-thématiques";
-        $menu['lien']           =   "Méta-Thématiques";
-        $menu['icone']           =   "thematique";
-
-        if ($this->ac->isGranted('ROLE_OBS')) {
-            $menu['ok'] = true;
-        } else {
-            $menu['ok'] = false;
-            $menu['raison'] = "Vous devez être au moins un observateur pour accéder à cette page";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    //////////////////////////////////////
-
     // Menu principal Projet
 
     //////////////////////////////////////
@@ -2017,27 +1997,6 @@ class ServiceMenus
         $this->__prio($menu, $priorite);
         return $menu;
     }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    public function statistiquesMetathematique(int $priorite=self::HPRIO): array
-    {
-        $menu['name']           =   'statistiques_metathematique';
-        $menu['lien']           =   "Métathématiques";
-
-        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez accéder aux statistiques par metathématique !";
-        } else {
-            $menu['ok']             =   false;
-            $menu['commentaire']    =   "Vous ne pouvez pas accéder aux statistiques par metathématique !";
-            $menu['raison']         =   "Vous devez être président ou administrateur pour y accéder";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -52,9 +52,6 @@ use App\GramcServices\ServiceUsers;
 use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
-use App\GramcServices\GramcGraf\CalculTous;
-use App\GramcServices\GramcGraf\Stockage;
-use App\GramcServices\GramcGraf\Calcul;
 
 use Psr\Log\LoggerInterface;
 
@@ -108,9 +105,6 @@ class ProjetSpecController extends AbstractController
         private ServiceSessions $ss,
         private ServiceUsers $su,
         private ServiceServeurs $sr,
-        private Calcul $gcl,
-        private Stockage $gstk,
-        private CalculTous $gall,
         private GramcDate $sd,
         private ServiceVersions $sv,
         private ServiceExperts $se,

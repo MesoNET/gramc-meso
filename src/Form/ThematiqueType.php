@@ -57,7 +57,6 @@ class ThematiqueType extends AbstractType
     {
         $builder
             ->add('libelleThematique')
-            ->add('metaThematique')
             ->add(
                 'expert',
                 EntityType::class,

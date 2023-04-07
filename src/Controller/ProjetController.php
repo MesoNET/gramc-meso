@@ -54,9 +54,6 @@ use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
-use App\GramcServices\GramcGraf\CalculTous;
-use App\GramcServices\GramcGraf\Stockage;
-use App\GramcServices\GramcGraf\Calcul;
 
 use Psr\Log\LoggerInterface;
 
@@ -110,9 +107,6 @@ class ProjetController extends AbstractController
         private ServiceUsers $su,
         private ServiceServeurs $sr,
         private ServiceRessources $sroc,
-        private Calcul $gcl,
-        private Stockage $gstk,
-        private CalculTous $gall,
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceExperts $se,
@@ -706,17 +700,6 @@ class ProjetController extends AbstractController
                 continue;
             }
             $thematique= $v->getPrjThematique();
-            $metathema = null;
-            if ($thematique==null) {
-                $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $v . " n'a pas de thématique !");
-            } else {
-                $metathema = $thematique->getMetaThematique()->getLibelle();
-            }
-
-            if (! isset($projets[$metathema])) {
-                $projets[$metathema] = [];
-            }
-            $prjm = &$projets[$metathema];
             $prj  = [];
             $prj['id'] = $v->getProjet()->getIdProjet();
             $prj['titre'] = $v->getPrjTitre();
@@ -732,11 +715,6 @@ class ProjetController extends AbstractController
             $prj['porteur'] = $v->getResponsable()->getPrenom().' '.$v->getResponsable()->getNom();
             $prjm[] = $prj;
         };
-
-        // Tris des tableaux par thématique du plus récent au plus ancien
-        foreach ($projets as $metathema => &$prjm) {
-            usort($prjm, "App\Controller\cmpProj");
-        }
 
         return $this->render(
             'projet/resumes.html.twig',

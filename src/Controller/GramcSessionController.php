@@ -150,7 +150,6 @@ class GramcSessionController extends AbstractController
         $menu4[] = $sm->gererThematiques();
         $menu4[] = $sm->gererServeurs();
         $menu4[] = $sm->gererResources();
-        //$menu4[] = $sm->gererMetathematiques();
 
         //$menu5[] = $sm->bilanAnnuel();
         //$menu5[] = $sm->statistiques();

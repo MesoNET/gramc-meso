@@ -31,7 +31,6 @@ use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\GramcDate;
-use App\GramcServices\GramcGraf\Calcul;
 use App\GramcServices\DonneesFacturation;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,7 +64,6 @@ class ProjetDfctController extends AbstractController
     public function __construct(
         private ServiceJournal $sj,
         private ServiceMenus $sm,
-        private Calcul $gcl,
         private GramcDate $sd,
         private ServiceVersions $sv,
         private DonneesFacturation $dfct,

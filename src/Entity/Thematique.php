@@ -42,16 +42,6 @@ class Thematique
     private $libelleThematique;
 
     /**
-    * @var \App\Entity\MetaThematique
-    *
-    * @ORM\ManyToOne(targetEntity="App\Entity\MetaThematique", inversedBy="thematique")
-    * @ORM\JoinColumns({
-    *   @ORM\JoinColumn(name="id_meta_thematique", referencedColumnName="id_meta_thematique")
-    * })
-    */
-    private $metaThematique;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="id_thematique", type="integer")
@@ -139,30 +129,6 @@ class Thematique
     public function getIdThematique()
     {
         return $this->idThematique;
-    }
-
-    /**
-     * Set metaThematique
-     *
-     * @param \App\Entity\MetaThematique $metaThematique
-     *
-     * @return Thematique
-     */
-    public function setMetaThematique(\App\Entity\MetaThematique $metaThematique = null)
-    {
-        $this->metaThematique = $metaThematique;
-
-        return $this;
-    }
-
-    /**
-     * Get metaThematique
-     *
-     * @return \App\Entity\MetaThematique
-     */
-    public function getMetaThematique()
-    {
-        return $this->metaThematique;
     }
 
     /**

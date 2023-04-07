@@ -1965,22 +1965,6 @@ class Version implements Demande
             return $thematique->__toString();
         }
     }
-    ////////////////////////////////////////////
-
-    public function getAcroMetaThematique()
-    {
-        $thematique = $this->getPrjThematique();
-        if ($thematique == null) {
-            return "sans thématique";
-        }
-
-        $metathematique =   $thematique->getMetaThematique();
-        if ($metathematique == null) {
-            return $thematique->__toString() . " sans métathématique";
-        } else {
-            return  $thematique->getMetaThematique()->__toString();
-        }
-    }
 
     ////////////////////////////////////////////
 
