@@ -45,6 +45,7 @@ use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceRessources;
+use App\GramcServices\ServiceDacs;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\ServiceUsers;
@@ -82,6 +83,7 @@ class AdminuxController extends AbstractController
         private ServiceVersions $sv,
         private ServiceUsers $su,
         private ServiceRessources $sroc,
+        private ServiceDacs $sdac,
         private Cron $cr,
         private TokenStorageInterface $tok,
         private EntityManagerInterface $em
@@ -728,6 +730,7 @@ class AdminuxController extends AbstractController
     {
         $sp = $this->sp;
         $sroc = $this->sroc;
+        $sdac = $this->sdac;
         $em = $this->em;
 
         //$attr  = $v->getAttrHeuresTotal();
@@ -824,8 +827,8 @@ class AdminuxController extends AbstractController
         foreach ($v->getDac() as $dac)
         {
             $d = [];
-            $d['attribution'] = $dac->getAttribution();
-            $d['demande'] = $dac->getDemande();
+            $d['attribution'] = $sdac->getAttributionConsolidee($dac);
+            $d['demande'] = $sdac->getDemandeConsolidee($dac);
             $d['consommation'] = $dac->getConsommation();
             $ressources[$sroc->getNomComplet($dac->getRessource())] = $d;
         }

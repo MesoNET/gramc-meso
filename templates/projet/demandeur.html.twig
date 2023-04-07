@@ -84,7 +84,7 @@
                         {{icones.attention(20,20)}}
                     </span>
                 {%endif%}   
-                <span title="Attribution">{{ dacs[nr].attribution}}</span>&nbsp;-&nbsp;<span title="Consommation">{{ dacs[nr].consommation }}
+                <span title="Attribution">{{ serviceDacs.getAttributionConsolidee(dacs[nr])}}</span>&nbsp;-&nbsp;<span title="Consommation">{{ dacs[nr].consommation }}
                     {% if dacs[nr].consommation > 0 %}
                         ({{100*dacs[nr].consommation/dacs[nr].attribution}} %)
                     {% endif %}
