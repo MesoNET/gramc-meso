@@ -33,8 +33,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="expertise", uniqueConstraints={@ORM\UniqueConstraint(name="id_version_2", columns={"id_version", "id_expert"})}, indexes={@ORM\Index(name="version_expertise_fk", columns={"id_version"}), @ORM\Index(name="expert_expertise_fk", columns={"id_expert"}), @ORM\Index(name="id_version", columns={"id_version"}), @ORM\Index(name="id_expert", columns={"id_expert"})})
  * @ORM\Entity(repositoryClass="App\Repository\ExpertiseRepository")
- * @Assert\Expression("this.getNbHeuresAttEte() <= this.getNbHeuresAtt()",
- *      message="Vous ne pouvez pas attribuer plus d'heures pour l'été que pour la session.")
  *
  */
 class Expertise
@@ -48,30 +46,6 @@ class Expertise
      * @ORM\Column(name="validation", type="integer", nullable=false)
      */
     private $validation=1;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAtt = 0;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att_uft", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAttUft = 0;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att_criann", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAttCriann = 0;
 
     /**
      * @var string
@@ -102,16 +76,6 @@ class Expertise
      * @ORM\Column(name="definitif", type="boolean", nullable=false)
      */
     private $definitif = false;
-
-    /**
-     * @var integer
-     *
-     * Seulement lors de la session de type B: ces heures doivent être consommées en Juillet-Août, sinon on pourra appliquer des pénalités
-     *
-     * @ORM\Column(name="nb_heures_att_ete", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures d'été négatif.")
-     */
-    private $nbHeuresAttEte = 0;
 
     /**
      * @var integer
@@ -179,78 +143,6 @@ class Expertise
     public function getValidation()
     {
         return $this->validation;
-    }
-
-    /**
-     * Set nbHeuresAtt
-     *
-     * @param integer $nbHeuresAtt
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAtt($nbHeuresAtt)
-    {
-        $this->nbHeuresAtt = $nbHeuresAtt;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAtt
-     *
-     * @return integer
-     */
-    public function getNbHeuresAtt()
-    {
-        return $this->nbHeuresAtt;
-    }
-
-    /**
-     * Set nbHeuresAttUft
-     *
-     * @param integer $nbHeuresAttUft
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttUft($nbHeuresAttUft)
-    {
-        $this->nbHeuresAttUft = $nbHeuresAttUft;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttUft
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttUft()
-    {
-        return $this->nbHeuresAttUft;
-    }
-
-    /**
-     * Set nbHeuresAttCriann
-     *
-     * @param integer $nbHeuresAttCriann
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttCriann($nbHeuresAttCriann)
-    {
-        $this->nbHeuresAttCriann = $nbHeuresAttCriann;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttCriann
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttCriann()
-    {
-        return $this->nbHeuresAttCriann;
     }
 
     /**
@@ -323,30 +215,6 @@ class Expertise
     public function getDefinitif()
     {
         return $this->definitif;
-    }
-
-    /**
-     * Set nbHeuresAttEte
-     *
-     * @param integer $nbHeuresAttEte
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttEte($nbHeuresAttEte)
-    {
-        $this->nbHeuresAttEte = $nbHeuresAttEte;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttEte
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttEte()
-    {
-        return $this->nbHeuresAttEte;
     }
 
     /**

@@ -36,11 +36,9 @@ class ExpertiseType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('validation')
-                ->add('nbHeuresAtt')
                 ->add('commentaireInterne')
                 ->add('commentaireExterne')
                 ->add('definitif')
-                ->add('nbHeuresAttEte')
                 ->add('version')
                 ->add('expert');
     }

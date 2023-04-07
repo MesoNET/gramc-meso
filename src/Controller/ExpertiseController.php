@@ -118,76 +118,6 @@ class ExpertiseController extends AbstractController
 
     ///////////////////////
 
-    /**
-     * Affectation des experts
-     * Affiche l'écran d'affectation des experts
-     *
-     * @Route("/affectation", name="affectation", methods={"GET","POST"})
-     * Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function affectationAction(Request $request): Response
-    {
-        $ss = $this->ss;
-        $sp = $this->sp;
-        $sv = $this->sv;
-        $em = $this->em;
-        $affectationExperts = $this->se;
-
-        $session      = $ss->getSessionCourante();
-        $session_data = $ss->selectSession($this->createFormBuilder(['session'=>$session]), $request); // formulaire
-        $session      = $session_data['session']!=null ? $session_data['session'] : $session;
-        $session_form = $session_data['form'];
-        $versions     = $em->getRepository(Version::class)->findSessionVersions($session);
-        usort($versions, "self::cmpVersionsByEtat");
-        $etatSession  = $session->getEtatSession();
-
-        $affectationExperts->setDemandes($versions);
-
-        //
-        // 1ere etape = Traitement des formulaires qui viennent d'être soumis
-        //              On boucle sur les versions:
-        //                  - Une version non sélectionnée est ignorée
-        //                  - Pour chaque version sélectionnée on fait une action qui dépend du bouton qui a été cliqué
-        //              Puis on redirige sur la page
-        //
-        $form_buttons = $affectationExperts->getFormButtons();
-        $form_buttons->handleRequest($request);
-        if ($form_buttons->isSubmitted()) {
-            $affectationExperts->traitementFormulaires($request);
-            // doctrine cache les expertises précédentes du coup si on ne redirige pas
-            // l'affichage ne sera pas correctement actualisé !
-            // Essentiellement avec sub3 (ajout d'expertise)
-            return $this->redirectToRoute('affectation');
-        }
-
-        // 2nde étape = Création des formulaires pour affichage et génération des données de "stats"
-        $thematiques   = $affectationExperts->getTableauThematiques();
-        $rattachements = $affectationExperts->getTableauRattachements();
-        $experts       = $affectationExperts->getTableauExperts();
-        $forms         = $affectationExperts->getExpertsForms();
-        $stats         = $affectationExperts->getStats();
-        $attHeures     = $affectationExperts->getAttHeures($versions);
-
-        $sessionForm      = $session_data['form']->createView();
-        $titre            = "Affectation des experts aux projets de la session " . $session;
-
-        
-        return $this->render(
-            'expertise/affectation.html.twig',
-            [
-            'titre'         => $titre,
-            'versions'      => $versions,
-            'forms'         => $forms,
-            'sessionForm'   => $sessionForm,
-            'thematiques'   => $thematiques,
-            'rattachements' => $rattachements,
-            'experts'       => $experts,
-            'stats'         => $stats,
-            'attHeures'     => $attHeures,
-            ]
-        );
-    }
 
     private static function cmpVersionsByEtat(Version $a, Version $b): int
     {
@@ -218,28 +148,6 @@ class ExpertiseController extends AbstractController
         }
     }
 
-    /**
-     * Lists all expertise entities.
-     *
-     * @Route("/", name="expertise_index", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function indexAction(): Response
-    {
-        $em = $this->em;
-
-        $expertises = $em->getRepository(Expertise::class)->findAll();
-        $projets =  $em->getRepository(Projet::class)->findAll();
-
-
-        return $this->render(
-            'expertise/index.html.twig',
-            [
-            'expertises' => $expertises,
-            ]
-        );
-    }
 
     // Helper function used by listeAction
     private static function exptruefirst($a, $b): int
@@ -254,219 +162,7 @@ class ExpertiseController extends AbstractController
     }
 
     /**
-     * Liste les expertises attribuées à un expert
-     *       Aussi les anciennes expertises réalisées par cet expert
-     *
-     * @Route("/liste", name="expertise_liste", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_EXPERT')")
-     */
-    public function listeAction(): Response
-    {
-        $grdt= $this->grdt;
-        $sid = $this->sid;
-        $ss  = $this->ss;
-        $sp  = $this->sp;
-        $sj  = $this->sj;
-        $token = $this->token;
-        $em  = $this->em;
-
-        $moi = $token->getUser();
-        if (is_string($moi)) {
-            $sj->throwException();
-        }
-
-        if ($token != null)
-        {
-            $individu = $token->getUser();
-            if (! $sid->validerProfil($individu))
-            {
-                return $this->redirectToRoute('profil');
-            };
-        }
-
-        $mes_thematiques     = $moi->getThematique();
-        $expertiseRepository = $em->getRepository(Expertise::class);
-        $session             = $ss->getSessionCourante();
-
-        // Les expertises affectées à cet expert
-        // On regarde toutes les sessions (il peut y avoir des projets fil de l'eau qui trainent)
-        // mais seulement les expertises non terminées
-        $expertises  = $expertiseRepository->findExpertisesByExpertForAllSessions($moi,true); //($moi, $session);
-
-        $my_expertises  =   [];
-        foreach ($expertises as $expertise) {
-
-            $version    =   $expertise->getVersion();
-            $projetId   =   $version->getProjet()->getIdProjet();
-            $thematique =   $version->getPrjThematique();
-
-            $my_expertises[ $version->getIdVersion() ] = [
-                                'expertise' => $expertise,
-                                'demHeures' => $version->getDemHeures(),
-                                'versionId' => $version->getIdVersion(),
-                                'projetId'  => $projetId,
-                                'titre'     => $version->getPrjTitre(),
-                                'thematique'    => $thematique,
-                                'responsable'   => $version->getResponsable(),
-                                'expert'        => true,
-                                                         ];
-        }
-
-        //$sj->debugMessage(__METHOD__ . " my_expertises " . Functions::show($my_expertises));
-        // $sj->debugMessage(__METHOD__ . " mes_thematiques " . Functions::show($mes_thematiques). " count=" . count($mes_thematiques->ToArray()));
-
-        // Les projets associés à une de mes thématiques
-        $expertises_by_thematique   =   [];
-        foreach ($mes_thematiques as $thematique) {
-            // $expertises_thematique =  $expertiseRepository->findExpertisesByThematique($thematique, $session);
-            $expertises_thematique =  $expertiseRepository->findExpertisesByThematiqueForAllSessions($thematique);
-            //$sj->debugMessage(__METHOD__ . " expertises pour thématique ".Functions::show($thematique). '-> '.Functions::show($expertises_thematique));
-            $expertises =   [];
-            foreach ($expertises_thematique as $expertise) {
-
-                // On n'affiche pas les expertises définitives
-                if ($expertise->getDefinitif()) {
-                    continue;
-                }
-
-                $version    =  $expertise->getVersion();
-
-                // On  n'affiche que les expertises des versions en édition expertise
-                if ($version->getEtatVersion()!=Etat::EDITION_EXPERTISE && $version->getEtatVersion()!=Etat::EXPERTISE_TEST) {
-                    continue;
-                }
-                $projetId   =  $version->getProjet()->getIdProjet();
-
-                $output =               [
-                                        'expertise'   => $expertise,
-                                        'demHeures'   => $version->getDemHeures(),
-                                        'versionId'   => $version->getIdVersion(),
-                                        'projetId'    => $projetId,
-                                        'titre'       => $version->getPrjTitre(),
-                                        'thematique'  => $thematique,
-                                        'responsable' =>  $version->getResponsable(),
-                                        ];
-                //$sj->debugMessage(__METHOD__ . " expertise ".$expertise->getId());
-
-                // On n'affiche pas deux expertises vers la même version
-                if (!array_key_exists($version->getIdVersion(), $expertises)) {
-                    // Si j'ai une expertise vers cette version, je remplace l'expertise trouvée par la mienne
-                    if (array_key_exists($version->getIdVersion(), $my_expertises)) {
-                        $output = $my_expertises[ $version->getIdVersion() ];
-                        unset($my_expertises[ $version->getIdVersion() ]);
-                        $output['expert']   =   true;
-                    } else {
-                        $output['expert']   =   false;
-                    }
-                    $expertises[$version->getIdVersion()] = $output;
-                }
-            }
-
-            $expertises_by_thematique[] = [ 'expertises' => $expertises, 'thematique' => $thematique ];
-        }
-
-        ///////////////////
-        // tri des tableaux expertises_by_thematique: d'abord les expertises pour lesquelles je dois intervenir
-        foreach ($expertises_by_thematique as &$exp_thema) {
-            uasort($exp_thema['expertises'], "self::exptruefirst");
-        }
-
-
-
-        ///////////////////
-
-        $old_expertises = [];
-        $expertises  = $expertiseRepository->findExpertisesByExpertForAllSessions($moi);
-        foreach ($expertises as $expertise) {
-            // Les expertises non définitives ne sont pas "old"
-            if (! $expertise->getDefinitif()) {
-                continue;
-            }
-
-            $version    = $expertise->getVersion();
-            $id_session = $version->getSession()->getIdSession();
-            $output = [
-                        'projetId'   => $version->getProjet()->getIdProjet(),
-                        'sessionId'  => $id_session,
-                        'thematique' => $version->getPrjThematique(),
-                        'titre'      => $version->getPrjTitre(),
-                        'demHeures'  => $version->getDemHeures(),
-                        'attrHeures' => $version->getAttrHeures(),
-                        'responsable' =>  $version->getResponsable(),
-                        'versionId'   => $version->getIdVersion(),
-                        'id' => $expertise->getId()
-                       ];
-            $old_expertises[] = $output;
-        };
-
-        // rallonges
-        $rallonges       = [];
-        $all_rallonges   = $em->getRepository(Rallonge::class)->findRallongesExpert($moi);
-        foreach ($all_rallonges as $rallonge) {
-            $version    =   $rallonge->getVersion();
-            if ($version == null) {
-                $sj->errorMessage(__METHOD__ . ':'. __FILE__ . " Rallonge " . $rallonge . " n'a pas de version !");
-                continue;
-            }
-            $projet = $version->getProjet();
-            if ($projet == null) {
-                $sj->errorMessage(__METHOD__ . ':'. __FILE__ . " Version " . $version . " n'a pas de projet !");
-                continue;
-            }
-
-            $rallonges[$projet->getIdProjet()]['projet']                                =   $projet;
-            $rallonges[$projet->getIdProjet()]['version']                               =   $version;
-            $rallonges[$projet->getIdProjet()]['consocalcul']                           =   $sp->getConsoCalculVersion($version);
-            $rallonges[$projet->getIdProjet()]['rallonges'][$rallonge->getIdRallonge()] =   $rallonge;
-        }
-
-        // Commentaires
-        // On propose aux experts du comité d'attribution (c-a-d ceux qui ont une thématique) d'entrer un commentaire sur l'année écoulée
-        $mes_commentaires_flag = false;
-        $mes_commentaires_maj = null;
-        
-        try
-        {
-            $mois = $grdt->format('m');
-            $annee= $grdt->format('Y');
-
-            // si on est après mars 2022, on ouvre le commentaires pour 2022
-            if ($mois >= $this->getParameter('commentaires_experts_d'))
-            {
-                $mes_commentaires_maj = $annee;
-            }
-
-            // si on est avant mai 2022, on ouvre le commentaire pour 2021
-            elseif ($mois < $this->getParameter('commentaires_experts_f'))
-            {
-                $mes_commentaires_maj = $annee - 1;
-            }
-            $mes_commentaires_flag = true;
-        }
-        catch (\InvalidArgumentException $e) {};
-        
-        $mes_commentaires = $em->getRepository(CommentaireExpert::class)->findBy(['expert' => $moi ]);
-
-        ///////////////////////
-
-        return $this->render(
-            'expertise/liste.html.twig',
-            [
-            'rallonges'                  => $rallonges,
-            'expertises_by_thematique'   => $expertises_by_thematique,
-            'expertises_hors_thematique' => $my_expertises,
-            'old_expertises'             => $old_expertises,
-            'mes_commentaires_flag'      => $mes_commentaires_flag,
-            'mes_commentaires'           => $mes_commentaires,
-            'mes_commentaires_maj'       => $mes_commentaires_maj,
-            'session'                    => $session,
-            ]
-        );
-    }
-
-    /**
-     * Liste les expertises non finalisées de projets dynamiques
+     * Liste les projets dynamiques non encore validés
      *
      * @Route("/listedyn", name="expertise_liste_dyn", methods={"GET"})
      * Method("GET")
@@ -517,7 +213,7 @@ class ExpertiseController extends AbstractController
      * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PRESIDENT')")
      */
-    public function newAction(Request $request): Response
+    public function newAction_SUPPR(Request $request): Response
     {
         $expertise = new Expertise();
         $form = $this->createForm('App\Form\ExpertiseType', $expertise);
@@ -544,7 +240,7 @@ class ExpertiseController extends AbstractController
      * Method("GET")
      * @Security("is_granted('ROLE_PRESIDENT')")
      */
-    public function showAction(Expertise $expertise): Response
+    public function showAction_SUPPR(Expertise $expertise): Response
     {
         $deleteForm = $this->createDeleteForm($expertise);
 
@@ -561,7 +257,7 @@ class ExpertiseController extends AbstractController
      * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_PRESIDENT')")
      */
-    public function editAction(Request $request, Expertise $expertise): Response
+    public function editAction_SUPPR(Request $request, Expertise $expertise): Response
     {
         $deleteForm = $this->createDeleteForm($expertise);
         $editForm = $this->createForm('App\Form\ExpertiseType', $expertise);
@@ -688,7 +384,7 @@ class ExpertiseController extends AbstractController
         $projet_type = $projet  -> getTypeProjet();
         if ($projet_type !== Projet::PROJET_DYN)
         {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Le projet $projet n'est pas un projet dynamque (type=$projet_type)");
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Le projet $projet n'est pas un projet dynamique (type=$projet_type)");
         }
 
         // $peut_envoyer -> Si true, on affiche le bouton Envoyer
@@ -925,7 +621,7 @@ class ExpertiseController extends AbstractController
         $grdt = $this->grdt;
 
         // On fixe les dates de début à la date de validation
-        // On fixe la date limite à la à la date de validation + 1 an
+        // On fixe la date limite à la date de validation + 1 an
         $projet = $expertise->getVersion()->getProjet();
         $version->setStartDate($grdt->getNew());
         $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
