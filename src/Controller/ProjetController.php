@@ -211,7 +211,7 @@ class ProjetController extends AbstractController
                     ($version->getResponsable()->getExpert()) ? '*******' : $version->getExpert(),
                     $version->getDemHeures(),
                     $version->getAttrHeures(),
-                    $sp->getConsoCalculVersion($version);
+                    $sp->getConsoCalculVersion($version)
                     ];
             $sortie     .=   join("\t", $ligne) . "\n";
         }
@@ -1164,17 +1164,20 @@ class ProjetController extends AbstractController
     /**
      * Projets dynamiques
      *
-     * @Route("/dynamiques", name="projet_dynamique", methods={"GET"})
-     * Method("GET")
+     * @Route("/dynamiques", name="projet_dynamique", methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS')")
      */
-    public function projetsDynamiquesAction(): Response
+    public function projetsDynamiquesAction(Request $request): Response
     {
         $em = $this->em;
         //$projets = $em->getRepository(Projet::class)->findAll();
         $sj = $this->sj;
         $sp = $this->sp;
         $sroc = $this->sroc;
+        $ss = $this->ss;
+
+        $selectAnneeData  = $ss->selectAnnee($request); // formulaire
+        $annee = $selectAnneeData['annee'];
 
         foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
             $etat_projet[$e] = 0;
@@ -1182,7 +1185,8 @@ class ProjetController extends AbstractController
 
         // On récupère tous les projets dynamiques toutes années confondues
         // Avec des informations statistiques
-        [$projets_data,$total,$repart] = $sp->projetsDynParAnnee();
+        [$projets_data,$total,$repart] = $sp->projetsDynParAnnee($annee);
+
         $data = [];
         $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
         $versionRepository              = $em->getRepository(Version::class);
@@ -1213,22 +1217,23 @@ class ProjetController extends AbstractController
                 $dacs[$sroc->getNomComplet($d->getRessource())] = $d;
             }
             $data[] = [
-                    'projet'       => $projet,
+                    'projet' => $projet,
                     'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
-                    'metaetat'     => $metaetat,
-                    'version'      => $version,
-                    'dacs'         => $dacs,
+                    'metaetat' => $metaetat,
+                    'version' => $version,
+                    'dacs' => $dacs,
                     'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    'count'        => $count,
-                    'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
+                    'count' => $count,
+                    'responsable' => $collaborateurVersionRepository->getResponsable($projet),
             ];
         }
 
         $etat_projet['total']      = $projetRepository->countAll();
-
+    
         return $this->render(
             'projet/projets_dyn.html.twig',
             [
+            'form' => $selectAnneeData['form']->createView(), // formulaire de hoix de l'année
             'etat_projet' => $etat_projet,
             'data' => $data,
             'total' => $total

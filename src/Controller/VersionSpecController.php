@@ -316,12 +316,9 @@ class VersionSpecController extends AbstractController
                              $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
                              $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)];
 
-        $session = $ss -> getSessionCourante();
-
         return $this->render(
             'version/modifier_projet_sess.html.twig',
             [
-                'session' => $session,
                 'form'      => $form->createView(),
                 'version'   => $version,
                 'img_expose' => $img_expose,

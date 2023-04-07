@@ -1012,7 +1012,6 @@ class ServiceMenus
             $menu['ok']          = false;
             $menu['commentaire'] =   "Vous ne pouvez pas changer le responsable de ce projet";
     
-            $session        =   $this->ss->getSessionCourante();
             $etatVersion    =   $version->getEtatVersion();
     
             if ($version->getEtatVersion() != Etat::EDITION_DEMANDE)
@@ -1066,15 +1065,9 @@ class ServiceMenus
     
             if ($etatVersion ==  Etat::EDITION_EXPERTISE) {
                 $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
-            } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {
-                $menu['raison'] = "Le projet test a été annulé !";
-            } elseif ($isProjetTest == true && $etatVersion !=  Etat::EDITION_TEST) {
-                $menu['raison'] = "Le projet test a déjà été envoyé en expertise !";
-            } elseif ($isProjetSess && $version->getSession()->getEtatSession() != Etat::EDITION_DEMANDE) {
-                $menu['raison'] = "Nous ne sommes pas en période de demandes de ressources";
             } elseif ($version->isCollaborateur($this->token->getUser()) == false) {
                 $menu['raison']         = "Seul un collaborateur du projet peut modifier ou supprimer le projet";
-            } elseif ($etatVersion !=  Etat::EDITION_DEMANDE && $etatVersion !=  Etat::EDITION_TEST) {
+            } elseif ($etatVersion !=  Etat::EDITION_DEMANDE) {
                 $menu['raison'] = "Le projet n'est pas en mode d'édition";
             } else {
                 $menu['ok']          = true;

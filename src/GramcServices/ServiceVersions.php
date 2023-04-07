@@ -757,6 +757,8 @@ class ServiceVersions
      **************************************************************/
     public function isAnnee(Version $version, int $annee):bool
     {
+        // Fonction désactivée pour l'instant
+        return true;
         $grdt = $this->grdt;
         
         if ($version->getTypeVersion()==Projet::PROJET_DYN)
@@ -764,21 +766,35 @@ class ServiceVersions
             $annee_courante = intval($grdt->showYear());
             
             // Si pas de date de début, la version n'a pas démarré
-            if ($version->getStartDate() == null) return false;
+            if ($version->getStartDate() === null)
+            {
+                return false;
+            }
+            else
+            {
+                $s = $version->getStartDate();
+            }
 
             // Si pas de date de fin, la version est en cours
-            return $annee == $annee_courante;
+            // Le résultat est le même que si elle s'arrêtait aujourd'hui
+            if ($version->getEndDate() === null)
+            {
+                $e = $grdt->getNew();
+            }
+            else
+            {
+                $e = $version->getEndDate();
+            }
 
             // Si les deux sont spécifiés, on vérifie s'il y a chevauchement avec l'année
-            $j1 = new \Datetime(strval($annee).'-01-01');
-            $d31 = new \Datetime(strval($annee+1).'-12-31');
-
-            $s = $version->getStartDate();
-            $e = $version->getEndDate();
+            $j1 = new \DateTime($grdt->showYear() . '-01-01');
+            $d31 = new \DateTime($grdt->showYear() . '-12-31');
 
             // Si $s ou $e sont dans l'intervalle on renvoie true
             if ($s>=$j1 && $s<=$d31) return true;
             if ($e>=$j1 && $e<=$d31) return true;
+
+            //if ($version->getIdVersion() === '02M23017') {dd($version->getIdVersion(),$s,$e,$j1,$d31);};
 
             // Sinon on renvoie false
             return false;

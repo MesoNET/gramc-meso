@@ -65,12 +65,15 @@ class ServiceSessions
 
     public function selectAnnee(Request $request, $annee = null): array
     {
-        $annee_max = $this->grdt->showYear();
-        if ($annee == null) {
-            $annee=$annee_max;
+        $grdt = $this->grdt;
+        
+        $annee_max = new \DateTime($grdt->showYear().'-01-01');
+        $annee_min = new \DateTime('2023-01-01'); // Mesonet commence en 2023 
+        if ($annee === null) {
+            $annee = $annee_max->format('Y');
         }
 
-        $choices = array_reverse(Functions::choicesYear(new \DateTime('2000-01-01'), new \DateTime($annee_max.'-01-01'), 0), true);
+        $choices = array_reverse(Functions::choicesYear($annee_min, $annee_max, 0), true);
         $form    = Functions::createFormBuilder($this->ff, ['annee' => $annee ])
                     ->add(
                         'annee',
