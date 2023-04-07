@@ -84,7 +84,7 @@
                         {{icones.attention(20,20)}}
                     </span>
                 {%endif%}   
-                <span title="Attribution">{{ dacs[nr].attribution}}</span> - <span title="Consommation">{{ dacs[nr].consommation }}
+                <span title="Attribution">{{ dacs[nr].attribution}}</span>&nbsp;-&nbsp;<span title="Consommation">{{ dacs[nr].consommation }}
                     {% if dacs[nr].consommation > 0 %}
                         ({{100*dacs[nr].consommation/dacs[nr].attribution}} %)
                     {% endif %}
@@ -191,7 +191,7 @@ passwd
             <th>Accès</th>
             <th>Numéro</th>
             {% if noconso==false %}{% for s in serviceServeurs.getserveurs %}<th>Id {{s.nom}}</th>{% endfor %}{% endif %}
-            <th>Titre</th>
+            <th  style="width: 25em">Titre</th>
             <th>Fin</th>
             {% if false %}<th colspan="2">Consommation</th>{% endif %}
             {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
@@ -230,7 +230,7 @@ passwd
             <th>Accès</th>
             <th>Numéro</th>
             {% if noconso==false %}{% for s in serviceServeurs %}<th>Id {{s}}</th>{% endfor %}{% endif %}
-            <th>Titre</th>
+            <th style="width: 25em">Titre</th>
             <th>Fin</th>
             {% if noconso==false %}<th colspan="2">Consommation</th>{% endif %}
         </tr>
