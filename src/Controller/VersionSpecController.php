@@ -226,33 +226,25 @@ class VersionSpecController extends AbstractController
         $ressource_form = $sv->getRessourceform($version);
         $ressource_form->handleRequest($request);
         
-        // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET... ou pas
+        // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
-            case Projet::PROJET_SESS:
             case Projet::PROJET_DYN:
-            return $this->modifierType1($request, $version, $collaborateur_form, $formation_form, $ressource_form);
-    
-            case Projet::PROJET_TEST:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
-    
-            case Projet::PROJET_FIL:
-            return $this->modifierType3($request, $version, $collaborateur_form, $formation_form, $ressource_form);
-    
+            return $this->modifier4($request, $version, $collaborateur_form, $formation_form, $ressource_form);
             default:
                $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
         }
     }
 
     /*
-     * Appelée par modifierAction pour les projets de type 1 (PROJET_SESS)
+     * Appelée par modifierAction pour les projets de type 4 (PROJET_DYN)
      *
      * params = $request, $version
      *          $image_forms (formulaire de téléversement d'images)
      *          $collaborateurs_form (formulaire des collaborateurs)
      *
      */
-    private function modifierType1(Request $request,
+    private function modifier4(Request $request,
                                    Version $version,
                                    FormInterface $collaborateur_form,
                                    FormInterface $formation_form,
@@ -267,9 +259,9 @@ class VersionSpecController extends AbstractController
 
         // formulaire principal
         $form_builder = $this->createFormBuilder($version);
-        $this->modifierType1PartieI($version, $form_builder);
-        $this->modifierType1PartieII($version, $form_builder);
-        $this->modifierType1PartieIII($version, $form_builder);
+        $this->modifier4PartieI($version, $form_builder);
+        $this->modifier4PartieII($version, $form_builder);
+        $this->modifier4PartieIII($version, $form_builder);
         $nb_form = 0;
 
         $form_builder
@@ -288,10 +280,6 @@ class VersionSpecController extends AbstractController
                 // $sj->errorMessage(__METHOD__ . ' seconde annuler clicked !');
                 return $this->redirectToRoute('projet_accueil');
             }
-
-            // Changement de type ou plafonnement de la demande en heures !
-            // Supprimé pour mesonet
-            // $this->validDemHeures($version);
 
             // on sauvegarde le projet (Enregistrer ou Fermer)
             $return = Functions::sauvegarder($version, $em, $this->lg);
@@ -317,7 +305,7 @@ class VersionSpecController extends AbstractController
                              $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)];
 
         return $this->render(
-            'version/modifier_projet_sess.html.twig',
+            'version/modifier_projet4.html.twig',
             [
                 'form' => $form->createView(),
                 'version' => $version,
@@ -332,36 +320,8 @@ class VersionSpecController extends AbstractController
         );
     }
 
-    /*
-     * Appelée par modifierType1
-     *         Si on est en type 3, on plafonne le nombre d'heures
-     *         NB - On ne fait pas de flush, c'est l'appelant qui s'en chargera.
-     *
-     * params = $version
-     * return = true si OK, false changement de type de projet ou heures plafonnées !
-     *
-     */
-    private function validDemHeures($version): bool
-    {
-        $em = $this->em;
-        //$ss = $this->ss;
-        $projet = $version->getProjet();
-        $type = $projet->getTypeProjet();
-        $seuil = intval($this->getParameter('prj_seuil_sess'));
-        $demande = $version->getDemHeures();
-        $rvl = true;
-
-        if ($type == Projet::PROJET_FIL) {
-            if ($demande > $seuil) {
-                $version -> setDemHeures($seuil);
-                $rvl = false;
-            }
-        }
-        return $rvl;
-    }
-
     /* Les champs de la partie I */
-    private function modifierType1PartieI($version, &$form): void
+    private function modifier4PartieI($version, &$form): void
     {
         $em = $this->em;
         $form
@@ -408,159 +368,20 @@ class VersionSpecController extends AbstractController
     }
 
     /* Les champs de la partie II */
-    private function modifierType1PartieII($version, &$form): void
+    private function modifier4PartieII($version, &$form): void
     {
         $form
         ->add('prjExpose', TextAreaType::class, [ 'required'       =>  false ]);
     }
 
     /* Les champs de la partie III */
-    private function modifierType1PartieIII($version, &$form): void
+    private function modifier4PartieIII($version, &$form): void
     {
         $form
         ->add('codeNom', TextType::class, [ 'required'       =>  false ])
         ->add('codeLicence', TextAreaType::class, [ 'required'       =>  false ]);
     }
 
-    /*
-     * Appelée par modifierAction pour les projets de type 3 (PROJET_FIL => PROJET_TEST)
-     *
-     * params = $request, $version
-     *          $image_forms (formulaire de téléversement d'images)
-     *          $collaborateurs_form (formulaire des collaborateurs)
-     *
-     */
-    private function modifierType3( Request $request,
-                                    Version $version,
-                                    FormInterface $collaborateur_form,
-                                    FormInterface $formation_form,
-                                    FormInterface $ressource_form
-                                    ): Response
-    {
-        $sj = $this->sj;
-        $sval = $this->vl;
-        $em = $this->em;
-
-        $heures_projet_test = $this->getParameter('heures_projet_test');
-        
-        $form_builder = $this->createFormBuilder($version)
-        ->add('prjTitre', TextType::class, [ 'required'       =>  false ])
-        ->add(
-            'prjThematique',
-            EntityType::class,
-            [
-                'required'       =>  false,
-                'multiple' => false,
-                'class' => Thematique::class,
-                'label'     => '',
-                'placeholder' => '-- Indiquez la thématique',
-                ]
-        );
-        if ($this->getParameter('norattachement')==false) {
-            $form_builder->add(
-                'prjRattachement',
-                EntityType::class,
-                [
-                    'required'    => false,
-                    'multiple'    => false,
-                    'expanded'    => true,
-                    'class'       => Rattachement::class,
-                    'empty_data'  => null,
-                    'label'       => '',
-                    'placeholder' => 'AUCUN',
-                ]
-            );
-        }
-        $form_builder->add(
-            'demHeures',
-            IntegerType::class,
-            [
-                'required'       =>  false,
-                'data' => $heures_projet_test,
-                'disabled' => 'disabled'
-            ]
-        )
-        //$form_builder
-        //->add('demHeures', IntegerType::class, ['required' => false ])
-        ->add('prjResume', TextAreaType::class, [ 'required'       =>  false ])
-        ->add('codeNom', TextType::class, [ 'required'       =>  false ])
-        ->add('codeFor', CheckboxType::class, [ 'required'       =>  false ])
-        ->add('codeC', CheckboxType::class, [ 'required'       =>  false ])
-        ->add('codeCpp', CheckboxType::class, [ 'required'       =>  false ])
-        ->add('codeAutre', CheckboxType::class, [ 'required'       =>  false ])
-        ->add('codeLangage', TextType::class, [ 'required'       =>  false ])
-        ->add('codeLicence', TextAreaType::class, [ 'required'       =>  false ])
-        ->add('codeUtilSurMach', TextAreaType::class, [ 'required'       =>  false ])
-        ->add('demLogiciels', TextAreaType::class, [ 'required'       =>  false ])
-        ->add('demBib', TextAreaType::class, [ 'required'       =>  false ])
-        ->add(
-            'gpu',
-            ChoiceType::class,
-            [
-            'required'       =>  false,
-            'placeholder'   =>  "-- Choisissez une option",
-            'choices'  =>   [
-                            "Oui" => "Oui",
-                            "Non" => "Non",
-                            "Je ne sais pas" => "je ne sais pas",
-                            ],
-            ]
-        )
-        ->add('fermer', SubmitType::class)
-        ->add('annuler', SubmitType::class)
-        ->add('enregistrer', SubmitType::class);
-
-        $form = $form_builder->getForm();
-        $form->handleRequest($request);
-        $valid = true;
-
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $version->setDemHeures($heures_projet_test);
-
-            // TODO - Le mécanisme warn_type n'est PLUS UTILISE
-            // Changement de type ou plafonnement de la demande en heures !
-            $valid = $this->validDemHeures($version);
-
-            $return = Functions::sauvegarder($version, $em, $this->lg);
-
-            // On sauvegarde $warn_type dans la SESSION
-            $request->getSession()->set('warn_type',$valid ? 0:1);
-            return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet()]);
-        }
-
-        // Les heures de projets tests sont fixes, donc pas dans le formulaire
-        $version->setDemHeures($heures_projet_test);
-        
-        return $this->render(
-            'version/modifier_projet_test.html.twig',
-            [
-                'form'      => $form->createView(),
-                'version'   => $version,
-                'collaborateur_form' => $collaborateur_form->createView(),
-                'todo'      => static::versionValidate($version, $sj, $em, $sval),
-            ]
-        );
-    }
-
-    /**
-     * Displays a form to edit an existing version entity.
-     *
-     * @Route("/{id}/renouveler", name="renouveler_version",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"GET", "POST"})
-     */
-    public function renouvellementAction(Request $request, Version $version): Response
-    {
-        if ($version->getTypeVersion() == Projet::PROJET_DYN)
-        {
-            return $this->__renouvProjetDyn($request, $version);
-        }
-        else
-        {
-            return $this->__renouvProjetSess($request, $version);
-        }
-    }
 
     private function __renouvProjetDyn(Request $request, Version $version): Response
     {
