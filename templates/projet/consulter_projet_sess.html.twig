@@ -101,19 +101,8 @@
                     </a>
                 {% endif %}
             {% endif %}
-
-            {# cv est null si c'est un valideur ou un admin (et pas un collab) qui le regarde #}
-            {# TODO - Mais on devrait avoir accès à la conso du projet dans sa globalité #}
-            {% if cv != null %}
-                <a title="Consommation" alt="Consommation" class="lien_supplementaire conso"  id="bconso_{{ projet }}"
-                    data-href="{{ absolute_url(path('projet_conso', { 'id': projet.id, 'cv': cv.id })) }}" >
-                    {{ icones.consommation }}
-                    <p>Afficher la consommation</p>
-                </a>
-                <div id="dialog-compta"></div>
-            {% endif %}
-    
-            {# Pour les figures #}
+   
+            {# Pour les figures (pour les iframes de conso ?) #}
             <div id="dialog"></div>
             
             {# Pour deboguer les fonctions de generation de graphes de conso1

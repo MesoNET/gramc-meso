@@ -4,26 +4,16 @@
 
 {% block body %}
 
-{% if session.etat == 2 %}
-{% set verbe = 'Renouveler' %}
-{% set crer = '' %}
-{% else %}
-{% set verbe = 'Créer une rallonge pour' %}
-{% endif %}
-
 <section id="section_nouveauProjet">
-        <h1>Nouveau projet</h2>
+    <h1>Nouveau projet</h2>
     <div class="information ok">
         <p>Il apparait que vous collaborez déjà à un ou plusieurs projets {{mesoc}}.<br>
-            Vous voudrez <strong>{{verbe}} un projet</strong> si vous souhaitez demander de nouvelles ressources de calcul pour
+            Vous voudrez <strong>revoueler un projet ou créer une extension pour votre projet</strong> si vous souhaitez demander de nouvelles ressources de calcul pour
             <strong>poursuivre le même objectif scientifique</strong>.<br>
             Vous voudrez <strong>créer un nouveau projet</strong> si vous avez besoin de ressources de calcul pour
             <strong>atteindre un nouvel objectif scientifique</strong>.<br>
              Merci de préciser votre choix:
         </p>
-        {% if session.etat != 2 %}
-            <p>Pour créer une rallonge, contactez {{mailadmin}}</p>
-        {% endif %}
     </div>
 
     <div class="projets">

@@ -40,7 +40,7 @@ use App\Interfaces\Demande;
 /**
  * Version
  *
- * @ORM\Table(name="version", indexes={@ORM\Index(name="etat_version", columns={"etat_version"}), @ORM\Index(name="id_session", columns={"id_session"}), @ORM\Index(name="id_projet", columns={"id_projet"}), @ORM\Index(name="prj_id_thematique", columns={"prj_id_thematique"})})
+ * @ORM\Table(name="version", indexes={@ORM\Index(name="etat_version", columns={"etat_version"}), @ORM\Index(name="id_projet", columns={"id_projet"}), @ORM\Index(name="prj_id_thematique", columns={"prj_id_thematique"})})
  * @ORM\Entity(repositoryClass="App\Repository\VersionRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -286,16 +286,6 @@ class Version implements Demande
      * })
      */
     private $prjRattachement;
-
-    /**
-     * @var \App\Entity\Session
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Session",inversedBy="version")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_session", referencedColumnName="id_session")
-     * })
-     */
-    private $session;
 
     /**
      * @var string
@@ -1200,30 +1190,6 @@ class Version implements Demande
     }
 
     /**
-     * Set session
-     *
-     * @param \App\Entity\Session $session
-     *
-     * @return Version
-     */
-    public function setSession(\App\Entity\Session $session = null)
-    {
-        $this->session = $session;
-
-        return $this;
-    }
-
-    /**
-     * Get session
-     *
-     * @return \App\Entity\Session
-     */
-    public function getSession()
-    {
-        return $this->session;
-    }
-
-    /**
      * Set nbVersion
      *
      * @param string $idVersion
@@ -1620,15 +1586,6 @@ class Version implements Demande
             $attrHeures   +=  $rallonge->getAttrHeures();
         }
         return $attrHeures;
-    }
-
-    ////////////////////////////////////////////////////////////////////
-    // TODO - un poil redondant !
-    // On ne passe pas par la session afin de gérer les projets dynamiques !
-    public function getAnneeSession()
-    {
-        //return $this->getSession()->getAnneeSession() + 2000;
-        return $this->getFullAnnee();
     }
 
     /***********************

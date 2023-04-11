@@ -74,15 +74,9 @@ class DefaultController extends AbstractController
     {
         $em = $this->em;
         $projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => 'P1440']);
-        //return new Response( count( $projet->getVersion() ) );
-        //return new Response( gettype($projet->calculDerniereVersion()  ));
-        //return new Response( $projet->derniereVersion()->getSession() );
-        //return new Response( $projet->calculDerniereVersion()->getSession() );
-        //return new Response( $projet->getVersionDerniere()->getSession() );
 
         $query = $em->createQuery('SELECT partial u.{idIndividu,nom} AS individu, partial s.{eppn} AS sso, count(s) AS score FROM App\Entity\Individu u JOIN u.sso s GROUP BY u');
         $result = $query->getResult();
-        //$version = $em->getRepository(Version::class)->findDerniereVersion( $projet  );
 
         return new Response(get_class($result[0]['individu']));
         return new Response(gettype($result[0]['individu']));
@@ -114,8 +108,6 @@ class DefaultController extends AbstractController
         $output   = $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', [ 'projet' => [ 'idProjet' => 'ID' ] ], $users);
 
         //return new Response ( $users[0] );
-
-        //return new Response ( Functions::getSessionCourante()->getPresident() );
 
         return new Response($output['to']);
         return new Response($output['contenu']);

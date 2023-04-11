@@ -30,7 +30,6 @@ use App\GramcServices\Etat;
 use App\Entity\Projet;
 use App\Entity\Version;
 use App\Entity\Rallonge;
-use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
 use App\Entity\User;
@@ -707,35 +706,8 @@ class AdminuxController extends AbstractController
         $sdac = $this->sdac;
         $em = $this->em;
 
-        //$attr  = $v->getAttrHeuresTotal();
-        //$attrUft = $v->getAttrHeuresUft();
-        //$attrCriann = $v->getAttrHeuresCriann();
-
-        $session = $v->getSession();
-        $id_session = '';
-        if ($session != null)
-        {
-            $id_session = $session -> getIdSession();
-            $annee = 2000 + $session->getAnneeSession();
-    
-            // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
-            // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-            if ($session->getTypeSession()) {
-                $id_va = $v->getAutreIdVersion();
-                $va = $em->getRepository(Version::class)->find($id_va);
-                if ($va != null) {
-                    $attr += $va->getAttrHeures();
-                    $attr -= $va->getPenalHeures();
-                    foreach ($va->getRallonge() as $r) {
-                        $attr += $r->getAttrHeures();
-                    }
-                }
-            }
-        }
-
         $r = [];
         $r['idProjet']        = $v->getProjet()->getIdProjet();
-        $r['idSession']       = $id_session;
         $r['idVersion']       = $v->getIdVersion();
         $r['etatVersion']     = $v->getEtatVersion();
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
@@ -769,22 +741,12 @@ class AdminuxController extends AbstractController
         
         $resp = $v->getResponsable();
         $r['mail']            = $resp == null ? null : $resp->getMail();
-        //$r['attrHeures']      = $attr;
-        //$r['attrHeures@TURPAN'] = $attrUft;
-        //$r['attrHeures@BOREALE'] = $attrCriann;
-        
-        // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
-        // Pour le déboguage
-        // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
-        // supprime provisoirement $r['quota'] = $sp->getConsoRessource($v->getProjet(), 'cpu', $annee)[1];
         if ($long)
         {
             $r['titre']      = $v->getPrjTitre();
-            //$r['resume']   = $v->getPrjResume();
             $r['expose']     = $v->getPrjExpose();
             $r['labo']       = $v->getPrjLLabo();
             $r['idLabo']     = $resp->getLabo()->getId();
-            //$r['metadonnees'] = $v->getDataMetaDataFormat();
             if ($v->getPrjThematique() != null)
             {
                 $r['thematique'] = $v->getPrjThematique()->getLibelleThematique();
@@ -837,7 +799,6 @@ class AdminuxController extends AbstractController
      *
      * Données renvoyées pour versionActive et versionDerniere:
      *          idProjet    P01234
-     *          idSession   20A
      *          idVersion   20AP01234
      *          mail        mail du responsable de la version
      *          attrHeures  Heures cpu attribuées
@@ -910,7 +871,7 @@ class AdminuxController extends AbstractController
      * Exemples de données POST (fmt json):
      *             ''
      *             ou
-     *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES quelque soit la session
+     *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES
      *
      *             '{ "projet" : "P01234" }'
      *             ou
@@ -950,7 +911,7 @@ class AdminuxController extends AbstractController
      *                 labo        prjLLabo
      *                 metadonnees dataMetaDataFormat
      *
-     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "session" : "20A" }' https://.../adminux/version/get
+     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234" }' https://.../adminux/version/get
      *
      */
      public function versionGetAction(Request $request): Response
@@ -958,7 +919,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
-        $nosession = true;
         
         $versions = [];
 
@@ -966,21 +926,14 @@ class AdminuxController extends AbstractController
         if ($content == null)
         {
             $id_projet = null;
-            $id_session= null;
             $id_version = null;
             $long = false;
         }
         else
         {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
-            $id_session = (isset($content['session']))? $content['session']: null;
             $id_version = (isset($content['version']))? $content['version']: null;
             $long = (isset($content['long']))? $content['long']: false;
-        }
-
-        if ($id_session != null && $nosession == true)
-        {
-            return new Response(json_encode(['KO' => 'Les sessions sont désactivées']));
         }
         
         $v_tmp = [];
@@ -995,62 +948,25 @@ class AdminuxController extends AbstractController
         // Tous les projets actifs
         elseif ($id_projet == null && $id_session == null)
         {
-            if ($nosession == false)
-            {
-                $sessions = $em->getRepository(Session::class)->get_sessions_non_terminees();
-                foreach ($sessions as $sess)
-                {
-                    //$versions = $em->getRepository(Version::class)->findSessionVersionsActives($sess);
-                    $v_tmp = array_merge($v_tmp,$em->getRepository(Version::class)->findSessionVersions($sess));
-                }
-            }
-            else
-            {
-                $v_tmp = $em->getRepository(Version::class)->findAll();
-            }
-        }
-
-        // Tous les projets d'une session particulière  (on filtre les projets annulés)
-        elseif ($id_projet == null)
-        {
-            $sess  = $em->getRepository(Session::class)->find($id_session);
-            $v_tmp = $em->getRepository(Version::class)->findSessionVersions($sess);
+            $v_tmp = $em->getRepository(Version::class)->findAll();
         }
 
         // La version active d'un projet donné
-        elseif ($id_session == null)
+        else
         {
             $projet = $em->getRepository(Projet::class)->find($id_projet);
             if ($projet != null) $v_tmp[]= $projet->getVersionActive();
         }
 
-        // Une version particulière
-        else
+        // On ne garde que les versions actives... ou presque actives
+        $etats = [Etat::ACTIF, Etat::EN_ATTENTE, Etat::NOUVELLE_VERSION_DEMANDEE];
+        foreach ($v_tmp as $v)
         {
-            //$projet = $em->getRepository(Projet::class)->find($id_projet);
-            //$sess  = $em->getRepository(Session::class)->find($id_session);
-            //$v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
-        }
-
-        // SEULEMENT si session n'est pas spécifié: On ne garde que les versions actives... ou presque actives
-        if ( $id_session == null )
-        {
-            $etats = [Etat::ACTIF, Etat::EN_ATTENTE, Etat::NOUVELLE_VERSION_DEMANDEE, Etat::ACTIF_TEST];
-            foreach ($v_tmp as $v)
+            if ($v == null) continue;
+            if (in_array($v->getEtatVersion(),$etats,true))
             {
-                if ($v == null) continue;
-                if (in_array($v->getEtatVersion(),$etats,true))
-                {
-                    $versions[] = $v;
-                }
+                $versions[] = $v;
             }
-        }
-
-        // Si la session est spécifiée: On renvoie la version demandée, quelque soit son état
-        // On renvoie aussi l'état de la version et l'état de la session
-        else
-        {
-            $versions = $v_tmp;
         }
 
         $retour = [];
@@ -1058,25 +974,9 @@ class AdminuxController extends AbstractController
         foreach ($versions as $v)
         {
             if ($v==null) continue;
-            
-            // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-            if ($v->getsession() != null && $v->getSession()->getTypeSession())
-            {
-                $id_va = $v->getAutreIdVersion();
-                $va = $em->getRepository(Version::class)->find($id_va);
-                if ($va != null)
-                {
-                    $attr += $va->getAttrHeures();
-                    $attr -= $va->getPenalHeures();
-                    foreach ($va->getRallonge() as $r)
-                    {
-                        $attr += $r->getAttrHeures();
-                    }
-                }
-            }
+
             $r = $this->__getVersionInfo($v,$long);
             $r['idProjet']        = $v->getProjet()->getIdProjet();
-            $r['idSession']       = $v->getSession()!=null ? $v->getSession()->getIdSession() : 'N/A';
             $r['idVersion']       = $v->getIdVersion();
             $r['etatVersion']     = $v->getEtatVersion();
             $r['etatProjet']      = $v->getProjet()->getEtatProjet();
@@ -1090,143 +990,6 @@ class AdminuxController extends AbstractController
         $sj -> infoMessage(__METHOD__ . " OK");
         return new Response(json_encode($retour));
 
-     }
-
-    /**
-     * Changer le quota de la version active d'un projet
-     *
-     * @Route("/projets/setquota", name="set_quota", methods={"POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Exemples de données POST (fmt json):
-     *
-     *             '{ "projet" : "P01234", "session" : "20A", "quota" : "10000"}' -> La version 20AP01234 à condition que ce soit bien la version active !
-     *
-     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "session" : "20A", "quota" : "10000" }' https://.../adminux/projets/setquota
-     */
-     public function projetsSetQuotaAction(Request $request): Response
-     {
-        $em = $this->em;
-        $sp = $this->sp;
-        $sj = $this->sj;
-
-        /****** SUPPRIME CAR PAS DE QUOTAS DANS CETTE VERSION *****/
-        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
-
-
-        // todo - Si ce paramètre n'existe pas ça va planter
-        $ressources_conso_group = $this->getParameter('ressources_conso_group');
-
-        // On recherche les ressources marquées "calcul"
-        // On initialise le tableau à 'cpu', ou 'cpu','gpu'
-        $ressources = [];
-        foreach ($ressources_conso_group as $ress)
-        {
-            if (array_key_exists('type', $ress) && $ress['type'] === 'calcul')
-            {
-                if (array_key_exists('ress', $ress))
-                {
-                    $ressources = explode(',',$ress['ress']);
-                }
-            }
-        }
-
-        $content  = json_decode($request->getContent(),true);
-        if ($content == null)
-        {
-            $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
-            return new Response(json_encode(['KO' => 'Pas de données']));
-        }
-
-        $idProjet  = (isset($content['projet'])) ? $content['projet'] : null;
-        $idSession = (isset($content['session']))? $content['session']: null;
-        $quota      = (isset($content['quota']))? $content['quota']: null;
-
-        if ($idProjet === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de projet spécifié");
-            return new Response(json_encode(['KO' => 'Pas de projet spécifié']));
-        }
-        if ($idSession === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de session spécifiée");
-            return new Response(json_encode(['KO' => 'Pas de session spécifiée']));
-        }
-        if ($quota === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de quota spécifié");
-            return new Response(json_encode(['KO' => 'Pas de quota spécifié']));
-        }
-        else
-        {
-            $quota = intval($quota);
-            if ($quota < 0)
-            {
-                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - quota doit être un entier positif >= 0");
-                return new Response(json_encode(['KO' => 'quota doit être un entier positif >= 0']));
-            }
-        }
-
-        $projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => $idProjet]);
-        if ($projet === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de projet $idProjet");
-            return new Response(json_encode(['KO' => "Pas de projet $idProjet"]));
-        }
-
-        $session = $em->getRepository(Session::class)->findOneBy(['idSession' => $idSession]);
-        if ($session === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de session $idSession");
-            return new Response(json_encode(['KO' => "Pas de session $idSession"]));
-        }
-
-        $idVersion = $idSession . $idProjet;
-        $version = $em->getRepository(Version::class)->findOneBy(['idVersion' => $idVersion]);
-        if ($version === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de version $idVersion");
-            return new Response(json_encode(['KO' => "Pas de version $idVersion"]));
- 
-        }
-
-        $veract = $sp->versionActive($projet);
-        if ($veract != $version) {
-            $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La version active de $idProjet est $veract, on ne peut pas changer le quota de $idVersion");
-            return new Response(json_encode(['KO' => "La version active de $idProjet est $veract, on ne peut pas changer le quota de $idVersion"]));
-        }
-
-        // Toutes les vérifications sont terminées, on peut changer le quota
-        // Cela revient à écrire directement dans la table de conso
-        // On écrit le même quota pour toutes les ressources "calcul"
-
-        $date = $this->grdt;  // aujourd'hui
-        $loginname = strtolower($idProjet); // Le projet traduit en groupe unix
-        $type = 2;                          // Un groupe, pas un utilisateur
-        foreach ($ressources as $ress)
-        {
-            $compta = $em->getRepository(Compta::class)->findOneBy(
-                [
-                    'date'      => $date,
-                    'ressource' => $ress,
-                    'loginname' => $loginname,
-                    'type'      => $type
-                ]);
-
-            // Si pas de compta on crée l'objet (nouveau projet pas encore de compta) !
-            if ($compta === null) {
-                $compta = new Compta();
-                $compta ->setDate($date)
-                        ->setRessource($ress)
-                        ->setLoginname($loginname)
-                        ->setType(2)
-                        ->setConso(0);
-            }
-
-            $compta->setQuota($quota);
-            $em->persist($compta);
-            $em->flush();
-        }
-        
-        // OK
-        $sj->infoMessage(__METHOD__ . " Le quota de $idVersion est maintenant $quota");
-        return new Response(json_encode(['OK' => "Le quota de $idVersion est maintenant $quota"]));
      }
 
     /**
@@ -1250,9 +1013,7 @@ class AdminuxController extends AbstractController
      *
      *             '{ "projet" : "P01234", "mail" : "toto@exemple.fr" }' -> rien ou toto si toto avait un login sur ce projet
      *
-     * Par défaut on ne considère QUE les version actives et dernières de chaque projet non terminé
-     * MAIS si on AJOUTE un PARAMETRE "session" : "20A" on travaille sur la session passée en paramètres (ici 20A)
-     * (on ne considère PAS les projets tests (type==2))
+     * On ne considère QUE les version actives et dernières de chaque projet non terminé
      *
      * On renvoie pour chaque version considérée, la liste des collaborateurs
      * tels que loginname != null (login créé, peut-être à supprimer si login==false),
@@ -1274,7 +1035,7 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null, "session" : "19A" }' https://.../adminux/utilisateurs/get
+    // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null }' https://.../adminux/utilisateurs/get
     public function utilisateursGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1289,16 +1050,12 @@ class AdminuxController extends AbstractController
         }
         if ($content == null) {
             $id_projet = null;
-            $id_session= null;
             $mail      = null;
         } else {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
             $mail       = (isset($content['mail'])) ? $content['mail'] : null;
-            $id_session = (isset($content['session'])) ? $content['session'] : null;
         }
-        //return new Response(json_encode([$id_projet,$id_session]));
 
-        // $sessions  = $em->getRepository(Session::class)->get_sessions_non_terminees();
         $users = [];
         $projets = [];
 
@@ -1341,46 +1098,22 @@ class AdminuxController extends AbstractController
         foreach ($projets as $p) {
             $id_projet = $p->getIdProjet();
             
-            // Si session non spécifiée, on prend toutes les versions de chaque projet !
+            // On prend toutes les versions de chaque projet !
             $vs = [];
             $vs_labels = [];
-            if ($id_session==null) {
-                if ($p->getVersionDerniere() == null) {
-                    $this->sj->warningMessage("ATTENTION - Projet $p SANS DERNIERE VERSION !");
-                    continue;   // oups, projet bizarre
-                } else {
-                    $vs[] = $p->getVersionDerniere();
-                    $vs_labels[] = 'derniere';
-                }
-                if ($p->getVersionActive() != null) {
-                    $vs[] = $p->getVersionActive();
-                    $vs_labels[] = 'active';
-                }
 
-                // Toutes les versions
-                // TODO - Viré le 24 Février 2022 - Peut-être qu'on le remettra
-                // à condition d'employer un paramètre particulier à la requête
-                // Par exemple id_session = all déclenche l'envoi de la totalité des versions des projets non terminés
-                // alors que id_session = null déclenche l'envoi des versions DERNIERE et ACTIVE seulement
-                
-                //foreach ($p->getVersion() as $v) {
-                //    // ne pas compter deux fois les versions dernière + active
-                //    if (in_array($v,$vs)) continue;
-                //    $vs[] = $v;
-                //    $vs_labels[] = $v->getIdVersion();
-                //}
+            if ($p->getVersionDerniere() == null) {
+                $this->sj->warningMessage("ATTENTION - Projet $p SANS DERNIERE VERSION !");
+                continue;   // oups, projet bizarre
+            } else {
+                $vs[] = $p->getVersionDerniere();
+                $vs_labels[] = 'derniere';
+            }
+            if ($p->getVersionActive() != null) {
+                $vs[] = $p->getVersionActive();
+                $vs_labels[] = 'active';
             }
 
-            // Sinon, on prend la version de cette session... si elle existe
-            else {
-                $id_version = $id_session . $id_projet;
-                $req        = $em->getRepository(Version::class)->findBy(['idVersion' =>$id_version]);
-                //return new Response(json_encode($req[0]));
-                if ($req != null) {
-                    $vs[] = $req[0];
-                    $vs_labels[] = $id_version;
-                }
-            }
 
             // $vs contient au moins une version
             $i = 0; // i=0 -> version dernière, $i=1 -> version active

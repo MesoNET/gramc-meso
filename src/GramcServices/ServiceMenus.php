@@ -153,23 +153,6 @@ class ServiceMenus
         return $menu;
     }
 
-    public function president(int $priorite=self::HPRIO):array
-    {
-        $menu['name']      = 'president_accueil';
-        $menu['lien']      = 'Président';
-        if ($this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Espace Président du Comité d'Attribution";
-        } else {
-            $menu['ok']          = false;
-            $menu['commentaire'] = "Vous ne pouvez pas rejoindre l'espace président";
-            $menu['raison']      = "vous n'êtes pas connecté, ou vous n'avez pas les droits du président";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
     public function aide(int $priorite=self::HPRIO):array
     {
         $menu['name']      = 'aide';
@@ -182,372 +165,18 @@ class ServiceMenus
     }
 
     /*******************
-     * Gestion de la session
-     ***************************************************/
-
-    // Nouvelle session
-    public function ajouterSession(int $priorite=self::HPRIO):array
-    {
-        $session      = $this->ss->getSessionCourante();
-        $etat_session = $session->getEtatSession();
-        $workflow     = $this->sw;
-        $menu['name'] = 'ajouter_session';
-        $menu['lien'] = "Nouvelle session";
-        if ($etat_session === Etat::ACTIF) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = 'Nouvelle session';
-        } else {
-            $menu['commentaire'] = "Pas possible de créer une nouvelle session";
-            $menu['ok']          = false;
-            $menu['raison']      = "La session courante n'est pas encore activée";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Modifier la session
-    public function modifierSession(int $priorite=self::HPRIO):array
-    {
-        $session        = $this->ss->getSessionCourante();
-        $workflow       = $this->sw;
-        $menu['name']   = 'modifier_session';
-        $menu['params'] = [ 'id' => $session->getIdSession() ];
-        $menu['lien']   = "Modifier la session";
-        if ($workflow->canExecute(Signal::DAT_DEB_DEM, $session)) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = 'Modifier les paramètres de la session';
-        } else {
-            $menu['commentaire'] = 'Pas possible de modifier la session.';
-            $menu['ok']          = false;
-            $menu['raison']      = 'La session a déjà démarré !';
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Début de la saisie
-    public function demarrerSaisie(int $priorite=self::HPRIO):array
-    {
-        $session        = $this->ss->getSessionCourante();
-        $workflow       = $this->sw;
-        $menu['name']   = 'session_avant_changer_etat';
-        $menu['lien']   = "Demandes";
-        $menu['params'] = [ 'ctrl' => 'demarrer_saisie'];
-
-        if ($workflow->canExecute(Signal::DAT_DEB_DEM, $session)) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = 'Début de la saisie des demandeurs';
-        } else {
-            $menu['commentaire'] = 'Pas possible de débuter la saisie des projets';
-            $menu['ok']          = false;
-            $menu['raison']      = 'La période est déjà passée !';
-        }
-        
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Fin de la saisie
-    public function terminerSaisie(int $priorite=self::HPRIO):array
-    {
-        $session        = $this->ss->getSessionCourante();
-        $workflow       = $this->sw;
-        $menu['name']   = 'session_avant_changer_etat';
-        $menu['lien']   = "Expertises";
-        $menu['params'] = [ 'ctrl' => 'terminer_saisie'];
-
-        if ($workflow->canExecute(Signal::DAT_FIN_DEM, $session)) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Début d'expertise des projets";
-        } else {
-            $menu['commentaire'] = 'Pas possible de passer les projets en expertise';
-            $menu['ok']          = false;
-            $menu['raison']      = 'La session n\'est pas en période de saisie des projets';
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Envoyer les expertises
-    public function envoyerExpertises(int $priorite=self::HPRIO):array
-    {
-        $session        = $this->ss->getSessionCourante();
-        $workflow       = $this->sw;
-        $menu['name']   = 'session_avant_changer_etat';
-        $menu['lien']   = 'Envoi des expertises';
-        $menu['params'] = [ 'ctrl' => 'envoyer_expertises'];
-
-        if ($workflow->canExecute(Signal::CLK_ATTR_PRS, $session)  &&  $session->getcommGlobal() != null) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Envoyer les expertises";
-        } else {
-            $menu['ok']          = false;
-            $menu['commentaire'] = "Impossible d'envoyer les expertises";
-            
-            if ($session->getCommGlobal() == null) {
-                $menu['raison']  = "Il n'y a pas de commentaire de session (menu Président)";
-            } else {
-                $menu['raison']  = "La session n'est pas en \"expertise\"";
-            }
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Commentaire de session - accessible à partir de l'écran Président
-    public function commSess(int $priorite=self::HPRIO):array
-    {
-        $session      = $this->ss->getSessionCourante();
-        $workflow     = $this->sw;
-
-        $menu['name'] = 'session_commentaires';
-        $menu['lien'] = "Commentaire de session ($session)";
-
-        if (!$this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']          = false;
-            $menu['commentaire'] = "Vous ne pouvez pas ajouter le commentaire de session";
-            $menu['raison']      = "Vous n'êtes pas président";
-        }
-        else
-        {
-            if (! $workflow->canExecute(Signal::CLK_ATTR_PRS, $session)) {
-                $menu['ok']          = false;
-                $menu['commentaire'] = "Vous ne pouvez pas ajouter le commentaire de session";
-                $menu['raison']      = "La session n'est pas en phase d'expertise";
-            } else {
-                $menu['ok']          = true;
-                $menu['commentaire'] = "Commentaire de session et fin de la phase d'expertise";
-            }
-        }
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    // Activer la session
-    public function activerSession(int $priorite=self::HPRIO):array
-    {
-        $session        = $this->ss->getSessionCourante();
-        $workflow       = $this->sw;
-
-        $menu['name']   = 'session_avant_changer_etat';
-        $menu['lien']   = "Activation";
-        $menu['params'] = [ 'ctrl' => 'activer_session'];
-
-        // NOTE - Le workflow accepte d'activer la session plusieurs fois, du coup il faut tester l'état ici
-        if (! $workflow->canExecute(Signal::CLK_SESS_DEB, $session) || $session->getEtatSession() == Etat::ACTIF) {
-            $menu['ok']          = false;
-            $menu['commentaire'] = "Vous ne pouvez pas activer la session pour l'instant";
-            $menu['raison']      = "La session n'est pas en attente";
-        } else {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Activer la session $session";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    /***********************************************************************
-     * 
-     * Transformation d'un projet FIL ( ou projet test) en projet de session
-     *     - Seulement lors des sessions d'attribution
-     *     - La transformation inverse n'est pas possible
-     *
-     ***********************************************************************/
-    public function transformerProjet(Projet $projet, int $priorite=self::BPRIO):array
-    {
-        $token = $this->token;
-        $user = $token->getUser();
-        
-        $menu = [];
-        $menu['commentaire'] = "Impossible pour l'instant";
-        $menu['name'] = 'avant_transformer';
-        $menu['params'] = [ 'projet' => $projet ];
-        $menu['lien'] = 'Transformer';
-        $menu['ok'] = false;
-
-        $session = $this->ss->getSessionCourante();
-        if ($session == null) {
-            $menu['raison'] = "Il n'y a pas de session courante";
-        }
-        else
-        {
-            $etat_session   =   $session->getEtatSession();
-    
-            if ($user == null)
-            {
-                $menu['raison'] = "Connexion anonyme ?";
-            }
-            elseif (! $user->peutCreerProjets())
-            {
-                $menu['raison'] = "Commencez par changer de responsable, le responsable doit être membre permanent d'un laboratoire enregistré";
-            }
-            elseif ($etat_session == Etat::EDITION_DEMANDE)
-            {
-                $menu['raison'] = '';
-                $menu['commentaire'] = "Confirmez le test, créez un VRAI projet !";
-                $priorite = $priorite=self::HPRIO;
-                $menu['ok'] = true;
-            }
-            else
-            {
-                $menu['raison'] = 'Nous ne sommes pas en période de demande';
-            }
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    /*******************
      * Gestion des projets et des versions
      ***************************************************/
 
     public function nouveauProjet($type, int $priorite=self::HPRIO):array
     {
+        $sj = $this->sj;
         switch ($type) {
-        case Projet::PROJET_FIL:
-        return $this->nouveauProjetFil($priorite);
-        break;
-        case Projet::PROJET_SESS:
-        return $this->nouveauProjetSess($priorite);
-        break;
-        case Projet::PROJET_TEST:
-        return $this->nouveauProjetTest($priorite);
-        break;
-        case Projet::PROJET_DYN:
-        return $this->nouveauProjetDyn($priorite);
+            case Projet::PROJET_DYN:
+                return $this->nouveauProjetDyn($priorite);
+            default:
+                $sj->throwException("Type de projet ($type) inconnu !");
         }
-    }
-
-    /*
-     * Création d'un projet de type PROJET_SESS:
-     *     - Peut être créé seulement lors des sessions d'attribution
-     *     - Renouvelable à chaque session
-     *     - Créé seulement par un permanent, qui devient responsable du projet
-     *
-     */
-    private function nouveauProjetSess(int $priorite=self::HPRIO):array
-    {
-        $menu   =   [];
-        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet actuellement";
-        $menu['name']   =   'avant_nouveau_projet';
-        $menu['params'] =   [ 'type' =>  Projet::PROJET_SESS ];
-        $menu['lien']   =   'Nouveau projet';
-        $menu['ok'] = false;
-
-        $session =  $this->ss->getSessionCourante();
-        if ($session == null) {
-            $menu['raison'] = "Il n'y a pas de session courante";
-        }
-        else
-        {
-            $etat_session   =   $session->getEtatSession();
-            if (! $this->peutCreerProjets())
-            {
-                $menu['raison'] = "Seuls les personnels permanents des laboratoires enregistrés peuvent créer un projet";
-            }
-            elseif ($etat_session == Etat::EDITION_DEMANDE)
-            {
-                $menu['raison'] = '';
-                $menu['commentaire'] = "Créez un nouveau projet, vous en serez le responsable";
-                $menu['ok'] = true;
-            }
-            else
-            {
-                $menu['raison'] = 'Nous ne sommes pas en période de demande, pas possible de créer un nouveau projet';
-            }
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    /*
-     * Création d'un projet de type PROJET_TEST:
-     *     - Peut être créé seulement EN-DEHORS des sessions d'attribution
-     *     - Non renouvelable
-     *     - Créé par n'importe qui, qui devient responsable du projet
-     *
-     */
-    public function nouveauProjetTest(int $priorite=self::HPRIO):array
-    {
-        $menu   =   [];
-        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet test actuellement";
-        $menu['name']   =   'nouveau_projet';
-        $menu['params'] =   [ 'type' =>  Projet::PROJET_TEST ];
-        $menu['lien']   =   'Nouveau projet test';
-        $menu['ok'] = false;
-
-        $session =  $this->ss->getSessionCourante();
-        if ($session == null)
-        {
-            $menu['raison'] = "Il n'y a pas de session courante";
-        }
-        else
-        {
-            //$etat_session   =   $session->getEtatSession();
-            $user = $this->token->getUser();
-            if (! $user instanceof Individu)
-            {
-                $menu['raison'] = "Vous n'êtes pas connecté";
-    
-            }
-            elseif ($this->em->getRepository(Projet::class)->countProjetsTestResponsable($user) > 0)
-            {
-                $menu['raison'] = "Vous êtes déjà responsable d'un projet test";
-            }
-            else
-            {
-                $menu['commentaire'] = "Créer un projet test: 5000h max, uniquement pour faire des essais et avoir une idée du nombre d'heures dont vous avez besoin.";
-                $menu['ok'] = true;
-            }
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    /*
-     * Création d'un projet de type PROJET_FIL:
-     *     - Peut être créé n'importe quand ("au fil de l'eau")
-     *     - Renouvelable seulement à chaque session
-     *     - Créé seulement par un permanent, qui devient responsable du projet
-     *
-     */
-    private function nouveauProjetFil(int $priorite=self::HPRIO):array
-    {
-        $menu   =   [];
-
-        $menu['commentaire']    =   "Vous ne pouvez pas créer de nouveau projet actuellement";
-        $menu['name']   =   'avant_nouveau_projet';
-        $menu['params'] =   [ 'type' =>  Projet::PROJET_FIL ];
-        $menu['lien']   =   'Nouveau projet';
-        $menu['ok']     = false;
-
-        $session =  $this->ss->getSessionCourante();
-        if ($session == null)
-        {
-            $menu['raison'] = "Il n'y a pas de session courante";
-        }
-        else
-        {
-            $etat_session   =   $session->getEtatSession();
-            if (! $this->peutCreerProjets()) {
-                $menu['raison'] = "Seuls les personnels permanents des laboratoires enregistrés peuvent créer un projet";
-            } else {
-                $menu['raison'] = '';
-                $menu['commentaire'] = "Créez un nouveau projet, vous en serez le responsable";
-                $menu['ok'] = true;
-            }
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
     }
 
     /*
@@ -1232,46 +861,6 @@ class ServiceMenus
     }
 
     /////////////////////////////////////////////////////////////////////
-    //public function renouvelerVersion_SUPPRIME(Version $version, int $priorite=self::BPRIO):array
-    //{
-        //$menu['name']        = 'renouveler_version';
-        //$menu['param']       = $version->getIdVersion();
-        //$menu['lien']        = "Renouveler";
-        //$menu['icone']       = "renouveler";
-        //$menu['commentaire'] = "Vous ne pouvez pas demander de renouvellement";
-        //$menu['ok']          = false;
-
-        //$session = $this->em->getRepository(Session::class)->findOneBy([ 'etatSession' => Etat::EDITION_DEMANDE ]);
-
-        //if ($session == null) {
-            //$menu['raison']     =   "Nous ne sommes pas en période de demandes de ressources";
-        //}
-        //else
-        //{
-            //$idVersion = $session->getIdSession() . $version->getProjet()->getIdProjet();
-    
-            //if ($this->em->getRepository(Version::class)->findOneBy([ 'idVersion' =>  $idVersion]) != null) {
-                //$menu['raison'] = "Version initiale ou renouvellement déjà demandé";
-            //} elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE) {
-                //$menu['raison'] = "Votre projet est ou sera prochainement terminé";
-            //} elseif ($version->isCollaborateur($this->token->getUser())) {
-                //$menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session " . $session->getIdSession();
-                //$priorite = self::HPRIO;
-                //$menu['ok'] =   true;
-            //} elseif ($this->ac->isGranted('ROLE_ADMIN')) {
-                //$menu['commentaire'] = "Demander de nouvelles ressources sur ce projet pour la session "
-                    //.   $session->getIdSession() . " en tant qu'administrateur";
-                //$priorite = self::HPRIO;
-                //$menu['ok'] = true;
-            //} else {
-                //$menu['raison'] = "Vous n'avez pas le droit de renouveler ce projet, vous n'êtes pas un collaborateur";
-            //}
-        //}
-        //$this->__prio($menu, $priorite);
-        //return $menu;
-    //}
-
-    /////////////////////////////////////////////////////////////////////
     public function renouvelerVersion(Version $version, int $priorite=self::BPRIO):array
     {
         return $this->__renouvelerVersionDyn($version, $priorite);
@@ -1322,79 +911,6 @@ class ServiceMenus
         return $menu;
     }
 
-    /////////////////////////////////////////////////////////////////////
-
-    public function envoyerEnExpertise(Version $version, int $priorite=self::HPRIO):array
-    {
-        if ($version == null) {
-            return [];
-        }
-
-        // Projet/version de type 4 = envoi quand on veut en expertise pas besoin de session !
-        if ($version->getTypeVersion() == Projet::PROJET_DYN) return $this->envoyer4EnExpertise($version, $priorite);
-
-        $projet = $version -> getProjet();
-        $user   = $this->token->getUser();
-
-        $menu['name']           =   'envoyer_en_expertise';
-        $menu['param']          =   $version->getIdVersion();
-        $menu['lien']           =   "Envoyer en expertise";
-        $menu['icone']           =   "envoyer";
-        $menu['commentaire']    =   "Vous ne pouvez pas envoyer ce projet en expertise";
-        $menu['ok']             =   false;
-        $menu['raison']         =   "";
-        $menu['incomplet']      =   false;
-
-        $etatVersion  = $version->getEtatVersion();
-
-        // true si le projet est un projet test
-        $type_projet  = $version->getProjet()->getTypeProjet();
-        //$isProjetTest = ($type_projet == Projet::PROJET_FIL || $type_projet == Projet::PROJET_TEST);
-        $isProjetTest = $type_projet == Projet::PROJET_TEST;
-        $isProjetSess = $type_projet == Projet::PROJET_SESS;
-
-        if ($version->getSession() != null) {
-            $etatSession = $version->getSession()->getEtatSession();
-        } else {
-            $etatSession = null;
-        }
-
-        if ($version->getSession() == null) {
-            $menu['raison'] = "Pas de session attachée à ce projet !";
-            $this->sj->errorMessage(__METHOD__ . ' la version ' . Functions::show($version) . " n'a pas de session attachée !");
-        } elseif ($version->isResponsable($user) == false) {
-            $menu['raison'] = "Seul le responsable du projet peut envoyer ce projet en expertise";
-        }
-
-        // manu - $priorite=self::HPRIO$priorite=self::HPRIO juin 20$priorite=self::HPRIO9 - Tout le monde peut créer un projet test !
-        // manu - Je ne comprends pas ce truc !
-        elseif ($isProjetTest == false && $version->isResponsable($user) == true &&  ! $this->peutCreerProjets()) {
-            $menu['raison'] = "Le responsable du projet n'a pas le droit de créer des projets";
-            $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ ." Le responsable " . $this->token->getUser()
-                . " du projet " . $projet . " ne peut pas créer des projets");
-        } elseif ($etatVersion ==  Etat::EDITION_EXPERTISE) {
-        $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
-        } elseif ($isProjetTest == true) {
-        $menu['raison'] = "ATTENTION - PAS DE PROJETS TESTS ACTUELLEMENT - Adressez-vous au support";
-        } elseif ($isProjetTest == true && $etatVersion ==  Etat::ANNULE) {
-            $menu['raison'] = "Le projet test a été annulé !";
-        } elseif ($isProjetTest == true && $etatVersion !=  Etat::EDITION_TEST) {
-            $menu['raison'] = "Le projet test a déjà été envoyé en expertise !";
-        } elseif ($etatVersion !=  Etat::EDITION_DEMANDE && $etatVersion !=  Etat::EDITION_TEST) {
-            $menu['raison'] = "Le responsable du projet n'a pas demandé de renouvellement";
-        } elseif ($isProjetSess && $etatSession != Etat::EDITION_DEMANDE) {
-            $menu['raison'] = "Nous ne sommes pas en période de demandes de ressources";
-        } else {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Envoyer votre demande pour expertise. ATTENTION, vous ne pourrez plus la modifier par la suite";
-            $menu['todo']        = "Envoyer le projet en <strong>expertise</strong>";
-            $menu['name']        = 'avant_modifier_version';
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
     // Envoyer en expertise pour un projet de type 4
     public function envoyer4EnExpertise(Version $version, int $priorite=self::HPRIO):array
     {
@@ -1436,100 +952,6 @@ class ServiceMenus
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public function affecterExperts(int $priorite=self::HPRIO):array
-    {
-        $session = $this->ss->getSessionCourante();
-
-        $menu['name']        =   'affectation';
-        $menu['lien']        =   "Affecter les experts ($session)";
-
-        $menu['commentaire'] =   "Vous ne pouvez pas affecter les experts de la session " . $session;
-        $menu['ok']          =   false;
-        if (!$this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['raison']     =   "Vous n'avez pas le rôprésident";
-        } else {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Espace d'affectation des experts";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    public function affecterExpertsRallonges(int $priorite=self::HPRIO):array
-    {
-        //$session = $this->ss->getSessionCourante();
-        $menu['name']           =   'rallonge_affectation';
-        $menu['lien']           =   "Rallonge de ressources";
-        $menu['commentaire']    =   "Affecter les experts pour les rallonges";
-        $menu['ok']             =   false;
-        $menu['raison']         =   "Vous n'êtes pas président";
-
-        if ($this->ac->isGranted('ROLE_ADMIN') ||  $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Affecter les experts pour les rallonges";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    public function expertiserRallonge(Rallonge $rallonge, int $priorite=self::HPRIO):array
-    {
-        $menu['name']        =   'expertiser_rallonge';
-        $menu['param']       =   $rallonge->getIdRallonge();
-        $menu['lien']        =   "Expertiser la rallonge";
-        $menu['commentaire'] =   "Vous ne pouvez pas expertiser cette demande";
-        $menu['ok']          =   false;
-        $menu['raison']      =   "raison inconnue";
-        $user                = $this->token->getUser();
-
-        $version = $rallonge->getVersion();
-        if ($version != null) {
-            $projet = $version->getProjet();
-        } else {
-            $projet = null;
-        }
-
-        $etatRallonge   =  $rallonge->getEtatRallonge();
-
-        if ($version == null) {
-            $menu['raison']         =   "Cette rallonge n'est associée à aucun projet !";
-        }
-        //elseif( $version->getEtatVersion()  == Etat::NOUVELLE_VERSION_DEMANDEE )
-        //    $menu['raison']         =   "Un renouvellement du projet " . $projet . " est déjà accepté !";
-        elseif ($version->getProjet() == null) {
-            $menu['raison']     =   "Cette version du projet n'est associée à aucun projet";
-        } elseif ($version->getProjet()->getEtatProjet() == Etat::TERMINE) {
-            $menu['raison']     =   "Votre projet est ou sera prochainement terminé";
-        } elseif ($version->getEtatVersion() == Etat::ANNULE) {
-            $menu['raison']     =   "Votre projet est annulé";
-        } elseif ($version->getEtatVersion() == Etat::TERMINE) {
-            $menu['raison']     =   "Votre projet de cette session est déjà terminé";
-        } elseif ($etatRallonge == Etat::EDITION_DEMANDE) {
-            $menu['raison']     =   "Cette demande n'a pas encore été envoyée en expertise";
-        } elseif ($etatRallonge== Etat::ANNULE) {
-            $menu['raison']     =   "Cette demande a été annulée";
-        } elseif ($etatRallonge != Etat::EDITION_EXPERTISE) {
-            $menu['raison']     =   "Cette demande a déjà été envoyée au président";
-        } elseif ($this->ac->isGranted('ROLE_ADMIN')) {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez expertiser cette demande et l'envoyer au président en tant qu'administrateur !";
-        } elseif ($rallonge->isExpertDe($user)) {
-            $menu['commentaire']         =   "Vous pouvez expertiser cette demande et l'envoyer au président" ;
-            $menu['ok']             =   true;
-        } else {
-            $menu['raison']         = "Vous n'avez pas le droit d'expertiser cette demande, vous n'êtes pas l'expert designé";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
     public function testerMail(int $priorite=self::HPRIO):array
     {
         $menu['name']        = 'mail_tester';
@@ -1552,7 +974,6 @@ class ServiceMenus
 
     public function tempsAvancer(int $priorite=self::HPRIO):array
     {
-        //$session = $this->ss->getSessionCourante();
         $menu['name']           =   'param_avancer';
         $menu['lien']           =   "Avancer dans le temps";
         $menu['commentaire']    =   "Vous ne pouvez pas avancer dans le temps";
@@ -1571,100 +992,67 @@ class ServiceMenus
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public function mailToResponsables(int $priorite=self::HPRIO):array
-    {
-        $session = $this->ss->getSessionCourante();
-        if ($session != null) {
-            $etatSession     = $session->getEtatSession();
-            $idSession       = $session->getIdSession();
-        } else {
-            $this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La session courante est nulle !");
-            $etatSession     = null;
-            $idSession       = 'X';
-        }
+    //public function mailToResponsablesRallonge(int $priorite=self::HPRIO):array
+    //{
+        //$session = $this->ss->getSessionCourante();
+        //if ($session != null) {
+            //$etatSession     = $session->getEtatSession();
+            //$idSession       = $session->getIdSession();
+        //} else {
+            //$this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La session courante est nulle !");
+            //$etatSession     = null;
+            //$idSession       = 'X';
+        //}
 
-        $menu['name']        = 'mail_to_responsables';
-        $menu['param']       = $idSession;
-        $menu['lien']        = "Mail - projets non renouvelés";
-        $menu['commentaire'] = "Vous ne pouvez pas envoyer un mail aux responsables des projets qui ne l'ont pas renouvelé";
-        $menu['ok']          = false;
-        $menu['raison']      = "Vous n'êtes pas un administrateur ou président";
-        $menu['icone']      = "mail";
+        //$menu['name']        = 'mail_to_responsables_rallonge';
+        //$menu['param']       = $idSession;
+        //$menu['lien']        = "Mail - Proposition de rallonge";
+        //$menu['commentaire'] = "Vous ne pouvez pas envoyer un mail aux responsables de projets";
+        //$menu['ok']          = false;
+        //$menu['raison']      = "Vous n'êtes pas un administrateur ou président";
+        //$menu['icone']      = "mail";
 
-        if ($etatSession    != Etat::EDITION_DEMANDE) {
-            $menu['raison']  = "La session n'est pas en mode d'édition";
-        } elseif ($this->ac->isGranted('ROLE_ADMIN') || $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Envoyer un rappel aux responsables des projets qui n'ont pas renouvelé !";
-        }
+        //if ($this->ac->isGranted('ROLE_ADMIN') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            //$menu['ok']          = true;
+            //$menu['commentaire'] = "Envoyer un rappel aux responsables des projets qui n'ont pas renouvelé !";
+        //}
 
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
+        //$this->__prio($menu, $priorite);
+        //return $menu;
+    //}
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public function mailToResponsablesRallonge(int $priorite=self::HPRIO):array
-    {
-        $session = $this->ss->getSessionCourante();
-        if ($session != null) {
-            $etatSession     = $session->getEtatSession();
-            $idSession       = $session->getIdSession();
-        } else {
-            $this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La session courante est nulle !");
-            $etatSession     = null;
-            $idSession       = 'X';
-        }
+    //public function mailToResponsablesFiche(int $priorite=self::HPRIO):array
+    //{
+        //$session = $this->ss->getSessionCourante();
+        //if ($session != null) {
+            //$etatSession     = $session->getEtatSession();
+            //$idSession       = $session->getIdSession();
+        //} else {
+            //$this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La session courante est nulle !");
+            //$etatSession     = null;
+            //$idSession       = 'X';
+        //}
 
-        $menu['name']        = 'mail_to_responsables_rallonge';
-        $menu['param']       = $idSession;
-        $menu['lien']        = "Mail - Proposition de rallonge";
-        $menu['commentaire'] = "Vous ne pouvez pas envoyer un mail aux responsables de projets";
-        $menu['ok']          = false;
-        $menu['raison']      = "Vous n'êtes pas un administrateur ou président";
-        $menu['icone']      = "mail";
+        //$menu['name']        = 'mail_to_responsables_fiche';
+        //$menu['param']       = $idSession;
+        //$menu['lien']        = "Mail - projets sans fiche";
+        //$menu['commentaire'] = "Vous ne pouvez pas envoyer un mail aux responsables des projets qui n'ont pas téléversé leur fiche projet";
+        //$menu['ok']          = false;
+        //$menu['raison']      = "Vous n'êtes pas un administrateur ou président";
+        //$menu['icone']      = "mail";
 
-        if ($this->ac->isGranted('ROLE_ADMIN') || $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Envoyer un rappel aux responsables des projets qui n'ont pas renouvelé !";
-        }
+        //if ($etatSession    !=  Etat::ACTIF && $etatSession    !=  Etat::EN_ATTENTE) {
+            //$menu['raison']         =   "La session n'est pas en mode actif ou en attente";
+        //} elseif ($this->ac->isGranted('ROLE_ADMIN') || $this->ac->isGranted('ROLE_PRESIDENT')) {
+            //$menu['ok']          = true;
+            //$menu['commentaire'] = "Envoyer un rappel aux responsables des projets qui n'ont pas téléversé leur fiche projet !";
+        //}
 
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    public function mailToResponsablesFiche(int $priorite=self::HPRIO):array
-    {
-        $session = $this->ss->getSessionCourante();
-        if ($session != null) {
-            $etatSession     = $session->getEtatSession();
-            $idSession       = $session->getIdSession();
-        } else {
-            $this->sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La session courante est nulle !");
-            $etatSession     = null;
-            $idSession       = 'X';
-        }
-
-        $menu['name']        = 'mail_to_responsables_fiche';
-        $menu['param']       = $idSession;
-        $menu['lien']        = "Mail - projets sans fiche";
-        $menu['commentaire'] = "Vous ne pouvez pas envoyer un mail aux responsables des projets qui n'ont pas téléversé leur fiche projet";
-        $menu['ok']          = false;
-        $menu['raison']      = "Vous n'êtes pas un administrateur ou président";
-        $menu['icone']      = "mail";
-
-        if ($etatSession    !=  Etat::ACTIF && $etatSession    !=  Etat::EN_ATTENTE) {
-            $menu['raison']         =   "La session n'est pas en mode actif ou en attente";
-        } elseif ($this->ac->isGranted('ROLE_ADMIN') || $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']          = true;
-            $menu['commentaire'] = "Envoyer un rappel aux responsables des projets qui n'ont pas téléversé leur fiche projet !";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
+        //$this->__prio($menu, $priorite);
+        //return $menu;
+    //}
 
     ////////////////////////////////////////////////////////////////////////////
 

@@ -288,8 +288,6 @@ class VersionController extends AbstractController
             $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
         }
 
-        $session = $version->getSession();
-
         $img_expose = [
             $sv->imageProperties('img_expose_1', 'Figure 1', $version),
             $sv->imageProperties('img_expose_2', 'Figure 2', $version),
@@ -309,12 +307,9 @@ class VersionController extends AbstractController
             'projet'             => $projet,
             'pdf'                => true,
             'version'            => $version,
-            'session'            => $session,
             'menu'               => null,
             'img_expose'         => $img_expose,
             'img_justif_renou'   => $img_justif_renou,
-            'conso_cpu'          => $sp->getConsoRessource($projet, 'cpu', $version->getAnneeSession()),
-            'conso_gpu'          => $sp->getConsoRessource($projet, 'gpu', $version->getAnneeSession()),
             'rapport_1'          => null,
             'rapport'            => null,
             ]
@@ -349,14 +344,11 @@ class VersionController extends AbstractController
                 " parce que : " . $sm->telechargerFiche($version)['raison']);
         }
 
-        $session = $version->getSession();
-
         $html4pdf =  $this->render(
             'version/fiche_pdf.html.twig',
             [
                 'projet' => $projet,
                 'version'   =>  $version,
-                'session'   =>  $session,
                 ]
         );
         // return $html4pdf;
@@ -444,9 +436,6 @@ class VersionController extends AbstractController
         $sv = $this->sv;
         $ff = $this->ff;
         $token = $this->tok->getToken();
-
-        // Si changement d'état de la session alors que je suis connecté !
-        $request->getSession()->remove('SessionCourante'); // remove cache
 
         // ACL
         $moi = $token->getUser();
@@ -542,7 +531,6 @@ class VersionController extends AbstractController
                 'projet' => $idProjet,
                 'change_form'   => $change_form->createView(),
                 'version'   =>  $version,
-                'session'   =>  $version->getSession(),
             ]
         );
     }
@@ -631,18 +619,6 @@ class VersionController extends AbstractController
 
             // On retourne à la page du projet
             return $this->redirectToRoute('consulter_version', ['id' => $version->getProjet() ]);
-
-            // return new Response( Functions::show( $resultat ) );
-            // return new Response( print_r( $mail, true ) );
-            //return new Response( print_r($request->request,true) );
-
-            // TODO - SI ON VIRE ça ON N'A PLUS LES MAILS: POURQUOI ???????????????
-            //return $this->redirectToRoute(
-            //    'modifierCollaborateurs',
-            //    [
-            //    'id'    => $version->getIdVersion() ,
-           // ]
-           // );
         }
 
         //return new Response( dump( $collaborateur_form->createView() ) );
@@ -652,7 +628,6 @@ class VersionController extends AbstractController
              'projet' => $idProjet,
              'collaborateur_form'   => $collaborateur_form->createView(),
              'version'   =>  $version,
-             'session'   =>  $version->getSession(),
          ]
         );
     }
@@ -687,7 +662,6 @@ class VersionController extends AbstractController
         }
 
         $projet  = $version->getProjet();
-        $session = $version->getSession();
 
         $form = Functions::createFormBuilder($ff)
                 ->add(
@@ -748,7 +722,6 @@ class VersionController extends AbstractController
             'version/envoyer_en_expertise.html.twig',
             [ 'projet' => $projet,
               'form' => $form->createView(),
-              'session' => $session
             ]
         );
     }

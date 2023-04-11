@@ -90,8 +90,7 @@ class ServiceProjets
         $em = $this->em;
         
         // Création du projet        
-        $session = null; // TODO - Virer les sessions !
-        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
+        $annee = $grdt->format('y');
 
         $projet = new Projet($type);
         $projet->setIdProjet($this->nextProjetId($annee, $type));
@@ -265,77 +264,6 @@ class ServiceProjets
     * un "état" qui n'est pas utilisé dans les workflows mais qui peut être
     * affiché et qui a du sens pour les utilisateurs
     ************************************************************/
-    //public function getMetaEtat_SUPPR(Projet $p): string
-    //{
-        //$etat_projet = $p->getEtatProjet();
-        //$type_projet = $p->gettypeProjet();
-
-        //// Projet terminé
-        //if ($etat_projet == Etat::TERMINE) {
-            //return 'TERMINE';
-        //}
-
-        //// Projet non renouvelable:
-        ////    - Projet test   = toujours non renouvelable
-        ////    - Autres projets= sera bientôt terminé car expert a dit "refusé"
-        ////
-        //if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
-            //return 'REFUSE';
-        //}
-
-        //$veract  = $this->versionActive($p);
-        //$version = $p->derniereVersion();
-        //// Ne doit pas arriver: un projet a toujours une dernière version !
-        //// Peut-être la BD est-elle en rade donc on utilise le logger
-        //if ($version == null) {
-            //$this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
-                                            //$p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
-            //return 'STANDBY';
-        //}
-        //$etat_version   =   $version->getEtatVersion();
-
-        //if ($etat_version ==  Etat::EDITION_DEMANDE) {
-            //return 'EDITION';
-        //} elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
-            //return 'EXPERTISE';
-        //} elseif ($etat_version ==  Etat::EDITION_TEST) {
-            //return 'EDITION';
-        //} elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
-            //return 'EXPERTISE';
-        //} elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
-            //if ( $type_projet != Projet::PROJET_DYN )
-            //{
-                //// Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
-                //$session = $this->ss->getSessionCourante();
-                //if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
-                    //return 'NONRENOUVELE';
-                //} // Non renouvelé
-                //else {
-                    //return 'ACCEPTE';
-                //} // Projet ou rallonge accepté par le comité d'attribution
-            //}
-            //else
-            //{
-                //// TODO - Remettre le signe particulier 30 jours avant le renouvellement
-                //return 'ACCEPTE';
-            //}
-        //} elseif ($etat_version == Etat::ACTIF_TEST) {
-            //return 'ACCEPTE';
-        //} // projet-test non renouvelable
-        //elseif ($etat_version == Etat::EN_ATTENTE) {
-            //return 'ACCEPTE';
-        //} elseif ($etat_version == Etat::TERMINE) {
-            //if ($p->getNepasterminer()) {
-                //return 'AGARDER';
-            //} else {
-                //return 'STANDBY';
-            //}
-        //} elseif ($veract       == null) {
-            //return 'STANDBY';
-        //}
-    //}
-
-    /* PLUS SIMPLE POUR LES PROJETS DYNAMIQUES */
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
@@ -1007,129 +935,6 @@ class ServiceProjets
         return ($conso_fin) ? $conso_fin-$conso_debut : 0;
     }
 
-    /*******************
-    * calcul de la consommation "calcul" à une date donnée ou pour une année donnée
-    *
-    * Retourne: la consommation cpu + gpu à la date ou pour l'année donnée
-    *           Ne retourne pas le quota
-    *
-    *************************/
-    public function getConsoCalcul(Projet|CollaborateurVersion $projet, $annee_ou_date): int
-    {
-        $conso_gpu = $this->getConsoRessource($projet, 'gpu', $annee_ou_date);
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee_ou_date);
-        return $conso_gpu[0] + $conso_cpu[0];
-    }
-
-    /********
-     * La conso d'une version...
-     *****/
-    public function getConsoCalculVersion(Version $version): int
-    {
-        $projet = $version->getProjet();
-        $annee  = $version->getAnneeSession();
-        return $this->getConsoCalcul($projet, $annee);
-    }
-
-    /*******************
-    * calcul de la consommation "calcul" à une date donnée ou pour une année donnée, en pourcentage du quota
-    *
-    * Retourne: la consommation cpu + gpu à la date ou pour l'année donnée
-    *           en %age du quota cpu
-    *
-    *************************/
-    public function getConsoCalculP(Projet|CollaborateurVersion $projet, $annee_ou_date=null): float
-    {
-        $conso_gpu = $this->getConsoRessource($projet, 'gpu', $annee_ou_date);
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee_ou_date);
-        if ($conso_cpu[1] <= 0) {
-            return 0;
-        } else {
-            return 100.0*($conso_gpu[0] + $conso_cpu[0])/$conso_cpu[1];
-        }
-    }
-
-    /***************
-    * Renvoie la consommation calcul (getConsoCalcul() de l'année et du mois
-    *
-    * params: $projet
-    *         $annee (2019 ou 19)
-    *         $mois (0..11)
-    *
-    * Retourne: La conso cpu+gpu, ou 0 si le mois se situe dans le futur
-    *
-    **************************/
-    public function getConsoMois(Projet|CollaborateurVersion $projet, $annee, $mois) : int
-    {
-        $now = $this->grdt;
-        $annee_courante = $now->showYear();
-        $mois_courant   = $now->showMonth();
-        $mois += 1;	// 0..11 -> 1..12 !
-
-        // 2019 - 2000 !
-        if (($annee==$annee_courante || abs($annee-$annee_courante)==2000) && $mois==$mois_courant)
-        {
-            $conso_fin = $this->getConsoCalcul($projet, $now);
-        }
-        else
-        {
-            // Pour décembre on mesure la consomation au 31 car il y a risque de remise à zéro le 1er Janvier
-            // Du coup on ignore la consommation du 31 Décembre...
-            if ($mois==12) {
-                $d = strval($annee)."-12-31";
-                $conso_fin = $this->getConsoCalcul($projet, new \DateTime($d));
-            //App::getLogger()->error("koukou1 " . $this->getIdProjet() . "$d -> $conso_fin");
-            }
-            // Pour les autres mois on prend la conso du 1er du mois suivant
-            else {
-                $m = strval($mois + 1);
-                $conso_fin = $this->getConsoCalcul($projet, new \DateTime($annee.'-'.$m.'-01'));
-            }
-        }
-
-        // Pour Janvier on prend zéro, pas la valeur au 1er Janvier
-        // La remise à zéro ne se fait jamais le 1er Janvier
-        if ($mois==1)
-        {
-            $conso_debut = 0;
-        }
-        else
-        {
-            $conso_debut = $this->getConsoCalcul($projet, new \DateTime("$annee-$mois-01"));
-        }
-        if ($conso_fin>$conso_debut)
-        {
-            return $conso_fin-$conso_debut;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    /*
-     * Renvoie le quota seul (pas la conso) des ressources cpu
-     *
-     * param : $projet, $annee ou $date (cf getConsoRessource)
-     * return: La consommation "calcul" pour l'année
-     *
-     */
-    public function getQuota(Projet $projet, $annee=null): int
-    {
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee);
-        return $conso_cpu[1];
-    }
-
-    /********
-     * Le quota d'une version...
-     *****/
-    public function getQuotaCalculVersion(Version $version): int
-    {
-        $projet = $version->getProjet();
-        $annee  = $version->getAnneeSession();
-        return $this->getQuota($projet, $annee);
-    }
-
     /*
      * Le user connecté a-t-il accès à $projet ?
      * Si OBS (donc ADMIN) ou PRESIDENT = La réponse est Oui
@@ -1277,9 +1082,6 @@ class ServiceProjets
     public function getRapport(Projet $projet, $annee): ?string
     {
         $rapport_directory = $this->rapport_directory;
-        //if ( $annee == null )
-        //    $annee  = $this->getAnneeSession()-1;
-
         $dir    =  $rapport_directory;
         if ($dir == null) {
             return null;
@@ -1400,58 +1202,6 @@ class ServiceProjets
         $em->flush();
         return $individus_effaces;
     }
-
-    /**
-    * calculVersionDerniere
-    *
-    * NOTE - la B.D. doit être cohérente, c-à-d que s'il y a des flush à faire, ils doivent
-    *        être faits en entrant dans cette fonction
-    *        Inversement, cette fonction refait si nécessaire le flush du projet afin de garder la cohérence
-    *
-    * @return \App\Entity\Version
-    */
-
-
-    // On réécrit cette fonction car le tri doit se faire sur le NbVersion plutôt que sur la session
-    // (indispensable pour les projets dynamiques, s'il y a un jour des projets de session il faudra que le NbVersion soit géré)
-    //public function calculVersionDerniere_SUPPR(Projet $projet): ?Version
-    //{
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
-        //if ($projet->getVersion() == null) {
-            //return null;
-        //}
-
-        //$iterator = $projet->getVersion()->getIterator();
-        ////$cnt = count(iterator_to_array($iterator));
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
-
-        //$iterator->uasort(function ($a, $b) {
-            //if ($a->getSession() == null) {
-                //return true;
-            //} elseif ($b->getSession() == null) {
-                //return false;
-            //} else {
-                //return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
-            //}
-        //});
-
-        //$sortedVersions =  iterator_to_array($iterator) ;
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
-        //$result = end($sortedVersions);
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
-
-        //if (! $result instanceof Version) {
-            //return null;
-        //}
-
-        //// update BD
-        //$projet->setVersionDerniere($result);
-        //$em = $this->em;
-        //$em->persist($projet);
-        //$em->flush();
-
-        //return $result;
-    //}
 
     /*
      * Calcul de la dernière version d'un projet - Utilisé par App\EventListener\ProjetDerniereVersion
