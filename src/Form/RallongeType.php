@@ -39,7 +39,6 @@ class RallongeType extends AbstractType
                 ->add('demHeures')
                 ->add('attrHeures')
                 ->add('prjJustifRallonge')
-                ->add('attrAccept')
                 ->add('idRallonge')
                 ->add('version')
                 ->add('nbHeuresAtt')

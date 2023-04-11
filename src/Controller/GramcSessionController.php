@@ -48,8 +48,6 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
-use App\GramcServices\PropositionExperts\PropositionExpertsType1;
-use App\GramcServices\PropositionExperts\PropositionExpertsType2;
 use App\GramcServices\GramcDate;
 use App\Security\User\UserChecker;
 
@@ -104,11 +102,8 @@ class GramcSessionController extends AbstractController
         private ServicePhpSessions $sps,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
-        private PropositionExpertsType1 $pe1,
-        private PropositionExpertsType2 $pe2,
         private GramcDate $sd,
         private ServiceVersions $sv,
-        private ProjetWorkflow $pw,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private TokenStorageInterface $ts,

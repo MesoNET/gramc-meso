@@ -108,7 +108,6 @@ class ProjetController extends AbstractController
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceExperts $se,
-        private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private TokenStorageInterface $tok,

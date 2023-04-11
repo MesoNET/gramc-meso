@@ -30,7 +30,7 @@ use App\Utils\Functions;
 use App\Interfaces\Demande;
 
 /*
- * TODO - Utiliser l'héritage pour faire hériter Veriosn et Rallonge d'une même classe
+ * TODO - Utiliser l'héritage pour faire hériter Version et Rallonge d'une même classe
  *        cf. https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/inheritance-mapping.html
  *        Pas le temps / pas le recul alors on travaille salement
  *        Emmanuel, 27/3/23
@@ -73,48 +73,6 @@ class Version implements Demande
      * @ORM\Column(name="prj_titre", type="string", length=500, nullable=true)
      */
     private $prjTitre = '';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures", type="integer", nullable=true)
-     */
-    private $demHeures = '0';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="attr_heures", type="integer", nullable=true)
-     */
-    private $attrHeures = '0';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures_uft", type="integer", nullable=true)
-     */
-    private $demHeuresUft = '0';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="attr_heures_uft", type="integer", nullable=true)
-     */
-    private $attrHeuresUft = '0';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="dem_heures_criann", type="integer", nullable=true)
-     */
-    private $demHeuresCriann = '0';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="attr_heures_criann", type="integer", nullable=true)
-     */
-    private $attrHeuresCriann = '0';
 
     /**
      * @var string
@@ -192,13 +150,6 @@ class Version implements Demande
      * @ORM\Column(name="libelle_thematique", type="string", length=200, nullable=true)
      */
     private $libelleThematique ='';
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="attr_accept", type="boolean", nullable=true)
-     */
-    private $attrAccept = true;
 
     /**
      * @var \App\Entity\Individu
@@ -467,150 +418,6 @@ class Version implements Demande
     }
 
     /**
-     * Set demHeures
-     *
-     * @param integer $demHeures
-     *
-     * @return Version
-     */
-    public function setDemHeures($demHeures)
-    {
-        $this->demHeures = $demHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeures
-     *
-     * @return integer
-     */
-    public function getDemHeures()
-    {
-        return $this->demHeures;
-    }
-
-    /**
-     * Set demHeuresUft
-     *
-     * @param integer $demHeuresUft
-     *
-     * @return Version
-     */
-    public function setDemHeuresUft($demHeuresUft)
-    {
-        $this->demHeuresUft = $demHeuresUft;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeuresUft
-     *
-     * @return integer
-     */
-    public function getDemHeuresUft()
-    {
-        return $this->demHeuresUft;
-    }
-
-    /**
-     * Set demHeuresCriann
-     *
-     * @param integer $demHeuresCriann
-     *
-     * @return Version
-     */
-    public function setDemHeuresCriann($demHeuresCriann)
-    {
-        $this->demHeuresCriann = $demHeuresCriann;
-
-        return $this;
-    }
-
-    /**
-     * Get demHeuresCriann
-     *
-     * @return integer
-     */
-    public function getDemHeuresCriann()
-    {
-        return $this->demHeuresCriann;
-    }
-
-    /**
-     * Set attrHeures
-     *
-     * @param integer $attrHeures
-     *
-     * @return Version
-     */
-    public function setAttrHeures($attrHeures)
-    {
-        $this->attrHeures = $attrHeures;
-
-        return $this;
-    }
-
-    /**
-     * Get attrHeures
-     *
-     * @return integer
-     */
-    public function getAttrHeures()
-    {
-        return $this->attrHeures;
-    }
-
-    /**
-     * Set attrHeuresUft
-     *
-     * @param integer $attrHeuresUft
-     *
-     * @return Version
-     */
-    public function setAttrHeuresUft($attrHeuresUft)
-    {
-        $this->attrHeuresUft = $attrHeuresUft;
-
-        return $this;
-    }
-
-    /**
-     * Get attrHeuresUft
-     *
-     * @return integer
-     */
-    public function getAttrHeuresUft()
-    {
-        return $this->attrHeuresUft;
-    }
-
-    /**
-     * Set attrHeuresCriann
-     *
-     * @param integer $attrHeuresCriann
-     *
-     * @return Version
-     */
-    public function setAttrHeuresCriann($attrHeuresCriann)
-    {
-        $this->attrHeuresCriann = $attrHeuresCriann;
-
-        return $this;
-    }
-
-    /**
-     * Get attrHeuresCriann
-     *
-     * @return integer
-     */
-    public function getAttrHeuresCriann()
-    {
-        return $this->attrHeuresCriann;
-    }
-
-    /**
      * Set prjFinancement
      *
      * @param string $prjFinancement
@@ -872,30 +679,6 @@ class Version implements Demande
     public function getLibelleThematique()
     {
         return $this->libelleThematique;
-    }
-
-    /**
-     * Set attrAccept
-     *
-     * @param boolean $attrAccept
-     *
-     * @return Version
-     */
-    public function setAttrAccept($attrAccept)
-    {
-        $this->attrAccept = $attrAccept;
-
-        return $this;
-    }
-
-    /**
-     * Get attrAccept
-     *
-     * @return boolean
-     */
-    public function getAttrAccept()
-    {
-        return $this->attrAccept;
     }
 
     /**

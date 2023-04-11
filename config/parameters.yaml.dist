@@ -72,66 +72,17 @@ parameters:
     # pour pour laisser les experts envoyer les expertises !
     noedition_expertise: true
 
-    # Fonctionnalité permettant d'affecter des heures spéciales pour l'été (en session B uniquement) #}
-    heures_ete: false
-    
-    # Nombre max de rallonges par projet et par session
+    # Nombre max de rallonges par projet et par version
     max_rall: 2
     
     # Préfixe associé au nom du projet, dépend du type de projet
     # Seuls les projets de type 4 sont utilisés actuellement
     prj_prefix:
-        1: P
-        2: T
         4: M
-
-    # Ressources dont on peut visualiser la consommation
-    ressources_conso_group:
-        TURPAN:
-            1:
-                type: calcul
-                ress: 'cpu@TURPAN,gpu@TURPAN'
-                nom: 'TURPAN - Heures normalisées'
-                unite: h
-
-        BOREAL:
-            1:
-                type: calcul
-                ress: 'cpu@BOREAL'
-                nom: 'BOREAL - Heures de calcul'
-                unite: h
-
-    ressources_conso_user:
-        TURPAN:
-            1:
-                type: calcul
-                ress: 'cpu@TURPAN,gpu@TURPAN'
-                nom: 'TURPAN - Heures normalisées'
-                unite: h
-            2:
-                type: stockage
-                ress: home_space@TURPAN
-                nom: Home TURPAN
-                unite: Gio
-        BOREAL:
-            1:
-                type: calcul
-                ress: 'cpu@BOREAL'
-                nom: 'Heures de calcul'
-                unite: h
-            2:
-                type: stockage
-                ress: home_space@BOREAL
-                nom: Home BOREAL
-                unite: Gio
 
     # Nombre max d'experts par version de projet
     max_expertises_nb: 1
     
-    # Les experts peuvent entrer un commentaire général entre les mois de mai et de mars
-    commentaires_experts_d: 0
-    commentaires_experts_f: 0
-
     # La durée du projet dynamique
     dyn_duree: P365D
     

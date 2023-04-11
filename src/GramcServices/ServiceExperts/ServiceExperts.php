@@ -78,8 +78,6 @@ class ServiceExperts
         protected FormFactoryInterface $formFactory,
         protected ServiceNotifications $sn,
         protected ServiceJournal $sj,
-        protected PropositionExpertsType1 $pe1,
-        protected PropositionExpertsType2 $pe2,
         protected LoggerInterface $lg,
         protected EntityManagerInterface $em
     ) {}

@@ -77,18 +77,8 @@ services:
     App\GramcServices\DonneesFacturation:
         arguments: ['%dfct_directory%']
 
-    App\GramcServices\GramcGraf\Calcul:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-     
-    App\GramcServices\GramcGraf\Stockage:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-
-    App\GramcServices\GramcGraf\CalculTous:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-     
     App\GramcServices\ServiceProjets:
         arguments: ["%prj_prefix%",
-                    "%ressources_conso_group%",
                     "%signature_directory%",
                     "%rapport_directory%",
                     "%fig_directory%",

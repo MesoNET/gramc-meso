@@ -47,8 +47,6 @@ use App\GramcServices\Etat;
 use App\GramcServices\Signal;
 use App\AffectationExperts\AffectationExperts;
 
-use App\GramcServices\Workflow\Projet\ProjetWorkflow;
-use App\GramcServices\Workflow\Version\VersionWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 
@@ -103,7 +101,6 @@ class ExpertiseController extends AbstractController
         private ServiceVersions $sv,
         private ServiceExpertises $sexp,
         private ServiceExperts $se,
-        private ProjetWorkflow $pw,
         private Projet4Workflow $p4w,
         private Rallonge4Workflow $r4w,
         private FormFactoryInterface $ff,

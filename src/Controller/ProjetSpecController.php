@@ -38,8 +38,6 @@ use App\Entity\CompteActivation;
 use App\Entity\Journal;
 use App\Entity\Compta;
 
-use App\GramcServices\Workflow\Projet\ProjetWorkflow;
-use App\GramcServices\Workflow\Version\VersionWorkflow;
 use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
@@ -107,7 +105,6 @@ class ProjetSpecController extends AbstractController
         private GramcDate $sd,
         private ServiceVersions $sv,
         private ServiceExperts $se,
-        private ProjetWorkflow $pw,
         private FormFactoryInterface $ff,
         private TokenStorageInterface $tok,
         private Environment $tw,

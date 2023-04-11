@@ -68,13 +68,6 @@ class Rallonge implements Demande
     private $prjJustifRallonge;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="attr_accept", type="boolean", nullable=false)
-     */
-    private $attrAccept = '0';
-
-    /**
      * @var string
      *
      * @ORM\Column(name="id_rallonge", type="string", length=15)
@@ -270,30 +263,6 @@ class Rallonge implements Demande
     public function getPrjJustifRallonge()
     {
         return $this->prjJustifRallonge;
-    }
-
-    /**
-     * Set attrAccept
-     *
-     * @param boolean $attrAccept
-     *
-     * @return Rallonge
-     */
-    public function setAttrAccept($attrAccept)
-    {
-        $this->attrAccept = $attrAccept;
-
-        return $this;
-    }
-
-    /**
-     * Get attrAccept
-     *
-     * @return boolean
-     */
-    public function getAttrAccept()
-    {
-        return $this->attrAccept;
     }
 
     /**

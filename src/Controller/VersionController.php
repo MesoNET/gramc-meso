@@ -32,7 +32,6 @@ use App\Entity\CollaborateurVersion;
 use App\Entity\RapportActivite;
 use App\Entity\Expertise;
 
-use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
@@ -113,7 +112,6 @@ class VersionController extends AbstractController
         private GramcDate $sd,
         private ServiceVersions $sv,
         private ServiceExperts $se,
-        private ProjetWorkflow $pw,
         private Projet4Workflow $p4w,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,

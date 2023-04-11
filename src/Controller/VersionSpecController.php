@@ -43,7 +43,6 @@ use App\GramcServices\ServiceDacs;
 
 use App\GramcServices\ServiceForms;
 use App\GramcServices\GramcDate;
-use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 
 use App\Utils\Functions;
@@ -105,7 +104,6 @@ class VersionSpecController extends AbstractController
         private ServiceRessources $sroc,
         private ServiceDacs $sdac,
         private ServiceForms $sf,
-        private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
@@ -518,7 +516,6 @@ class VersionSpecController extends AbstractController
                 $new_version->setPrjJustifRenouv(null);
                 $new_version->setAttrHeures(0);
                 $new_version->setAttrHeuresEte(0);
-                $new_version->setAttrAccept(false);
                 $new_version->setPenalHeures(0);
                 $new_version->setPrjGenciCentre('');
                 $new_version->setPrjGenciDari('');

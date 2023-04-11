@@ -66,7 +66,6 @@ class ServiceMenus
         private ServiceVersions $sv,
         private ServiceProjets $sp,
         private ServiceJournal $sj,
-        private SessionWorkflow $sw,
         private GramcDate $grdt,
         private ValidatorInterface $sval,
         private ServiceSessions $ss,
