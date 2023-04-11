@@ -70,7 +70,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
         $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
@@ -202,15 +201,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @ORM\ManyToMany(targetEntity="App\Entity\Thematique", mappedBy="expert")
      */
     private $thematique;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Rattachement", mappedBy="expert")
-     */
-    private $rattachement;
-
-    ///////////////////////////////////////
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -742,44 +732,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getThematique()
     {
         return $this->thematique;
-    }
-
-    /**
-     * Add rattachement
-     *
-     * @param \App\Entity\Rattachement $rattachement
-     *
-     * @return Individu
-     */
-    public function addRattachement(\App\Entity\Rattachement $rattachement): self
-    {
-        if (! $this->rattachement->contains($rattachement))
-        {
-            $this->rattachement[] = $rattachement;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove rattachement
-     *
-     * @param \App\Entity\Rattachement $rattachement
-     */
-    public function removeRattachement(\App\Entity\Rattachement $rattachement): self
-    {
-        $this->rattachement->removeElement($rattachement);
-        return $this;
-    }
-
-    /**
-     * Get rattachement
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRattachement()
-    {
-        return $this->rattachement;
     }
 
     /**

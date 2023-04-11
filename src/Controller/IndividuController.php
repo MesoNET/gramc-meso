@@ -27,7 +27,6 @@ namespace App\Controller;
 use App\Entity\Individu;
 use App\Entity\Invitation;
 use App\Entity\Thematique;
-use App\Entity\Rattachement;
 use App\Entity\CollaborateurVersion;
 use App\Entity\CompteActivation;
 use App\Entity\Expertise;
@@ -902,15 +901,6 @@ class IndividuController extends AbstractController
                 'class' => Thematique::class,
                 ]
             )
-            ->add(
-                'rattachement',
-                EntityType::class,
-                [
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Rattachement::class,
-                ]
-            )
             ->add('submit', SubmitType::class, ['label' => 'modifier' ])
             ->add('reset', ResetType::class, ['label' => 'reset' ])
             ->getForm();
@@ -927,18 +917,6 @@ class IndividuController extends AbstractController
                     $thematique->addExpert($individu);
                 } else {
                     $thematique->removeExpert($individu);
-                }
-            }
-
-            // rattachement && Doctrine ManyToMany
-            $all_ratt = $em->getRepository(Rattachement::class)->findAll();
-            $my_ratt = $individu->getRattachement();
-
-            foreach ($all_ratt as $ratt) {
-                if ($my_ratt->contains($ratt)) {
-                    $ratt->addExpert($individu);
-                } else {
-                    $ratt->removeExpert($individu);
                 }
             }
             $em->flush();
@@ -994,17 +972,6 @@ class IndividuController extends AbstractController
                 }
             }
 
-            // rattachement && Doctrine ManyToMany
-            $all_ratt = $em->getRepository(Rattachement::class)->findAll();
-            $my_ratt = $individu->getRattachement();
-
-            foreach ($all_ratt as $ratt) {
-                if ($my_ratt->contains($ratt)) {
-                    $ratt->addExpert($individu);
-                } else {
-                    $ratt->removeExpert($individu);
-                }
-            }
             $em->flush();
         }
 

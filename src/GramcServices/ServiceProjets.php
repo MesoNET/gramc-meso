@@ -30,7 +30,6 @@ use App\Entity\Session;
 use App\Entity\Compta;
 use App\Entity\Individu;
 use App\Entity\RapportActivite;
-use App\Entity\Rattachement;
 
 // Pour la suppression des projets RGPD
 use App\Entity\CollaborateurVersion;

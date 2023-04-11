@@ -563,15 +563,6 @@ class Projet
         }
     }
 
-    public function getRattachement()
-    {
-        if ($this->derniereVersion() != null) {
-            return $this->derniereVersion()->getPrjRattachement();
-        } else {
-            return null;
-        }
-    }
-
     public function getLaboratoire()
     {
         if ($this->derniereVersion() != null) {
@@ -580,11 +571,6 @@ class Projet
             return null;
         }
     }
-
-    //public function countVersions()
-    //{
-    //return getRepository(Version::class)->countVersions($this);
-    //}
 
     public function derniereSession()
     {

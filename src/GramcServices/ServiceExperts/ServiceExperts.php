@@ -34,7 +34,6 @@ use App\Interfaces\Demande;
 use App\Form\ChoiceList\ExpertChoiceLoader;
 
 use App\Entity\Thematique;
-use App\Entity\Rattachement;
 use App\GramcServices\Etat;
 use App\Utils\Functions;
 
@@ -72,7 +71,6 @@ class ServiceExperts
     protected $notifications = null;
     private $form_buttons = null;
     private $thematiques = null;
-    private $rattachements = null;
     private $demandes = null;
 
     public function __construct(
@@ -175,49 +173,6 @@ class ServiceExperts
             $this->thematiques = $thematiques;
         }
         return $this->thematiques;
-    }
-
-    /*********************************************
-     * getTableauRattachements = Calcule et renvoie le tableau des rattachements,
-     * avec pour chacun la liste des experts associés et
-     * le nombre de projets affectés au rattachement
-     *
-     * return: Le tableau des rattachements
-     *
-     ***************************************************/
-    public function getTableauRattachements()
-    {
-        $em       = $this->em;
-        $demandes = $this->demandes;
-        if ($this->rattachements==null) {
-            // Construction du tableau des thématiques
-            $rattachements = [];
-            foreach ($em->getRepository(Rattachement::class)->findAll() as $rattachement) {
-                foreach ($rattachement->getExpert() as $expert) {
-                    if ($expert->getExpert() == false) {
-                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " $expert" . " est supprimé de la thématique pour ce projet" . $rattachement);
-                        //Functions::noRattachement($expert);
-                        $expert->removeRattachement($rattachement);
-                    }
-                }
-                $rattachements[ $rattachement->getIdRattachement() ] =
-                    ['rattachement' => $rattachement, 'experts' => $rattachement->getExpert(), 'projets' => 0 ];
-            }
-
-            // Remplissage avec le nb de demandes par thématiques
-            foreach ($demandes as $demande) {
-                $etatDemande    =   $demande->getEtat();
-                if ($etatDemande == Etat::EDITION_DEMANDE || $etatDemande == Etat::ANNULE) {
-                    continue;
-                }
-
-                if ($demande->getPrjRattachement() != null) {
-                    $rattachements[ $demande->getPrjRattachement()->getIdRattachement() ]['projets']++;
-                }
-            }
-            $this->rattachements = $rattachements;
-        }
-        return $this->rattachements;
     }
 
     /*********************************************

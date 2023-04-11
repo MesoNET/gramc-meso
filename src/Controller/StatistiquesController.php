@@ -143,7 +143,6 @@ class StatistiquesController extends AbstractController
         $menu[] = $sm->statistiquesLaboratoire();
         $menu[] = $sm->statistiquesEtablissement($annee);
         $menu[] = $sm->statistiquesThematique($annee);
-        $menu[] = $sm->statistiquesRattachement($annee);
         $menu[] = $sm->statistiquesCollaborateur($annee);
         $menu[] = $sm->statistiquesRepartition();
 
@@ -194,7 +193,6 @@ class StatistiquesController extends AbstractController
         //$menu[] = $sm->statistiquesLaboratoire();
         //$menu[] = $sm->statistiquesEtablissement($annee);
         //$menu[] = $sm->statistiquesThematique($annee);
-        //$menu[] = $sm->statistiquesRattachement($annee);
         //$menu[] = $sm->statistiquesCollaborateur($annee);
         //$menu[] = $sm->statistiquesRepartition();
 
@@ -659,24 +657,6 @@ class StatistiquesController extends AbstractController
     public function thematiqueAction(Request $request): Response
     {
         return $this->parCritere($request, "getAcroThematique", "thématique");
-    }
-
-    /**
-     * @Route("/rattachement", name="statistiques_rattachement",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function rattachementAction(Request $request): Response
-    {
-        return $this->parCritere($request, "getAcroRattachement", "rattachement");
-    }
-
-    /**
-     * @Route("/{annee}/rattachement_csv", name="statistiques_rattachement_csv",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function rattachementCSVAction(Request $request, $annee)
-    {
-        return $this->parCritereCSV($request, $annee, "getAcroRattachement", "rattachement");
     }
 
     /* Cette fonction est appelée par laboratoireCSVAction, etablissementCSVAction etc. */

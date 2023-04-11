@@ -146,7 +146,6 @@ class GramcSessionController extends AbstractController
 
         $menu4[] = $sm->gererFormations();
         $menu4[] = $sm->gererLaboratoires();
-        if ($this->getParameter('norattachement')==false) $menu4[] = $sm->gererRattachements();
         $menu4[] = $sm->gererThematiques();
         $menu4[] = $sm->gererServeurs();
         $menu4[] = $sm->gererResources();

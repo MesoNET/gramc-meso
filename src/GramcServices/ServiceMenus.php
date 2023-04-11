@@ -579,26 +579,6 @@ class ServiceMenus
 
     //////////////////////////////////////
 
-    public function gererRattachements(int $priorite=self::HPRIO):array
-    {
-        $menu['name']   =   'gerer_rattachements';
-        $menu['commentaire']    =   "Gérer la liste des rattachements";
-        $menu['lien']           =   "Rattachements";
-        $menu['icone']          =   "rattachement";
-
-        if ($this->ac->isGranted('ROLE_OBS')) {
-            $menu['ok'] = true;
-        } else {
-            $menu['ok'] = false;
-            $menu['raison'] = "Vous devez être au moins un observateur pour accéder à cette page";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    //////////////////////////////////////
-
     // Menu principal Projet
 
     //////////////////////////////////////
@@ -1379,26 +1359,6 @@ class ServiceMenus
         } else {
             $menu['ok']             =   false;
             $menu['commentaire']    =   "Vous ne pouvez pas accéder aux statistiques par thématique !";
-            $menu['raison']         =   "Vous devez être président ou administrateur pour y accéder";
-        }
-
-        $this->__prio($menu, $priorite);
-        return $menu;
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    public function statistiquesRattachement(int $priorite=self::HPRIO): array
-    {
-        $menu['name']           =   'statistiques_rattachement';
-        $menu['lien']           =   "Rattachements";
-
-        if ($this->ac->isGranted('ROLE_OBS') || $this->ac->isGranted('ROLE_PRESIDENT')) {
-            $menu['ok']             =   true;
-            $menu['commentaire']    =   "Vous pouvez accéder aux statistiques par rattachement";
-        } else {
-            $menu['ok']             =   false;
-            $menu['commentaire']    =   "Vous ne pouvez pas accéder aux statistiques par rattachement";
             $menu['raison']         =   "Vous devez être président ou administrateur pour y accéder";
         }
 

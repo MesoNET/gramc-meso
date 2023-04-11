@@ -176,9 +176,6 @@ services:
         arguments: ["%kernel.debug%"]
         tags: ["console.command"]
 
-    App\Command\InitTypeVersion:
-        tags: ["console.command"]
-
     App\Command\InitLimitDate:
         arguments: [ "%dyn_duree%" ]
         tags: ["console.command"]

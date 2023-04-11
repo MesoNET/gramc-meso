@@ -31,7 +31,6 @@ use App\Entity\CollaborateurVersion;
 use App\Entity\Formation;
 use App\Entity\User;
 use App\Entity\Thematique;
-use App\Entity\Rattachement;
 use App\Entity\Expertise;
 use App\Entity\Individu;
 use App\Entity\Sso;

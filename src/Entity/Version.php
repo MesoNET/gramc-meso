@@ -276,17 +276,6 @@ class Version implements Demande
      */
     private $prjThematique;
 
-
-    /**
-     * @var \App\Entity\Rattachement
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rattachement", inversedBy="version")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="prj_id_rattachement", referencedColumnName="id_rattachement")
-     * })
-     */
-    private $prjRattachement;
-
     /**
      * @var string
      *
@@ -1166,30 +1155,6 @@ class Version implements Demande
     }
 
     /**
-     * Set prjRattachement
-     *
-     * @param \App\Entity\Rattachement $prjRattachement
-     *
-     * @return Version
-     */
-    public function setPrjRattachement(\App\Entity\Rattachement $prjRattachement = null)
-    {
-        $this->prjRattachement = $prjRattachement;
-
-        return $this;
-    }
-
-    /**
-     * Get prjRattachement
-     *
-     * @return \App\Entity\Rattachement
-     */
-    public function getPrjRattachement()
-    {
-        return $this->prjRattachement;
-    }
-
-    /**
      * Set nbVersion
      *
      * @param string $idVersion
@@ -1920,18 +1885,6 @@ class Version implements Demande
             return "sans thématique";
         } else {
             return $thematique->__toString();
-        }
-    }
-
-    ////////////////////////////////////////////
-
-    public function getAcroRattachement()
-    {
-        $rattachement = $this->getPrjRattachement();
-        if ($rattachement == null) {
-            return "aucun";
-        } else {
-            return $rattachement->__toString();
         }
     }
 

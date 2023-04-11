@@ -31,7 +31,6 @@ use App\Entity\Individu;
 use App\Entity\Thematique;
 use App\Entity\CollaborateurVersion;
 use App\Entity\RapportActivite;
-use App\Entity\Rattachement;
 use App\Entity\Formation;
 use App\Entity\Dac;
 
@@ -338,22 +337,6 @@ class VersionSpecController extends AbstractController
             ]
         );
 
-        if ($this->getParameter('norattachement')==false) {
-            $form
-            ->add(
-                'prjRattachement',
-                EntityType::class,
-                [
-                'required'    => false,
-                'multiple'    => false,
-                'expanded'    => true,
-                'class'       => Rattachement::class,
-                'empty_data'  => null,
-                'label'       => '',
-                'placeholder' => 'AUCUN',
-                ]
-            );
-        };
         $form
             ->add('prjFinancement', TextType::class, [ 'required'     => false ])
             ->add('prjGenciCentre', TextType::class, [ 'required' => false ])
