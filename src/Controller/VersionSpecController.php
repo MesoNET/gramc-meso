@@ -319,15 +319,15 @@ class VersionSpecController extends AbstractController
         return $this->render(
             'version/modifier_projet_sess.html.twig',
             [
-                'form'      => $form->createView(),
-                'version'   => $version,
+                'form' => $form->createView(),
+                'version' => $version,
                 'img_expose' => $img_expose,
                 'img_justif_renou' => $img_justif_renou,
                 'collaborateur_form' => $collaborateur_form->createView(),
                 'formation_form' => $formation_form->createView(),
                 'ressource_form' => $ressource_form->createView(),
-                'todo'          => static::versionValidate($version, $sj, $em, $sval, $this->getParameter('nodata')),
-                'nb_form'       => $nb_form
+                'todo' => $this->versionValidate($version),
+                'nb_form' => $nb_form
             ]
         );
     }
@@ -784,7 +784,7 @@ class VersionSpecController extends AbstractController
      * Validation du formulaire de version
      *
      *    param = Version
-     *            $em l'entity manager
+     *            
      *    return= Un array contenant la "todo liste", ie la liste de choses à faire pour que le formulaire soit validé
      *            Un array vide [] signifie: "Formulaire validé"
      *

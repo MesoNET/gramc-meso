@@ -25,7 +25,6 @@
 namespace App\Controller;
 
 use App\Entity\Expertise;
-use App\Entity\CommentaireExpert;
 use App\Entity\Individu;
 use App\Entity\Thematique;
 use App\Entity\Projet;
