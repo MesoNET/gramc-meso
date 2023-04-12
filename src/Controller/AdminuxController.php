@@ -1155,10 +1155,6 @@ class AdminuxController extends AbstractController
                     // Les loginnames au niveau version
                     $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
-                    // Provisoire...
-                    //$loginnames['TURPAN']['login'] = $cv->getLogint();
-                    //$loginnames['BOREALE']['login'] = $cv->getLoginb();
-                    
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
                     {
@@ -1167,8 +1163,6 @@ class AdminuxController extends AbstractController
                     
                     $v_info = [];
                     $v_info['version'] = $v->getIdVersion();
-                    //$v_info['logint'] = $cv->getLogint();   // A JETER
-                    //$v_info['loginb'] = $cv->getloginb();   // A JETER
                     
                     $v_info['loginnames'] = $loginnames;
                     $v_info['deleted'] = $cv->getDeleted();
@@ -1214,24 +1208,21 @@ class AdminuxController extends AbstractController
         foreach ($versions as $version) {
             if ($version->getEtatVersion() == Etat::ACTIF) {
                 foreach ($version->getCollaborateurVersion() as $cv) {
-                    if ($cv->getLogint() || $cv->getLoginb())
-                    {
-                        $collaborateur  = $cv->getCollaborateur() ;
-                        if ($collaborateur != null) {
-                            $prenom     = $collaborateur->getPrenom();
-                            $nom        = $collaborateur->getNom();
-                            $idIndividu = $collaborateur->getIdIndividu();
-                            $mail       = $collaborateur->getMail();
-                            $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
-                            $output[] =   [
-                                    'idIndividu' => $idIndividu,
-                                    'idProjet' =>$idProjet,
-                                    'mail' => $mail,
-                                    'prenom' => $prenom,
-                                    'nom' => $nom,
-                                    'loginnames' => $loginnames,
-                            ];
-                        }
+                    $collaborateur  = $cv->getCollaborateur() ;
+                    if ($collaborateur != null) {
+                        $prenom     = $collaborateur->getPrenom();
+                        $nom        = $collaborateur->getNom();
+                        $idIndividu = $collaborateur->getIdIndividu();
+                        $mail       = $collaborateur->getMail();
+                        $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
+                        $output[] =   [
+                                'idIndividu' => $idIndividu,
+                                'idProjet' =>$idProjet,
+                                'mail' => $mail,
+                                'prenom' => $prenom,
+                                'nom' => $nom,
+                                'loginnames' => $loginnames,
+                        ];
                     }
                 }
             }

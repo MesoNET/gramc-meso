@@ -652,37 +652,6 @@ class ServiceVersions
     }
 
     /*********************************************************
-     * Synchroniser les flags Deleted d'un collaborateurVersion
-     * NB - Les flags $delt et $delb sont inutlisés actuellement
-     **********************************************************/
-    private function syncDeleted( Version $version, Individu $individu, bool $delt, bool $delb, bool $deleted): void
-    {
-        $em = $this->em;
-        $sj = $this->sj;
-        
-        $cv = $this->TrouverCollaborateur($version, $individu);
-        if ($cv->getDelt() != $delt) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$delt => $delt");
-            $cv -> setDelt($delt);
-            $em->persist($cv);
-            $em->flush();
-        }
-        if ($cv->getDelb() != $delb) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$delb => $delb");
-            $cv -> setDelb($delb);
-            $em->persist($cv);
-            $em->flush();
-        }
-        if ($cv->getDeleted() != $deleted) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$deleted => $deleted");
-            $cv -> setDeleted($deleted);
-            $em->persist($cv);
-            $em->flush();
-        }
-
-    }
-
-    /*********************************************************
      * modifier les logins d'un collaborateur d'une version
      ***********************************************************/
     private function modifierLogins(Projet $projet, Individu $individu, array $logins): void
@@ -1220,11 +1189,7 @@ class ServiceVersions
                     $logins[$k] = $u->getLogin();
                 }
                 $individuForm->setLogins($logins);
-                $individuForm->setLogint($cv->getLogint());
-                $individuForm->setLoginb($cv->getLoginb());
                 $individuForm->setResponsable($cv->getResponsable());
-                $individuForm->setDelt($cv->getDelt());
-                $individuForm->setDelb($cv->getDelb());
                 $individuForm->setDeleted($cv->getDeleted());
 
                 if ($individuForm->getResponsable() == true) {

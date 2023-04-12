@@ -187,8 +187,6 @@ class ProjetSpecController extends AbstractController
             {
                 $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
-                //$loginnames['TURPAN']['login'] = $cv->getLogint();
-                //$loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);
@@ -260,8 +258,6 @@ class ProjetSpecController extends AbstractController
             {
                 $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
                 $loginnames = $su->collaborateurVersion2LoginNames($cv);
-                //$loginnames['TURPAN']['login'] = $cv->getLogint();
-                //$loginnames['BOREALE']['login'] = $cv->getLoginb();
 
                 /* GESTION DES MOTS DE PASSE SUPPRIMEE 
                 $u     = $user_repo->findOneBy(['loginname' => $login]);

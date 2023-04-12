@@ -51,37 +51,9 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
-     * @ORM\Column(name="delt", type="boolean", nullable=false, options={"comment":"login Turpan à supprimer"})
-     */
-    private $delt = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="delb", type="boolean", nullable=false, options={"comment":"login Boreale à supprimer"})
-     */
-    private $delb = false;
-
-    /**
-     * @var boolean
-     *
      * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"comment":"supprimé prochainement"})
      */
     private $deleted = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="logint", type="boolean", nullable=false, options={"comment":"login sur Turpan"}))
-     */
-    private $logint = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="loginb", type="boolean", nullable=false, options={"comment":"login sur Boreale"}))
-     */
-    private $loginb = false;
 
     /**
      * @var \App\Entity\Statut
@@ -148,12 +120,6 @@ class CollaborateurVersion
         if ($this->getResponsable() == true) {
             $output .= 'responsable:';
         }
-        if ($this->getLogint() == true) {
-            $output .= 'login TURPAN:';
-        }
-        if ($this->getLoginb() == true) {
-            $output .= 'login BOREALE:';
-        }
         $output .= 'version=' . $this->getVersion() .':';
         $output .= 'id=' . $this->getId() . ':';
         $output .= 'statut=' .$this->getStatut() .':';
@@ -165,11 +131,6 @@ class CollaborateurVersion
 
     public function __construct(Individu $individu = null, Version $version = null)
     {
-        $this->logint = false;
-        $this->loginb = false;
-        $this->delt = false;
-        $this->delb = false;
-        
         $this->responsable = false;
 
         if ($individu != null) {
@@ -209,54 +170,6 @@ class CollaborateurVersion
     }
 
     /**
-     * Set delt
-     *
-     * @param boolean $delt
-     *
-     * @return CollaborateurVersion
-     */
-    public function setDelt($delt)
-    {
-        $this->delt = $delt;
-
-        return $this;
-    }
-
-    /**
-     * Get delt
-     *
-     * @return boolean
-     */
-    public function getDelt()
-    {
-        return $this->delt;
-    }
-
-    /**
-     * Set delb
-     *
-     * @param boolean $delb
-     *
-     * @return CollaborateurVersion
-     */
-    public function setDelb($delb)
-    {
-        $this->delb = $delb;
-
-        return $this;
-    }
-
-    /**
-     * Get delb
-     *
-     * @return boolean
-     */
-    public function getDelb()
-    {
-        return $this->delb;
-    }
-
-    /**
      * Set deleted
      *
      * @param boolean $deleted
@@ -278,54 +191,6 @@ class CollaborateurVersion
     public function getDeleted()
     {
         return $this->deleted;
-    }
-
-    /**
-     * Set logint
-     *
-     * @param boolean $logint
-     *
-     * @return CollaborateurVersion
-     */
-    public function setLogint($logint)
-    {
-        $this->logint = $logint;
-
-        return $this;
-    }
-
-    /**
-     * Get logint
-     *
-     * @return boolean
-     */
-    public function getLogint()
-    {
-        return $this->logint;
-    }
-
-    /**
-     * Set loginb
-     *
-     * @param boolean $loginb
-     *
-     * @return CollaborateurVersion
-     */
-    public function setLoginb($loginb)
-    {
-        $this->loginb = $loginb;
-
-        return $this;
-    }
-
-    /**
-     * Get loginb
-     *
-     * @return boolean
-     */
-    public function getLoginb()
-    {
-        return $this->loginb;
     }
 
     /**

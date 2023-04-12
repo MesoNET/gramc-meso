@@ -76,17 +76,7 @@ class FormationVersion
 
     public function __toString(): string
     {
-        $output = '{';
-        if ($this->getResponsable() == true) {
-            $output .= 'responsable:';
-        }
-        if ($this->getLogint() == true) {
-            $output .= 'login TURPAN:';
-        }
-        if ($this->getLoginb() == true) {
-            $output .= 'login BOREALE:';
-        }
-        $output .= 'version=' . $this->getVersion() .':';
+        $output .= 'version=' . $this->getVersion();
         $output .= 'id=' . $this->getId() . ':';
         $output .= 'formation=' . $this->getFormation();
         return $output;
