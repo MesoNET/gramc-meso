@@ -242,8 +242,6 @@ class ServiceExperts
      *********/
     public function newExpertiseIfPossible(Version|Rallonge $objet): void
     {
-        $pe1 = $this->pe1;
-        $pe2 = $this->pe2;
         $lg  = $this->lg;
         $sj = $this->sj;
         $em  = $this->em;

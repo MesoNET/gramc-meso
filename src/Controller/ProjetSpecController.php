@@ -210,7 +210,6 @@ class ProjetSpecController extends AbstractController
             $projets_resp[]   =
             [
                 'projet'    => $projet,
-                'conso'     => $sp->getConsoCalculP($projet),
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
                 'meta_etat' => $sp->getMetaEtat($projet),
@@ -401,7 +400,7 @@ class ProjetSpecController extends AbstractController
         $menu[] = $sm->nouvelleRallonge($projet);
         $menu[] = $sm->renouvelerVersion($version);
         $menu[] = $sm->modifierVersion($version);
-        $menu[] = $sm->envoyer4EnExpertise($version);
+        $menu[] = $sm->envoyerEnExpertise($version);
         $menu[] = $sm->changerResponsable($version);
         $menu[] = $sm->gererPublications($projet);
         $menu[] = $sm->modifierCollaborateurs($version);

@@ -410,11 +410,6 @@ class ExpertiseController extends AbstractController
         $ressource_form = $expRallonge ? $sexp->getRessourceFormForRallonge($rallonge) : $sexp->getRessourceFormForVersion($version);
         $ressource_form->handleRequest($request);
 
-        if ($editForm->isSubmitted() && ! $editForm->isValid())
-        {
-            $sj->warningMessage(__METHOD__ . " form error " .  Functions::show($editForm->getErrors()));
-        }
-
         // Bouton ANNULER
         if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked())
         {
@@ -424,10 +419,9 @@ class ExpertiseController extends AbstractController
         // Boutons ENREGISTRER, FERMER ou ENVOYER
         $erreur  = 0;
         $erreurs = [];
-        if ($editForm->isSubmitted() && $editForm->isValid())
+        if ($editForm->isSubmitted())
         {
             $erreurs = Functions::dataError($sval, $expertise);
-            //$validation = $expertise->getValidation();
 
             // Projet dynamique = Dès qu'on enregistre une expertise, on est enregistré comme valideur
             $expertise->setExpert($moi);
@@ -534,7 +528,6 @@ class ExpertiseController extends AbstractController
         $sj = $this->sj;
         $ac = $this->ac;
         $sp = $this->sp;
-        $pw = $this->pw;
         $p4w = $this->p4w;
         $grdt = $this->grdt;
         $em = $this->em;

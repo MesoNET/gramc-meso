@@ -890,8 +890,24 @@ class ServiceMenus
         return $menu;
     }
 
+
+    public function envoyerEnExpertise(Version $version, int $priorite=self::HPRIO):array
+    {
+        if ($version == null) {
+            return [];
+        }
+
+        $type = $version->getTypeVersion();
+        switch ($type) {
+            case Projet::PROJET_DYN:
+                return $this->__envoyerVersion4($version, $priorite);
+            default:
+                $sj->errorMessage(__METHOD__ . " Type de version inconnu: $type");
+        }
+    }
+
     // Envoyer en expertise pour un projet de type 4
-    public function envoyer4EnExpertise(Version $version, int $priorite=self::HPRIO):array
+    private function __envoyerVersion4(Version $version, int $priorite):array
     {
         $projet = $version -> getProjet();
         $user   = $this->token->getUser();
