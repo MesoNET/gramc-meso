@@ -98,13 +98,7 @@ services:
         arguments: [ "%max_rall%" ]
         
     App\GramcServices\ServiceNotifications:
-        arguments: [ "%mailfrom%","%noedition_expertise%" ]
-
-    App\GramcServices\ServiceExperts\ServiceExperts:
-        arguments: [ "%max_expertises_nb%" ]
-
-    App\GramcServices\ServiceExperts\ServiceExpertsRallonge:
-        arguments: [ "%max_expertises_nb%" ]
+        arguments: [ "%mailfrom%" ]
 
     App\GramcServices\ServiceInvitations:
         arguments: [ "%invit_duree%" ]
@@ -119,7 +113,7 @@ services:
         arguments: [ "%dyn_duree%", "%dyn_duree_post%" ]
         
     App\Controller\ExpertiseController:
-        arguments: [ "%dyn_duree%","%max_expertises_nb%" ]
+        arguments: [ "%dyn_duree%" ]
 
     # Formulaires, validateurs, securité
     App\Form\:

@@ -74,7 +74,6 @@ class ServiceExperts
     private $demandes = null;
 
     public function __construct(
-        protected $max_expertises_nb,
         protected FormFactoryInterface $formFactory,
         protected ServiceNotifications $sn,
         protected ServiceJournal $sj,
@@ -173,66 +172,6 @@ class ServiceExperts
         return $this->thematiques;
     }
 
-    /*********************************************
-     * traitementFormulaires
-     * Traite les formulaires d'affectation des experts pour les demandes sélectionnées
-     * Retourne un bool: Si true, notifications envoyées, si false pas de notifications envoyées
-     *
-     ********/
-    public function traitementFormulaires(Request $request): bool
-    {
-        $this->clearNotifications();
-        $demandes = $this->demandes;
-
-        // Traitements différentiés suivant le bouton sur lequel on a cliqué
-        $form_buttons = $this->getFormButtons();
-        foreach ($demandes as $demande) {
-            $etatDemande    =   $demande->getEtat();
-            if ($etatDemande == Etat::EDITION_DEMANDE || $etatDemande == Etat::ANNULE) {
-                continue;
-            }
-
-            // La demande est-elle sélectionnée ? - Si non on ignore
-            $selform = $this->getSelForm($demande);
-            $selform->handleRequest($request);
-            if ($selform->getData() == null || $selform->getData()['sel']==false) {
-                continue;
-            }
-
-            // traitement du formulaire d'affectation
-            $forms   = $this->getExpertForms($demande);
-
-            $experts_affectes = [];
-            foreach ($forms as $f) {
-                $f->handleRequest($request);
-                $experts_affectes[] = $f->getData()['expert'];
-            }
-
-            if ($form_buttons->get('sub2')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-            } elseif ($form_buttons->get('sub1')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-                $this->addNotification($demande);
-            } elseif ($form_buttons->get('sub3')->isClicked()) {
-                $this->addExpertiseToDemande($demande);
-            } elseif ($form_buttons->get('sub4')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-                $this->remExpertiseFromDemande($demande);
-            } else {
-                continue;
-            }
-        }
-
-        if ($form_buttons->get('sub1')->isClicked()) {
-            $this->notifierExperts();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     /**
      * Si pas déjà fait, crée une expertise pour un rallonge ou une version
      *
@@ -265,34 +204,6 @@ class ServiceExperts
             }
 
             Functions::sauvegarder($expertise, $em, $lg);
-        }
-    }
-
-    /**
-    * Ajoute une expertise à la demande
-    * Si on atteint le paramètre max_expertises_nb, ne fait rien
-    * TODO - Si on atteint le paramètre max_expertises_nb, envoyer un message d'erreur !
-    *
-    * param = $demande
-    * Return= rien
-    *
-    ****/
-    private function addExpertiseToDemande($demande)
-    {
-        $expertises = $demande->getExpertise()->toArray();
-        if (count($expertises)< $this->max_expertises_nb) {
-            $expertise  =   new Expertise();
-            $expertise->setVersion($demande);
-
-            // Attention, l'algorithme de proposition des experts dépend du type de projet
-            // TODO Actuellement on ne propose pas d'expertise à ce moment
-            //      Il faudra améliorer l'algorithme de proposition
-            //$expert = $demande->getProjet()->proposeExpert();
-            //if ($expert != null)
-            //{
-            //	$expertise->setExpert( $expert );
-            //}
-            Functions::sauvegarder($expertise, $this->em);
         }
     }
 

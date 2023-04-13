@@ -90,7 +90,6 @@ class ExpertiseController extends AbstractController
     
     public function __construct(
         private $dyn_duree,
-        private $max_expertises_nb,
         private ServiceNotifications $sn,
         private ServiceJournal $sj,
         private ServiceIndividus $sid,

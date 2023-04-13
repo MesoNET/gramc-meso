@@ -213,23 +213,6 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/president", name="president_accueil", methods={"GET"} )
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function presidentAccueilAction(): Response
-    {
-        $sm     = $this->sm;
-        $menu[] = $sm->affecterExperts();
-        
-        if ($this->getParameter('noedition_expertise')==false) {
-            $menu[] = $sm->commSess();
-        }
-        $menu[] = $sm->affecterExpertsRallonges();
-        /* $menu[] = $sm->affectation_test(); */
-        return $this->render('default/president.html.twig', ['menu' => $menu]);
-    }
-
-    /**
     * @Route("/profil",name="profil", methods={"GET","POST"})
     * @Security("is_granted('ROLE_DEMANDEUR')")
 
