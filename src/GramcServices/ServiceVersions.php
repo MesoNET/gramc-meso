@@ -92,7 +92,10 @@ class ServiceVersions
 
     /****************
      * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
-     *    - Création de la version
+     *    - Création de la version:
+     *       * Si c'est la première version, création ex-nihilo
+     *       * Sinon, clonage de la dernière version du projet
+     *       * Choix du numéro de version
      *    - Création des Dac associés
      *    - Si nécessaire, création des User associés
      *
@@ -110,7 +113,154 @@ class ServiceVersions
         $token = $this->tok->getToken();
         $em = $this->em;
 
-        $session = null; // A virer
+        $versions = $em->getRepository(Version::class)->findVersions($projet);
+
+        // Si première version du projet 
+        if (count($versions) === 0)
+        {
+            $version = new Version();
+            $version->setEtatVersion(Etat::EDITION_DEMANDE);
+            // On fixe aussi le type de la version (cf getVersionType())
+            // important car le type du projet peut changer (en théorie))
+            // En pratique PROJET_DYN est le SEUL TYPE supporté
+            $version->setProjet($projet);
+            $version->setTypeVersion($projet->getTypeProjet());
+    
+            $version->setNbVersion("01");
+            $version->setIdVersion("01" . $projet->getIdProjet());
+    
+            // Le laboratoire associé est celui du responsable
+            $moi = $token->getUser();
+            $this->setLaboResponsable($version, $moi);
+    
+            // La dernière version est fixée par l'EventListener
+            // TODO - mais ici cela ne fonctionne pas
+            $projet->setVersionDerniere($version);
+            $em->persist( $projet);
+            $em->flush($projet);
+    
+            // Affectation de l'utilisateur connecté en tant que responsable
+            $cv = new CollaborateurVersion($moi);
+            $cv->setVersion($version);
+            $cv->setResponsable(true);
+            $cv->setDeleted(false);
+        
+            // Ecriture de collaborateurVersion dans la BD
+            $em->persist($cv);
+            $em->flush();
+
+            // Ecriture de la version dans la BD
+            $em->persist($version);
+            $em->flush();
+
+            // Création du répertoire pour les images
+            $dir = $sv->imageDir($version);        
+
+            // Création de nouveaux User pour le responsable (1 User par serveur)
+            // NOTE - ils seront créés seulement lors de la première version
+            //        car pour un utilisateur donné il n'y a qu'un user/serveur, même avec plusieurs versions
+            $serveurs = $sr->getServeurs();
+            foreach ($serveurs as $s)
+            {
+                $su->getUser($moi, $projet, $s);
+            }
+
+        }
+
+        // Sinon, c'est un renouvellement
+        else
+        {
+            $verder = $projet->getVersionDerniere();
+
+            $old_dir = $this->imageDir($verder);
+    
+            // Clonage de la version à renouveler
+            $version = clone $verder;
+
+            // Changement du numéro de version et de l'Id - Tout le reste est identique
+            $nb = $this->__incrNbVersion($version->getNbVersion());
+            $version->setNbVersion($nb);
+            $version->setIdVersion($nb.$projet->getIdProjet());
+
+            // Ecriture de la version dans la BD
+            $em->persist($version);
+            $em->flush();
+
+            // images: On reprend les images "img_expose" de la version précédente
+            //         On ne REPREND PAS les images "img_justif_renou" !!!
+            $new_dir = $this->imageDir($version);
+            for ($id=1;$id<4;$id++)
+            {
+                $f='img_expose_'.$id;
+                $old_f = $old_dir . '/' . $f;
+                $new_f = $new_dir . '/' . $f;
+                if (is_file($old_f)) {
+                    $rvl = copy($old_f, $new_f);
+                    if ($rvl==false) {
+                        $sj->errorMessage("VersionController:erreur dans la fonction copy $old_f => $new_f");
+                    }
+                }
+            }
+
+            // Nouveaux collaborateurVersion
+            $collaborateurVersions = $verder->getCollaborateurVersion();
+            foreach ($collaborateurVersions as $collaborateurVersion)
+            {
+                // ne pas reprendre un collaborateur marqué comme supprimé
+                if ($collaborateurVersion->getDeleted()) continue;
+    
+                $newCollaborateurVersion = clone $collaborateurVersion;
+                $newCollaborateurVersion->setVersion($version);
+                $em->persist($newCollaborateurVersion);
+            }
+            $em->flush();
+        }
+
+        // Création de nouveaux Dac (1 Dac par ressource)
+        $ressources = $sroc->getRessources();
+        foreach ($ressources as $r)
+        {
+            $dac = new Dac();
+            $dac->setVersion($version);
+            $dac->setRessource($r);
+            $em->persist($dac);
+            $version->addDac($dac);
+        }
+        $em->flush();
+
+        return $version;
+    }
+
+    /******
+     * Incrémentation du numéro de version lors d'un renouvellement
+     *********************************************/
+    private function __incrNbVersion(string $nbVersion): string
+    {
+        $n = intval($nbVersion);
+        $n += 1;
+        return sprintf('%02d', $n);
+    }
+
+    /****************
+     * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
+     *    - Création de la version
+     *    - Création des Dac associés
+     *    - Si nécessaire, création des User associés
+     *
+     * Params: $projet le projet associé 
+     *    
+     * Retourne: La nouvelle version
+     * 
+     ************************************************/
+
+    public function creerVersion_SUPPR(Projet $projet): Version
+    {
+        $su = $this->su;
+        $sr = $this->sr;
+        $sroc = $this->sroc;
+        $token = $this->tok->getToken();
+        $em = $this->em;
+
         $version = new Version();
         $version->setEtatVersion(Etat::EDITION_DEMANDE);
         // setProjet fixe aussi le type de la version (cf getVersionType())
@@ -118,17 +268,9 @@ class ServiceVersions
         // En pratique PROJET_DYN est le SEUL TYPE supporté
         $version->setProjet($projet);
         $type = $projet->getTypeProjet();
-        if ($type == Projet::PROJET_DYN)
-        {
+
             $version->setNbVersion("01");
             $version->setIdVersion("01" . $projet->getIdProjet());
-        }
-        else
-        {
-            $version->setSession($session);
-            $version->setNbVersion("01");
-            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
-        }
 
         // Le laboratoire associé est celui du responsable
         $moi = $token->getUser();
@@ -504,7 +646,7 @@ class ServiceVersions
      *
      * param = $version  Version
      *
-     * return = Le chemin complet (que le fichier existe ou non)
+     * return = Le chemin complet du fichier (que le fichier existe ou non)
      *
      ************************************/
      public function getSignePath(Version $version): string
@@ -522,7 +664,7 @@ class ServiceVersions
      *******************************************/
     public function getSigneDir(Version $version): string
     {
-        $dir = $this->signature_directory . '/' . $version->getNbVersion();
+        $dir = $this->signature_directory . '/' . $version->getProjet();
         if (! is_dir($dir))
         {
             if (file_exists($dir) && is_file($dir))

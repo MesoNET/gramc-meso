@@ -220,8 +220,8 @@ class VersionSpecController extends AbstractController
         }
 
         // FORMULAIRE DES RESSOURCES
-        $ressource_form = $sv->getRessourceform($version);
-        $ressource_form->handleRequest($request);
+       // $ressource_form = $sv->getRessourceform($version);
+       // $ressource_form->handleRequest($request);
         
         // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET
         $type = $version->getProjet()->getTypeProjet();
@@ -375,7 +375,7 @@ class VersionSpecController extends AbstractController
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_DYN:
-                return $this->__renouveler4($request, $version());
+                return $this->__renouveler4($request, $version);
 
             default:
                $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
@@ -389,6 +389,93 @@ class VersionSpecController extends AbstractController
      *
      */
     private function __renouveler4(Request $request, Version $version): Response
+    {
+        $sm = $this->sm;
+        $sv = $this->sv;
+        $sj = $this->sj;
+        $sdac = $this->sdac;
+        $sroc = $this->sroc;
+        $dyn_duree = $this->dyn_duree;
+        $dyn_duree_post = $this->dyn_duree_post;
+        $projet_workflow = $this->pw4;
+        $grdt = $this->grdt;
+        $em = $this->em;
+
+
+        // ACL
+        if ($sm->renouvelerVersion($version)['ok'] == false)
+        {
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Impossible de renouveler la version " . $version->getIdVersion());
+        }
+
+        // Création de la nouvelle version
+        $projet = $version->getProjet();
+        $version = $sv->creerVersion($projet);
+        
+        // Si version est en état ACTIF_R on peut renouveler
+        // Mais dans ce cas la date limite sera positionnée à start_date + dyn_duree (def = 365 jours))
+
+        //$old_dir = $sv->imageDir($verder);
+        //$etat_version = $verder->getEtatVersion();
+
+        // nouvelle version
+        //$new_version = clone $verder;
+
+        $version->setPrjGenciCentre('');
+        $version->setPrjGenciDari('');
+        $version->setPrjGenciHeures(0);
+        $version->setPrjGenciMachines('');
+        $version->setStartDate($grdt);
+        $version->setPrjJustifRenouv(null);
+        $version->setCgu(0);
+
+        // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire
+        // La startDate et la LimitDate seront fixées de manière définitive lorsqu'on validera la version
+        $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
+
+        // Etat initial d'une version
+        $version->setEtatVersion(Etat::EDITION_DEMANDE);
+
+        Functions::sauvegarder($version, $em, $this->lg);
+
+        //// Nouveaux collaborateurVersions
+        //$collaborateurVersions = $version->getCollaborateurVersion();
+        //foreach ($collaborateurVersions as $collaborateurVersion)
+        //{
+            //// ne pas reprendre un collaborateur marqué comme supprimé
+            //if ($collaborateurVersion->getDeleted()) continue;
+
+            //$newCollaborateurVersion = clone $collaborateurVersion;
+            //$newCollaborateurVersion->setVersion($version);
+            //$em->persist($newCollaborateurVersion);
+        //}
+        //$em->flush();
+
+        // Nouveaux dac (1 par ressource)
+        //$ressources = $sroc->getRessources();
+        //foreach ($ressources as $r)
+        //{
+            //$sdac->getDac($version,$r);
+        //}
+
+        //// images: On reprend les images "img_expose" de la version précédente
+        ////         On ne REPREND PAS les images "img_justif_renou" !!!
+        //$new_dir = $sv->imageDir($version);
+        //for ($id=1;$id<4;$id++) {
+            //$f='img_expose_'.$id;
+            //$old_f = $old_dir . '/' . $f;
+            //$new_f = $new_dir . '/' . $f;
+            //if (is_file($old_f)) {
+                //$rvl = copy($old_f, $new_f);
+                //if ($rvl==false) {
+                    //$sj->errorMessage("VersionController:erreur dans la fonction copy $old_f => $new_f");
+                //}
+            //}
+        //}
+        return $this->redirect($this->generateUrl('modifier_version', [ 'id' => $version->getIdVersion() ]));
+    }
+
+    private function __renouveler4_SUPPR(Request $request, Version $version): Response
     {
         $sm = $this->sm;
         $sv = $this->sv;
@@ -493,7 +580,7 @@ class VersionSpecController extends AbstractController
     }
 
     /******
-     * Incrémentation du numéro de version lors d'un renvouellement
+     * Incrémentation du numéro de version lors d'un renouvellement
      *********************************************/
     private function __incrNbVersion(string $nbVersion): string
     {
