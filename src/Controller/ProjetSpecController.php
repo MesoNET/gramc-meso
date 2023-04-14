@@ -279,7 +279,7 @@ class ProjetSpecController extends AbstractController
             $projets_collab[] =
                 [
                 'projet'    => $projet,
-                'conso'     => $sp->getConsoCalculP($projet),
+                //'conso'     => $sp->getConsoCalculP($projet),
                 'rallonges' => $rallonges,
                 'cpt_rall'  => $cpt_rall,
                 'cv' => $cv,

@@ -758,7 +758,7 @@ class ServiceProjets
      * Création des répertoires de données
      *
      ************************************************************/
-    public function createDirectories($annee = null, $session = null): void
+    /*public function createDirectories($annee = null, $session = null): void
     {
         $rapport_directory = $this->rapport_directory;
         if ($rapport_directory != null) {
@@ -810,7 +810,7 @@ class ServiceProjets
             unlink($dir);
             mkdir($dir);
         }
-    }
+    }*/
 
     /************************************************
      * Renvoie le chemin vers le rapport d'activité s'il existe, null s'il n'y a pas de RA
@@ -955,14 +955,16 @@ class ServiceProjets
 
         $iterator = $projet->getVersion()->getIterator();
 
-        $iterator->uasort(function ($a, $b) {
+        $iterator->uasort(function ($a, $b)
+        {
+            $sj = $this->sj;
             if ($a->getNbVersion() == null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $a = PAS DE NbVersion");
             }
             if ($b->getNbVersion() == null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $b = PAS DE NbVersion");
             }
             return strcmp($a->getNbVersion(), $b->getNbVersion());
         });

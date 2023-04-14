@@ -163,6 +163,3 @@ services:
     App\Command\InitLimitDate:
         arguments: [ "%dyn_duree%" ]
         tags: ["console.command"]
-
-    App\Command\InitRessources:
-        tags: ["console.command"]
