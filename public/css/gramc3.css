@@ -2364,3 +2364,8 @@ img.dfct {
     margin: 1em;
     /*border: black solid 1px;*/
 }
+
+/* ================ TELEVERSEMENT GENERIQUE ================== */
+table#telgen {
+    width: 50em;
+}

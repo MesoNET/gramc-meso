@@ -1221,9 +1221,12 @@ class ServiceVersions
     }
 
     /********************************************************************
-     * Génère et renvoie un form pour modifier les demandes de ressources
-     ********************************************************************/
-    public function getRessourceForm(Version $version): FormInterface
+     * Génère et renvoie un form pour modifier les demandes ou attributions de ressources
+     *
+     * $version = La version associée aux Dac
+     * $attribution = Si true les formulaires présentent l'attribution, sinon la demande (défaut) 
+     ********************************************************************************************/
+    public function getRessourceForm(Version $version, bool $attribution = false): FormInterface
     {
         $sj = $this->sj;
         $em = $this->em;
@@ -1232,8 +1235,9 @@ class ServiceVersions
         $form = $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, [ 'ressource' => $this->prepareRessources($version) ])
                    ->add('ressource', CollectionType::class, [
-                       'entry_type' =>  DacType::class,
-                       'label' =>  true,
+                       'entry_type' => DacType::class,
+                       'entry_options' => [ 'attribution' => $attribution ],
+                       'label' => true,
                    ])
                    ->getForm();
         return $form;
@@ -1250,10 +1254,17 @@ class ServiceVersions
         $val = true;
         foreach ( $ressource_forms as &$dac)
         {
-            if ($dac->getDemande() < 0)
+            if ($dac->getDemande() < 0 )
             {
                 $val = false;
-                $dac->setdemande(0);
+                $dac->setDemande(0);
+                break;
+            }
+            if ($dac->getAttribution() < 0 )
+            {
+                $val = false;
+                $dac->setAttribution(0);
+                break;
             }
         }
         return $val;

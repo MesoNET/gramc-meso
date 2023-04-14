@@ -410,6 +410,52 @@ class VersionController extends AbstractController
         }
     }
 
+    /**
+     * Téléversement de la fiche projet en tant qu'admin
+     *
+     * @Route("/{id}/televerser_fiche_admin", name="version_televerser_fiche_admin",methods={"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function televerserFicheAdminAction(Request $request, Version $version): Response
+    {
+        $em = $this->em;
+        $sm = $this->sm;
+        $sj = $this->sj;
+
+        $rtn = $this->televerser($request, $version, "fiche.pdf");
+
+        // Si on récupère un formulaire on l'affiche
+        if (is_a($rtn, 'Symfony\Component\Form\Form'))
+        {
+            return $this->render(
+                'version/televerser_fiche.html.twig',
+                [
+                    'version' => $version,
+                    'form' => $rtn->createView(),
+                    'resultat' => null
+                ]);
+        }
+
+        // Sinon c'est une chaine de caractères en json.
+        else
+        {
+            $resultat = json_decode($rtn, true);
+
+            if ($resultat['OK'])
+            {
+                $this->modifyFiche($version);
+                $request->getSession()->getFlashbag()->add("flash info","La fiche projet a été correctement téléversée");
+                return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
+            }
+            else
+            {
+                $request->getSession()->getFlashbag()->add("flash erreur",strip_tags($resultat['message']));
+                return $this->redirectToRoute('version_televerser_fiche', ['id' => $version->getIdVersion() ]);
+            }
+            return new Response ($rtn);
+        }
+    }
+
     private function modifyFiche(Version $version) : void
     {
         $em = $this->em;
@@ -739,164 +785,96 @@ class VersionController extends AbstractController
         $sp = $this->sp;
         $sj = $this->sj;
 
-        return $this->render('default/oups.html.twig');
+        //return $this->render('default/oups.html.twig');
 
 
-        $format_fichier = new \Symfony\Component\Validator\Constraints\File(
-            [
-            'mimeTypes'=> [ 'application/pdf' ],
-            'mimeTypesMessage'=>' Le fichier doit être un fichier pdf. ',
-            'maxSize' => "2024k",
-            'uploadIniSizeErrorMessage' => ' Le fichier doit avoir moins de {{ limit }} {{ suffix }}. ',
-            'maxSizeMessage' => ' Le fichier est trop grand ({{ size }} {{ suffix }}), il doit avoir moins de {{ limit }} {{ suffix }}. ',
-        ]
-        );
-
-        $def_annee = $sd->format('Y');
-        // Tite bidouille ULTRA PROVISOIRE, on n'a PAS DE SESSION
-        //$def_sess  = $ss->getSessionCourante()->getIdSession();
-        $def_sess = '01';
-
+        // Premier formulaire = téléversement de la fiche projet
         $form = $this
            ->ff
            ->createNamedBuilder('upload', FormType::class, [], ['csrf_protection' => false ])
-           ->add('projet', TextType::class, [ 'label'=> "", 'required' => false, 'attr' => ['placeholder' => 'P12345']])
-           ->add('session', TextType::class, [ 'label'=> "", 'required' => false, 'attr' => ['placeholder' => $def_sess]])
-           ->add('annee', TextType::class, [ 'label'=> "", 'required' => false, 'attr' => ['placeholder' => $def_annee]])
+           ->add('version', TextType::class, [ 'label'=> "", 'required' => true, 'attr' => ['placeholder' => '01M23999']])
            ->add(
                'type',
                ChoiceType::class,
                [
                 'required' => true,
                 'choices'  => [
+                                "Fiche projet" => "f",
                                 "Rapport d'activité" => "r",
-                                "Fiche projet"       => "f",
                               ],
                 'label'    => "",
             ]
            )
-           ->add(
-               'file',
-               FileType::class,
-               [
-                'required'    =>  true,
-                'label'       => "",
-                'constraints' => [$format_fichier , new PagesNumber() ]
-            ]
-           )
+           ->add('televerser', SubmitType::class)
+           ->add('attribution', SubmitType::class,[ 'label'=> "Changer l'attribution" ] )
            ->getForm();
 
         $erreurs  = [];
         $resultat = [];
 
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            $data   =   $form->getData();
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $data = $form->getData();
 
-            if (isset($data['projet']) && $data['projet'] != null) {
-                $projet = $em->getRepository(Projet::class)->find($data['projet']);
-                if ($projet == null) {
-                    $erreurs[]  =   "Le projet " . $data['projet'] . " n'existe pas";
+            // Récupérer la version
+            if (isset($data['version']) && $data['version'] != null)
+            {
+                $version = $em->getRepository(Version::class)->find($data['version']);
+                if ($version === null)
+                {
+                    $request->getSession()->getFlashbag()->add("flash erreur","Pas de version " . $data['version']);
+                    return $this->redirectToRoute('televersement_generique');
                 }
-            } else {
-                $projet = null;
+            }
+            else
+            {
+                $request->getSession()->getFlashbag()->add("flash erreur","Erreur interne");
+                return $this->redirectToRoute('televersement_generique');
             }
 
-            if (isset($data['session']) && $data['session'] != null) {
-                $session = $em->getRepository(Session::class)->find($data['session']);
-                if ($session == null) {
-                    $erreurs[] = "La session " . $data['session'] . " n'existe pas";
+            // Bouton Téléverser
+            if ($form->get('televerser')->isClicked())
+            {
+                if (isset($data['type']) && $data['type'] === 'f')
+                {
+                    return $this->redirectToRoute('version_televerser_fiche_admin', ['id' => $version->getIdVersion() ]);
                 }
-            } else {
-                $session = $ss->getSessionCourante();
-            }
-
-            if (isset($data['annee']) && $data['annee'] != null) {
-                $annee = $data['annee'];
-            } else {
-                $annee = $session->getAnneeSession() + 2000;
-            }
-
-            if (isset($data['file']) && $data['file'] != null) {
-                $tempFilename = $data['file'];
-                if (! empty($tempFilename) && $tempFilename != "") {
-                    $validator = $this->vl;
-                    $violations = $validator->validate($tempFilename, [ $format_fichier, new PagesNumber() ]);
-                    foreach ($violations as $violation) {
-                        $erreurs[]  =   $violation->getMessage();
-                    }
+                elseif (isset($data['type']) && $data['type'] === 'r')
+                {
+                    $request->getSession()->getFlashbag()->add("flash erreur","PAS DE RAPPORT D'ACTIVITE dans cette version de gramc-meso");
+                    return $this->redirectToRoute('televersement_generique');
                 }
-            } else {
-                $tempFilename = null;
-            }
-
-            $type = $data['type'];
-
-            if ($annee == null && $type != "f") {
-                $erreurs[] =  "L'année doit être donnée pour un rapport d'activité";
-            }
-            if ($projet == null) {
-                $erreurs[] =  "Le projet doit être donné";
-            }
-            if ($session == null && $type == "f") {
-                $erreurs[] =  "La session doit être donnée pour une fiche projet";
-            }
-
-            $sp->createDirectories($annee, $session);
-
-            $file = null;
-            if (is_file($tempFilename) && ! is_dir($tempFilename)) {
-                $file = new File($tempFilename);
-            } elseif (is_dir($tempFilename)) {
-                $sj->errorMessage(__METHOD__ .":" . __LINE__ . " Le nom  " . $tempFilename . " correspond à un répertoire");
-                $erreurs[]  =  " Le nom  " . $tempFilename . " correspond à un répertoire";
-            } else {
-                $sj->errorMessage(__METHOD__ .":" . __LINE__ . " Le fichier " . $tempFilename . " n'existe pas");
-                $erreurs[]  =  " Le fichier " . $tempFilename . " n'existe pas";
-            }
-
-            if ($form->isValid() && $erreurs == []) {
-                if ($type == "f") {
-                    $filename = $this->getParameter('signature_directory') .'/'.$session->getIdSession() .
-                                    "/" . $session->getIdSession() . $projet->getIdProjet() . ".pdf";
-                    $file->move(
-                        $this->getParameter('signature_directory') .'/'.$session->getIdSession(),
-                        $session->getIdSession() . $projet->getIdProjet() . ".pdf"
-                    );
-
-                    // on marque le téléversement de la fiche projet
-                    $version = $em->getRepository(Version::class)->findOneBy(['projet' => $projet, 'session' => $session ]);
-                    if ($version != null) {
-                        $version->setPrjFicheVal(true);
-                        $em->flush();
-                    } else {
-                        $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Il n'y a pas de version du projet " . $projet . " pour la session " . $session);
-                    }
-
-                    $resultat[] =   " Fichier " . $filename . " téléversé";
-                } elseif ($type = "r") {
-                    $filename = $this->getParameter('rapport_directory') .'/'.$annee .
-                                    "/" . $annee . $projet->getIdProjet() . ".pdf";
-                    $file->move(
-                        $this->getParameter('rapport_directory') .'/'.$annee,
-                        $annee . $projet->getIdProjet() . ".pdf"
-                    );
-                    $resultat[] =   " Fichier " . $filename . " téléversé";
-                    $this->modifyRapport($projet, $annee, $filename);
+                else
+                {
+                    $request->getSession()->getFlashbag()->add("flash erreur","Erreur interne");
+                    return $this->redirectToRoute('televersement_generique');
                 }
+            }
+
+            // Bouton Attribution
+            if ($form->get('attribution')->isClicked())
+            {
+                //dd('ATTRIB',$version);
+                return $this->redirectToRoute('version_attribution_admin', ['id' => $version->getIdVersion() ]);
             }
         }
 
+        // Second formulaire = Attributions de la fiche projet
+/*
         $form1 = $this->ff
             ->createBuilder()
             ->add('version', TextType::class, [
-                    'label' => "Numéro de version",'required' => true, 'attr' => ['placeholder' => $def_sess.'P12345']])
-            ->add('attrHeures', IntegerType::class, [
-                    'label' => 'Attribution', 'required' => true, 'attr' => ['placeholder' => '100000']])
-            ->add('attrHeuresEte', IntegerType::class, [
-                    'label' => 'Attribution', 'required' => false, 'attr' => ['placeholder' => '10000']])
+                    'label' => "Numéro de version",'required' => true, 'attr' => ['placeholder' => '01P12345']])
             ->getForm();
-
+*/
+        // FORMULAIRE DES RESSOURCES
+/*        $ressource_form = $sv->getRessourceForm($version);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+        */
+/*
         $erreurs1 = [];
         $form1->handleRequest($request);
         if ($form1->isSubmitted()) {
@@ -941,21 +919,78 @@ class VersionController extends AbstractController
                 $em->flush();
             }
         }
-
+*/
         return $this->render(
             'version/televersement_generique.html.twig',
             [
             'form'     => $form->createView(),
             'erreurs'  => $erreurs,
-            'form1'    => $form1->createView(),
-            'erreurs1' => $erreurs1,
-            'def_annee' => $def_annee,
-            'def_sess'  => $def_sess,
+  //          'form1'    => $form1->createView(),
+  //          'erreurs1' => $erreurs1,
             'resultat' => $resultat,
         ]
         );
     }
 
+    /**
+     * Changer l'attribution d'une version en mode admin
+     *
+     * @Route("/{id}/attribution", name="version_attribution_admin",methods={"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function versionAttributionAction(Request $request, Version $version): Response
+    {
+        $sv = $this->sv;
+        $em = $this->em;
+
+        // FORMULAIRE DES RESSOURCES
+        $ressource_form = $sv->getRessourceForm($version, true);
+        $ressource_form->handleRequest($request);
+        $data = $ressource_form->getData();
+        $ressource_forms = $data['ressource'];
+
+        $editForm = $this->createFormBuilder($version)
+            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer' ])
+            ->add('fermer', SubmitType::class, ['label' => 'Fermer' ])
+            ->add('annuler', SubmitType::class, ['label' => 'Annuler' ])
+            ->getForm();
+
+        $erreurs = [];
+        $editForm->handleRequest($request);
+        if ($editForm->isSubmitted())
+        {
+            if ($editForm->get('annuler')->isClicked())
+            {
+                return $this->redirectToRoute('televersement_generique');
+            }
+            else
+            {
+                $validated = $sv->validateRessourceForms($ressource_forms);
+                if (! $validated)
+                {
+                    $message = "Erreur dans une de vos attributions";
+                    $request->getSession()->getFlashbag()->add("flash erreur",$message);
+                }
+                else
+                {
+                    $em->flush();
+                    $request->getSession()->getFlashbag()->add("flash info","Attributions enregistrées");
+                    if ($editForm->get('fermer')->isClicked()) {
+                        return $this->redirectToRoute('televersement_generique');
+                    }
+                }
+            }
+        }
+        return $this->render(
+            'version/attribution.html.twig',
+            [
+            'version'  => $version,
+            'edit_form' => $editForm->createView(),
+            'ressource_form' => $ressource_form->createView(),
+            'erreurs'   => $erreurs,
+            ]);
+    }
+ 
     ///////////////////////////////////////////////////////////////
 
     /**
