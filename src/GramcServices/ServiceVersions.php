@@ -1617,4 +1617,92 @@ class ServiceVersions
                                    ->getForm();
         return $collaborateur_form;
     }
+
+    /**
+     * Validation du formulaire de version
+     *
+     *    param = Version
+     *            
+     *    return= Un array contenant la "todo liste", ie la liste de choses à faire pour que le formulaire soit validé
+     *            Un array vide [] signifie: "Formulaire validé"
+     *
+     **/
+    public function validateVersion(Version $version): array
+    {
+        $em   = $this->em;
+
+        $todo   =   [];
+        if ($version->getPrjTitre() == null) {
+            $todo[] = 'prj_titre';
+        }
+        // Il faut qu'au moins une ressource ait une demande non nulle
+        $dacs = $version->getDac();
+        $dem = false;
+        foreach ($dacs as $d)
+        {
+            if ($d->getDemande() != 0)
+            {
+                $dem = true;
+                break;
+            }
+        }
+        if ($dem == false)$todo[] = 'ressources';
+        
+        if ($version->getPrjThematique() == null) {
+            $todo[] = 'prj_id_thematique';
+        }
+        if ($version->getCodeNom() == null) {
+            $todo[] = 'code_nom';
+        }
+        if ($version->getCodeLicence() == null) {
+            $todo[] = 'code_licence';
+        }
+
+        // TODO - Automatiser cela avec le formulaire !
+        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_DYN) {
+            if ($version->getPrjExpose() == null) {
+                $todo[] = 'prj_expose';
+            }
+
+            // s'il s'agit d'un renouvellement
+            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
+                $todo[] = 'prj_justif_renouv';
+            }
+
+            // Centres nationaux
+            if ($version->getPrjGenciCentre()     == null
+                || $version->getPrjGenciMachines() == null
+                || $version->getPrjGenciHeures()   == null
+                || $version->getPrjGenciDari()     == null) {
+                $todo[] = 'genci';
+            };
+        }
+
+        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_SESS) {
+            if ($version->getPrjExpose() == null) {
+                $todo[] = 'prj_expose';
+            }
+
+            // s'il s'agit d'un renouvellement
+            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
+                $todo[] = 'prj_justif_renouv';
+            }
+
+            // Centres nationaux
+            if ($version->getPrjGenciCentre()     == null
+                || $version->getPrjGenciMachines() == null
+                || $version->getPrjGenciHeures()   == null
+                || $version->getPrjGenciDari()     == null) {
+                $todo[] = 'genci';
+            };
+        }
+
+        // Validation des formulaires des collaborateurs
+        if (! $this->validateIndividuForms($this->prepareCollaborateurs($version), true)) {
+            $todo[] = 'collabs';
+        }
+
+        return $todo;
+    }
+
 }

@@ -126,6 +126,7 @@ class VersionSpecController extends AbstractController
     {
         $sm = $this->sm;
         $sj = $this->sj;
+        $sv = $this->sv;
         $vl = $this->vl;
         $em = $this->em;
 
@@ -134,14 +135,15 @@ class VersionSpecController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de modifier la version " . $version->getIdVersion().
                 " parce que : " . $sm->modifierVersion($version)['raison']);
         }
-        if ($this->__versionValidate($version) != []) {
+        if ($sv->validateVersion($version) != []) {
             return $this->render(
                 'version/avant_modifier.html.twig',
                 [
                 'version'   => $version
                 ]);
         }
-        else {
+        else
+        {
             return $this->redirectToRoute('envoyer_en_expertise', [ 'id' => $version->getIdVersion() ]);
         }
     }
@@ -311,7 +313,7 @@ class VersionSpecController extends AbstractController
                 'collaborateur_form' => $collaborateur_form->createView(),
                 'formation_form' => $formation_form->createView(),
                 'ressource_form' => $ressource_form->createView(),
-                'todo' => $this->__versionValidate($version),
+                'todo' => $sv->validateVersion($version),
                 'nb_form' => $nb_form
             ]
         );
@@ -588,93 +590,4 @@ class VersionSpecController extends AbstractController
         $n += 1;
         return sprintf('%02d', $n);
     }
-    
-    /**
-     * Validation du formulaire de version
-     *
-     *    param = Version
-     *            
-     *    return= Un array contenant la "todo liste", ie la liste de choses à faire pour que le formulaire soit validé
-     *            Un array vide [] signifie: "Formulaire validé"
-     *
-     **/
-    private function __versionValidate(Version $version): array
-    {
-        $sv = $this->sv;
-        $em   = $this->em;
-
-        $todo   =   [];
-        if ($version->getPrjTitre() == null) {
-            $todo[] = 'prj_titre';
-        }
-        // Il faut qu'au moins une ressource ait une demande non nulle
-        $dacs = $version->getDac();
-        $dem = false;
-        foreach ($dacs as $d)
-        {
-            if ($d->getDemande() != 0)
-            {
-                $dem = true;
-                break;
-            }
-        }
-        if ($dem == false)$todo[] = 'ressources';
-        
-        if ($version->getPrjThematique() == null) {
-            $todo[] = 'prj_id_thematique';
-        }
-        if ($version->getCodeNom() == null) {
-            $todo[] = 'code_nom';
-        }
-        if ($version->getCodeLicence() == null) {
-            $todo[] = 'code_licence';
-        }
-
-        // TODO - Automatiser cela avec le formulaire !
-        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_DYN) {
-            if ($version->getPrjExpose() == null) {
-                $todo[] = 'prj_expose';
-            }
-
-            // s'il s'agit d'un renouvellement
-            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
-                $todo[] = 'prj_justif_renouv';
-            }
-
-            // Centres nationaux
-            if ($version->getPrjGenciCentre()     == null
-                || $version->getPrjGenciMachines() == null
-                || $version->getPrjGenciHeures()   == null
-                || $version->getPrjGenciDari()     == null) {
-                $todo[] = 'genci';
-            };
-        }
-
-        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_SESS) {
-            if ($version->getPrjExpose() == null) {
-                $todo[] = 'prj_expose';
-            }
-
-            // s'il s'agit d'un renouvellement
-            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
-                $todo[] = 'prj_justif_renouv';
-            }
-
-            // Centres nationaux
-            if ($version->getPrjGenciCentre()     == null
-                || $version->getPrjGenciMachines() == null
-                || $version->getPrjGenciHeures()   == null
-                || $version->getPrjGenciDari()     == null) {
-                $todo[] = 'genci';
-            };
-        }
-
-        // Validation des formulaires des collaborateurs
-        if (! $sv->validateIndividuForms($sv->prepareCollaborateurs($version), true)) {
-            $todo[] = 'collabs';
-        }
-
-        return $todo;
-    }
-
 }

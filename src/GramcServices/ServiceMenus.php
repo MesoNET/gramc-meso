@@ -633,17 +633,24 @@ class ServiceMenus
 
     public function modifierVersion(Version $version, int $priorite=self::HPRIO):array
     {
+        $sv = $this->sv;
+        
         $menu['name'] = 'modifier_version';
         $menu['param'] = $version->getIdVersion();
         $menu['lien'] = "Modifier";
         $menu['icone'] = "modifier";
         $menu['commentaire'] = "Vous ne pouvez pas modifier ce projet";
+
         $menu['ok'] = false;
 
         if ($this->ac->isGranted('ROLE_ADMIN')) {
-            $menu['commentaire']    =   "Modifier le projet en tant qu'administrateur";
-            $menu['raison']         =   "L'administrateur peut TOUJOURS modifier le projet quelque soit son état !";
-            $menu['ok']             = true;
+            $menu['commentaire'] = "Modifier le projet en tant qu'administrateur";
+            $menu['raison'] = "L'administrateur peut TOUJOURS modifier le projet quelque soit son état !";
+            $menu['ok'] = true;
+            if ($sv->validateVersion($version))
+            {
+                $menu['todo'] = "Compléter le formulaire";
+            }
         }
         else
         {
@@ -1314,7 +1321,7 @@ class ServiceMenus
         } else {
             $menu['ok']          = true;
             $menu['commentaire'] = "Téléverser la fiche projet";
-            $menu['todo']        = "Télécharger la fiche projet, la faire signer et la téléverser à nouveau";
+            $menu['todo']        = "Télécharger la fiche projet, la faire signer et la téléverser";
         }
 
         $this->__prio($menu, $priorite);

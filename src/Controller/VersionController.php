@@ -688,6 +688,7 @@ class VersionController extends AbstractController
         $sj = $this->sj;
         $ff = $this->ff;
         $se = $this->se;
+        $em = $this->em;
 
         if ($version->getTypeVersion() === Projet::PROJET_DYN)
         {
@@ -695,10 +696,8 @@ class VersionController extends AbstractController
         }
         else
         {
-            $projetWorkflow = $this->pw;
+            $sj->throwException(__METHOD__ . ":" . __LINE__ . " $version n'est PAS de type 4 (type ".$version->getTypeVersion().")");
         }
-
-        $em = $this->em;
 
         if ($sm->envoyerEnExpertise($version)['ok'] == false) {
         $sj->throwException(__METHOD__ . ":" . __LINE__ .

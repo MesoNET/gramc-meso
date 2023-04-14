@@ -346,7 +346,7 @@ class ProjetSpecController extends AbstractController
         $type = $projet->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_DYN:
-                return $this->consulterProjet4($projet, $version, $request);
+                return $this->__consulter4($projet, $version, $request);
             default:
                 $sj->errorMessage(__METHOD__ . " Type de projet inconnu: $type");
         }
@@ -354,7 +354,7 @@ class ProjetSpecController extends AbstractController
 
 
     // Consulter les projets de type 4 (=> projets dynamiques))
-    private function consulterProjet4(Projet $projet, Version $version, Request $request)
+    private function __consulter4(Projet $projet, Version $version, Request $request)
     {
         $em = $this->em;
         $sm = $this->sm;
