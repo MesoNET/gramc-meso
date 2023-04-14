@@ -147,6 +147,9 @@ class ServiceProjets
         $sj = $this->sj;
         $em = $this->em;
         
+        // suppression des fichiers liés à la version
+        $this->__effacerDonnees($version);
+
         // Suppression des dac associés
          foreach ($version->getDac() as $dac)
         {
@@ -172,7 +175,8 @@ class ServiceProjets
             $em->remove($expertise);
         }
 
-        // TODO - Suppression des rallonges
+        // Suppression des rallonges
+        $this->__effacerRallonges($version);
         
         // Ne devrait pas arriver !
         $projet = $version->getProjet();
@@ -189,9 +193,6 @@ class ServiceProjets
             $em -> persist($projet);
             //$em->flush();
         }
-
-        // suppression des fichiers liés à la version
-        $this->effacerDonnees($version);
 
         // On supprime la version
         // Du coup la versionDerniere est mise à jour par l'EventListener
@@ -210,11 +211,8 @@ class ServiceProjets
      *
      *  - Les fichiers img_* et *.pdf du répertoire des figures
      *  - Le fichier de signatures s'il existe
-     *  - N'EFFACE PAS LE RAPPORT D'ACTIVITE !
-     *    cf. ServiceProjets pour cela
-     *  TODO - Rendre cette fonction privée, et pour cela modifier la commande Rgpd
-     *************************************************************/
-    public function effacerDonnees(Version $version): void
+     *********************************************************/ 
+    private function __effacerDonnees(Version $version): void
     {
         $sv = $this->sv;
         
@@ -229,6 +227,25 @@ class ServiceProjets
             unlink($fiche);
         }
     }
+
+    // effacer toutes les rallonges d'une version
+    private function __effacerRallonges(Version $version)
+    {
+        $em = $this->em;
+        
+        // Effacer les rallonges
+        foreach ( $version->getRallonge() as $r)
+        {
+            // Effacer les Dars !
+            foreach ($r->getDars() as $d )
+            {
+                $em->remove($d);
+            }
+            $em->remove($r);
+        }
+        $em->flush();
+    }
+
 
     /**************
      * Calcule le prochain id de projet, à partir des projets existants
@@ -907,7 +924,9 @@ class ServiceProjets
      *         - Pas collaborateurs
      *         - Pas d'expertises
      *         - Pas de privilèges
+     *         - Pas de users
      *
+     * Efface les Users correspondants à ces individus !
      * Renvoie un tableau contenant les clones des individus effacés
      * TODO - Un peu zarbi tout de même
      */
@@ -923,7 +942,6 @@ class ServiceProjets
         $individus = $repo_ind->findAll();
         foreach ($individus as $individu) {
             if ( $individu -> getAdmin() ) continue;
-            if ( $individu -> getPresident() ) continue;
             if ( $individu -> getObs() ) continue;
             if ( $individu -> getExpert() ) continue;
             
@@ -934,7 +952,19 @@ class ServiceProjets
             foreach ($em->getRepository(Sso::class)->findBy(['individu' => $individu]) as $sso) {
                 $em->remove($sso);
             }
+            
+            foreach ($individu -> getUser() as $u)
+            {
+                $em->remove($u);
+            }
 
+            foreach ($individu -> getClessh() as $k)
+            {
+                $em->remove($k);
+            }
+
+            // TODO - Supprimer les invitations... ne devraient pas exister mais il fuadrait le vérifier !
+            
             $this->sj->infoMessage("L'individu " . $individu . ' a été effacé ');
             $em->remove($individu);
         }

@@ -614,10 +614,6 @@ class ExpertiseController extends AbstractController
         $version->setStartDate($grdt->getNew());
         $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
         $projet->setLimitDate($version->getLimitDate());
-        if ( $version->getEtatVersion() === Etat::REFUSE)
-        {
-            $version->setEndDate($grdt->getNew());
-        }
 
         // Si la version active existe, on positionne sa date de fin
         $veract = $projet->getVersionActive();
@@ -641,6 +637,13 @@ class ExpertiseController extends AbstractController
         else
         {
             $expertise->setDefinitif(true);
+
+            // Version refusée = On met la date de fin à aujourd'hui'
+            if ( !$validation)
+            {
+                $version->setEndDate($grdt->getNew());
+                $version->setLimitDate($grdt->getNew());
+            }
         }
 
         // On met à jour la version active
