@@ -89,93 +89,6 @@ class AdminuxController extends AbstractController
     ) {}
 
     /**
-     * Met à jour les données de comptabilité à partir d'un unique fichier csv
-     *
-     * format date, loginname, ressource, type, consommation, quota
-     * ressource = cpu, gpu, home, etc.
-     * type      = user ou group unix
-     * @Route("/compta_update_batch", name="compta_update_batch", methods={"PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     */
-
-    // exemple: curl --netrc -T path/to/file.csv https://.../adminux/compta_update_batch
-    
-    public function UpdateComptaBatchAction(Request $request): Response
-    {
-
-        /****** NON IMPLEMENTE ACTUELLEMENT ********/
-        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
-
-        $em = $this->em;
-        $sj = $this->sj;
-        
-        $conso_repository = $em->getRepository(Compta::class);
-
-        $putdata = fopen("php://input", "r");
-        //$input = [];
-
-        while ($ligne  =   fgetcsv($putdata)) {
-            if (sizeof($ligne) < 5) {
-                continue;
-            } // pour une ligne erronée ou incomplète
-
-            $date       =   $ligne[0]; // 2019-02-05
-            $date       =   new \DateTime($date . "T00:00:00");
-            $loginname  =   $ligne[1]; // login
-            $ressource  =   $ligne[2]; // cpu, gpu, ...
-            $type   =   $ligne[3]; // user, group
-            if ($type=="user") {
-                $type_nb = Compta::USER;
-            } elseif ($type=="group") {
-                $type_nb = Compta::GROUP;
-            } else {
-                $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - type de ligne bizarre: $type");
-                return new Response('KO');
-            }
-
-            $compta =  $conso_repository->findOneBy([ 'date' => $date, 'loginname' =>  $loginname,  'ressource' => $ressource, 'type' => $type_nb ]);
-            if ($compta == null) { // new item
-                $compta = new Compta();
-                $compta->setDate($date);
-                $compta->setLoginname($loginname);
-                $compta->setRessource($ressource);
-                $compta->setType($type_nb);
-                $em->persist($compta);
-            }
-
-            $conso  =   $ligne[4]; // consommation
-
-            if (array_key_exists(5, $ligne)) {
-                $quota  =   $ligne[5];
-            } // quota
-            else {
-                $quota  =   -1;
-            }
-
-
-            $compta->setConso($conso);
-            $compta->setQuota($quota);
-
-            //$input[]    =   $compta;
-            //return new Response( Functions::show( $ligne ) );
-        }
-
-        try {
-            $em->flush();
-        }
-        catch (\Exception $e)
-        {
-            $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - Mise à jour de la compta incomplète");
-            return new Response('KO');
-        }
-
-        //return new Response( Functions::show( $conso_repository->findAll() ) );
-        $sj -> infoMessage(__METHOD__ . "Compta mise à jour");
-        return $this->render('consommation/conso_update_batch.html.twig');
-    }
-
-    /**
      * Met à jour la consommation pour un projet donné
      *
      * @Route("/projet/setconso", name="set_conso", methods={"POST"})
@@ -184,7 +97,7 @@ class AdminuxController extends AbstractController
      */
 
     // exemple: curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
-    public function setconsoAction(Request $request, LoggerInterface $lg): Response
+    public function setconsoAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -192,7 +105,7 @@ class AdminuxController extends AbstractController
         $su = $this->su;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null)
+        if ($content === null)
         {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
@@ -266,7 +179,7 @@ class AdminuxController extends AbstractController
         else
         {
             $version = $projet->getVersionActive();
-            if ($version == null)
+            if ($version === null)
             {
                 $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de version active pour $projet");
                 return new Response(json_encode(['KO' => 'Pas de version active']));
@@ -312,14 +225,14 @@ class AdminuxController extends AbstractController
      */
 
     // exemple: curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
-    public function setloginnameAction(Request $request, LoggerInterface $lg): Response
+    public function setloginnameAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $su = $this->su;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -344,18 +257,18 @@ class AdminuxController extends AbstractController
 
         $error = [];
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $error[]    =   'No Projet ' . $idProjet;
         }
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[]    =   'No idIndividu ' . $idIndividu;
         }
 
         $loginname_p = $su -> parseLoginname($loginname);
         $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-        if ($serveur == null)
+        if ($serveur === null)
         {
            $error[] = 'No serveur ' . $loginname_p['serveur'];
         }
@@ -372,7 +285,7 @@ class AdminuxController extends AbstractController
         }
 
         $u = $su->getUser($individu, $projet, $serveur);
-        if ( $u->getLogin() == false)
+        if ( $u->getLogin() === false)
         {
             $msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
             $sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
@@ -402,63 +315,6 @@ class AdminuxController extends AbstractController
 
         $sj -> infoMessage(__METHOD__ . "user $u modifié");
         return new Response(json_encode('OK'));
-
-
-            //$versions = $projet->getVersion();
-        //$i=0;
-        //foreach ($versions as $version)
-        //{
-            //// $version->getIdVersion()."\n";
-            //if ($version->getEtatVersion() == Etat::ACTIF             ||
-                //$version->getEtatVersion() == Etat::ACTIF_TEST        ||
-                //$version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                //$version->getEtatVersion() == Etat::EN_ATTENTE
-              //)
-            //{
-              //foreach ($version->getCollaborateurVersion() as $cv)
-              //{
-                  //$collaborateur  =  $cv->getCollaborateur() ;
-                  //if ($collaborateur != null && $collaborateur->isEqualTo($individu))
-                  //{
-                      //$user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      //foreach ($cv->getUser() as $u)
-                      //{                     
-                          //if ($serveur === $u->getServeur())
-                          //{
-                              //if ( $u->getLogin() == false)
-                              //{
-                                  //$msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
-                                  //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
-                                  //return new Response(json_encode(['KO' => $msg]));
-                              //}
-                              //if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
-                              //{
-                                  //$msg = "Commencez par appeler clearloginname";
-                                  //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg ");
-                                  //return new Response(json_encode(['KO' => $msg]));
-                              //}
-                              
-                              //$u->setLoginname($loginname_p['loginname']);
-                              //$em->persist($u);
-                              //$em->flush();
-                              //$i += 1;
-                              //break; // Sortir de la boucle sur les cv
-                          //}
-                      //}
-                  //}
-               //}
-            //}
-        //}
-        //if ($i > 0 )
-        //{
-            //$sj -> infoMessage(__METHOD__ . "$i versions modifiées");
-            //return new Response(json_encode(['OK' => "$i versions modifiees"]));
-        //}
-        //else
-        //{
-            //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - Mauvais projet ou mauvais idIndividu !");
-            //return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
-        //}
     }
 
     /**
@@ -472,13 +328,13 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "bob@serveur", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
 
-    public function setpasswordAction(Request $request, LoggerInterface $lg): Response
+    public function setpasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -574,13 +430,13 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto" }' https://.../adminux/users/clearpassword
 
-    public function clearpasswordAction(Request $request, LoggerInterface $lg): Response
+    public function clearpasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage("__METHOD__ . ':' . __FILE__ .  - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de donnees']));
         }
@@ -648,14 +504,14 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto@SERVEUR", "projet":"P1234" }' https://.../adminux/utilisateurs/clearloginname
 
-    public function clearloginnameAction(Request $request, LoggerInterface $lg): Response
+    public function clearloginnameAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $token = $this->tok->getToken();
         
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de donnees']));
         }
@@ -740,7 +596,7 @@ class AdminuxController extends AbstractController
         }
         
         $resp = $v->getResponsable();
-        $r['mail']            = $resp == null ? null : $resp->getMail();
+        $r['mail']            = $resp === null ? null : $resp->getMail();
         if ($long)
         {
             $r['titre']      = $v->getPrjTitre();
@@ -818,7 +674,7 @@ class AdminuxController extends AbstractController
 
         $content  = json_decode($request->getContent(), true);
         //print_r($content);
-        if ($content == null) {
+        if ($content === null) {
             $id_projet = null;
             $long = false;
 
@@ -829,7 +685,7 @@ class AdminuxController extends AbstractController
 
         $p_tmp = [];
         $projets = [];
-        if ($id_projet == null) {
+        if ($id_projet === null) {
             $projets = $rep->findNonTermines();
         } else {
             $p = $rep->findOneBy(["idProjet" => $id_projet]);
@@ -923,7 +779,7 @@ class AdminuxController extends AbstractController
         $versions = [];
 
         $content  = json_decode($request->getContent(),true);
-        if ($content == null)
+        if ($content === null)
         {
             $id_projet = null;
             $id_version = null;
@@ -946,7 +802,7 @@ class AdminuxController extends AbstractController
         }
         
         // Tous les projets actifs
-        elseif ($id_projet == null && $id_session == null)
+        elseif ($id_projet === null && $id_session === null)
         {
             $v_tmp = $em->getRepository(Version::class)->findAll();
         }
@@ -962,7 +818,7 @@ class AdminuxController extends AbstractController
         $etats = [Etat::ACTIF, Etat::EN_ATTENTE, Etat::NOUVELLE_VERSION_DEMANDEE];
         foreach ($v_tmp as $v)
         {
-            if ($v == null) continue;
+            if ($v === null) continue;
             if (in_array($v->getEtatVersion(),$etats,true))
             {
                 $versions[] = $v;
@@ -1043,12 +899,12 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($raw_content == '' || $raw_content == '{}') {
+        if ($raw_content === '' || $raw_content === '{}') {
             $content = null;
         } else {
             $content  = json_decode($request->getContent(), true);
         }
-        if ($content == null) {
+        if ($content === null) {
             $id_projet = null;
             $mail      = null;
         } else {
@@ -1060,17 +916,17 @@ class AdminuxController extends AbstractController
         $projets = [];
 
         // Tous les collaborateurs de tous les projets non terminés
-        if ($id_projet == null && $mail == null) {
+        if ($id_projet === null && $mail === null) {
             $projets = $em->getRepository(Projet::class)->findNonTermines();
         }
 
         // Tous les projets dans lesquels une personne donnée a un login
-        elseif ($id_projet == null) {
+        elseif ($id_projet === null) {
             $projets = $em->getRepository(Projet::class)->findNonTermines();
         }
 
         // Tous les collaborateurs d'un projet
-        elseif ($mail == null) {
+        elseif ($mail === null) {
             $p = $em->getRepository(Projet::class)->find($id_projet);
             if ($p != null) {
                 $projets[] = $p;
@@ -1102,7 +958,7 @@ class AdminuxController extends AbstractController
             $vs = [];
             $vs_labels = [];
 
-            if ($p->getVersionDerniere() == null) {
+            if ($p->getVersionDerniere() === null) {
                 $this->sj->warningMessage("ATTENTION - Projet $p SANS DERNIERE VERSION !");
                 continue;   // oups, projet bizarre
             } else {
@@ -1196,7 +1052,7 @@ class AdminuxController extends AbstractController
         $su = $this->su;
         
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $sj->infoMessage(__METHOD__ . " No projet $idProjet");
             return new Response(json_encode(['KO' => 'No Projet ' . $idProjet ]));
         }
@@ -1206,7 +1062,7 @@ class AdminuxController extends AbstractController
         $idProjet    =   $projet->getIdProjet();
 
         foreach ($versions as $version) {
-            if ($version->getEtatVersion() == Etat::ACTIF) {
+            if ($version->getEtatVersion() === Etat::ACTIF) {
                 foreach ($version->getCollaborateurVersion() as $cv) {
                     $collaborateur  = $cv->getCollaborateur() ;
                     if ($collaborateur != null) {
@@ -1264,7 +1120,7 @@ class AdminuxController extends AbstractController
                 // On ne s'occupe pas des projets terminés ou annulés
                 // TODO - Tester sur l'état plutôt que sur le meta état,
                 //        le méta état est censé être fait SEULEMENT pour l'affichage !
-                if ( $p['metaetat'] == "TERMINE" ) continue;
+                if ( $p['metaetat'] === "TERMINE" ) continue;
                 if ($p['attrib'] != $p['q']) {
                     $msg .= $p['p']->getIdProjet() . "\t" . $p['attrib'] . "\t\t" . $p["q"] . "\n";
                 }
@@ -1292,7 +1148,7 @@ class AdminuxController extends AbstractController
      * curl --netrc -H "Content-Type: application/json" https://.../adminux/utilisateurs/checkpassword
      *
      */
-    public function checkPasswordAction(Request $request, LoggerInterface $lg): Response
+    public function checkPasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -1313,7 +1169,7 @@ class AdminuxController extends AbstractController
             }
             
             // Si nécessaire on marque le user comme expiré, mais on ne supprime rien
-            if ($user->getPassexpir() <= $grdt && $user->getExpire() == false)
+            if ($user->getPassexpir() <= $grdt && $user->getExpire() === false)
             {
                 $user->setExpire(true);
                 $em->persist($user);
@@ -1322,7 +1178,7 @@ class AdminuxController extends AbstractController
             }
 
             // On ne devrait jamais rentrer dans le if mais on ajoute de la robustesse
-            if ($user->getPassexpir() > $grdt && $user->getExpire() == true)
+            if ($user->getPassexpir() > $grdt && $user->getExpire() === true)
             {
                 $user->setExpire(false);
                 $em->persist($user);
@@ -1361,7 +1217,7 @@ class AdminuxController extends AbstractController
         {
             $loginname_p = $su -> parseLoginname($prm);
             $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-            if ($serveur == null)
+            if ($serveur === null)
             {
                return false;
             }
@@ -1402,7 +1258,7 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($raw_content == '' || $raw_content == '{}')
+        if ($raw_content === '' || $raw_content === '{}')
         {
             $content = null;
         }
@@ -1411,7 +1267,7 @@ class AdminuxController extends AbstractController
             $content  = json_decode($request->getContent(), true);
         }
         
-        if ($content == null) {
+        if ($content === null) {
             $rvk = 0;
         }
         else
@@ -1441,8 +1297,8 @@ class AdminuxController extends AbstractController
             $r_c['pub'] = $c->getPub();
             $r_c['rvk'] = $c->getrvk();
 
-            if ( $rvk === 1 && $r_c['rvk'] == false) continue;
-            if ( $rvk === -1 && $r_c['rvk'] == true) continue;
+            if ( $rvk === 1 && $r_c['rvk'] === false) continue;
+            if ( $rvk === -1 && $r_c['rvk'] === true) continue;
             $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
             $r_c['empreinte'] = $c->getEmp();
 
@@ -1491,7 +1347,7 @@ class AdminuxController extends AbstractController
         $su = $this->su;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -1516,12 +1372,12 @@ class AdminuxController extends AbstractController
 
         $error = [];
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $error[]    =   'No Projet ' . $idProjet;
         }
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[]    =   'No idIndividu ' . $idIndividu;
         }
 
@@ -1536,7 +1392,7 @@ class AdminuxController extends AbstractController
             $loginname_p['serveur'] = '';
         }
         $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-        if ($serveur == null)
+        if ($serveur === null)
         {
            $error[] = 'No serveur ' . $loginname_p['serveur'];
         }
@@ -1556,10 +1412,10 @@ class AdminuxController extends AbstractController
         $i=0;
         foreach ($versions as $version) {
             // $version->getIdVersion()."\n";
-            if ($version->getEtatVersion() == Etat::ACTIF             ||
-                $version->getEtatVersion() == Etat::ACTIF_TEST        ||
-                $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                $version->getEtatVersion() == Etat::EN_ATTENTE
+            if ($version->getEtatVersion() === Etat::ACTIF             ||
+                $version->getEtatVersion() === Etat::ACTIF_TEST        ||
+                $version->getEtatVersion() === Etat::NOUVELLE_VERSION_DEMANDEE ||
+                $version->getEtatVersion() === Etat::EN_ATTENTE
               )
               {
               foreach ($version->getCollaborateurVersion() as $cv)
@@ -1567,7 +1423,7 @@ class AdminuxController extends AbstractController
                   $collaborateur  =  $cv->getCollaborateur() ;
                   if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
                       $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      if ($user == null)
+                      if ($user === null)
                       {
                           $msg = "L'utilisateur $loginname n'existe pas";
                           $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
@@ -1609,7 +1465,7 @@ class AdminuxController extends AbstractController
         $su = $this->su;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -1629,12 +1485,12 @@ class AdminuxController extends AbstractController
         $error = [];
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[] = 'No idIndividu ' . $idIndividu;
         }
 
         $cle = $em->getRepository(Clessh::class)->find($idCle);
-        if ($cle == null) {
+        if ($cle === null) {
             $error[] = 'No Cle ' . $idCle;
         }
         else
@@ -1664,7 +1520,7 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -X GET https://.../adminux/cron/execute
-    public function cronAction(Request $request, LoggerInterface $lg): Response
+    public function cronAction(Request $request): Response
     {
         $cr = $this->cr;
         $cr->execute();
@@ -1771,7 +1627,7 @@ class AdminuxController extends AbstractController
      *
      */
     // curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN" }' https://.../adminux/todo/done
-    public function setdoneAction(Request $request, LoggerInterface $lg): Response
+    public function setdoneAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -1779,7 +1635,7 @@ class AdminuxController extends AbstractController
         $sroc = $this->sroc;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -1905,9 +1761,9 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -X GET https://.../adminux/gramcdate/get
-    public function getDateAction(Request $request, LoggerInterface $lg): Response
+    public function getDateAction(Request $request): Response
     {
-        if ($this->getParameter('kernel.debug') == false)
+        if ($this->getParameter('kernel.debug') === false)
         {
             return new Response(json_encode(['KO' => 'Seulement en debug !']));
         }
@@ -1937,14 +1793,14 @@ class AdminuxController extends AbstractController
     // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
 
-    public function setDateAction(Request $request, LoggerInterface $lg): Response
+    public function setDateAction(Request $request): Response
     {
         $grdt = $this->grdt;
         $cr = $this->cr;
         $sj = $this->sj;
         $em = $this->em;
         
-        if ($this->getParameter('kernel.debug') == false)
+        if ($this->getParameter('kernel.debug') === false)
         {
             return new Response(json_encode(['KO' => 'Seulement en debug !']));
         }
@@ -1954,7 +1810,7 @@ class AdminuxController extends AbstractController
             $rel = false;
             $cron = false;
             $content  = json_decode($request->getContent(), true);
-            if ($content == null)
+            if ($content === null)
             {
                 $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
                 return new Response(json_encode(['KO' => 'Pas de données']));
@@ -1978,7 +1834,7 @@ class AdminuxController extends AbstractController
             }
             
             $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
-            if ($grdt_now == null)
+            if ($grdt_now === null)
             {
                 $grdt_now = new Param();
                 $grdt_now->setCle('now');
