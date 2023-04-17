@@ -26,7 +26,6 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-//use App\App;
 use App\GramcServices\Etat;
 use App\Utils\Functions;
 use App\Entity\Version;
@@ -177,11 +176,11 @@ class Projet
      */
     private $tetatProjet;
 
-    public function getId()
+    public function getId(): string
     {
         return $this->getIdProjet();
     }
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getIdProjet();
     }
@@ -193,23 +192,9 @@ class Projet
      *
      * @return Projet
      */
-    public function setEtatProjet($etatProjet)
+    public function setEtatProjet(int $etatProjet): self
     {
         $this->etatProjet = $etatProjet;
-
-        return $this;
-    }
-
-    /**
-     * Set typeProjet
-     *
-     * @param integer $typeProjet
-     *
-     * @return Projet
-     */
-    public function setTypeProjet($typeProjet)
-    {
-        $this->typeProjet = $typeProjet;
 
         return $this;
     }
@@ -219,9 +204,23 @@ class Projet
      *
      * @return integer
      */
-    public function getEtatProjet()
+    public function getEtatProjet(): int
     {
         return $this->etatProjet;
+    }
+
+    /**
+     * Set typeProjet
+     *
+     * @param integer $typeProjet
+     *
+     * @return Projet
+     */
+    public function setTypeProjet(int $typeProjet): self
+    {
+        $this->typeProjet = $typeProjet;
+
+        return $this;
     }
 
     /**
@@ -229,7 +228,7 @@ class Projet
      *
      * @return integer
      */
-    public function getTypeProjet()
+    public function getTypeProjet(): int
     {
         return $this->typeProjet;
     }
@@ -241,7 +240,7 @@ class Projet
      *
      * @return Projet
      */
-    public function setIdProjet($idProjet)
+    public function setIdProjet(string $idProjet): self
     {
         $this->idProjet = $idProjet;
 
@@ -253,7 +252,7 @@ class Projet
      *
      * @return string
      */
-    public function getIdProjet()
+    public function getIdProjet(): string
     {
         return $this->idProjet;
     }
@@ -265,7 +264,7 @@ class Projet
      *
      * @return Projet
      */
-    public function setVersionActive(\App\Entity\Version $version = null)
+    public function setVersionActive(?\App\Entity\Version $version = null): self
     {
         $this->versionActive = $version;
 
@@ -277,7 +276,7 @@ class Projet
      *
      * @return \App\Entity\Version
      */
-    public function getVersionActive()
+    public function getVersionActive(): ?\App\Entity\Version
     {
         return $this->versionActive;
     }
@@ -289,7 +288,7 @@ class Projet
      *
      * @return Projet
      */
-    public function setVersionDerniere(Version $version = null)
+    public function setVersionDerniere(?\App\Entity\Version $version = null): self
     {
         $this->versionDerniere = $version;
 
@@ -301,7 +300,7 @@ class Projet
      *
      * @return \App\Entity\Version
      */
-    public function getVersionDerniere()
+    public function getVersionDerniere(): ?\App\Entity\Version
     {
         return $this->versionDerniere;
     }
@@ -313,7 +312,7 @@ class Projet
      *
      * @return Version
      */
-    public function setLimitDate($limitDate)
+    public function setLimitDate(?\DateTime $limitDate): self
     {
         $this->limitDate = $limitDate;
 
@@ -325,7 +324,7 @@ class Projet
      *
      * @return \DateTime
      */
-    public function getLimitDate()
+    public function getLimitDate(): ?\DateTime
     {
         return $this->limitDate;
     }
@@ -510,35 +509,18 @@ class Projet
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatProjet/setEtatProjet !
      ***************************************************/
-    public function getObjectState()
+    public function getObjectState(): int
     {
         return $this->getEtatProjet();
     }
-    public function setObjectState($state)
+    public function setObjectState(int $state): self
     {
-        $this->setEtatProjet($state);
-        return $this;
+        return $this->setEtatProjet($state);
     }
-
-    //public function getSubWorkflow()    { return new \App\Workflow\VersionWorkflow(); }
-
-    //public function getSubObjects()
-    //{
-    //$versions = $this->getVersion();
-    //$my_versions = new \Doctrine\Common\Collections\ArrayCollection();
-
-    //foreach( $versions as $version )
-    //{
-    //$etat   =   $version->getEtatVersion();
-    //if( $etat != Etat::TERMINE && $etat != Etat::ANNULE )
-    //$my_versions[]  = $version;
-    //}
-    //return $my_versions;
-    //}
 
     ////////////////////////////////////////
 
-    // pour twig
+    // pour twig - TODO - A METTRE DANS ServiceProjets !
 
     public function getLibelleEtat()
     {
@@ -602,7 +584,7 @@ class Projet
 
     /*
      * Renvoie true si le projet est un projet test, false sinon
-     *
+     * TODO - A VIRER !
      */
     public function isProjetTest()
     {
@@ -631,7 +613,7 @@ class Projet
     public function isCollaborateur(Individu $individu)
     {
         foreach ($this->getVersion() as $version) {
-            if ($version->isCollaborateur($individu) == true) {
+            if ($version->isCollaborateur($individu) === true) {
                 return true;
             }
         }
@@ -643,7 +625,7 @@ class Projet
     /* Supprimé car non utilisé
         //public function getCollaborateurs( $versions = [] )
         //{
-            //if( $versions == [] ) $versions = getRepository(Version::class)->findVersions( $this );
+            //if( $versions === [] ) $versions = getRepository(Version::class)->findVersions( $this );
 
             //$collaborateurs = [];
             //foreach( $versions as $version )
@@ -656,18 +638,18 @@ class Projet
     /////////////////////////////////////////////////////
 
 
-    public function getEtat()
+    public function getEtat(): int
     {
         return $this->getEtatProjet();
     }
 
-    public function getLibelleType()
-    {
-        $type = $this->getTypeProjet();
-        if ($type <=3 and $type > 0) {
-            return Projet::LIBELLE_TYPE[$this->getTypeProjet()];
-        } else {
-            return '?';
-        }
-    }
+    //public function getLibelleType()
+    //{
+        //$type = $this->getTypeProjet();
+        //if ($type <=3 and $type > 0) {
+            //return Projet::LIBELLE_TYPE[$this->getTypeProjet()];
+        //} else {
+            //return '?';
+        //}
+    //}
 }

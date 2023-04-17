@@ -57,6 +57,7 @@ class ProjetDerniereVersion
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
+        //dd($projet,$version,$projet->getVersionDerniere());
     }
     public function postRemove(Version $version, LifecycleEventArgs $event): void
     {

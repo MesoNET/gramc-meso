@@ -117,7 +117,7 @@ class CollaborateurVersion
     public function __toString()
     {
         $output = '{';
-        if ($this->getResponsable() == true) {
+        if ($this->getResponsable() === true) {
             $output .= 'responsable:';
         }
         $output .= 'version=' . $this->getVersion() .':';
@@ -152,7 +152,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setResponsable($responsable)
+    public function setResponsable(bool $responsable): self
     {
         $this->responsable = $responsable;
 
@@ -164,7 +164,7 @@ class CollaborateurVersion
      *
      * @return boolean
      */
-    public function getResponsable()
+    public function getResponsable(): bool
     {
         return $this->responsable;
     }
@@ -176,7 +176,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setDeleted($deleted)
+    public function setDeleted(bool $deleted): self
     {
         $this->deleted = $deleted;
 
@@ -188,7 +188,7 @@ class CollaborateurVersion
      *
      * @return boolean
      */
-    public function getDeleted()
+    public function getDeleted(): bool
     {
         return $this->deleted;
     }
@@ -198,7 +198,7 @@ class CollaborateurVersion
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -210,7 +210,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setStatut(\App\Entity\Statut $statut = null)
+    public function setStatut(?\App\Entity\Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -222,7 +222,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Statut
      */
-    public function getStatut()
+    public function getStatut(): ?\App\Entity\Statut
     {
         return $this->statut;
     }
@@ -234,7 +234,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setVersion(\App\Entity\Version $version = null)
+    public function setVersion(?\App\Entity\Version $version = null): self
     {
         $this->version = $version;
 
@@ -246,7 +246,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Version
      */
-    public function getVersion()
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
     }
@@ -258,7 +258,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setLabo(\App\Entity\Laboratoire $labo = null)
+    public function setLabo(?\App\Entity\Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -270,7 +270,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Laboratoire
      */
-    public function getLabo()
+    public function getLabo(): ?\App\Entity\Laboratoire
     {
         return $this->labo;
     }
@@ -282,7 +282,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setEtab(\App\Entity\Etablissement $etab = null)
+    public function setEtab(?\App\Entity\Etablissement $etab = null): self
     {
         $this->etab = $etab;
 
@@ -294,7 +294,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Etablissement
      */
-    public function getEtab()
+    public function getEtab(): ?\App\Entity\Etablissement
     {
         return $this->etab;
     }
@@ -306,7 +306,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setCollaborateur(\App\Entity\Individu $collaborateur = null)
+    public function setCollaborateur(?\App\Entity\Individu $collaborateur = null): self
     {
         $this->collaborateur = $collaborateur;
 
@@ -318,7 +318,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Individu
      */
-    public function getCollaborateur(): Individu
+    public function getCollaborateur(): ?\App\Entity\Individu
     {
         return $this->collaborateur;
     }

@@ -75,11 +75,11 @@ class Thematique
 
     //////////////////////////////////////////////////////////
 
-    public function getId()
+    public function getId(): int
     {
         return $this->getIdThematique();
     }
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getLibelleThematique();
     }
@@ -104,7 +104,7 @@ class Thematique
      *
      * @return Thematique
      */
-    public function setLibelleThematique($libelleThematique)
+    public function setLibelleThematique(string $libelleThematique): self
     {
         $this->libelleThematique = $libelleThematique;
 
@@ -116,7 +116,7 @@ class Thematique
      *
      * @return string
      */
-    public function getLibelleThematique()
+    public function getLibelleThematique(): string
     {
         return $this->libelleThematique;
     }
@@ -126,7 +126,7 @@ class Thematique
      *
      * @return integer
      */
-    public function getIdThematique()
+    public function getIdThematique(): int
     {
         return $this->idThematique;
     }

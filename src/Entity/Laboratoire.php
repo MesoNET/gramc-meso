@@ -118,7 +118,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setNumeroLabo($numeroLabo): self
+    public function setNumeroLabo(int $numeroLabo): self
     {
         $this->numeroLabo = $numeroLabo;
 
@@ -142,7 +142,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setAcroLabo($acroLabo): self
+    public function setAcroLabo(string $acroLabo): self
     {
         $this->acroLabo = $acroLabo;
 
@@ -166,7 +166,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setNomLabo($nomLabo): self
+    public function setNomLabo(string $nomLabo): self
     {
         $this->nomLabo = $nomLabo;
 

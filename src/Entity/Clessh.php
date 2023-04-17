@@ -180,7 +180,7 @@ class Clessh
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUser(): user
+    public function getUser()
     {
         return $this->user;
     }
@@ -222,13 +222,13 @@ class Clessh
     }
 
     /**
-     * Get emp
+     * Get pub
      *
      * @return string
      */
-    public function getEmp()
+    public function getPub(): string
     {
-        return $this->emp;
+        return $this->pub;
     }
 
     /**
@@ -245,13 +245,13 @@ class Clessh
     }
 
     /**
-     * Get pub
+     * Get emp
      *
      * @return string
      */
-    public function getPub(): string
+    public function getEmp(): string
     {
-        return $this->pub;
+        return $this->emp;
     }
 
     /**

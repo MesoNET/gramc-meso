@@ -167,7 +167,8 @@ class ServiceIndividus
          if ($individu->getMail() == null) $ok = false;
          if ($individu->getStatut() == null) $ok = false;
          if ($individu->getLabo() == null) $ok = false;
-         if ($individu->getEtablissement() == null) $ok = false;
+         //if ($individu->getEtablissement() == null) $ok = false;
+         if ($individu->getEtab() == null) $ok = false;
          return $ok;
      }
 }

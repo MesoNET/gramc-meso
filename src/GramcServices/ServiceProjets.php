@@ -974,7 +974,7 @@ class ServiceProjets
     }
 
     /*
-     * Calcul de la dernière version d'un projet - Utilisé par App\EventListener\ProjetDerniereVersion
+     * Calcul de la dernière version d'un projet - Utilisé par \App\EventListener\ProjetDerniereVersion
      */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
@@ -988,11 +988,11 @@ class ServiceProjets
         $iterator->uasort(function ($a, $b)
         {
             $sj = $this->sj;
-            if ($a->getNbVersion() == null)
+            if ($a->getNbVersion() === null)
             {
                 $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $a = PAS DE NbVersion");
             }
-            if ($b->getNbVersion() == null)
+            if ($b->getNbVersion() === null)
             {
                 $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $b = PAS DE NbVersion");
             }
@@ -1004,7 +1004,8 @@ class ServiceProjets
         if ($result === false) return null;
         
         // On met à jour projet si nécessaire
-        if ($projet->getVersionDerniere() != $result)
+        //dd($projet->getVersionDerniere(),$result);
+        if ($projet->getVersionDerniere() !== $result)
         {
             $projet->setVersionDerniere($result);
             $em = $this->em;

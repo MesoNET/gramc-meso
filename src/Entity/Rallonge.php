@@ -33,7 +33,7 @@ use App\Interfaces\Demande;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /*
- * TODO - Utiliser l'héritage pour faire hériter Veriosn et Rallonge d'une même classe
+ * TODO - Utiliser l'héritage pour faire hériter Version et Rallonge d'une même classe
  *        cf. https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/inheritance-mapping.html
  *        Pas le temps / pas le recul alors on travaille salement
  *        Emmanuel, 27/3/23
@@ -127,23 +127,6 @@ class Rallonge implements Demande
      */
     private $dar;
 
-    /////////
-
-    /**
-    * @
-    * ORM\PostLoad
-    *
-    * TODO - Ce truc est une bidouille immonde à supprimer ASAP
-    */
-    /*
-    public function convert()
-    {
-        if ($this->getEtatRallonge() == Etat::ACTIF && $this->getAttrHeures() == null) {
-            $this->setAttrHeures($this->getNbHeuresAtt());
-            //Functions::infoMessage(__METHOD__ . ':' . __LINE__ . ' Fixture partielle de Rallonge ' . $this->getIdRallonge() );
-        }
-    }
-*/
     ////////////////////////////////////////////////////////
 
     /**
@@ -159,11 +142,11 @@ class Rallonge implements Demande
     /////////////////////////////////////////////////////////////////////////////
 
 
-    public function getId()
+    public function getId(): int
     {
         return $this->getIdRallonge();
     }
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getIdRallonge();
     }
@@ -220,13 +203,13 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setEtatRallonge($etatRallonge)
+    public function setEtatRallonge(int $etatRallonge): self
     {
         $this->etatRallonge = $etatRallonge;
 
         return $this;
     }
-    public function setEtat($etatRallonge)
+    public function setEtat(int $etatRallonge): self
     {
         return $this->setEtatRallonge($etatRallonge);
     }
@@ -236,9 +219,14 @@ class Rallonge implements Demande
      *
      * @return integer
      */
-    public function getEtatRallonge()
+    public function getEtatRallonge(): int
     {
         return $this->etatRallonge;
+    }
+
+    public function getEtat(): int
+    {
+        return $this->getEtatRallonge();
     }
 
     /**
@@ -248,7 +236,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setPrjJustifRallonge($prjJustifRallonge)
+    public function setPrjJustifRallonge(?string $prjJustifRallonge): self
     {
         $this->prjJustifRallonge = $prjJustifRallonge;
 
@@ -260,7 +248,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getPrjJustifRallonge()
+    public function getPrjJustifRallonge(): ?string
     {
         return $this->prjJustifRallonge;
     }
@@ -272,7 +260,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setIdRallonge($idRallonge)
+    public function setIdRallonge(int $idRallonge): int
     {
         $this->idRallonge = $idRallonge;
 
@@ -284,7 +272,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getIdRallonge()
+    public function getIdRallonge(): int
     {
         return $this->idRallonge;
     }
@@ -296,7 +284,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setVersion(\App\Entity\Version $version = null)
+    public function setVersion( ?\App\Entity\Version $version = null): self
     {
         $this->version = $version;
 
@@ -308,7 +296,7 @@ class Rallonge implements Demande
      *
      * @return \App\Entity\Version
      */
-    public function getVersion()
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
     }
@@ -357,7 +345,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setCommentaireInterne($commentaireInterne)
+    public function setCommentaireInterne(?string $commentaireInterne): self
     {
         $this->commentaireInterne = $commentaireInterne;
 
@@ -369,7 +357,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getCommentaireInterne()
+    public function getCommentaireInterne(): ?string
     {
         return $this->commentaireInterne;
     }
@@ -381,7 +369,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setCommentaireExterne($commentaireExterne)
+    public function setCommentaireExterne(?string $commentaireExterne): self
     {
         $this->commentaireExterne = $commentaireExterne;
 
@@ -393,7 +381,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getCommentaireExterne()
+    public function getCommentaireExterne(): ?string
     {
         return $this->commentaireExterne;
     }
@@ -405,7 +393,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setValidation($validation)
+    public function setValidation(bool $validation): self
     {
         $this->validation = $validation;
 
@@ -417,7 +405,7 @@ class Rallonge implements Demande
      *
      * @return boolean
      */
-    public function getValidation()
+    public function getValidation(): bool
     {
         return $this->validation;
     }
@@ -436,7 +424,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setExpert(\App\Entity\Individu $expert = null)
+    public function setExpert(?\App\Entity\Individu $expert = null): self
     {
         $this->expert = $expert;
 
@@ -448,7 +436,7 @@ class Rallonge implements Demande
      *
      * @return \App\Entity\Individu
      */
-    public function getExpert()
+    public function getExpert(): ?\App\Entity\Individu
     {
         return $this->expert;
     }
@@ -457,7 +445,7 @@ class Rallonge implements Demande
      * @ORM\PrePersist()
      */
     // cf. https://stackoverflow.com/questions/39272733/boolean-values-and-choice-symfony-type
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->validation = (bool) $this->validation; //Force using boolean value of $this->active
     }
@@ -465,7 +453,7 @@ class Rallonge implements Demande
     /**
      * @ORM\PreUpdate()
      */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->validation = (bool) $this->validation;
     }    
@@ -475,63 +463,62 @@ class Rallonge implements Demande
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatRallonge/setEtatRallonge !
      ***************************************************/
-    public function getObjectState()
+    public function getObjectState(): int
     {
         return $this->getEtatRallonge();
     }
-    public function setObjectState($state)
+    public function setObjectState(int $state): self
     {
         $this->setEtatRallonge($state);
         return $this;
     }
 
-    public function getResponsables()
+    public function getResponsables(): array
     {
         $version = $this->getVersion();
-        if ($version != null) {
+        if ($version != null)
+        {
             return $version->getResponsables();
-        } else {
+        }
+        else
+        {
             return [];
         }
     }
 
-    // pour notifications
-    public function getOneExpert()
+    /***************************************************
+     * Fonctions utiles pour les notifications
+     ***************************************************/
+    public function getOneExpert(): ?\App\Entity\Individu
     {
-        $expert = $this->getExpert();
-        if ($expert == null) {
-            return null;
-        } else {
-            //return $expert[0];
-            return $expert;
-        }
+        return $this->getExpert();
     }
 
-    // pour notifications
-    public function getExperts()
+    public function getExperts(): array
     {
         return [ $this->getExpert() ];
     }
 
-    // pour notifications
-    public function getExpertsThematique()
+    public function getExpertsThematique(): array
     {
-        $version    =   $this->getVersion();
-        if ($version    ==  null) {
+        $version = $this->getVersion();
+        if ($version === null)
+        {
             return [];
         }
 
         $thematique = $version->getThematique();
-        if ($thematique == null) {
+        if ($thematique === null)
+        {
             return [];
-        } else {
+        }
+        else
+        {
             return $thematique->getExpert();
         }
     }
 
-    //////////////
-
-    public function getLibelleEtatRallonge()
+    public function getLibelleEtatRallonge(): string
     {
         return Etat::getLibelle($this->getEtatRallonge());
     }
@@ -539,38 +526,26 @@ class Rallonge implements Demande
     ////////////////////////////////////////////////////////////////////////
     // TODO - Mettre cette fonction dans ServiceRallonge
 
-    public function isExpertDe(Individu $individu)
+    public function isExpertDe(Individu $individu): bool
     {
-        if ($individu == null) {
+        if ($individu === null)
+        {
             return false;
         }
 
         $expert = $this->getExpert();
 
-        if ($expert == null) {
-            //Functions::warningMessage(__METHOD__ . ":" . __LINE__ . " rallonge " . $this->__toString() . " n'a pas d'expert ");
-            return false;
-        } elseif ($expert->isEqualTo($individu)) {
-            return true;
-        } else {
+        if ($expert === null)
+        {
             return false;
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-
-    public function isFinalisable()
-    {
-        if ($this->getEtatRallonge() == Etat::EN_ATTENTE) {
+        elseif ($expert->isEqualTo($individu))
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    public function getEtat()
-    {
-        return $this->getEtatRallonge();
     }
 }

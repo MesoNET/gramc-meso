@@ -133,12 +133,6 @@ class ServiceVersions
             $moi = $token->getUser();
             $this->setLaboResponsable($version, $moi);
     
-            // La dernière version est fixée par l'EventListener
-            // TODO - mais ici cela ne fonctionne pas
-            $projet->setVersionDerniere($version);
-            $em->persist( $projet);
-            $em->flush($projet);
-    
             // Affectation de l'utilisateur connecté en tant que responsable
             $cv = new CollaborateurVersion($moi);
             $cv->setVersion($version);
@@ -147,14 +141,19 @@ class ServiceVersions
         
             // Ecriture de collaborateurVersion dans la BD
             $em->persist($cv);
-            $em->flush();
 
             // Ecriture de la version dans la BD
             $em->persist($version);
             $em->flush();
 
+            // La dernière version est fixée par l'EventListener
+            // TODO - mais ici cela ne fonctionne pas car lors du persist de la version de projet n'est pas dans la BD 
+            $projet->setVersionDerniere($version);
+            $em->persist( $projet);
+            $em->flush($projet);
+    
             // Création du répertoire pour les images
-            $dir = $sv->imageDir($version);        
+            $dir = $this->imageDir($version);        
 
             // Création de nouveaux User pour le responsable (1 User par serveur)
             // NOTE - ils seront créés seulement lors de la première version

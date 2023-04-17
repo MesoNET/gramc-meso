@@ -77,9 +77,9 @@ class ServiceJournal
         // Si l'erreur provient de l'API, getUser() n'est pas un Individu
         if ($token != null && $token->getUser() != null && $token->getUser() instanceof Individu) {
             $journal->setIndividu($token->getUser());
-            $journal->setIdIndividu($token->getUser()->getId());
+            //$journal->setIdIndividu($token->getUser()->getId());
         } else {
-            $journal->setIdIndividu(null);
+            //$journal->setIdIndividu(null);
             $journal->setIndividu(null);
         }
 
