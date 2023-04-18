@@ -104,11 +104,11 @@ class LaboratoireController extends AbstractController
     /**
      * Modifie un laboratoire
      *
-     * @Route("/{id}/modify", name="modifier_laboratoire", methods={"GET","POST"})
+     * @Route("/{id}/modifier", name="modifier_laboratoire", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
-    public function modifyAction(Request $request, Laboratoire $laboratoire): Response
+    public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
         $em = $this->em;
         $editForm = $this->createForm('App\Form\LaboratoireType', $laboratoire, ['modifier' => true ]);

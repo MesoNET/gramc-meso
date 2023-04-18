@@ -50,7 +50,7 @@ class JournalController extends AbstractController
     public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em) {}
 
     /**
-     * Lists all Journal entities.
+     * Liste les entrées de journal (l'écran utilisé)
      *
      * @Route("/list", name="journal_list", methods={"GET","POST"})
      * Method({"GET", "POST"})
@@ -93,7 +93,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Creates a new journal entity.
+     * Creates a new journal entity. CRUD
      *
      * @Route("/new", name="journal_new", methods={"GET","POST"})
      * Method({"GET", "POST"})
@@ -119,7 +119,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Finds and displays a journal entity.
+     * Finds and displays a journal entity. CRUD
      *
      * @Route("/{id}", name="journal_show", methods={"GET"})
      * Method("GET")
@@ -135,7 +135,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing journal entity.
+     * Displays a form to edit an existing journal entity. CRUD
      *
      * @Route("/{id}/edit", name="journal_edit", methods={"GET","POST"})
      * Method({"GET", "POST"})
@@ -160,7 +160,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Deletes a journal entity.
+     * Deletes a journal entity. CRUD
      *
      * @Route("/{id}", name="journal_delete", methods={"DELETE"})
      * Method("DELETE")
@@ -180,7 +180,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Creates a form to delete a journal entity.
+     * Creates a form to delete a journal entity. CRUD
      *
      * @param Journal $journal The journal entity
      *

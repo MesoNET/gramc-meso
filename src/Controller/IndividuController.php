@@ -93,7 +93,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/supprimer", name="supprimer_utilisateur", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function supprimerUtilisateurAction(Request $request, Individu $individu): Response
     {
@@ -108,7 +107,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/remplacer", name="remplacer_utilisateur", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function remplacerUtilisateurAction(Request $request, Individu $individu): Response
     {
@@ -239,7 +237,6 @@ class IndividuController extends AbstractController
     *
     * @Route("/{id}/delete", name="individu_delete", methods={"DELETE"})
     * @Security("is_granted('ROLE_ADMIN')")
-    * Method("DELETE")
     */
     public function deleteAction(Request $request, Individu $individu): Response
     {
@@ -257,11 +254,10 @@ class IndividuController extends AbstractController
 
 
     /**
-     * Lists all individu entities.
+     * Lists all individu entities (CRUD)
      *
      * @Route("/", name="individu_index", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function indexAction(): Response
     {
@@ -275,11 +271,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Creates a new individu entity.
+     * Creates a new individu entity (CRUD)
      *
      * @Route("/new", name="individu_new", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function newAction(Request $request): Response
     {
@@ -302,7 +297,7 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Finds and displays a individu entity.
+     * Finds and displays a individu entity (CRUD)
      *
      * @Route("/{id}/show", name="individu_show", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
@@ -319,11 +314,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing individu entity.
+     * Displays a form to edit an existing individu entity (CRUD)
      *
      * @Route("/{id}/edit", name="individu_edit", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function editAction(Request $request, Individu $individu): Response
     {
@@ -365,11 +359,10 @@ class IndividuController extends AbstractController
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Ajouter un utilisateur
+     * Ajouter un individu
      *
      * @Route("/ajouter", name="individu_ajouter", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function ajouterAction(Request $request)
     {
@@ -400,11 +393,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Modifier une entité individu.
+     * Modifier un individu
      *
      * @Route("/{id}/modify", name="individu_modify", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function modifyAction(Request $request, Individu $individu): Response
     {
@@ -491,7 +483,7 @@ class IndividuController extends AbstractController
         );
     }
 
-     /**
+    /**
      *
      * Envoyer une invitation
      *
@@ -582,7 +574,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/devenir_admin", name="devenir_admin", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function devenirAdminAction(Request $request, Individu $individu): Response
     {
@@ -605,7 +596,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/plus_admin", name="plus_admin", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusAdminAction(Request $request, Individu $individu): Response
     {
@@ -626,7 +616,6 @@ class IndividuController extends AbstractController
     *
     * @Route("/{id}/devenir_obs", name="devenir_obs", methods={"GET"})
     * @Security("is_granted('ROLE_ADMIN')")
-    * Method("GET")
     */
     public function devenirObsAction(Request $request, Individu $individu): Response
     {
@@ -648,7 +637,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/plus_obs", name="plus_obs", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusObsAction(Request $request, Individu $individu): Response
     {
@@ -669,7 +657,6 @@ class IndividuController extends AbstractController
     *
     * @Route("/{id}/devenir_sysadmin", name="devenir_sysadmin", methods={"GET"})
     * @Security("is_granted('ROLE_ADMIN')")
-    * Method("GET")
     */
     public function devenirSysadminAction(Request $request, Individu $individu): Response
     {
@@ -690,7 +677,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/plus_sysadmin", name="plus_sysadmin", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusSysadminAction(Request $request, Individu $individu): Respone
     {
@@ -707,11 +693,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Devenir President
+     * Devenir President - PAS UTILISE
      *
      * @Route("/{id}/devenir_president", name="devenir_president", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function devenirPresidentAction(Request $request, Individu $individu): Response
     {
@@ -728,11 +713,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Cesser d'être President
+     * Cesser d'être President - PAS UTILISE
      *
      * @Route("/{id}/plus_president", name="plus_president", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusPresidentAction(Request $request, Individu $individu): Response
     {
@@ -749,11 +733,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Devenir Expert
+     * Devenir Expert - PAS UTILISE
      *
      * @Route("/{id}/devenir_expert", name="devenir_expert", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function devenirExpertAction(Request $request, Individu $individu): Response
     {
@@ -770,11 +753,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Cesser d'être Expert
+     * Cesser d'être Expert - PAS UTILISE
      *
      * @Route("/{id}/plus_expert", name="plus_expert", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusExpertAction(Request $request, Individu $individu):Response
     {
@@ -796,7 +778,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/devenir_valideur", name="devenir_valideur", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function devenirValideurAction(Request $request, Individu $individu): Response
     {
@@ -817,7 +798,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/plus_valideur", name="plus_valideur", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function plusValideurAction(Request $request, Individu $individu):Response
     {
@@ -833,11 +813,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-    * Activer
+    * Activer individu
     *
     * @Route("/{id}/activer", name="activer_utilisateur", methods={"GET"})
     * @Security("is_granted('ROLE_ADMIN')")
-    * Method("GET")
     */
     public function activerAction(Request $request, Individu $individu)
     {
@@ -854,11 +833,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Desactiver utilisateur
+     * Desactiver individu
      *
      * @Route("/{id}/desactiver", name="desactiver_utilisateur", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function desactiverAction(Request $request, Individu $individu): Response
     {
@@ -882,11 +860,10 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Affecter l'utilisateur à une ou des thematiques
+     * Affecter l'individu à une ou des thematiques - PAS UTILISE
      *
      * @Route("/{id}/thematique", name="choisir_thematique", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function thematiqueAction(Request $request, Individu $individu): Response
     {
@@ -936,7 +913,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/{id}/eppn", name="gere_eppn", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function eppnAction(Request $request, Individu $individu): Response
     {
@@ -990,7 +966,6 @@ class IndividuController extends AbstractController
      *
      * @Route("/mail_autocomplete", name="mail_autocomplete", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"POST","GET"})
      */
     public function mailAutocompleteAction(Request $request): Response
     {
@@ -1087,7 +1062,6 @@ class IndividuController extends AbstractController
      * @Route("/gerer", name="individu_gerer", methods={"GET","POST"})
      * @Route("/liste", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET","POST"})
      */
     public function gererAction(Request $request): Response
     {

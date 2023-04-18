@@ -114,7 +114,7 @@ class GramcSessionController extends AbstractController
 
     /**
      * @Route("/admin/accueil",name="admin_accueil", methods={"GET"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
+     * @Security("is_granted('ROLE_OBS')")
     **/
 
     public function adminAccueilAction(): Response
@@ -145,8 +145,6 @@ class GramcSessionController extends AbstractController
         $menu4[] = $sm->gererServeurs();
         $menu4[] = $sm->gererResources();
 
-        //$menu5[] = $sm->bilanAnnuel();
-        //$menu5[] = $sm->statistiques();
         $menu5[] = $sm->statistiquesDyn();
         $menu5[] = $sm->statistiquesFormation();
         $menu5[] = $sm->publicationsAnnee();
