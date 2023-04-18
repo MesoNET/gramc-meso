@@ -123,7 +123,7 @@ class ExpertiseController extends AbstractController
      * Afficher une expertise
      *
      * @Route("/consulter/{id}", name="consulter_expertise", methods={"GET"})
-     * @ Security("is_granted('ROLE_PRESIDENT')")
+     * @Security("is_granted('ROLE_VALIDEUR')")
      */
     public function consulterAction(Request $request, Expertise $expertise): Response
     {
@@ -134,23 +134,25 @@ class ExpertiseController extends AbstractController
         
         $moi = $token->getUser();
         $version = $expertise->getVersion();
-        if ($version != null && $version->isExpertDe($moi))
+        if ($version !== null && $version->isExpertDe($moi))
         {
             return $this->render('expertise/consulter.html.twig', [ 'expertise' => $expertise, 'menu' => $menu ]);
         }
-        else{
+        else
+        {
             return new RedirectResponse($this->generateUrl('accueil'));
         }
     }
 
-
     // Helper function used by listeAction
     private static function exptruefirst($a, $b): int
     {
-        if ($a['expert']==true  && $b['expert']==false) {
+        if ($a['expert'] === true  && $b['expert'] === false)
+        {
             return -1;
         }
-        if ($a['projetId'] < $b['projetId']) {
+        if ($a['projetId'] < $b['projetId'])
+        {
             return -1;
         }
         return 1;
@@ -160,7 +162,6 @@ class ExpertiseController extends AbstractController
      * Liste les projets dynamiques non encore validés
      *
      * @Route("/listedyn", name="expertise_liste_dyn", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
     public function listeDynAction(): Response
@@ -178,7 +179,7 @@ class ExpertiseController extends AbstractController
             $sj->throwException();
         }
 
-        if ($token != null)
+        if ($token !== null)
         {
             $individu = $token->getUser();
             if (! $sid->validerProfil($individu))
@@ -200,77 +201,6 @@ class ExpertiseController extends AbstractController
         return $this->render('expertise/dyn.html.twig',
                              [ 'expertises' => $expertises ]);
     }
-
-    /**
-     * Creates a new expertise entity.
-     *
-     * @Route("/new", name="expertise_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function newAction_SUPPR(Request $request): Response
-    {
-        $expertise = new Expertise();
-        $form = $this->createForm('App\Form\ExpertiseType', $expertise);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->persist($expertise);
-            $em->flush($expertise);
-
-            return $this->redirectToRoute('expertise_show', array('id' => $expertise->getId()));
-        }
-
-        return $this->render('expertise/new.html.twig', array(
-            'expertise' => $expertise,
-            'form' => $form->createView(),
-        ));
-    }
-
-    /**
-     * Finds and displays a expertise entity.
-     *
-     * @Route("/{id}", name="expertise_show", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function showAction_SUPPR(Expertise $expertise): Response
-    {
-        $deleteForm = $this->createDeleteForm($expertise);
-
-        return $this->render('expertise/show.html.twig', array(
-            'expertise' => $expertise,
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
-    /**
-     * Displays a form to edit an existing expertise entity.
-     *
-     * @Route("/{id}/edit", name="expertise_edit", methods={"GET","POST"})
-     * Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function editAction_SUPPR(Request $request, Expertise $expertise): Response
-    {
-        $deleteForm = $this->createDeleteForm($expertise);
-        $editForm = $this->createForm('App\Form\ExpertiseType', $expertise);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->em->flush();
-
-            return $this->redirectToRoute('expertise_edit', array('id' => $expertise->getId()));
-        }
-
-        return $this->render('expertise/edit.html.twig', array(
-            'expertise' => $expertise,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
 
     // Helper function used by modifierAction
     private static function expprjfirst($a, $b): int
@@ -327,7 +257,7 @@ class ExpertiseController extends AbstractController
      * ATTENTION - La même fonction permet de valider PROJETS ET RALLONGES
      *
      * @Route("/{id}/modifier", name="expertise_modifier", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_EXPERT') or is_granted('ROLE_VALIDEUR')")
+     * @Security("is_granted('ROLE_VALIDEUR')")
      */
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
@@ -438,9 +368,9 @@ class ExpertiseController extends AbstractController
             // Bouton ENVOYER --> Vérification des champs non renseignés
             //                    Si refus, on met toutes les attributions à zéro
             //                    Puis demande de confirmation
-            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs == null)
+            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs === [])
             {
-                if ($expertise->getValidation() == false)
+                if ($expertise->getValidation() === false)
                 {
                     if ($expRallonge)
                     {
@@ -517,8 +447,7 @@ class ExpertiseController extends AbstractController
      * On lui envoie un écran de confirmation
      *
      * @Route("/{id}/valider", name="expertise_validation", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_EXPERT') or is_granted('ROLE_VALIDEUR')")
+     * @Security("is_granted('ROLE_VALIDEUR')")
      */
     public function validationAction(Request $request, Expertise $expertise): Response
     {
@@ -552,7 +481,7 @@ class ExpertiseController extends AbstractController
         $moi = $token->getUser();
         if (is_string($moi)) {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
-        } elseif ($expertise->getExpert() == null) {
+        } elseif ($expertise->getExpert() === null) {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " aucun expert pour l'expertise " . $expertise);
         } elseif (! $expertise->getExpert()->isEqualTo($moi)) {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $moi .
@@ -617,7 +546,7 @@ class ExpertiseController extends AbstractController
 
         // Si la version active existe, on positionne sa date de fin
         $veract = $projet->getVersionActive();
-        if ($veract != null)
+        if ($veract !== null)
         {
             $veract->setEndDate($grdt);
             $em->persist($veract);
@@ -628,7 +557,7 @@ class ExpertiseController extends AbstractController
         $signal = ($validation === 1) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $version->getProjet());
-        if ($rtn != true)
+        if ($rtn !== true)
         {
             $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
             . "(" . $signal . ") pour l'expertise " . $expertise . " avec rtn = " . Functions::show($rtn));
@@ -666,7 +595,7 @@ class ExpertiseController extends AbstractController
         $signal = ($validation === 1) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $rallonge);
-        if ($rtn != true)
+        if ($rtn !== true)
         {
             $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
             . "(" . $signal . ") pour l'expertise " . $expertise . " avec rtn = " . Functions::show($rtn));

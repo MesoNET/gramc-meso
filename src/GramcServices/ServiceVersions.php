@@ -823,36 +823,18 @@ class ServiceVersions
     /*******
     * Retourne true si la version correspond à un Nouveau projet
     *
-    *      - session A -> On vérifie que l'année de création est la même que l'année de la session
-    *      - session B -> En plus on vérifie qu'il n'y a pas eu une version en session A
+    *      On vérifie que le numéro est 1 !
     *
-    *****/
+    **************************************************************/
     public function isNouvelle(Version $version): bool
     {
-        // Un projet test ne peut être renouvelé donc il est obligatoirement nouveau !
-        if ($version->isProjetTest()) {
+        if ($version->getNbVersion() === 1)
+        {
             return true;
         }
-
-        $idVersion      = $version->getIdVersion();
-        $anneeSession   = substr($idVersion, 0, 2);	// 19, 20 etc
-        $typeSession    = substr($idVersion, 2, 1);   // A, B
-        $anneeProjet    = substr($idVersion, -5, 2);  // 19, 20 etc qq soit le préfixe
-        $numero         = substr($idVersion, -3, 3);  // 001, 002 etc.
-
-        if ($anneeProjet != $anneeSession) {
+        else
+        {
             return false;
-        } elseif ($typeSession == 'A') {
-            return true;
-        } else {
-            $type_projet = $version->getProjet()->getTypeProjet();
-            $idVersionA  = $anneeSession . 'A' . $this->prj_prefix[$type_projet] . $anneeProjet . $numero;
-
-            if (0 < $this->em->getRepository(Version::class)->exists($idVersionA)) {
-                return false; // Il y a une version précédente
-            } else {
-                return true; // Non il n'y en a pas donc on est bien sur une nouvelle version
-            }
         }
     }
 

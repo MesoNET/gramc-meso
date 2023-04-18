@@ -64,14 +64,6 @@
                     {% endif %}
                 {% endif %}
 
-                {% if is_granted('ROLE_EXPERT') %}
-                    {% if app.request.attributes.get('_route') == 'expertise_liste' %}
-                        <a class="lien_nav actif" href="{{ path('expertise_liste') }}" title="Accéder à l'espace expert">Expert</a> 
-                    {% else %}
-                        <a class="lien_nav" href="{{ path('expertise_liste') }}" title="Accéder à l'espace expert">Expert</a> 
-                    {% endif %}
-                {% endif %}
-
                 {% if is_granted('ROLE_VALIDEUR') %}
                     {% if app.request.attributes.get('_route') == 'expertise_liste_dyn' %}
                         <a class="lien_nav actif" href="{{ path('expertise_liste_dyn') }}" title="Accéder à l'espace valideur">Valideur</a> 
