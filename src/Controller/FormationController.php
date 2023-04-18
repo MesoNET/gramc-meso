@@ -67,13 +67,13 @@ class FormationController extends AbstractController
     }
 
     /**
-     * Creates a new formation entity.
+     * Nouvelle formation
      *
      * @Route("/ajouter", name="ajouter_formation", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
-    public function newAction(Request $request): Response
+    public function ajouterAction(Request $request): Response
     {
         $formation = new formation();
         $form = $this->createForm('App\Form\FormationType', $formation, ['ajouter' => true ]);
@@ -88,7 +88,7 @@ class FormationController extends AbstractController
         }
 
         return $this->render(
-            'formation/ajouter.html.twig',
+            'formation/modif.html.twig',
             [
             'menu' => [ [
                         'ok' => true,
@@ -103,19 +103,18 @@ class FormationController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing formation entity.
+     * Modifier une formation
      *
-     * @Route("/{id}/modify", name="modifier_formation", methods={"GET","POST"})
+     * @Route("/{id}/modifier", name="modifier_formation", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
-    public function modifyAction(Request $request, Formation $formation): Response
+    public function modifierAction(Request $request, Formation $formation): Response
     {
-        $deleteForm = $this->createDeleteForm($formation);
-        $editForm = $this->createForm('App\Form\FormationType', $formation, ['modifier' => true ]);
-        $editForm->handleRequest($request);
+        $form = $this->createForm('App\Form\FormationType', $formation, ['modifier' => true ]);
+        $form->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
 
             return $this->redirectToRoute('gerer_formations');
@@ -131,14 +130,13 @@ class FormationController extends AbstractController
                         'commentaire'=> 'Retour vers la liste des formations'
                         ] ],
             'formation' => $formation,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'form' => $form->createView(),
             ]
         );
     }
 
     /**
-     * Deletes a formation entity.
+     * Supprime une formation
      *
      * @Route("/{id}/supprimer", name="supprimer_formation", methods={"GET"})
      * @Route("/{id}/supprimer", name="formation_delete", methods={"GET"})

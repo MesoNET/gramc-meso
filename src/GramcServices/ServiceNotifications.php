@@ -40,7 +40,6 @@ class ServiceNotifications
 {
     public function __construct(
         private $mailfrom,
-        private $noedition_expertise,
         private \Twig\Environment $twig,
         private TokenStorageInterface $tok,
         private MailerInterface $mailer,
@@ -187,8 +186,10 @@ class ServiceNotifications
     {
         $em    = $this->em;
         $users = [];
-        foreach ($mail_roles as $mail_role) {
-            switch ($mail_role) {
+        foreach ($mail_roles as $mail_role)
+        {
+            switch ($mail_role)
+            {
                 case 'D': // demandeur
                     $user = $this->token->getUser();
                     if ($user != null) {
@@ -277,26 +278,6 @@ class ServiceNotifications
                             $new_users = $new_users->toArray();
                         }
                         $users  =  array_merge($users, $new_users);
-                    }
-                    break;
-                case 'ET': // experts pour la thématique
-                    // Si noedition_expertise, on n'a pas de "comité d'attribution" constitué
-                    // Dans ce cas, on n'envoie pas de mail aux experts de la thématique = ils n'y comprendraient rien
-                    if ($this->noedition_expertise == false)
-                    {
-                        if ($objet == null) {
-                            $this->sj->warningMessage(__METHOD__ . ":" .  __LINE__ .' Objet null pour experts de la thématique');
-                            break;
-                        }
-                        $new_users  = $objet->getExpertsThematique();
-                        if ($new_users == null) {
-                            $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." Aucun expert pour la thématique pour l'objet " . $objet . ' !');
-                        } else {
-                            if (! is_array($new_users)) {
-                                $new_users = $new_users->toArray();
-                            }
-                            $users  =  array_merge($users, $new_users);
-                        }
                     }
                     break;
             }

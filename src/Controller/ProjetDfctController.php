@@ -31,7 +31,6 @@ use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\GramcDate;
-use App\GramcServices\GramcGraf\Calcul;
 use App\GramcServices\DonneesFacturation;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,7 +64,6 @@ class ProjetDfctController extends AbstractController
     public function __construct(
         private ServiceJournal $sj,
         private ServiceMenus $sm,
-        private Calcul $gcl,
         private GramcDate $sd,
         private ServiceVersions $sv,
         private DonneesFacturation $dfct,
@@ -131,22 +129,25 @@ class ProjetDfctController extends AbstractController
         $db_conso      = $compta_repo->conso($id_projet, $annee);
 
         // conso  sur la période
-        $struct_data   = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
-        if (count($struct_data) > 10) {
-            $dessin_heures->resetConso($struct_data);
-            $image_conso_p = $dessin_heures->createImage($struct_data)[0];
-        } else {
-            $image_conso_p = null;
-        }
+        $image_conso_p = null;
+        
+        //$struct_data   = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
+        //if (count($struct_data) > 10) {
+            //$dessin_heures->resetConso($struct_data);
+            //$image_conso_p = $dessin_heures->createImage($struct_data)[0];
+        //} else {
+            //$image_conso_p = null;
+        //}
 
         // conso sur toute l'année
-        $struct_data   = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
-        if (count($struct_data) > 10) {
-            $dessin_heures->resetConso($struct_data);
-            $image_conso_a = $dessin_heures->createImage($struct_data)[0];
-        } else {
-            $image_conso_a = null;
-        }
+        $image_conso_a = null;
+        //$struct_data   = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
+        //if (count($struct_data) > 10) {
+            //$dessin_heures->resetConso($struct_data);
+            //$image_conso_a = $dessin_heures->createImage($struct_data)[0];
+        //} else {
+            //$image_conso_a = null;
+        //}
 
         return $this->render(
             'projetfct/dfctliste.html.twig',

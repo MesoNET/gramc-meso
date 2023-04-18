@@ -2033,10 +2033,11 @@ tbody tr.rallonge{
     text-decoration: #9c9c9c69 solid underline;
     text-underline-position: under;
     color: var(--first-color);
+    width: 30em;
+    display: inline-block;
 }
 
 #section_validation_expertise .recapitulatif .premiere_partie{
-    display: flex;
     justify-content: space-between;
     width: 80%;
     margin: auto;
@@ -2044,12 +2045,8 @@ tbody tr.rallonge{
     margin-bottom: 2rem;
 }
 
-#section_validation_expertise .recapitulatif .premiere_partie div{
-    display: flex;
-}
-
 #section_validation_expertise .recapitulatif .premiere_partie div p{
-    margin-left: 2rem;
+    display: inline-block;
 }
 
 #section_validation_expertise .recapitulatif .deuxieme_partie{
@@ -2062,6 +2059,7 @@ tbody tr.rallonge{
 
 #section_validation_expertise .recapitulatif .deuxieme_partie .commentaire{
     width: 45%;
+    margin-top: 2ex;
 }
 
 #section_validation_expertise .recapitulatif .deuxieme_partie .commentaire p{
@@ -2365,4 +2363,9 @@ img.dfct {
 #choix_cle_ssh .radio {
     margin: 1em;
     /*border: black solid 1px;*/
+}
+
+/* ================ TELEVERSEMENT GENERIQUE ================== */
+table#telgen {
+    width: 50em;
 }

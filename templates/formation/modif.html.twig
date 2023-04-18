@@ -2,37 +2,38 @@
 
 {% block body %}
 <section>
-<h2>Modification d'une formation</h2>
+
+<h2>Formation</h2>
     {% import "default/macros.html.twig" as gramcmacros %}
 
-    {{ form_start(edit_form) }}
+    {{ form_start(form) }}
     <table>
         <tr>
-            <th>{{ form_label(edit_form.numeroform) }}</th>
-            <td>{{ form_widget(edit_form.numeroform) }}</td>
+            <th>{{ form_label(form.numeroform) }}</th>
+            <td>{{ form_widget(form.numeroform) }}</td>
         </tr>
         <tr>
-            <th>{{ form_label(edit_form.acroform) }}</th>
-            <td>{{ form_widget(edit_form.acroform) }}</td>
+            <th>{{ form_label(form.acroform) }}</th>
+            <td>{{ form_widget(form.acroform) }}</td>
         </tr>
         <tr>
-            <th>{{ form_label(edit_form.nomform) }}</th>
-            <td>{{ form_widget(edit_form.nomform) }}</td>
+            <th>{{ form_label(form.nomform) }}</th>
+            <td>{{ form_widget(form.nomform) }}</td>
         </tr>
         <tr>
-            <th>{{ form_label(edit_form.startdate) }}</th>
-            <td>{{ form_widget(edit_form.startdate) }}</td>
+            <th>{{ form_label(form.startdate) }}</th>
+            <td>{{ form_widget(form.startdate) }}</td>
         </tr>
         <tr>
-            <th>{{ form_label(edit_form.enddate) }}</th>
-            <td>{{ form_widget(edit_form.enddate) }}</td>
+            <th>{{ form_label(form.enddate) }}</th>
+            <td>{{ form_widget(form.enddate) }}</td>
         </tr>
         <tr>
             <th></th>
-            <td class="inputrond submitdyn">{{ form_widget(edit_form.submit) }}{{ form_widget(edit_form.reset) }}</td>
+            <td class="inputrond submitdyn">{{ form_widget(form.submit) }}{{ form_widget(form.reset) }}</td>
         </tr>    
     </table>
-    {{ form_end(edit_form) }}
+    {{ form_end(form) }}
 
     {{ gramcmacros.menu(menu) }}
 

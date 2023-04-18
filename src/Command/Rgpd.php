@@ -39,7 +39,6 @@
  *
  * NOTES - On ne supprime pas les fichiers de rapports d'activité, qui sont considérés comme des articles
  *         On ne supprime pas non plus les références de publications, ce ne sont pas des données personnelles
- *         Mais on supprime les données de comptabilité (table compta)
  *         L'exécution de cette commande peut être assez longue (> 1h00) suivant les données à supprimer
  *
  * ATTENTION:
@@ -58,7 +57,6 @@ use App\GramcServices\ServiceJournal;
 
 use App\Entity\Projet;
 use App\Entity\Version;
-use App\Entity\Compta;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,7 +71,11 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand( name: 'app:rgpd', )]
 class Rgpd extends Command
 {
-    public function __construct(private GramcDate $sd, private ServiceProjets $sp, private ServiceVersions $sv, private ServiceJournal $sj, private EntityManagerInterface $em)
+    public function __construct(private GramcDate $sd,
+                                private ServiceProjets $sp,
+                                private ServiceVersions $sv,
+                                private ServiceJournal $sj,
+                                private EntityManagerInterface $em)
     {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
@@ -92,91 +94,14 @@ class Rgpd extends Command
     // effacer toutes les versions d'un projet
     protected function effacerVersions(Projet $projet, OutputInterface $output)
     {
+        $sp = $this->sp;
         $em = $this->em;
         
         // Effacer les versions
         foreach ($projet->getVersion() as $version) {
 
             $output->writeln("                VERSION $version");
-
-            // Effacer les collaborateurs
-            foreach ($version->getCollaborateurVersion() as $item) {
-                $em->remove($item);
-            }
-            $em->flush();
-
-            // Effacer les expertises
-            foreach ($version->getExpertise() as $item) {
-                $em->remove($item);
-            }
-            $em->flush();
-
-            // Effacer les rallonges
-            $this->effacerRallonges($version, $output);
-
-            // Maintenant, on peut effacer la version !
-            // Pour ne pas avoir d'ennuis, effacer d'abord version dernière !
-            $projet->setVersionDerniere(null);
-            $em->persist($projet);
-            $em->flush();
-
-            $em->remove($version);
-            $em->flush();
-        }
-    }
-
-    // effacer toutes les rallonges d'une version
-    protected function effacerRallonges(Version $version, OutputInterface $output)
-    {
-        $em = $this->em;
-        
-        // Effacer les rallonges
-        foreach ( $version->getRallonge() as $item)
-        {
-            //$output->writeln("Rallonge $item");
-            $em->remove($item);
-        }
-        $em->flush();
-    }
-
-    // Effacer les documents joints au projet, ainsi que les infos sur le RA
-    // Attention on fait ça AVANT de supprimer les versions !
-    protected function effacerDocuments(Projet $projet, OutputInterface $output)
-    {
-        $sv = $this->sv;
-        $sp = $this->sp;
-        $em = $this->em;
-
-        // Pour chaque version, efface les documents joints
-        foreach ($projet->getVersion() as $version) {
-            $sv->effacerDonnees($version);
-        }
-
-        // NOTE - On laisse le rapport d'activité, qui est considéré comme une publication
-        // Donc ce n'est pas une donnée personnelle
-        // Mais on efface les infos sur le rapport d'activité
-        foreach ($projet->getRapportActivite() as $rapport) {
-            $em->remove($rapport);
-        }
-    }
-
-    // Effacer les enregistrements de compta correspondant aux logins
-    protected function effacerCompta(OutputInterface $output, array $loginnames) : void
-    {
-        $em = $this->em;
-        $output->writeln("");
-        $output->writeln("======");
-        $output->writeln("COMPTA");
-        $output->writeln("======");
-        foreach (array_keys($loginnames) as $log)
-        {
-            list($l,$d) = explode('-',$log);
-            if ($d == "0") continue;
-            $annee_limite = intval($d) + 1;
-            $date = new \DateTime("$annee_limite-01-01");
-            // TODO - compta::class ou Compta::class ?
-            $del = $em->getRepository(compta::class)->removeLoginname($l,$date);
-            $output->writeln ("   $log -> lignes supprimées = $del");
+            $sp->supprimerVersion($version);
         }
     }
 
@@ -196,10 +121,6 @@ class Rgpd extends Command
 
                 // Effacer la version active
                 $projet->setVersionActive(null);
-
-                // effacer les documents joints
-                $output->writeln("                Documents joints");
-                $this->effacerDocuments($projet, $output);
 
                 // effacer les versions du projet
                 $this->effacerVersions($projet, $output);
@@ -228,7 +149,7 @@ class Rgpd extends Command
     protected function buildProjetsByYear(int $limite, array $projets, array $toSkip = []): array
     {
         //
-        // $projets_annee[2015] -> un array contenant la liste des projets arrêtés ou en standby depuis 2015
+        // $projets_annee[2015] -> un array contenant la liste des projets arrêtés depuis 2015
         //                on le remplit pour les années des projets à supprimer (<= $anneeAncienne)
 
         $projets_annee = [];
@@ -247,7 +168,9 @@ class Rgpd extends Command
             }
             else
             {
-                $annee = $projet->derniereVersion()->getAnneeSession();
+                $date_fin = $projet->derniereVersion()->getEndDate();
+                if ($date_fin === null) continue;
+                $annee = $date_fin->format('Y');
             }
     
             if (intval($annee) <= $limite)
@@ -264,7 +187,7 @@ class Rgpd extends Command
     //
     // params: $projetsAnnee = Sortie de buildProjetsByYear
     //
-    // retour: Le tableau est utilisateurs, sous la forme loginname-2015
+    // retour: Le tableau des utilisateurs, sous la forme loginname-2015
     //
     
     protected function buildUsersList(array $projets_annee) : array
@@ -273,11 +196,18 @@ class Rgpd extends Command
         foreach ($projets_annee as $a => $pAnnee) {
             foreach ($pAnnee as $p) {
                 //$output->writeln("coucou " . $p->getIdProjet());
-                $loginnames[strtolower($p->getIdProjet()).'-'.$a] = 1;
                 foreach ($p->getVersion() as $v) {
                     foreach ($v->getCollaborateurVersion() as $cv) {
-                        if ($cv->getLoginname() !== null) {
-                            $loginnames[$cv->getLoginname().'-'.$a] = 1;
+                        $individu = $cv->getCollaborateur();
+                        foreach ($individu->getUser() as $u)
+                        {
+                            if ($u->getLogin())
+                            {
+                                if ($u->getLoginname() !== null)
+                                {
+                                    $loginnames[$u->getLoginname().'-'.$a] = 1;
+                                }
+                            }
                         }
                     }
                 }
@@ -332,7 +262,7 @@ class Rgpd extends Command
 
         $output->writeln("");
         $output->writeln("=============================================================================================================");
-        $output->writeln("Les enregistrements de compta des groupes ou utilisateurs suivants seront supprimés (loginname - date limite)");
+        $output->writeln("Les utilisateurs suivants seront supprimés (loginname - date limite)");
         $output->writeln("=============================================================================================================");
         foreach (array_keys($loginnames) as $l)
         {
@@ -349,9 +279,7 @@ class Rgpd extends Command
         // On y va: on commence par écrire dans le journal
         $sj->infoMessage("EXECUTION DE LA COMMANDE: rgpd $years");
 
-
-        // effacer les données de compta, les projets, les utilisateurs sans projet
-        $this->effacerCompta($output, $loginnames);
+        // effacer les projets, les utilisateurs sans projet
         $this->effacerProjets($output, $projets_annee);
         $individus_effaces = $sp->effacer_utilisateurs();
 

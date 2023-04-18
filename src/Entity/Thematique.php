@@ -42,16 +42,6 @@ class Thematique
     private $libelleThematique;
 
     /**
-    * @var \App\Entity\MetaThematique
-    *
-    * @ORM\ManyToOne(targetEntity="App\Entity\MetaThematique", inversedBy="thematique")
-    * @ORM\JoinColumns({
-    *   @ORM\JoinColumn(name="id_meta_thematique", referencedColumnName="id_meta_thematique")
-    * })
-    */
-    private $metaThematique;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="id_thematique", type="integer")
@@ -85,11 +75,11 @@ class Thematique
 
     //////////////////////////////////////////////////////////
 
-    public function getId()
+    public function getId(): int
     {
         return $this->getIdThematique();
     }
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getLibelleThematique();
     }
@@ -114,7 +104,7 @@ class Thematique
      *
      * @return Thematique
      */
-    public function setLibelleThematique($libelleThematique)
+    public function setLibelleThematique(string $libelleThematique): self
     {
         $this->libelleThematique = $libelleThematique;
 
@@ -126,7 +116,7 @@ class Thematique
      *
      * @return string
      */
-    public function getLibelleThematique()
+    public function getLibelleThematique(): string
     {
         return $this->libelleThematique;
     }
@@ -136,33 +126,9 @@ class Thematique
      *
      * @return integer
      */
-    public function getIdThematique()
+    public function getIdThematique(): int
     {
         return $this->idThematique;
-    }
-
-    /**
-     * Set metaThematique
-     *
-     * @param \App\Entity\MetaThematique $metaThematique
-     *
-     * @return Thematique
-     */
-    public function setMetaThematique(\App\Entity\MetaThematique $metaThematique = null)
-    {
-        $this->metaThematique = $metaThematique;
-
-        return $this;
-    }
-
-    /**
-     * Get metaThematique
-     *
-     * @return \App\Entity\MetaThematique
-     */
-    public function getMetaThematique()
-    {
-        return $this->metaThematique;
     }
 
     /**

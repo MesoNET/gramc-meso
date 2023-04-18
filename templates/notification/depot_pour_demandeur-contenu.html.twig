@@ -1,7 +1,6 @@
 Bonjour {{  object.responsable.prenom |raw }} {{ object.responsable.nom |raw }}
 Votre demande de ressources pour {{mesoc}} a bien été reçue.
 
-{% if object.session != null %} Numéro de session         : {{  object.session |raw }} {% endif %}
 Votre numéro de projet      : {{ object.projet |raw }}
 
 {% for dac in object.dac %}

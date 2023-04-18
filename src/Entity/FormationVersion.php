@@ -76,17 +76,7 @@ class FormationVersion
 
     public function __toString(): string
     {
-        $output = '{';
-        if ($this->getResponsable() == true) {
-            $output .= 'responsable:';
-        }
-        if ($this->getLogint() == true) {
-            $output .= 'login TURPAN:';
-        }
-        if ($this->getLoginb() == true) {
-            $output .= 'login BOREALE:';
-        }
-        $output .= 'version=' . $this->getVersion() .':';
+        $output .= 'version=' . $this->getVersion();
         $output .= 'id=' . $this->getId() . ':';
         $output .= 'formation=' . $this->getFormation();
         return $output;
@@ -111,7 +101,7 @@ class FormationVersion
      *
      * @return FormationVersion
      */
-    public function setNombre(int $nombre): FormationVersion
+    public function setNombre(int $nombre): self
     {
         $this->nombre = $nombre;
 
@@ -145,7 +135,7 @@ class FormationVersion
      *
      * @return CollaborateurVersion
      */
-    public function setVersion(\App\Entity\Version $version = null): FormationVersion
+    public function setVersion(?\App\Entity\Version $version = null): self
     {
         $this->version = $version;
 
@@ -157,7 +147,7 @@ class FormationVersion
      *
      * @return \App\Entity\Version
      */
-    public function getVersion(): \App\Entity\Version
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
     }
@@ -169,7 +159,7 @@ class FormationVersion
      *
      * @return CollaborateurFormation
      */
-    public function setFormation(\App\Entity\Formation $formation = null): FormationVersion
+    public function setFormation(?\App\Entity\Formation $formation = null): self
     {
         $this->formation = $formation;
 
@@ -181,7 +171,7 @@ class FormationVersion
      *
      * @return \App\Entity\Formation
      */
-    public function getFormation(): \App\Entity\Formation
+    public function getFormation(): ?\App\Entity\Formation
     {
         return $this->formation;
     }

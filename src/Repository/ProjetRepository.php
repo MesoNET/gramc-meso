@@ -26,7 +26,6 @@ namespace App\Repository;
 
 use App\GramcServices\Etat;
 use App\Utils\Functions;
-//use App\App;
 
 use App\Entity\Projet;
 use App\Entity\Individu;
@@ -287,46 +286,6 @@ class ProjetRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-
-    /*     public function findNouveauxProjetsAnnee($annee)
-        {
-            $subAnnee = substr( strval($annee), -2 );
-            $query = "SELECT  DISTINCT p FROM App:Version  v ";
-            $query .= " JOIN App:Projet p  WITH v.projet = p ";
-            $query .= " JOIN App:Session s WITH v.session = s ";
-            $query .= " WHERE (  s.idSession = :anneeA OR s.idSession = :anneeB ) AND p.idProjet LIKE :Pannee ";
-
-            return $this->getEntityManager()
-            ->createQuery( $query )
-            ->setParameter('anneeA', $subAnnee . 'A' )
-            ->setParameter('anneeB', $subAnnee . 'B' )
-            ->setParameter('Pannee', 'P' . $subAnnee . '%')
-            ->getResult();
-
-        }
-    */
-
-    ////////////////////////////////////////////////////////////////////////////////
-
-
-    /*     public function findAnciensProjetsAnnee($annee)
-        {
-            $subAnnee = substr( strval($annee), -2 );
-            $query = "SELECT  DISTINCT p FROM App:Version  v ";
-            $query .= " JOIN App:Projet p  WITH v.projet = p ";
-            $query .= " JOIN App:Session s WITH v.session = s ";
-            $query .= " WHERE (  s.idSession = :anneeA OR s.idSession = :anneeB ) AND NOT ( p.idProjet LIKE :Pannee )";
-
-            return $this->getEntityManager()
-            ->createQuery( $query )
-            ->setParameter('anneeA', $subAnnee . 'A' )
-            ->setParameter('anneeB', $subAnnee . 'B' )
-            ->setParameter('Pannee', 'P' . $subAnnee . '%')
-            ->getResult();
-
-        }
-    */
     //////////////////////////////////////////////////////////////////////////////////
 
     public function countProjetsAnnee($annee)
@@ -342,76 +301,5 @@ class ProjetRepository extends \Doctrine\ORM\EntityRepository
         ->setParameter('anneeA', $subAnnee . 'A')
         ->setParameter('anneeB', $subAnnee . 'B')
         ->getSingleScalarResult();
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    //
-    // $renouvel = Functions::TOUS, Functions::NOUVEAUX, Functions::ANCIENS
-    //
-    // TODO - NE MARCHE PAS AVEC PREFIX DIFFERENT DE P !!!
-    //        cf. StatistiquesController
-    //
-    public function heuresProjetsAnnee($annee, $renouvel = Functions::TOUS)
-    {
-        $subAnnee = substr(strval($annee), -2);
-
-        $query = "SELECT SUM(v.demHeures), SUM(v.attrHeures), SUM(v.penalHeures) FROM App:Version  v ";
-        $query .= " JOIN App:Session s WITH v.session = s ";
-        $query .= " JOIN App:Projet p WITH v.projet = p ";
-        $query .= " WHERE (  s.idSession = :anneeA OR s.idSession = :anneeB ) ";
-
-        if ($renouvel == Functions::NOUVEAUX) {
-            $query .=   "AND p.idProjet LIKE :Pannee ";
-        } elseif ($renouvel == Functions::ANCIENS) {
-            $query .=   "AND NOT ( p.idProjet LIKE :Pannee ) ";
-        }
-
-        $heures = $this->getEntityManager()
-        ->createQuery($query)
-        ->setParameter('anneeA', $subAnnee . 'A')
-        ->setParameter('anneeB', $subAnnee . 'B');
-
-        if ($renouvel == Functions::TOUS) {
-            $heures = $heures->getSingleResult();
-        } else {
-            $heures = $heures->setParameter('Pannee', 'P' . $subAnnee . '%')
-                    ->getSingleResult();
-        }
-
-
-        $query = "SELECT SUM(r.demHeures), SUM(r.attrHeures) FROM App:Rallonge r ";
-        $query .= " JOIN App:Version v WITH r.version = v ";
-        $query .= " JOIN App:Session s WITH v.session = s ";
-        $query .= " JOIN App:Projet p WITH v.projet = p ";
-        $query .= " WHERE (  s.idSession = :anneeA OR s.idSession = :anneeB ) AND r.validation = :true AND r.attrAccept = :true " ;
-
-        if ($renouvel == Functions::NOUVEAUX) {
-            $query .=   "AND p.idProjet LIKE :Pannee ";
-        } elseif ($renouvel == Functions::ANCIENS) {
-            $query .=   "AND NOT ( p.idProjet LIKE :Pannee ) ";
-        }
-
-        $heures_rallonges = $this->getEntityManager()
-        ->createQuery($query)
-        ->setParameter('anneeA', $subAnnee . 'A')
-        ->setParameter('anneeB', $subAnnee . 'B')
-        ->setParameter('true', true);
-
-        if ($renouvel == Functions::TOUS) {
-            $heures_rallonges = $heures_rallonges->getSingleResult();
-        } else {
-            $heures_rallonges = $heures_rallonges->setParameter('Pannee', 'P' . $subAnnee . '%')
-                    ->getSingleResult();
-        }
-
-        return [
-                'demHeures'         => $heures[1],
-                'attrHeures'        => $heures[2],
-                'penalHeures'       => $heures[3],
-                'rallongeDemHeures'      => $heures_rallonges[1],
-                'rallongeAttrHeures'     => $heures_rallonges[2],
-                ];
-
-        //return array_merge( $heures, $heures_rallonges );
     }
 }

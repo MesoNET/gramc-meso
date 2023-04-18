@@ -43,21 +43,25 @@ class FormationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('numeroform', IntegerType::class, ['required' => false, 'label' => "Numéro d'ordre *:" ])
-            ->add('acroform', TextType::class, ['required' => false, 'label' => 'Acronyme *:' ])
+            ->add('numeroform', IntegerType::class, ['required' => true, 'label' => "Numéro d'ordre *:" ])
+            ->add('acroform', TextType::class, ['required' => true, 'label' => 'Acronyme *:' ])
             ->add('nomform', TextType::class, ['required' => true, 'label' => 'Nom *:' ])
             ->add('startdate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer avant cette date *:', 'widget' => 'single_text' ])
             ->add('enddate', DateType::class, ['required' => true, 'label' => 'Ne pas proposer après cette date *:', 'widget' => 'single_text' ]);
 
-        if ($options['modifier'] == false &&  $options['ajouter'] == false) {
+        if ($options['modifier'] == false &&  $options['ajouter'] == false)
+        {
             $builder->add('individu');
         }
 
-        if ($options['modifier'] == true) {
+        if ($options['modifier'] == true)
+        {
             $builder
                 ->add('submit', SubmitType::class, ['label' => 'modifier' ])
                 ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        } elseif ($options['ajouter'] == true) {
+        }
+        elseif ($options['ajouter'] == true)
+        {
             $builder
                 ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
                 ->add('reset', ResetType::class, ['label' => 'reset' ]);

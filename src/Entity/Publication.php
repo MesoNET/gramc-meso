@@ -81,7 +81,7 @@ class Publication
 
     ////////////////////////////////////////////////////////////////////////
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getRefbib();
     }
@@ -89,9 +89,9 @@ class Publication
     /**
      * Get id
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return integer
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->getIdPubli();
     }
@@ -112,7 +112,7 @@ class Publication
      *
      * @return Publication
      */
-    public function setRefbib($refbib)
+    public function setRefbib(string $refbib): self
     {
         $this->refbib = $refbib;
 
@@ -124,7 +124,7 @@ class Publication
      *
      * @return string
      */
-    public function getRefbib()
+    public function getRefbib(): string
     {
         return $this->refbib;
     }
@@ -136,7 +136,7 @@ class Publication
      *
      * @return Publication
      */
-    public function setDoi($doi)
+    public function setDoi(?string $doi): self
     {
         $this->doi = $doi;
 
@@ -148,7 +148,7 @@ class Publication
      *
      * @return string
      */
-    public function getDoi()
+    public function getDoi(): ?string
     {
         return $this->doi;
     }
@@ -160,7 +160,7 @@ class Publication
      *
      * @return Publication
      */
-    public function setOpenUrl($openUrl)
+    public function setOpenUrl(?string $openUrl): self
     {
         $this->openUrl = $openUrl;
 
@@ -172,7 +172,7 @@ class Publication
      *
      * @return string
      */
-    public function getOpenUrl()
+    public function getOpenUrl(): ?string
     {
         return $this->openUrl;
     }
@@ -184,7 +184,7 @@ class Publication
      *
      * @return Publication
      */
-    public function setAnnee($annee)
+    public function setAnnee(int $annee): self
     {
         $this->annee = $annee;
 
@@ -196,7 +196,7 @@ class Publication
      *
      * @return integer
      */
-    public function getAnnee()
+    public function getAnnee(): int
     {
         return $this->annee;
     }
@@ -206,21 +206,9 @@ class Publication
      *
      * @return integer
      */
-    public function getIdPubli()
+    public function getIdPubli(): int
     {
         return $this->idPubli;
-    }
-
-    /**
-     * Set idPubli
-     *
-     * @param integer $id
-     * @return Publication
-     */
-    public function setIdPubli($id)
-    {
-        $this->idPubli = $id;
-        return $this;
     }
 
     /**
@@ -265,13 +253,15 @@ class Publication
     /**
      * Get doi, cleaned
      *************************************/
-    public function getDoiCleaned()
+    public function getDoiCleaned(): string
     {
         $doi = $this->getDoi();
         $prf = 'https://doi.org/';
 
-        if (! empty($doi)) {
-            if (str_starts_with($doi, $prf)) {
+        if (! empty($doi))
+        {
+            if (str_starts_with($doi, $prf))
+            {
                 $doi = substr($doi, strlen($prf));
             }
         }

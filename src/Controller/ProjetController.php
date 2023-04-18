@@ -26,13 +26,11 @@ namespace App\Controller;
 
 use App\Entity\Projet;
 use App\Entity\Version;
-use App\Entity\Session;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Formation;
 use App\Entity\User;
 use App\Entity\Serveur;
 use App\Entity\Thematique;
-use App\Entity\Rattachement;
 use App\Entity\Expertise;
 use App\Entity\Individu;
 use App\Entity\Sso;
@@ -44,6 +42,7 @@ use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Version\VersionWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
@@ -54,9 +53,6 @@ use App\GramcServices\ServiceServeurs;
 use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\GramcDate;
-use App\GramcServices\GramcGraf\CalculTous;
-use App\GramcServices\GramcGraf\Stockage;
-use App\GramcServices\GramcGraf\Calcul;
 
 use Psr\Log\LoggerInterface;
 
@@ -102,7 +98,10 @@ function cmpProj($a, $b)
 
 class ProjetController extends AbstractController
 {
+    private $token = null;
+    
     public function __construct(
+        private ServiceIndividus $sid,
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
@@ -110,28 +109,22 @@ class ProjetController extends AbstractController
         private ServiceUsers $su,
         private ServiceServeurs $sr,
         private ServiceRessources $sroc,
-        private Calcul $gcl,
-        private Stockage $gstk,
-        private CalculTous $gall,
         private GramcDate $grdt,
         private ServiceVersions $sv,
         private ServiceExperts $se,
-        private ProjetWorkflow $pw,
         private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private TokenStorageInterface $tok,
         private Environment $tw,
         private AuthorizationCheckerInterface $ac,
         private EntityManagerInterface $em
-    ) {}
-
-    //private static $count;
+    )
+    { $this->token = $tok->getToken(); }
 
     /**
      * Lists all projet entities.
      *
      * @Route("/", name="projet_index", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_OBS')")
      */
     public function indexAction(): Response
@@ -161,131 +154,10 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Projets par session en CSV
-     *
-     * @Route("/{id}/session_csv", name="projet_session_csv", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function sessionCSVAction(Session $session): Response
-    {
-        $em = $this->em;
-        $sp = $this->sp;
-        $sv = $this->sv;
-        $sortie = 'Projets de la session ' . $session->getId() . "\n";
-        $ligne  =   [
-                    'Nouveau',
-                    'id_projet',
-                    'état',
-                    'titre',
-                    'thématique',
-                    'rattachement',
-                    'dari',
-                    'courriel',
-                    'prénom',
-                    'nom',
-                    'laboratoire',
-                    'expert',
-                    'heures demandées',
-                    'heures attribuées',
-                    ];
-        if ($this->getParameter('noconso')==false) {
-            $ligne[] = 'heures consommées';
-        }
-        $sortie     .=   join("\t", $ligne) . "\n";
-
-        $versions = $em->getRepository(Version::class)->findSessionVersions($session);
-        foreach ($versions as $version) {
-            $responsable    =   $version->getResponsable();
-            $ligne  =
-                    [
-                    ($sv->isNouvelle($version) == true) ? 'OUI' : '',
-                    $version->getProjet()->getIdProjet(),
-                    $sp->getMetaEtat($version->getProjet()),
-                    Functions::string_conversion($version->getPrjTitre()),
-                    Functions::string_conversion($version->getPrjThematique()),
-                    Functions::string_conversion($version->getPrjRattachement()),
-                    $version->getPrjGenciDari(),
-                    $responsable->getMail(),
-                    Functions::string_conversion($responsable->getPrenom()),
-                    Functions::string_conversion($responsable->getNom()),
-                    Functions::string_conversion($version->getPrjLLabo()),
-                    ($version->getResponsable()->getExpert()) ? '*******' : $version->getExpert(),
-                    $version->getDemHeures(),
-                    $version->getAttrHeures(),
-                    ];
-            if ($this->getParameter('noconso')==false) {
-                $ligne[]= $sp->getConsoCalculVersion($version);
-            }
-
-            $sortie     .=   join("\t", $ligne) . "\n";
-        }
-        return Functions::csv($sortie, 'projet_session.csv');
-    }
-
-    /**
-     * Lists all projet entities.
-     *
-     * @Route("/tous_csv", name="projet_tous_csv", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function tousCSVAction(): Response
-    {
-        $grdt = $this->grdt;
-        $em = $this->em;
-
-        $entetes =
-                [
-                "Numéro",
-                "État",
-                "Titre",
-                "Thématique",
-                "Courriel",
-                "Prénom",
-                "Nom",
-                "Laboratoire",
-                "Nb de versions",
-                "Dernière session",
-                "Heures demandées cumulées",
-                "Heures attribuées cumulées",
-                ];
-
-        $sortie     =   "Projets enregistrés dans gramc à la date du " . $grdt->format('d-m-Y') . "\n" . join("\t", $entetes) . "\n";
-
-        $projets = $em->getRepository(Projet::class)->findBy([], ['idProjet' => 'DESC' ]);
-        foreach ($projets as $projet) {
-            $version        =   $projet->getVersionDerniere();
-            $responsable    =   $version->getResponsable();
-            $info           =   $em->getRepository(Version::class)->info($projet);
-
-            $ligne  =
-                [
-                $projet->getIdProjet(),
-                Etat::getLibelle($projet->getEtatProjet()),
-                Functions::string_conversion($version->getPrjTitre()),
-                Functions::string_conversion($version->getPrjThematique()),
-                $responsable->getMail(),
-                Functions::string_conversion($responsable->getPrenom()),
-                Functions::string_conversion($responsable->getNom()),
-                Functions::string_conversion($version->getPrjLLabo()),
-                $info[1],
-                $version->getSession()->getIdSession(),
-                $info[2],
-                $info[3],
-                ];
-            $sortie     .=   join("\t", $ligne) . "\n";
-        }
-
-        return Functions::csv($sortie, 'projet_gramc.csv');
-    }
-
-    /**
      * fermer un projet
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/fermer", name="fermer_projet", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function fermerAction(Projet $projet, Request $request): Response
     {
@@ -310,55 +182,10 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Conserver un projet en standby
-     *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}/nepasterminer", name="nepasterminer_projet", methods={"GET"})
-     * Method({"GET"})
-     */
-    //public function nepasterminerAction(Projet $projet, Request $request): Response
-    //{
-    //    $em = $this->em;
-
-    //    $projet->setNepasterminer(true);
-    //    $em->persist($projet);
-    //    $em->flush();
-    //    return $this->render(
-    //        'projet/nepasterminer.html.twig',
-    //        [
-    //        'projet' => $projet,
-    //        ]
-    //    );
-    //}
-
-    /**
-     * Permettre la fermeture d'un projet
-     *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}/onpeutterminer", name="onpeutterminer_projet", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     */
-    //public function onpeutterminerAction(Projet $projet, Request $request): Response
-    //{
-    //    $em = $this->em;
-
-    //  $projet->setNepasterminer(false);
-    // $em->persist($projet);
-    // $em->flush();
-    // return $this->render(
-    //      'projet/onpeutterminer.html.twig',
-    //      [
-    //      'projet' => $projet,
-    //      ]
-    //    );
-    //}
-
-    /**
-     * Retour en arrière
+     * Retour en arrière: un projet en validation repasse en édition
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function backAction(Projet $projet, Request $request): Response
     {
@@ -421,7 +248,6 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/fwd", name="fwd_version", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -475,217 +301,12 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Liste tous les projets qui ont une version lors de cette session
-     *
-     * @Route("/session", name="projet_session", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function sessionAction(Request $request): Response
-    {
-        $em             = $this->em;
-        $ss             = $this->ss;
-        $sp             = $this->sp;
-        $sv             = $this->sv;
-
-        $session        = $ss->getSessionCourante();
-        $data           = $ss->selectSession($this->createFormBuilder(['session'=>$session]), $request); // formulaire
-        $session        = $data['session']!=null ? $data['session'] : $session;
-        $form           = $data['form'];
-        $versions       = $em->getRepository(Version::class)->findSessionVersions($session);
-
-        $demHeures      = 0;
-        $attrHeures     = 0;
-        $nombreProjets  = count($versions);
-        $nombreNouveaux = 0;
-        $nombreSignes   = 0;
-        $nombreRapports = 0;
-        $nombreExperts  = 0;
-        $nombreAcceptesSess = 0;
-        $nombreAcceptesFil = 0;
-
-        $nombreEditionFil    = 0;
-        $nombreExpertiseFil  = 0;
-        $nombreEditionSess   = 0;
-        $nombreExpertiseSess = 0;
-        $nombreAttente       = 0;
-        $nombreActif         = 0;
-        $nombreNouvelleDem   = 0;
-        $nombreTermine       = 0;
-        $nombreAnnule        = 0;
-
-
-        $termine        = Etat::getEtat('TERMINE');
-        $nombreTermines = 0;
-
-        // Les thématiques
-        $thematiques = $em->getRepository(Thematique::class)->findAll();
-        if ($thematiques == null) {
-            new Response('Aucune thématique !');
-        }
-
-        $idThematiques = [];
-        $statsThematique = [];
-        foreach ($thematiques as $thematique) {
-            $statsThematique[$thematique->getLibelleThematique()] = 0;
-            $idThematiques[$thematique->getLibelleThematique()] = $thematique->getIdThematique();
-        }
-
-        // Les rattachements
-        $rattachements = $em->getRepository(Rattachement::class)->findAll();
-        if ($rattachements == null) {
-            $rattachements = [];
-        }
-
-        $statsRattachement = [];
-        $idRattachements   = [];
-        foreach ($rattachements as $rattachement) {
-            $statsRattachement[$rattachement->getLibelleRattachement()] = 0;
-            $idRattachements[$rattachement->getLibelleRattachement()] = $rattachement->getIdRattachement();
-        }
-
-        //$items  =   [];
-        foreach ($versions as $version) {
-            $id_version = $version->getIdVersion();
-            $projet = $version->getProjet();
-            $etat = $version->getEtatVersion();
-            $type = $version->getProjet()->getTypeProjet();
-            $metaetat = $sp->getMetaEtat($projet);
-
-            $annee_rapport = $version->getAnneeSession()-1;
-
-            //Modif Callisto Septembre 2019
-            $typeMetadata = $version -> getDataMetaDataFormat();
-            $nombreDatasets = $version -> getDataNombreDatasets();
-            $tailleDatasets = $version -> getDataTailleDatasets();
-            $demHeures  +=  $version->getDemHeures();
-            $attrHeures +=  $version->getAttrHeures();
-            
-            if ($sv->isNouvelle($version) == true) {
-                $nombreNouveaux++;
-            };
-            
-            if ($version->getPrjThematique() != null) {
-                $statsThematique[$version->getPrjThematique()->getLibelleThematique()]++;
-            };
-            
-            if ($version->getPrjRattachement() != null) {
-                $statsRattachement[$version->getPrjRattachement()->getLibelleRattachement()]++;
-            };
-
-            if ($sv->isSigne($version)) {
-                $nombreSignes++;
-            };
-            if ($sp->hasRapport($projet, $annee_rapport)) {
-                $nombreRapports++;
-            };
-            if ($version->hasExpert()) {
-                $nombreExperts++;
-            };
-            
-            //if( $version->getAttrAccept() ) $nombreAcceptes++;
-            if ($metaetat == 'ACCEPTE') {
-                if ($type == Projet::PROJET_FIL) {
-                    $nombreAcceptesFil++;
-                }
-                if ($type == Projet::PROJET_SESS) {
-                    $nombreAcceptesSess++;
-                }
-            };
-        
-            if ($version->getProjet() != null && $version->getProjet()->getEtatProjet() == $termine) {
-                $nombreTermines++;
-            };
-
-            if ($type == Projet::PROJET_FIL) {
-                if ($etat == Etat::EDITION_DEMANDE) {
-                    $nombreEditionFil++;
-                };
-                if ($etat == Etat::EDITION_EXPERTISE) {
-                    $nombreExpertiseFil++;
-                }
-            };
-
-            if ($type == Projet::PROJET_SESS) {
-                if ($etat == Etat::EDITION_DEMANDE) {
-                    $nombreEditionSess++;
-                } elseif ($etat == Etat::EDITION_EXPERTISE) {
-                    $nombreExpertiseSess++;
-                }
-            };
-
-            if ($etat == Etat::ACTIF) {
-                $nombreActif++;
-                    
-            };
-
-            if ($etat == Etat::NOUVELLE_VERSION_DEMANDEE) {
-                $nombreNouvelleDem++;
-            };
-            
-            if ($etat == Etat::EN_ATTENTE) {
-                $nombreAttente++;
-            };
-            
-            if ($etat == Etat::TERMINE) {
-                $nombreTermine++;
-            };
-            
-            if ($etat == Etat::ANNULE) {
-                $nombreAnnule++;
-            };
-        }
-
-        foreach ($thematiques as $thematique) {
-            if ($statsThematique[$thematique->getLibelleThematique()]    ==   0) {
-                unset($statsThematique[$thematique->getLibelleThematique()]);
-                unset($idThematiques[$thematique->getLibelleThematique()]);
-            }
-        }
-
-        return $this->render(
-            'projet/session.html.twig',
-            [
-            'nombreEditionSess'   => $nombreEditionSess,
-            'nombreExpertiseSess' => $nombreExpertiseSess,
-            'nombreAttente'       => $nombreAttente,
-            'nombreActif'         => $nombreActif,
-            'nombreNouvelleDem'   => $nombreNouvelleDem,
-            'nombreTermine'       => $nombreTermine,
-            'nombreAnnule'        => $nombreAnnule,
-            'nombreEditionFil'    => $nombreEditionFil,
-            'nombreExpertiseFil'  => $nombreExpertiseFil,
-            'form'                => $form->createView(), // formulaire
-            'idSession'           => $session->getIdSession(), // formulaire
-            'session'             => $session,
-            'versions'            => $versions,
-            'demHeures'           => $demHeures,
-            'attrHeures'          => $attrHeures,
-            'nombreProjets'       => $nombreProjets,
-            'nombreNouveaux'      => $nombreNouveaux,
-            'thematiques'         => $statsThematique,
-            'idThematiques'       => $idThematiques,
-            'rattachements'       => $statsRattachement,
-            'idRattachements'     => $idRattachements,
-            'nombreSignes'        => $nombreSignes,
-            'nombreRapports'      => $nombreRapports,
-            'nombreExperts'       => $nombreExperts,
-            'nombreAcceptesSess'      => $nombreAcceptesSess,
-            'nombreAcceptesFil'   => $nombreAcceptesFil,
-            'nombreTermines'      => $nombreTermines,
-            'showRapport'         => (substr($session->getIdSession(), 2, 1) == 'A') ? true : false,
-        ]
-        );
-    }
-
-    /**
      * Résumés de tous les projets qui ont une version cette annee
      *
      * Param : $annee
      *
      * @Security("is_granted('ROLE_OBS')")
      * @Route("/{annee}/resumes", name="projet_resumes", methods={"GET","POST"})
-     * Method({"GET","POST"})
      *
      */
     public function resumesAction($annee): Response
@@ -711,17 +332,6 @@ class ProjetController extends AbstractController
                 continue;
             }
             $thematique= $v->getPrjThematique();
-            $metathema = null;
-            if ($thematique==null) {
-                $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $v . " n'a pas de thématique !");
-            } else {
-                $metathema = $thematique->getMetaThematique()->getLibelle();
-            }
-
-            if (! isset($projets[$metathema])) {
-                $projets[$metathema] = [];
-            }
-            $prjm = &$projets[$metathema];
             $prj  = [];
             $prj['id'] = $v->getProjet()->getIdProjet();
             $prj['titre'] = $v->getPrjTitre();
@@ -738,11 +348,6 @@ class ProjetController extends AbstractController
             $prjm[] = $prj;
         };
 
-        // Tris des tableaux par thématique du plus récent au plus ancien
-        foreach ($projets as $metathema => &$prjm) {
-            usort($prjm, "App\Controller\cmpProj");
-        }
-
         return $this->render(
             'projet/resumes.html.twig',
             [
@@ -753,239 +358,9 @@ class ProjetController extends AbstractController
     }
 
     /**
-     *
-     * Liste tous les projets qui ont une version cette annee
-     *
-     * @Route("/annee", name="projet_annee", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-
-    public function anneeAction(Request $request): Response
-    {
-        $grdt = $this->grdt;
-        $ss = $this->ss;
-        $data  = $ss->selectAnnee($request); // formulaire
-        $annee = $data['annee'];
-
-        $isRecupPrintemps = $grdt->isRecupPrintemps($annee);
-        $isRecupAutomne   = $grdt->isRecupAutomne($annee);
-
-        $sp      = $this->sp;
-        $paa     = $sp->projetsParAnnee($annee, $isRecupPrintemps, $isRecupAutomne);
-        $projets = $paa[0];
-        $total   = $paa[1];
-        $rattachements = $total['rattachements'];
-
-        // Les sessions de l'année - On considère que le nombre d'heures par année est fixé par la session A de l'année
-        // donc on ne peut pas changer de machine en cours d'année.
-        // ça va peut-être changer un jour, ça n'est pas terrible !
-        $sessions = $ss->sessionsParAnnee($annee);
-        if (count($sessions)==0) {
-            $hparannee=0;
-        } else {
-            $hparannee= $sessions[0]->getHParAnnee();
-        }
-
-        return $this->render(
-            'projet/annee.html.twig',
-            [
-            'form' => $data['form']->createView(), // formulaire
-            'annee'     => $annee,
-            //'mois'    => $mois,
-            'projets'   => $projets,
-            'total'     => $total,
-            'rattachements' => $rattachements,
-            'showRapport'   => false,
-            'isRecupPrintemps' => $isRecupPrintemps,
-            'isRecupAutomne'   => $isRecupAutomne,
-            'heures_par_an'    => $hparannee
-            ]
-        );
-    }
-
-    /**
-     *
-     * Liste tous les projets avec des demandes de stockage ou partage de données
-     *
-     * NB - Utile pour Calmip, si c'est inutile pour les autres mesoc il faudra
-     *      mettre cette fonction ailleurs !
-     *
-     * @Route("/donnees", name="projet_donnees", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-
-    public function donneesAction(Request $request): Response
-    {
-        $ss    = $this->ss;
-        $sp    = $this->sp;
-        $data  = $ss->selectAnnee($request); // formulaire
-        $annee = $data['annee'];
-
-        list($projets, $total) = $sp->donneesParProjet($annee);
-
-        return $this->render(
-            'projet/donnees.html.twig',
-            ['form'    => $data['form']->createView(), // formulaire
-             'annee'   => $annee,
-             'projets' => $projets,
-             'total'   => $total,
-             ]
-        );
-    }
-
-    /**
-     * Données en CSV
-     *
-     * @Route("{annee}/donnees_csv", name="projet_donnees_csv", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function donneesCSVAction($annee): Response
-    {
-        $sp                  = $this->sp;
-        list($projets, $total)= $sp->donneesParProjet($annee);
-
-        $header  = [
-                    'projet',
-                    'Demande',
-                    'titre',
-                    'thématique',
-                    'courriel du resp',
-                    'nom',
-                    'prenom',
-                    'laboratoire',
-                    'justif',
-                    'demande',
-                    'quota',
-                    'DIFF',
-                    'occupation',
-                    'meta',
-                    'nombre',
-                    'taille'
-                   ];
-
-        $sortie     =   join("\t", $header) . "\n";
-        foreach ($projets as $prj_array) {
-            $line   = [];
-            $p = $prj_array['p'];
-            $line[] = $p->getIdProjet();
-            $d      = "";
-            if ($prj_array['stk']===true) {
-                $d  = "S ";
-            }
-            if ($prj_array['ptg']===true) {
-                $d .= "P";
-            }
-            if ($prj_array['stk']===false && $prj_array['ptg']===false) {
-                $d = "N";
-            }
-            $line[] = $d;
-            $line[] = $p->getTitre();
-            $line[] = $p->getThematique();
-            $line[] = $p->getResponsable()->getMail();
-            $line[] = $p->getResponsable()->getNom();
-            $line[] = $p->getResponsable()->getPrenom();
-            $line[] = $p->getLaboratoire();
-            $line[] = '"'.str_replace(["\n","\r\n","\t"], [' ',' ',' '], $prj_array['sondJustifDonnPerm']).'"';
-            $line[] = $prj_array['sondVolDonnPerm'];
-            $line[] = $prj_array['qt'];
-            if (strpos($prj_array['sondVolDonnPerm'], 'sais pas')===false && strpos($prj_array['sondVolDonnPerm'], '<')===false) {
-                if (intval($prj_array['sondVolDonnPerm']) != intval($prj_array['qt'])) {
-                    $line[] = 1;
-                } else {
-                    $line[] = 0;
-                }
-            } else {
-                if (intval($prj_array['qt']) != 1) {
-                    $line[] = 1;
-                } else {
-                    $line[] = 0;
-                }
-            }
-            $line[] = $prj_array['c'];
-            $line[] = $prj_array['dataMetaDataFormat'];
-            $line[] = $prj_array['dataNombreDatasets'];
-            $line[] = $prj_array['dataTailleDatasets'];
-            $sortie .=   join("\t", $line) . "\n";
-        }
-        return Functions::csv($sortie, 'donnees'.$annee.'.csv');
-    }
-
-    /**
-     * Projets de l'année en CSV
-     *
-     * @Route("/{annee}/annee_csv", name="projet_annee_csv", methods={"GET","POST"})
-     * Method({"GET","POST"})
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function anneeCSVAction($annee): Response
-    {
-        $sp      = $this->sp;
-        $paa     = $sp->projetsParAnnee($annee);
-        $projets = $paa[0];
-        $total   = $paa[1];
-        $sortie = '';
-
-        $header  = [
-                    'projets '.$annee,
-                    'titre',
-                    'thématique',
-                    'rattachement',
-                    'courriel du resp',
-                    'prénom',
-                    'nom',
-                    'laboratoire',
-                    'heures demandées A',
-                    'heures demandées B',
-                    'heures attribuées A',
-                    'heures attribuées B',
-                    'rallonges',
-                    'pénalités A',
-                    'pénalités B',
-                    'heures attribuées',
-                    'quota machine',
-                    'heures consommées',
-                    'heures gpu',
-                    ];
-
-        $sortie     .=   join("\t", $header) . "\n";
-        foreach ($projets as $prj_array) {
-            $p = $prj_array['p'];
-            $va= $prj_array['va'];
-            $vb= $prj_array['vb'];
-            $line = [];
-            $line[] = $p->getIdProjet();
-            $line[] = $p->getTitre();
-            $line[] = $p->getThematique();
-            $line[] = $p->getRattachement();
-            $line[] = $prj_array['resp']->getMail();
-            $line[] = $prj_array['resp']->getNom();
-            $line[] = $prj_array['resp']->getPrenom();
-            $line[] = $prj_array['labo'];
-            $line[] = empty($va) ? '' : $va->getDemHeures();
-            $line[] = empty($vb) ? '' : $vb->getDemHeures();
-            $line[] = empty($va) ? '' : $va->getAttrHeures();
-            $line[] = empty($vb) ? '' : $vb->getAttrHeures();
-            $line[] = $prj_array['r'];
-            $line[] = -$prj_array['penal_a'];
-            $line[] = -$prj_array['penal_b'];
-            $line[] = $prj_array['attrib'];
-            $line[] = $prj_array['q'];
-            $line[] = $prj_array['c'];
-            $line[] = $prj_array['g'];
-
-            $sortie     .=   join("\t", $line) . "\n";
-        }
-        return Functions::csv($sortie, 'projets_'.$annee.'.csv');
-    }
-
-    /**
-     * download rapport
+     * Téléchargement du rapport d'activité
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
      * @Route("/{id}/rapport/{annee}", defaults={"annee"=0}, name="rapport", methods={"GET"})
-     * Method("GET")
      */
     public function rapportAction(Version $version, Request $request, $annee): Response
     {
@@ -996,11 +371,6 @@ class ProjetController extends AbstractController
             $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
         }
 
-        if ($annee == 0) {
-            // Si on ne précise pas on prend le rapport de l'année précédente
-            // (pour les sessions A)
-            $annee    = $version->getAnneeSession()-1;
-        }
         $filename = $sp->getRapport($version->getProjet(), $annee);
 
         //return new Response($filename);
@@ -1014,11 +384,10 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * download signature
+     * Téléchargement de la fiche projet qui doit être signée par la direction du laboratoire demandeur
      *
      * @Route("/{id}/signature", name="signature", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
-     * Method("GET")
      */
     public function signatureAction(Version $version, Request $request): Response
     {
@@ -1031,7 +400,6 @@ class ProjetController extends AbstractController
      *
      * @Route("/{id}/document", name="document", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
-     * Method("GET")
      */
     public function documentAction(Version $version, Request $request): Response
     {
@@ -1040,146 +408,22 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Tous les projets
-     *
-     * @Route("/tous", name="projet_tous", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function tousAction(): Response
-    {
-        $em      = $this->em;
-        $projets = $em->getRepository(Projet::class)->findAll();
-        $sp      = $this->sp;
-
-        foreach (['termine','standby','agarder','accepte','refuse','edition','expertise','nonrenouvele'] as $e) {
-            $etat_projet[$e]         = 0;
-            $etat_projet[$e.'_test'] = 0;
-        }
-
-        $data = [];
-
-        $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
-        $versionRepository              = $em->getRepository(Version::class);
-        $projetRepository               = $em->getRepository(Projet::class);
-
-        foreach ($projets as $projet) {
-            $info     = $versionRepository->info($projet); // les stats du projet
-            $version  = $projet->getVersionDerniere();
-            $metaetat = strtolower($sp->getMetaEtat($projet));
-
-            if ($projet->getTypeProjet() == Projet::PROJET_TEST) {
-                $etat_projet[$metaetat.'_test'] += 1;
-            } else {
-                $etat_projet[$metaetat] += 1;
-            }
-
-            $data[] = [
-                    'projet'       => $projet,
-                    'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
-                    'metaetat'     => $metaetat,
-                    'version'      => $version,
-                    'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    'count'        => $info[1],
-                    'dem'          => $info[2],
-                    'attr'         => $info[3],
-                    'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
-            ];
-        }
-
-        $etat_projet['total']      = $projetRepository->countAll();
-        $etat_projet['total_test'] = $projetRepository->countAllTest();
-
-        return $this->render(
-            'projet/projets_tous.html.twig',
-            [
-            'etat_projet'   =>  $etat_projet,
-            'data' => $data,
-        ]
-        );
-    }
-
-    /**
      * Projets dynamiques
      *
-     * @Route("/dynamiques", name="projet_dynamique", methods={"GET"})
-     * Method("GET")
+     * @Route("/dynamiques", name="projet_dynamique", methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS')")
      */
-    //public function dynamiquesAction(): Response
-    //{
-        //$em = $this->em;
-        //$projets = $em->getRepository(Projet::class)->findAll();
-        //$sj = $this->sj;
-        //$sp = $this->sp;
-
-        //foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
-            //$etat_projet[$e] = 0;
-        //}
-
-        //$data = [];
-
-        //$collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
-        //$versionRepository              = $em->getRepository(Version::class);
-        //$projetRepository               = $em->getRepository(Projet::class);
-        //$total
-
-        //foreach ($projets as $projet) {
-            //$info     = $versionRepository->info($projet); // les stats du projet
-            //$version = $projet->getVersionActive();
-            //if ($version === null)
-            //{
-                //$version = $projet->getVersionDerniere();
-                //if ($version === null)
-                //{
-                    //$sj->errorMessage(__METHOD__ .":" . __LINE__ . "projet $projet - Pas de version !");
-                    //continue;
-                //}
-            //};
-            
-            //$metaetat = strtolower($sp->getMetaEtat($projet));
-
-            //$etat_projet[$metaetat] += 1;
-
-            
-            //$data[] = [
-                    //'projet'       => $projet,
-                    //'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
-                    //'metaetat'     => $metaetat,
-                    //'version'      => $version,
-                    //'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    //'count'        => $info[1],
-                    //'dem'          => $info[2],
-                    //'attr'         => $info[3],
-                    //'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
-            //];
-        //}
-
-        //$etat_projet['total']      = $projetRepository->countAll();
-
-        //return $this->render(
-            //'projet/projets_dyn.html.twig',
-            //[
-            //'etat_projet' => $etat_projet,
-            //'data' => $data,
-            //]
-        //);
-    //}
-
-    /**
-     * Projets dynamiques
-     *
-     * @Route("/dynamiques", name="projet_dynamique", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_OBS')")
-     */
-    public function projetsDynamiquesAction(): Response
+    public function projetsDynamiquesAction(Request $request): Response
     {
         $em = $this->em;
         //$projets = $em->getRepository(Projet::class)->findAll();
         $sj = $this->sj;
         $sp = $this->sp;
         $sroc = $this->sroc;
+        $ss = $this->ss;
+
+        $selectAnneeData  = $ss->selectAnnee($request); // formulaire
+        $annee = $selectAnneeData['annee'];
 
         foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
             $etat_projet[$e] = 0;
@@ -1187,7 +431,8 @@ class ProjetController extends AbstractController
 
         // On récupère tous les projets dynamiques toutes années confondues
         // Avec des informations statistiques
-        [$projets_data,$total,$repart] = $sp->projetsDynParAnnee();
+        [$projets_data,$total,$repart] = $sp->projetsDynParAnnee($annee);
+
         $data = [];
         $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
         $versionRepository              = $em->getRepository(Version::class);
@@ -1218,22 +463,23 @@ class ProjetController extends AbstractController
                 $dacs[$sroc->getNomComplet($d->getRessource())] = $d;
             }
             $data[] = [
-                    'projet'       => $projet,
+                    'projet' => $projet,
                     'renouvelable' => $projet->getEtatProjet()==Etat::RENOUVELABLE,
-                    'metaetat'     => $metaetat,
-                    'version'      => $version,
-                    'dacs'         => $dacs,
+                    'metaetat' => $metaetat,
+                    'version' => $version,
+                    'dacs' => $dacs,
                     'etat_version' => ($version != null) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    'count'        => $count,
-                    'responsable'  => $collaborateurVersionRepository->getResponsable($projet),
+                    'count' => $count,
+                    'responsable' => $collaborateurVersionRepository->getResponsable($projet),
             ];
         }
 
         $etat_projet['total']      = $projetRepository->countAll();
-
+    
         return $this->render(
             'projet/projets_dyn.html.twig',
             [
+            'form' => $selectAnneeData['form']->createView(), // formulaire de hoix de l'année
             'etat_projet' => $etat_projet,
             'data' => $data,
             'total' => $total
@@ -1242,7 +488,7 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Lists all projet entities.
+     * Pas utilisé...
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/gerer", name="gerer_projets", methods={"GET"})
@@ -1259,36 +505,9 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Creates a new projet entity.
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/new", name="projet_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
-     */
-    public function newAction(Request $request): Response
-    {
-        $projet = new Projet(Projet::PROJET_SESS);
-        $form = $this->createForm('App\Form\ProjetType', $projet);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->persist($projet);
-            $em->flush();
-
-            return $this->redirectToRoute('projet_show', array('id' => $projet->getId()));
-        }
-
-        return $this->render('projet/new.html.twig', array(
-            'projet' => $projet,
-            'form' => $form->createView(),
-        ));
-    }
-
-    /**
-     * Envoie un écran de mise en garde avant de créer un nouveau projet
+     * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé)
      *
      * @Route("/avant_nouveau/{type}", name="avant_nouveau_projet", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
@@ -1303,7 +522,6 @@ class ProjetController extends AbstractController
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de créer un nouveau projet parce que " . $sm->nouveauProjet($type)['raison']);
         }
 
-        $session = $ss->getSessionCourante();
         $projetRepository = $this->em->getRepository(Projet::class);
         $id_individu      = $token->getUser()->getIdIndividu();
         $renouvelables    = $projetRepository-> getProjetsCollab($id_individu, true, true, true);
@@ -1317,7 +535,6 @@ class ProjetController extends AbstractController
             [
             'renouvelables' => $renouvelables,
             'type'          => $type,
-            'session'       => $session
             ]
         );
     }
@@ -1326,9 +543,7 @@ class ProjetController extends AbstractController
      * Création d'un nouveau projet
      *
      * @Route("/nouveau/{type}", name="nouveau_projet", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * TODO - Passer nouveau dans ServiceProjets !
      *
      */
     public function nouveauAction(Request $request, $type): Response
@@ -1346,8 +561,7 @@ class ProjetController extends AbstractController
         $token = $this->tok->getToken();
         $em = $this->em;
 
-        // Si changement d'état de la session alors que je suis connecté !
-        // + contournement d'un problème lié à Doctrine
+        // contournement d'un problème lié à Doctrine (???))
         $request->getSession()->remove('SessionCourante'); // remove cache
 
         // NOTE - Pour ce controleur, on identifie les types par un chiffre (voir Entity/Projet.php)
@@ -1363,192 +577,333 @@ class ProjetController extends AbstractController
         
         return $this->redirectToRoute('modifier_version', [ 'id' => $version->getIdVersion() ]);
     }
-
-    /**
-     * Affichage graphique de la consommation d'un projet
-     *    Affiche un menu permettant de choisir quelle consommation on veut voir afficher
+        /**
+     * Montre les projets d'un utilisateur
      *
-     *
-     * @Route("/{id}/conso/{cv}/cv/{annee}/annee", name="projet_conso",
-     *        defaults={"loginname" = "nologin"},
-     *        methods={"GET"})
+     * @Route("/accueil", name="projet_accueil",methods={"GET"})
      * Method("GET")
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
-
-    public function consoAction(Projet $projet, CollaborateurVersion $cv, int $annee=9999): Response
+    public function accueilAction()
     {
-        $sp = $this->sp;
-        $sj = $this->sj;
-        $su = $this->su;
-        $grdt = $this->grdt;
+        $sm                  = $this->sm;
+        $ss                  = $this->ss;
+        $sp                  = $this->sp;
+        $su                  = $this->su;
+        $sr                  = $this->sr;
+        $token               = $this->token;
+        $sid                 = $this->sid;
+        $em                  = $this->em;
+        $individu            = $token->getUser();
+        $id_individu         = $individu->getIdIndividu();
 
-        // Seuls les collaborateurs du projet ont accès à la consommation
-        if (! $sp->projetACL($projet)) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
-        }
+        $projetRepository    = $em->getRepository(Projet::class);
+        $cv_repo             = $em->getRepository(CollaborateurVersion::class);
+        $user_repo           = $em->getRepository(User::class);
 
-        // Si année non spécifiée on prend l'année la plus récente du projet
-        // L'URL ne peut être construite si $annee vaut null, du coup 9999 signifie: année non spécifiée
-        // cf. Version::getFullAnnee()
-        if ($annee == 9999) {
-            $version = $projet->derniereVersion();
-            $annee = $version->getFullAnnee();
-            if ($annee==9999)
+        $list_projets_collab = $projetRepository-> getProjetsCollab($id_individu, false, true);
+        $list_projets_resp   = $projetRepository-> getProjetsCollab($id_individu, true, false);
+
+        $projets_term        = $projetRepository-> get_projets_etat($id_individu, 'TERMINE');
+
+        $passwd = null;
+        $pwd_expir = null;
+
+        // Vérifier le profil
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
             {
-                $annee = $grdt->showYear(); // En désespoir de cuase on prend l'année courante
-            }
+                return $this->redirectToRoute('profil');
+            };
         }
 
-        $loginnames = $su->collaborateurVersion2LoginNames($cv);
+        // TODO - Faire en sorte pour que les erreurs soient proprement affichées dans l'API
+        // En attendant ce qui suit permet de se dépanner mais c'est franchement dégueu
+        //echo '<pre>'.strlen($_SERVER['CLE_DE_CHIFFREMENT'])."\n";
+        //echo SODIUM_CRYPTO_SECRETBOX_KEYBYTES.'</pre>';
+        //$enc = Functions::simpleEncrypt("coucou");
+        //$dec = Functions::simpleDecrypt($enc);
+        //echo "$dec\n";
+
+        // TODO - Hou le vilain copier-coller !
+        // projets responsable
+        $projets_resp  = [];
+        foreach ($list_projets_resp as $projet) {
+            $versionActive  =   $sp->versionActive($projet);
+            if ($versionActive != null)
+            {
+                $rallonges = $versionActive ->getRallonge();
+                $cpt_rall  = count($rallonges->toArray());
+            }
+            else
+            {
+                $rallonges = null;
+                $cpt_rall  = 0;
+            }
+
+            $passwd = null;
+            $pwd_expir = null;
+            $cv = null;
+            if ($versionActive != null)
+            {
+                $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd    = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd    = $u->getPassword();
+                    $passwd    = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                } */
+            }
+            else
+            {
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
+            }
+
+            $projets_resp[]   =
+            [
+                'projet'    => $projet,
+                'rallonges' => $rallonges,
+                'cpt_rall'  => $cpt_rall,
+                'meta_etat' => $sp->getMetaEtat($projet),
+                'cv' => $cv,
+                'loginnames' => $loginnames,
+                'passwd'    => $passwd,
+                'pwd_expir' => $pwd_expir
+            ];
+        }
+
+        // projets collaborateurs
+        $projets_collab  = [];
+        foreach ($list_projets_collab as $projet) {
+            $versionActive = $sp->versionActive($projet);
+
+            if ($versionActive != null) {
+                $rallonges = $versionActive ->getRallonge();
+                $cpt_rall  = count($rallonges->toArray());
+            }
+            else
+            {
+                $rallonges = null;
+                $cpt_rall  = 0;
+            }
+
+            /*
+            if ($cv != null) {
+                // TODO - Remonter au niveau du ProjetRepository (fonctions get_projet_etats et getProjetsCollab)
+                if ($cv->getDeleted() == true) continue;
+                $login = $cv->getLoginname()==null ? 'nologin' : $cv->getLoginname();
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd = $u->getPassword();
+                    $passwd = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                }
+            } else {
+                $login = 'nologin';
+                $passwd= null;
+                $pwd_expir = null;
+            }
+            */
+            $cv = null;
+            if ($versionActive != null)
+            {
+                $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd    = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd    = $u->getPassword();
+                    $passwd    = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                } */
+            }
+            else
+            {
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
+            }
+            
+            $projets_collab[] =
+                [
+                'projet'    => $projet,
+                //'conso'     => $sp->getConsoCalculP($projet),
+                'rallonges' => $rallonges,
+                'cpt_rall'  => $cpt_rall,
+                'cv' => $cv,
+                'meta_etat' => $sp->getMetaEtat($projet),
+                'loginnames' => $loginnames,
+                'passwd'    => $passwd,
+                'pwd_expir' => $pwd_expir
+                ];
+        }
+
+        $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
 
         return $this->render(
-            'projet/conso_menu.html.twig',
-            ['projet'=>$projet,
-             'cv' => $cv,
-             'annee'=>$annee,
-             'loginnames'=>$loginnames,
-             'types'=>['group','user'],
-             'titres'=>['group' => 'Les consos du projet',
-                        'user' => 'Mes consommations']
-            ]
+            'projet/demandeur.html.twig',
+            [
+                'projets_collab' => $projets_collab,
+                'projets_resp'   => $projets_resp,
+                'projets_term'   => $projets_term,
+                'menu'           => $menu,
+                ]
         );
     }
 
     /**
-     * Affichage graphique de la consommation d'un projet
+     * Affiche un projet avec un menu pour choisir la version
      *
-     *      utype = type d'utilisateur - user ou group !
-     *
-     * @Route("/{id}/projet/{utype}/utype/{ress_id}/ress_id/{loginname}/loginname/{annee}/annee/conso_ressource",
-     *         defaults={"loginname" = "nologin"},
-     *         name="projet_conso_ressource",
-     *         methods={"GET"})
-     * Method("GET")
+     * @Route("/{id}/consulter", name="consulter_projet",methods={"GET","POST"})
+     * @Route("/{id}/consulter/{version}", name="consulter_version",methods={"GET","POST"})
+     * 
+     * Method({"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
 
-    public function consoRessourceAction(Projet $projet, $utype, $ress_id, $loginname, $annee): Response
+    public function consulterAction(Request $request, Projet $projet, Version $version = null)
     {
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
+        $su = $this->su;
+        $coll_vers_repo= $em->getRepository(CollaborateurVersion::class);
+        $token = $this->token;
 
+        // choix de la version
+        if ($version == null)
+        {
+            $version =  $projet->getVersionDerniere();
+            if ($version == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ .' Projet ' . $projet . ': la dernière version est nulle !');
+            }
+        }
+        else
+        {
+            $projet =   $version->getProjet();
+        } // nous devons être sûrs que le projet corresponde à la version
 
-        $dessin_heures = $this -> gcl;
-        $compta_repo   = $em->getRepository(Compta::class);
-        $id_projet     = strtolower($projet->getIdProjet());
-
-        // Seuls les collaborateurs du projet ont accès à la consommation
-        if (! $sp->projetACL($projet)) {
+        if (! $sp->projetACL($projet))
+        {
             $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
         }
 
-        // Verification du paramètre $utype
-        $ntype = null;
-        if ($utype == 'user') {
-            $ntype = 1;
-        } elseif ($utype == 'group') {
-            $ntype = 2;
-        } else {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec utype '.$utype);
+        // LA SUITE DEPEND DU TYPE DE PROJET !
+        // Affichage pour projets de type 4 (le seul type supporté actuellement))
+        $type = $projet->getTypeProjet();
+        switch ($type) {
+            case Projet::PROJET_DYN:
+                return $this->__consulter4($projet, $version, $request);
+            default:
+                $sj->errorMessage(__METHOD__ . " Type de projet inconnu: $type");
         }
-
-        // Si année non spécifiée on prend l'année la plus récente du projet
-
-        $version = null;
-        if ($annee == null) {
-            $version    =   $projet->derniereVersion();
-            $annee = '20' . substr($version->getIdVersion(), 0, 2);
-        }
-
-        $debut = new \DateTime($annee . '-01-01');
-        $fin   = new \DateTime($annee . '-12-31');
-
-        $ressource = $this->getParameter('ressources_conso_'.$utype)[$ress_id];
-        //$sj->debugMessage(__METHOD__.':'.__LINE__. " projet $projet - $utype - ressource = ".print_r($ressource,true));
-
-        // Détermination de loginname: soit le nom du projet soit le nom de login de l'utilisateur connecté
-        if ($utype === 'group') {
-            $conso_loginname = $id_projet;
-        } else {
-            $conso_loginname = $loginname;
-        }
-
-        // Génération du graphe de conso heures cpu et heures gpu
-        // Note - type ici n'a rien à voir avec le paramètre $utype
-        if ($ressource['type'] == 'calcul') {
-            $id_projet     = $projet->getIdProjet();
-            $db_conso      = $compta_repo->conso($conso_loginname, $annee, $ntype);
-            $struct_data   = $dessin_heures->createStructuredData($debut, $fin, $db_conso);
-            $dessin_heures->resetConso($struct_data);
-            $image_conso     = $dessin_heures->createImage($struct_data)[0];
-        }
-        // Génération du graphe de conso stockage
-        elseif ($ressource['type'] == 'stockage') {
-            $db_work     = $compta_repo->consoStockage($conso_loginname, $ressource, $annee, $ntype);
-            $dessin_work = $this -> gstk;
-            $struct_data = $dessin_work->createStructuredData($debut, $fin, $db_work, $ressource['unite']);
-            $image_conso = $dessin_work->createImage($struct_data, $ressource)[0];
-        } else {
-            $image_conso = '';
-        }
-
-        $twig     = $this->tw;
-        $template = $twig->createTemplate('<img src="data:image/png;base64, {{ image_conso }}" alt="" title="" />');
-        $html     = $twig->render($template, [ 'image_conso' => $image_conso ]);
-
-        return new Response($html);
     }
 
-    /**
-     * Affichage graphique de la consommation de TOUS les projets
-     *
-     * @Route("/ressource/{ressource}/tousconso/{annee}/{mois}", name="tous_projets_conso", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
 
-    public function consoTousAction($ressource, $annee, $mois=false): Response
+    // Consulter les projets de type 4 (=> projets dynamiques))
+    private function __consulter4(Projet $projet, Version $version, Request $request)
     {
         $em = $this->em;
+        $sm = $this->sm;
+        $sp = $this->sp;
+        $ac = $this->ac;
+        $sv = $this->sv;
+        $sj = $this->sj;
+        $ff = $this->ff;
+        $ss = $this->ss;
+        $token = $this->token;
+        $moi = $token->getUser();
 
-        if ($ressource != 'cpu' && $ressource != 'gpu') {
-            return "";
+        $version_form = Functions::createFormBuilder($ff, ['version' => $version ])
+        ->add(
+            'version',
+            EntityType::class,
+            [
+                'multiple' => false,
+                'class'    => Version::class,
+                'required' =>  true,
+                'label'    => '',
+                'choices'  =>  $projet->getVersion(),
+                'choice_label' => function ($version) {
+                    return $version->getNbVersion();
+                }
+            ]
+        )
+        ->add('submit', SubmitType::class, ['label' => 'Changer'])
+        ->getForm();
+        
+        $version_form->handleRequest($request);
+
+        if ($version_form->isSubmitted() && $version_form->isValid())
+        {
+            $version = $version_form->getData()['version'];
         }
 
-        $db_conso = $em->getRepository(Compta::class)->consoTotale($annee, $ressource);
+        $menu = [];
+        $menu[] = $sm->nouvelleRallonge($projet);
+        $menu[] = $sm->renouvelerVersion($version);
+        $menu[] = $sm->modifierVersion($version);
+        $menu[] = $sm->envoyerEnExpertise($version);
+        $menu[] = $sm->changerResponsable($version);
+        $menu[] = $sm->gererPublications($projet);
+        $menu[] = $sm->modifierCollaborateurs($version);
 
-        $debut = new \DateTime($annee . '-01-01');
-        $fin   = new \DateTime($annee . '-12-31');
+        $menu[] = $sm->telechargerFiche($version);
+        $menu[] = $sm->televerserFiche($version);
 
-        $dessin_heures = $this->gall;
-
-        if ($mois == true) {
-            $struct_data = $dessin_heures->createStructuredDataMensuelles($annee, $db_conso);
-            $dessin_heures->derivConso($struct_data);
-        } else {
-            $struct_data = $dessin_heures->createStructuredData($debut, $fin, $db_conso);
-            $dessin_heures->resetConso($struct_data);
+        $etat_version = $version->getEtatVersion();
+        if ($this->getParameter('rapport_dactivite')) {
+            if (($etat_version == Etat::ACTIF || $etat_version == Etat::TERMINE) && ! $sp->hasRapport($projet, $version->getAnneeSession())) {
+                $menu[] = $sm->telechargerModeleRapportDactivite($version,ServiceMenus::BPRIO);
+            }
         }
-        $image_conso     = $dessin_heures->createImage($struct_data)[0];
+        $img_expose = [
+            $sv->imageProperties('img_expose_1', 'Figure 1', $version),
+            $sv->imageProperties('img_expose_2', 'Figure 2', $version),
+            $sv->imageProperties('img_expose_3', 'Figure 3', $version),
+        ];
+        $document     = $sv->getdocument($version);
 
-        $twig     = $this->tw;
-        $template = $twig->createTemplate('<img src="data:image/png;base64, {{ ImageConso }}" alt="Heures cpu/gpu" title="Heures cpu et gpu" />');
-        $html     = $twig->render($template, [ 'ImageConso' => $image_conso ]);
+        $img_justif_renou = [
+            $sv->imageProperties('img_justif_renou_1', 'Figure 1', $version),
+            $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
+            $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)
+        ];
+        
+        $tmpl = 'projet/consulter_projet4.html.twig';
 
-        return new Response($html);
-    }
-
-    /**
-     * Finds and displays a projet entity.
-     *
-     * @Route("/modele", name="telecharger_modele", methods={"GET"})
-     * Method("GET")
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     */
-    public function telechargerModeleAction(): Response
-    {
-        return $this->render('projet/telecharger_modele.html.twig');
+        $cv = $em->getRepository(CollaborateurVersion::class)
+             ->findOneBy(['version' => $version, 'collaborateur' => $moi]);
+        
+        return $this->render(
+            $tmpl,
+            [
+                'projet' => $projet,
+                'version_form' => $version_form->createView(),
+                'version' => $version,
+                'session' => null,
+                'menu' => $menu,
+                'img_expose' => $img_expose,
+                'img_justif_renou' => $img_justif_renou,
+                'document' => $document,
+                'cv' => $cv
+            ]
+        );
     }
 }

@@ -1,7 +1,6 @@
 {% extends 'default/base.html.twig' %}
 
 {% block myjavascripts %}
- <script> var NOINVITATION = {{ noinvitation }}; </script>
  <script  src="{{ asset('js/gerer_collaborateurs.js') }}" ></script>
 {% endblock myjavascripts %}
 
@@ -117,7 +116,7 @@
 
 
 {% block body %}
-    <h2>Modifier la liste des collaborateurs - projet {{ projet }} (session {{ session }})</h2>
+    <h2>Modifier la liste des collaborateurs - projet {{ projet }}</h2>
     <div class="information ok">
     {% if resp_peut_modif_collabs %}
         <div class="message info">

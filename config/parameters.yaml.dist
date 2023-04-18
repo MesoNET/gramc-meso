@@ -13,6 +13,8 @@ parameters:
     mesoc_attrib: 'https://www.mesonet.fr'
     mesoc_merci: 'https://www.mesonet.fr'
     mesoc_formation: 'https://www.mesonet.fr'
+
+    # TOSO - Dans la B.D. !!!
     serveur_cgu:
        TURPAN: 'https://www.mesonet.fr/turpan/cgu'
        BOREAL: 'https://www.mesonet.fr/boreal/cgu'
@@ -24,30 +26,8 @@ parameters:
        - RSA-2048
        - ED25519-256
 
-    # Si false, on n'affiche pas la case login dans l'écran collaborateurs
-    # La gestion des mots de passe est elle aussi désactivée
-    coll_login: true
-
     # PARAMETRES PAS UTILISES ACTUELLEMENT
     # ====================================
-    # Si la demande en session A est supérieure à attrib_seuil_a (en hcpu), on surveille la demande en B
-    attrib_seuil_a: 600000
-    
-    # Mécanisme de récupération des heures attribuées mais non consommées en Juin
-    # recup_attrib_seuil (hcpu)    = on ne récupère que pour des attributions supérieures à ce seuil
-    # recup_conso_seuil (%attrib)  = on ne s'occupe que des projets avec cono inférieure à ce seuil
-    # recup_attrib_quant (%attrib) = partie de l'attribution récupérée
-    recup_attrib_seuil: 300000
-    recup_conso_seuil: 30
-    recup_attrib_quant: 50
-    
-    # La récup est proposée entre les mois de Mai et Août (inclus)...
-    recup_printemps_d: 5
-    recup_printemps_f: 8
-    
-    #...ou entre les mois de Septembre et Octobre pour les heures attribuées pour l'été (Juillet et Août) et non consommées
-    recup_automne_d: '09'
-    recup_automne_f: 10
 
     # En %attribution, permet d'indiquer les projets qui ont bientôt épuisé les quotas (écran projets par année)
     conso_seuil_1: 70
@@ -77,89 +57,16 @@ parameters:
     #             Unité = Mo
     max_size_doc: 10
     
-    # Suppression de toutes les fonctionnalités liées à la consommation
-    noconso: false
-    
-    # Suppression de la notion de rattachement administratif
-    norattachement: true
-    
-    # Suppression des formulaires concernant les données (stockage et partage)
-    nodata: true
-
     # Si true, le resp de projet peut modifier le profil de ses collaborateurs
     resp_peut_modif_collabs: false
 
-    # Si != 0, le mécanisme des invitations est désactivé
-    noinvitation: false
-
-    # Y a-t-il des sessions ?
-    nosession: true
-    
-    # Suppression d'une étape dans le workflow des sessions
-    # Cette étape est utile si on a un comité d'attribution constitué,
-    # car elle vient APRES la réunion: on attend la réunion ET l'entrée du commentaire de session
-    # pour pour laisser les experts envoyer les expertises !
-    noedition_expertise: true
-
-    # Fonctionnalité permettant d'affecter des heures spéciales pour l'été (en session B uniquement) #}
-    heures_ete: false
-    
-    # Nombre max de rallonges par projet et par session
+    # Nombre max de rallonges par projet et par version
     max_rall: 2
     
     # Préfixe associé au nom du projet, dépend du type de projet
     # Seuls les projets de type 4 sont utilisés actuellement
     prj_prefix:
-        1: P
-        2: T
         4: M
-
-    # Ressources dont on peut visualiser la consommation
-    ressources_conso_group:
-        TURPAN:
-            1:
-                type: calcul
-                ress: 'cpu@TURPAN,gpu@TURPAN'
-                nom: 'TURPAN - Heures normalisées'
-                unite: h
-
-        BOREAL:
-            1:
-                type: calcul
-                ress: 'cpu@BOREAL'
-                nom: 'BOREAL - Heures de calcul'
-                unite: h
-
-    ressources_conso_user:
-        TURPAN:
-            1:
-                type: calcul
-                ress: 'cpu@TURPAN,gpu@TURPAN'
-                nom: 'TURPAN - Heures normalisées'
-                unite: h
-            2:
-                type: stockage
-                ress: home_space@TURPAN
-                nom: Home TURPAN
-                unite: Gio
-        BOREAL:
-            1:
-                type: calcul
-                ress: 'cpu@BOREAL'
-                nom: 'Heures de calcul'
-                unite: h
-            2:
-                type: stockage
-                ress: home_space@BOREAL
-                nom: Home BOREAL
-                unite: Gio
-
-    # Nombre max d'experts par version de projet
-    max_expertises_nb: 1
-    
-    # Les experts peuvent entrer un commentaire général entre les mois de mai et de mars
-    commentaires_experts_d: 0
-    commentaires_experts_f: 0
 
     # La durée du projet dynamique
     dyn_duree: P365D
@@ -176,15 +83,6 @@ parameters:
     rapport_directory: '%kernel.project_dir%/data/rapports'
     fig_directory: '%kernel.project_dir%/data/figures'
     dfct_directory: '%kernel.project_dir%/data/dfct'
-    
-    # Heures fixes pour les projets tests
-    heures_projet_test: 5000
-    
-    # Seuil à partir duquel on ne peut plus créer de projet au fil de l'eau (ou "agile", ou "dynamique")
-    prj_seuil_sess: 100000
-
-    # Nombre d'heures minimal pour un projet
-    prj_heures_min: 50000
     
     # Différents mails
     mailadmin: admin.calmip@univ-toulouse.fr

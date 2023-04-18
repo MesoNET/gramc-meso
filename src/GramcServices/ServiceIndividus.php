@@ -25,7 +25,6 @@ namespace App\GramcServices;
 
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
-use App\Entity\CommentaireExpert;
 use App\Entity\Expertise;
 use App\Entity\Journal;
 use App\Entity\Rallonge;
@@ -72,7 +71,6 @@ class ServiceIndividus
         $Rallonge = $em->getRepository(Rallonge::class)->findBy(['expert' => $individu]);
         $Sso = $em->getRepository(Sso::class)->findBy(['individu' => $individu]);
         $Thematique = $individu->getThematique();
-        $commentaires =  $em->getRepository(CommentaireExpert::class)->findBy(['expert' => $individu]);
 
         // Supprimer les thématiques dont $individu est expert
         // Attention, $new_individu ne reprend pas ces thématiques
@@ -117,11 +115,6 @@ class ServiceIndividus
 
         // Mes expertises
         foreach ($Expertise  as $item) {
-            $item->setExpert($new_individu);
-        }
-
-        // Mes commentaires d'expert
-        foreach ($commentaires as $item) {
             $item->setExpert($new_individu);
         }
 
@@ -174,7 +167,8 @@ class ServiceIndividus
          if ($individu->getMail() == null) $ok = false;
          if ($individu->getStatut() == null) $ok = false;
          if ($individu->getLabo() == null) $ok = false;
-         if ($individu->getEtablissement() == null) $ok = false;
+         //if ($individu->getEtablissement() == null) $ok = false;
+         if ($individu->getEtab() == null) $ok = false;
          return $ok;
      }
 }

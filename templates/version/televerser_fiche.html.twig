@@ -5,7 +5,7 @@
 
 <section>
     <h2>Téléversement de la fiche projet</h2>
-    {% if serviceVersions.signe(version) == false %}
+    {% if is_granted('ROLE_ADMIN') or serviceVersions.signe(version) == false %}
         <div class="information attention">Le fichier doit être <strong>un pdf de taille inférieure à {{max_size_doc}} Mo</strong></div>
 
         <div class="televerser inputrond">
