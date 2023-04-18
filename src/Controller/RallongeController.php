@@ -91,29 +91,19 @@ class RallongeController extends AbstractController
      * Rallonges dynamiques
      *
      * @Route("/dynamiques", name="rallonge_dynamique", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_OBS')")
      */
     public function rallongesDynamiquesAction(): Response
     {
         $em = $this->em;
-        //$projets = $em->getRepository(Projet::class)->findAll();
         $sj = $this->sj;
         $sp = $this->sp;
         $sroc = $this->sroc;
 
-/*
-        foreach (['termine','standby','accepte','refuse','edition','expertise','nonrenouvele','inconnu'] as $e) {
-            $etat_projet[$e] = 0;
-        }
-*/
         // On récupère toutes les rallonges des projets dynamiques de cette année
         // Avec des informations statistiques
         $rallonges = $sp->rallongesDynParAnnee();
         $data = [];
-        //$collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
-        //$versionRepository              = $em->getRepository(Version::class);
-        //$projetRepository               = $em->getRepository(Projet::class);
 
         foreach ($rallonges as $r)
         {
@@ -127,11 +117,10 @@ class RallongeController extends AbstractController
                         'dars' => $dars
             ];
         }
-        //dd($data);
+
         return $this->render(
             'rallonge/rallonges_dyn.html.twig',
             [
-            //'etat_projet' => $etat_projet,
             'data' => $data
             ]
         );
@@ -159,7 +148,6 @@ class RallongeController extends AbstractController
      *
      * @Route("/", name="rallonge_index", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function indexAction(): Response
     {
@@ -177,7 +165,6 @@ class RallongeController extends AbstractController
      *
      * @Route("/new", name="rallonge_new", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function newAction(Request $request): Response
     {
@@ -205,7 +192,6 @@ class RallongeController extends AbstractController
      * @Route("/{id}/creation", name="nouvelle_rallonge", methods={"GET"})
      * @ Security("is_granted('ROLE_ADMIN')")
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method("GET")
      */
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
@@ -235,7 +221,6 @@ class RallongeController extends AbstractController
      *
      * @Route("/{id}/show", name="rallonge_show", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function showAction(Rallonge $rallonge): Response
     {
@@ -252,7 +237,6 @@ class RallongeController extends AbstractController
      *
      * @Route("/{id}/edit", name="rallonge_edit", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
     public function editAction(Request $request, Rallonge $rallonge): Response
     {
@@ -380,7 +364,6 @@ class RallongeController extends AbstractController
     }
 
     /**
-     * Displays a form to edit an existing rallonge entity.
      *
      * TODO - VIRER CETTE FONCTION
      *

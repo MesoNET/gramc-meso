@@ -42,6 +42,7 @@ use App\GramcServices\Workflow\Projet\ProjetWorkflow;
 use App\GramcServices\Workflow\Version\VersionWorkflow;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
 use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
@@ -97,7 +98,10 @@ function cmpProj($a, $b)
 
 class ProjetController extends AbstractController
 {
+    private $token = null;
+    
     public function __construct(
+        private ServiceIndividus $sid,
         private ServiceJournal $sj,
         private ServiceMenus $sm,
         private ServiceProjets $sp,
@@ -114,15 +118,13 @@ class ProjetController extends AbstractController
         private Environment $tw,
         private AuthorizationCheckerInterface $ac,
         private EntityManagerInterface $em
-    ) {}
-
-    //private static $count;
+    )
+    { $this->token = $tok->getToken(); }
 
     /**
      * Lists all projet entities.
      *
      * @Route("/", name="projet_index", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_OBS')")
      */
     public function indexAction(): Response
@@ -156,7 +158,6 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/fermer", name="fermer_projet", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function fermerAction(Projet $projet, Request $request): Response
     {
@@ -185,7 +186,6 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function backAction(Projet $projet, Request $request): Response
     {
@@ -248,7 +248,6 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/{id}/fwd", name="fwd_version", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -308,7 +307,6 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_OBS')")
      * @Route("/{annee}/resumes", name="projet_resumes", methods={"GET","POST"})
-     * Method({"GET","POST"})
      *
      */
     public function resumesAction($annee): Response
@@ -363,7 +361,6 @@ class ProjetController extends AbstractController
      * Téléchargement du rapport d'activité
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
      * @Route("/{id}/rapport/{annee}", defaults={"annee"=0}, name="rapport", methods={"GET"})
-     * Method("GET")
      */
     public function rapportAction(Version $version, Request $request, $annee): Response
     {
@@ -373,12 +370,6 @@ class ProjetController extends AbstractController
         if (! $sp->projetACL($version->getProjet())) {
             $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
         }
-
-        //if ($annee == 0) {
-            // Si on ne précise pas on prend le rapport de l'année précédente
-            // (pour les sessions A)
-        //    $annee    = $version->getAnneeSession()-1;
-        //}
 
         $filename = $sp->getRapport($version->getProjet(), $annee);
 
@@ -397,7 +388,6 @@ class ProjetController extends AbstractController
      *
      * @Route("/{id}/signature", name="signature", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
-     * Method("GET")
      */
     public function signatureAction(Version $version, Request $request): Response
     {
@@ -410,7 +400,6 @@ class ProjetController extends AbstractController
      *
      * @Route("/{id}/document", name="document", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
-     * Method("GET")
      */
     public function documentAction(Version $version, Request $request): Response
     {
@@ -499,7 +488,7 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * ??????????????
+     * Pas utilisé...
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * @Route("/gerer", name="gerer_projets", methods={"GET"})
@@ -516,10 +505,9 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * Envoie un écran de mise en garde avant de créer un nouveau projet
+     * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé)
      *
      * @Route("/avant_nouveau/{type}", name="avant_nouveau_projet", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
@@ -555,9 +543,7 @@ class ProjetController extends AbstractController
      * Création d'un nouveau projet
      *
      * @Route("/nouveau/{type}", name="nouveau_projet", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * TODO - Passer nouveau dans ServiceProjets !
      *
      */
     public function nouveauAction(Request $request, $type): Response
@@ -575,8 +561,7 @@ class ProjetController extends AbstractController
         $token = $this->tok->getToken();
         $em = $this->em;
 
-        // Si changement d'état de la session alors que je suis connecté !
-        // + contournement d'un problème lié à Doctrine
+        // contournement d'un problème lié à Doctrine (???))
         $request->getSession()->remove('SessionCourante'); // remove cache
 
         // NOTE - Pour ce controleur, on identifie les types par un chiffre (voir Entity/Projet.php)
@@ -591,5 +576,334 @@ class ProjetController extends AbstractController
         $version = $projet->getVersionDerniere();
         
         return $this->redirectToRoute('modifier_version', [ 'id' => $version->getIdVersion() ]);
+    }
+        /**
+     * Montre les projets d'un utilisateur
+     *
+     * @Route("/accueil", name="projet_accueil",methods={"GET"})
+     * Method("GET")
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+     */
+    public function accueilAction()
+    {
+        $sm                  = $this->sm;
+        $ss                  = $this->ss;
+        $sp                  = $this->sp;
+        $su                  = $this->su;
+        $sr                  = $this->sr;
+        $token               = $this->token;
+        $sid                 = $this->sid;
+        $em                  = $this->em;
+        $individu            = $token->getUser();
+        $id_individu         = $individu->getIdIndividu();
+
+        $projetRepository    = $em->getRepository(Projet::class);
+        $cv_repo             = $em->getRepository(CollaborateurVersion::class);
+        $user_repo           = $em->getRepository(User::class);
+
+        $list_projets_collab = $projetRepository-> getProjetsCollab($id_individu, false, true);
+        $list_projets_resp   = $projetRepository-> getProjetsCollab($id_individu, true, false);
+
+        $projets_term        = $projetRepository-> get_projets_etat($id_individu, 'TERMINE');
+
+        $passwd = null;
+        $pwd_expir = null;
+
+        // Vérifier le profil
+        if ($token != null)
+        {
+            $individu = $token->getUser();
+            if (! $sid->validerProfil($individu))
+            {
+                return $this->redirectToRoute('profil');
+            };
+        }
+
+        // TODO - Faire en sorte pour que les erreurs soient proprement affichées dans l'API
+        // En attendant ce qui suit permet de se dépanner mais c'est franchement dégueu
+        //echo '<pre>'.strlen($_SERVER['CLE_DE_CHIFFREMENT'])."\n";
+        //echo SODIUM_CRYPTO_SECRETBOX_KEYBYTES.'</pre>';
+        //$enc = Functions::simpleEncrypt("coucou");
+        //$dec = Functions::simpleDecrypt($enc);
+        //echo "$dec\n";
+
+        // TODO - Hou le vilain copier-coller !
+        // projets responsable
+        $projets_resp  = [];
+        foreach ($list_projets_resp as $projet) {
+            $versionActive  =   $sp->versionActive($projet);
+            if ($versionActive != null)
+            {
+                $rallonges = $versionActive ->getRallonge();
+                $cpt_rall  = count($rallonges->toArray());
+            }
+            else
+            {
+                $rallonges = null;
+                $cpt_rall  = 0;
+            }
+
+            $passwd = null;
+            $pwd_expir = null;
+            $cv = null;
+            if ($versionActive != null)
+            {
+                $cv    = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd    = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd    = $u->getPassword();
+                    $passwd    = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                } */
+            }
+            else
+            {
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
+            }
+
+            $projets_resp[]   =
+            [
+                'projet'    => $projet,
+                'rallonges' => $rallonges,
+                'cpt_rall'  => $cpt_rall,
+                'meta_etat' => $sp->getMetaEtat($projet),
+                'cv' => $cv,
+                'loginnames' => $loginnames,
+                'passwd'    => $passwd,
+                'pwd_expir' => $pwd_expir
+            ];
+        }
+
+        // projets collaborateurs
+        $projets_collab  = [];
+        foreach ($list_projets_collab as $projet) {
+            $versionActive = $sp->versionActive($projet);
+
+            if ($versionActive != null) {
+                $rallonges = $versionActive ->getRallonge();
+                $cpt_rall  = count($rallonges->toArray());
+            }
+            else
+            {
+                $rallonges = null;
+                $cpt_rall  = 0;
+            }
+
+            /*
+            if ($cv != null) {
+                // TODO - Remonter au niveau du ProjetRepository (fonctions get_projet_etats et getProjetsCollab)
+                if ($cv->getDeleted() == true) continue;
+                $login = $cv->getLoginname()==null ? 'nologin' : $cv->getLoginname();
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd = $u->getPassword();
+                    $passwd = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                }
+            } else {
+                $login = 'nologin';
+                $passwd= null;
+                $pwd_expir = null;
+            }
+            */
+            $cv = null;
+            if ($versionActive != null)
+            {
+                $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
+
+                /* GESTION DES MOTS DE PASSE SUPPRIMEE 
+                $u     = $user_repo->findOneBy(['loginname' => $login]);
+                if ($u==null) {
+                    $passwd    = null;
+                    $pwd_expir = null;
+                } else {
+                    $passwd    = $u->getPassword();
+                    $passwd    = Functions::simpleDecrypt($passwd);
+                    $pwd_expir = $u->getPassexpir();
+                } */
+            }
+            else
+            {
+                //$loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
+            }
+            
+            $projets_collab[] =
+                [
+                'projet'    => $projet,
+                //'conso'     => $sp->getConsoCalculP($projet),
+                'rallonges' => $rallonges,
+                'cpt_rall'  => $cpt_rall,
+                'cv' => $cv,
+                'meta_etat' => $sp->getMetaEtat($projet),
+                'loginnames' => $loginnames,
+                'passwd'    => $passwd,
+                'pwd_expir' => $pwd_expir
+                ];
+        }
+
+        $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
+
+        return $this->render(
+            'projet/demandeur.html.twig',
+            [
+                'projets_collab' => $projets_collab,
+                'projets_resp'   => $projets_resp,
+                'projets_term'   => $projets_term,
+                'menu'           => $menu,
+                ]
+        );
+    }
+
+    /**
+     * Affiche un projet avec un menu pour choisir la version
+     *
+     * @Route("/{id}/consulter", name="consulter_projet",methods={"GET","POST"})
+     * @Route("/{id}/consulter/{version}", name="consulter_version",methods={"GET","POST"})
+     * 
+     * Method({"GET","POST"})
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+     */
+
+    public function consulterAction(Request $request, Projet $projet, Version $version = null)
+    {
+        $em = $this->em;
+        $sp = $this->sp;
+        $sj = $this->sj;
+        $su = $this->su;
+        $coll_vers_repo= $em->getRepository(CollaborateurVersion::class);
+        $token = $this->token;
+
+        // choix de la version
+        if ($version == null)
+        {
+            $version =  $projet->getVersionDerniere();
+            if ($version == null)
+            {
+                $sj->throwException(__METHOD__ . ':' . __LINE__ .' Projet ' . $projet . ': la dernière version est nulle !');
+            }
+        }
+        else
+        {
+            $projet =   $version->getProjet();
+        } // nous devons être sûrs que le projet corresponde à la version
+
+        if (! $sp->projetACL($projet))
+        {
+            $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
+        }
+
+        // LA SUITE DEPEND DU TYPE DE PROJET !
+        // Affichage pour projets de type 4 (le seul type supporté actuellement))
+        $type = $projet->getTypeProjet();
+        switch ($type) {
+            case Projet::PROJET_DYN:
+                return $this->__consulter4($projet, $version, $request);
+            default:
+                $sj->errorMessage(__METHOD__ . " Type de projet inconnu: $type");
+        }
+    }
+
+
+    // Consulter les projets de type 4 (=> projets dynamiques))
+    private function __consulter4(Projet $projet, Version $version, Request $request)
+    {
+        $em = $this->em;
+        $sm = $this->sm;
+        $sp = $this->sp;
+        $ac = $this->ac;
+        $sv = $this->sv;
+        $sj = $this->sj;
+        $ff = $this->ff;
+        $ss = $this->ss;
+        $token = $this->token;
+        $moi = $token->getUser();
+
+        $version_form = Functions::createFormBuilder($ff, ['version' => $version ])
+        ->add(
+            'version',
+            EntityType::class,
+            [
+                'multiple' => false,
+                'class'    => Version::class,
+                'required' =>  true,
+                'label'    => '',
+                'choices'  =>  $projet->getVersion(),
+                'choice_label' => function ($version) {
+                    return $version->getNbVersion();
+                }
+            ]
+        )
+        ->add('submit', SubmitType::class, ['label' => 'Changer'])
+        ->getForm();
+        
+        $version_form->handleRequest($request);
+
+        if ($version_form->isSubmitted() && $version_form->isValid())
+        {
+            $version = $version_form->getData()['version'];
+        }
+
+        $menu = [];
+        $menu[] = $sm->nouvelleRallonge($projet);
+        $menu[] = $sm->renouvelerVersion($version);
+        $menu[] = $sm->modifierVersion($version);
+        $menu[] = $sm->envoyerEnExpertise($version);
+        $menu[] = $sm->changerResponsable($version);
+        $menu[] = $sm->gererPublications($projet);
+        $menu[] = $sm->modifierCollaborateurs($version);
+
+        $menu[] = $sm->telechargerFiche($version);
+        $menu[] = $sm->televerserFiche($version);
+
+        $etat_version = $version->getEtatVersion();
+        if ($this->getParameter('rapport_dactivite')) {
+            if (($etat_version == Etat::ACTIF || $etat_version == Etat::TERMINE) && ! $sp->hasRapport($projet, $version->getAnneeSession())) {
+                $menu[] = $sm->telechargerModeleRapportDactivite($version,ServiceMenus::BPRIO);
+            }
+        }
+        $img_expose = [
+            $sv->imageProperties('img_expose_1', 'Figure 1', $version),
+            $sv->imageProperties('img_expose_2', 'Figure 2', $version),
+            $sv->imageProperties('img_expose_3', 'Figure 3', $version),
+        ];
+        $document     = $sv->getdocument($version);
+
+        $img_justif_renou = [
+            $sv->imageProperties('img_justif_renou_1', 'Figure 1', $version),
+            $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
+            $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)
+        ];
+        
+        $tmpl = 'projet/consulter_projet4.html.twig';
+
+        $cv = $em->getRepository(CollaborateurVersion::class)
+             ->findOneBy(['version' => $version, 'collaborateur' => $moi]);
+        
+        return $this->render(
+            $tmpl,
+            [
+                'projet' => $projet,
+                'version_form' => $version_form->createView(),
+                'version' => $version,
+                'session' => null,
+                'menu' => $menu,
+                'img_expose' => $img_expose,
+                'img_justif_renou' => $img_justif_renou,
+                'document' => $document,
+                'cv' => $cv
+            ]
+        );
     }
 }

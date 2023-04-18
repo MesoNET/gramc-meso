@@ -590,9 +590,6 @@ class ServiceMenus
         else
         {
             $etatVersion = $version->getEtatVersion();
-            $isProjetTest = $version->isProjetTest();
-            $isProjetSess = $version->getProjet()->getTypeProjet() === Projet::PROJET_SESS;
-    
             if ($etatVersion ==  Etat::EDITION_EXPERTISE) {
                 $menu['raison'] = "Le projet a déjà été envoyé en expertise !";
             } elseif ($version->isCollaborateur($this->token->getUser()) == false) {

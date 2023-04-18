@@ -109,7 +109,7 @@ services:
     App\GramcServices\Cron\GramcCronTask\TempsStdbyCronTask:
         arguments: [ "%dyn_duree_post%"]
 
-    App\Controller\VersionSpecController:
+    App\Controller\VersionController:
         arguments: [ "%dyn_duree%", "%dyn_duree_post%" ]
         
     App\Controller\ExpertiseController:

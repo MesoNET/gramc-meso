@@ -260,7 +260,7 @@ class Rallonge implements Demande
      *
      * @return Rallonge
      */
-    public function setIdRallonge(int $idRallonge): int
+    public function setIdRallonge(string $idRallonge): self
     {
         $this->idRallonge = $idRallonge;
 
@@ -272,7 +272,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getIdRallonge(): int
+    public function getIdRallonge(): string
     {
         return $this->idRallonge;
     }
