@@ -12,13 +12,13 @@
     <table id="laboratoires" style="stroke: black">
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th>
+            {% if is_granted('ROLE_ADMIN')  or is_granted('ROLE_VALIDEUR') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th>
         </tr>
     </thead>
     <tbody>
     {% for labo in laboratoires %}
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') %}
             <td>
                 <a class="suppression" href="{{ path('supprimer_laboratoire',{'id' : labo.idLabo }) }}" title="Supprimer">
                 {{ icones.supprimer() }}</a>

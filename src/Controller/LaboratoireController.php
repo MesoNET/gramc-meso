@@ -56,7 +56,7 @@ class LaboratoireController extends AbstractController
         $em = $this->em;
 
         // Si on n'est pas admin on n'a pas accès au menu
-        $menu = $ac->isGranted('ROLE_ADMIN') ? [ ['ok' => true,'name' => 'ajouter_laboratoire' ,'lien' => 'Ajouter un laboratoire','commentaire'=> 'Ajouter un laboratoire'] ] : [];
+        $menu = ($ac->isGranted('ROLE_ADMIN') or $ac->isGranted('ROLE_VALIDEUR')) ? [ ['ok' => true,'name' => 'ajouter_laboratoire' ,'lien' => 'Ajouter un laboratoire','commentaire'=> 'Ajouter un laboratoire'] ] : [];
 
         return $this->render(
             'laboratoire/liste.html.twig',
@@ -71,8 +71,7 @@ class LaboratoireController extends AbstractController
      * Ajoute un nouveau laboratoire
      *
      * @Route("/ajouter", name="ajouter_laboratoire", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
     public function ajouterAction(Request $request): Response
     {
@@ -105,8 +104,7 @@ class LaboratoireController extends AbstractController
      * Modifie un laboratoire
      *
      * @Route("/{id}/modifier", name="modifier_laboratoire", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
     public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
@@ -137,8 +135,7 @@ class LaboratoireController extends AbstractController
      * Supprime un laboratoire
      *
      * @Route("/{id}/supprimer", name="supprimer_laboratoire", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("DELETEEEE")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {
