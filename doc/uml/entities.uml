@@ -107,6 +107,7 @@ package Classes <<Frame>> {
         class Statut
         class Laboratoire
         class Etablissement
+        class Adresseip
     }
     
 '    note "Un compte par individu et par projet !" as N3
@@ -150,6 +151,7 @@ package Classes <<Frame>> {
     Individu "1" o-- "0..n" CollaborateurVersion
     Individu "1" o-- "0..n" Sso
     Individu "1" o-- "0..n" Laboratoire
+    Adresseip "0..n" o-- "1" Laboratoire
     Individu "1" o-- "0..n" Statut
     Individu "1" o-- "0..n" Etablissement
     Individu "1" o-- "0..n" Clessh

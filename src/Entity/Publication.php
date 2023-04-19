@@ -91,7 +91,7 @@ class Publication
      *
      * @return integer
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->getIdPubli();
     }
@@ -204,9 +204,11 @@ class Publication
     /**
      * Get idPubli
      *
+     * NOTE - Peut retourner null avant insertion dans la B.D. - cf. PublicationController::
+     * gererAction
      * @return integer
      */
-    public function getIdPubli(): int
+    public function getIdPubli(): ?int
     {
         return $this->idPubli;
     }

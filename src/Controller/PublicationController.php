@@ -212,7 +212,7 @@ class PublicationController extends AbstractController
             [
             'publications' => $projet->getPubli(),
             'projet'    => $projet,
-        ]
+            ]
         );
     }
 

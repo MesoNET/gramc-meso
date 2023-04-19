@@ -25,7 +25,11 @@
             </td>
             <td>
                 <a class="modification" href="{{ path('modifier_laboratoire',{'id' : labo.idLabo }) }}" title="Modifier le libellé">
-                {{ icones.modifier() }}</a>
+                    {{ icones.modifier() }}
+                    {% if labo.adresseip | length == 0 %}
+                        <span title="Ce laboratoire n'est pas associé à une plage d'adresses IP">{{icones.attention(20,20)}}</span>
+                    {% endif %}
+                </a>
             </td>
             {% endif %}
             <td>{{ labo.numeroLabo }}</td>

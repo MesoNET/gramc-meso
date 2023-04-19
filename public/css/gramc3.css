@@ -329,6 +329,38 @@ div.flash.erreur{
     margin: 1ex 0;
 }
 
+/* ==== FORMULAIRE LABORATOIRE ===== */
+#laboratoire #s_adr, #laboratoire #a_adr  {
+    width: 40em;
+    margin: auto;
+    border: none;
+}
+
+#laboratoire #s_adr fieldset {
+    border: none;
+    width: 50%;
+    margin: 1em auto;
+}
+
+#laboratoire #s_adr fieldset div div.row {
+    margin-bottom: 2ex;
+}
+
+#s_adr .checkbox {
+    margin-left:2em;
+    width: 
+}
+#s_eppn .row {
+    margin-bottom: 2ex;
+}
+#s_eppn label {
+    font-weight: bold;
+}
+#s_eppn #sso_submit, #eppn #sso_reset,#eppn #form_submit, #form_reset {
+    margin: 1ex 0;
+}
+
+
 /* ===== ECRANS COLLABORATEURS ===== */
  
 #liste_des_collaborateurs {
