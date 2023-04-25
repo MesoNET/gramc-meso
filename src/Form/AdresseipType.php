@@ -38,8 +38,10 @@ class AdresseipType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('adresse', TextType::class, ['required' => true, 'label' => "Plage d'adresses IP (CIDR):" ])
-                ->add('submit', SubmitType::class, ['label' => 'nouvelle IP (CIDR)' ])
+        $builder->add('adresse', TextType::class,
+                        ['required' => true,
+                         'label' => "Plage d'adresses IP (CIDR):", 'attr' => [ "placeholder" => "1.2.3.4/32"] ])
+                ->add('submit', SubmitType::class, ['label' => 'nouvelle IP (CIDR)'])
                 ->add('reset', ResetType::class, ['label' => 'Annuler' ]);
 
         if ($options['widget_laboratoire']) $builder->add('laboratoire');

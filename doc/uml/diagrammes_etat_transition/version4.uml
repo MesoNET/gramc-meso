@@ -5,6 +5,7 @@ title Etats d'une version de type M\ngramc-meso
 EDITION_DEMANDE: Id 2
 EDITION_EXPERTISE: Id 3
 ACTIF: Id 5
+ACTIF_R: Id 7
 TERMINE: Id 9
 state ACTIF #red
 

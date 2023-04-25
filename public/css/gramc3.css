@@ -346,6 +346,11 @@ div.flash.erreur{
     margin-bottom: 2ex;
 }
 
+#laboratoire form table td ul {
+    color: red;
+    font-weight: bold;
+    list-style: none;
+}
 #s_adr .checkbox {
     margin-left:2em;
     width: 
