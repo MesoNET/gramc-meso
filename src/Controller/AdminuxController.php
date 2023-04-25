@@ -1551,27 +1551,28 @@ class AdminuxController extends AbstractController
         $output      =   [];
         $idProjet    =   $projet->getIdProjet();
 
-        foreach ($versions as $version) {
-            if ($version->getEtatVersion() == Etat::ACTIF) {
-                foreach ($version->getCollaborateurVersion() as $cv) {
-                    if ($cv->getLogint() || $cv->getLoginb())
+        foreach ($versions as $version)
+        {
+            if ($version->getEtatVersion() == Etat::ACTIF)
+            {
+                foreach ($version->getCollaborateurVersion() as $cv)
+                {
+                    $collaborateur  = $cv->getCollaborateur() ;
+                    if ($collaborateur != null)
                     {
-                        $collaborateur  = $cv->getCollaborateur() ;
-                        if ($collaborateur != null) {
-                            $prenom     = $collaborateur->getPrenom();
-                            $nom        = $collaborateur->getNom();
-                            $idIndividu = $collaborateur->getIdIndividu();
-                            $mail       = $collaborateur->getMail();
-                            $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
-                            $output[] =   [
-                                    'idIndividu' => $idIndividu,
-                                    'idProjet' =>$idProjet,
-                                    'mail' => $mail,
-                                    'prenom' => $prenom,
-                                    'nom' => $nom,
-                                    'loginnames' => $loginnames,
-                            ];
-                        }
+                        $prenom     = $collaborateur->getPrenom();
+                        $nom        = $collaborateur->getNom();
+                        $idIndividu = $collaborateur->getIdIndividu();
+                        $mail       = $collaborateur->getMail();
+                        $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
+                        $output[] =   [
+                                'idIndividu' => $idIndividu,
+                                'idProjet' =>$idProjet,
+                                'mail' => $mail,
+                                'prenom' => $prenom,
+                                'nom' => $nom,
+                                'loginnames' => $loginnames,
+                        ];
                     }
                 }
             }
