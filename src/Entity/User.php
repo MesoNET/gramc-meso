@@ -144,7 +144,7 @@ class User
      */
     private $deply = false;
 
-    public function __toString()
+    public function __toString(): string
     {
         $output = '{';
         $output .= 'loginname=' . $this->getLoginname() .'}';
@@ -174,7 +174,7 @@ class User
      *
      * @return User
      */
-    public function setLoginname($loginname)
+    public function setLoginname(?string $loginname): self
     {
         $this->loginname = $loginname;
 
@@ -186,7 +186,7 @@ class User
      *
      * @return string
      */
-    public function getLoginname()
+    public function getLoginname(): ?string
     {
         return $this->loginname;
     }
@@ -222,7 +222,7 @@ class User
      *
      * @return User
      */
-    public function setIndividu(\App\Entity\Individu $individu): self
+    public function setIndividu(?\App\Entity\Individu $individu): self
     {
         $this->individu = $individu;
 
@@ -234,7 +234,7 @@ class User
      *
      * @return \App\Entity\Individu
      */
-    public function getIndividu(): \App\Entity\Individu
+    public function getIndividu(): ?\App\Entity\Individu
     {
         return $this->individu;
     }
@@ -246,7 +246,7 @@ class User
      *
      * @return User
      */
-    public function setProjet(\App\Entity\Projet $projet): self
+    public function setProjet(?\App\Entity\Projet $projet): self
     {
         $this->projet = $projet;
 
@@ -258,7 +258,7 @@ class User
      *
      * @return \App\Entity\Projet
      */
-    public function getProjet(): \App\Entity\Projet
+    public function getProjet(): ?\App\Entity\Projet
     {
         return $this->projet;
     }
@@ -270,7 +270,7 @@ class User
      *
      * @return User
      */
-    public function setPassword($password)
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
 
@@ -282,7 +282,7 @@ class User
      *
      * @return string
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -294,7 +294,7 @@ class User
      *
      * @return User
      */
-    public function setCpassword($cpassword)
+    public function setCpassword(?string $cpassword): self
     {
         $this->cpassword = $cpassword;
 
@@ -306,7 +306,7 @@ class User
      *
      * @return string
      */
-    public function getCpassword()
+    public function getCpassword(): ?string
     {
         return $this->cpassword;
     }
@@ -318,7 +318,7 @@ class User
      *
      * @return User
      */
-    public function setPassexpir($passexpir)
+    public function setPassexpir(?\Datetime $passexpir): self
     {
         $this->passexpir = $passexpir;
 
@@ -330,7 +330,7 @@ class User
      *
      * @return \DateTime
      */
-    public function getPassexpir()
+    public function getPassexpir(): ?\Datetime
     {
         return $this->passexpir;
     }
@@ -342,7 +342,7 @@ class User
      *
      * @return CollaborateurVersion
      */
-    public function setExpire($expire)
+    public function setExpire(bool $expire): self
     {
         $this->expire = $expire;
 
@@ -354,7 +354,7 @@ class User
      *
      * @return boolean
      */
-    public function getExpire()
+    public function getExpire(): ?bool
     {
         return $this->expire;
     }
@@ -365,7 +365,7 @@ class User
      *
      * @return User
      */
-    public function setClessh(\App\Entity\Clessh $clessh): User
+    public function setClessh(?\App\Entity\Clessh $clessh): self
     {
         $this->clessh = $clessh;
         return $this;
@@ -376,7 +376,7 @@ class User
      *
      * @return \App\Entity\Clessh
      */
-    public function getClessh()
+    public function getClessh(): ?\App\Entity\Clessh
     {
         return $this->clessh;
     }
@@ -388,7 +388,7 @@ class User
      *
      * @return User
      */
-    public function setLogin(bool $login): Self
+    public function setLogin(bool $login): self
     {
         $this->login = $login;
 
@@ -412,7 +412,7 @@ class User
      *
      * @return User
      */
-    public function setCGU($CGU)
+    public function setCGU(bool $CGU): self
     {
         $this->CGU = $CGU;
         return $this;
@@ -423,7 +423,7 @@ class User
      *
      * @return boolean
      */
-    public function getCGU()
+    public function getCGU(): bool
     {
         return $this->CGU;
     }
@@ -435,7 +435,7 @@ class User
      *
      * @return User
      */
-    public function setDeply($deply): self
+    public function setDeply(bool $deply): self
     {
         $this->deply = $deply;
         return $this;
@@ -446,7 +446,7 @@ class User
      *
      * @return boolean
      */
-    public function getDeply()
+    public function getDeply(): bool
     {
         return $this->deply;
     }

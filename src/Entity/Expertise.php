@@ -31,10 +31,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Expertise
  *
+ * Argumentaire des valiteurs pour la validation d'un projet
+ * NOTE - Cette classe peut servir à valider une VERSION de projet aussi bien qu'une RALLONGE de version (=extension)
+ *        Le champ $version ou $rallonge sera différent de null
+ *        Le champ $expert renvoie sur le valideur (de class $individu, peut être nul si personne n'a encore modifié l'expertise)
+ *
  * @ORM\Table(name="expertise", uniqueConstraints={@ORM\UniqueConstraint(name="id_version_2", columns={"id_version", "id_expert"})}, indexes={@ORM\Index(name="version_expertise_fk", columns={"id_version"}), @ORM\Index(name="expert_expertise_fk", columns={"id_expert"}), @ORM\Index(name="id_version", columns={"id_version"}), @ORM\Index(name="id_expert", columns={"id_expert"})})
  * @ORM\Entity(repositoryClass="App\Repository\ExpertiseRepository")
- * @Assert\Expression("this.getNbHeuresAttEte() <= this.getNbHeuresAtt()",
- *      message="Vous ne pouvez pas attribuer plus d'heures pour l'été que pour la session.")
  *
  */
 class Expertise
@@ -48,30 +51,6 @@ class Expertise
      * @ORM\Column(name="validation", type="integer", nullable=false)
      */
     private $validation=1;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAtt = 0;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att_uft", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAttUft = 0;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="nb_heures_att_criann", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures négatif.")
-     */
-    private $nbHeuresAttCriann = 0;
 
     /**
      * @var string
@@ -102,16 +81,6 @@ class Expertise
      * @ORM\Column(name="definitif", type="boolean", nullable=false)
      */
     private $definitif = false;
-
-    /**
-     * @var integer
-     *
-     * Seulement lors de la session de type B: ces heures doivent être consommées en Juillet-Août, sinon on pourra appliquer des pénalités
-     *
-     * @ORM\Column(name="nb_heures_att_ete", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0,message="Vous ne pouvez pas attribuer un nombre d'heures d'été négatif.")
-     */
-    private $nbHeuresAttEte = 0;
 
     /**
      * @var integer
@@ -160,11 +129,11 @@ class Expertise
     /**
      * Set validation
      *
-     * @param integer $validation
+     * @param boolean $validation
      *
      * @return Expertise
      */
-    public function setValidation($validation)
+    public function setValidation(bool $validation): self
     {
         $this->validation = $validation;
 
@@ -174,83 +143,11 @@ class Expertise
     /**
      * Get validation
      *
-     * @return integer
+     * @return boolean
      */
-    public function getValidation()
+    public function getValidation(): bool
     {
         return $this->validation;
-    }
-
-    /**
-     * Set nbHeuresAtt
-     *
-     * @param integer $nbHeuresAtt
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAtt($nbHeuresAtt)
-    {
-        $this->nbHeuresAtt = $nbHeuresAtt;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAtt
-     *
-     * @return integer
-     */
-    public function getNbHeuresAtt()
-    {
-        return $this->nbHeuresAtt;
-    }
-
-    /**
-     * Set nbHeuresAttUft
-     *
-     * @param integer $nbHeuresAttUft
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttUft($nbHeuresAttUft)
-    {
-        $this->nbHeuresAttUft = $nbHeuresAttUft;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttUft
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttUft()
-    {
-        return $this->nbHeuresAttUft;
-    }
-
-    /**
-     * Set nbHeuresAttCriann
-     *
-     * @param integer $nbHeuresAttCriann
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttCriann($nbHeuresAttCriann)
-    {
-        $this->nbHeuresAttCriann = $nbHeuresAttCriann;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttCriann
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttCriann()
-    {
-        return $this->nbHeuresAttCriann;
     }
 
     /**
@@ -260,7 +157,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setCommentaireInterne($commentaireInterne)
+    public function setCommentaireInterne(?string $commentaireInterne): self
     {
         $this->commentaireInterne = $commentaireInterne;
 
@@ -272,7 +169,7 @@ class Expertise
      *
      * @return string
      */
-    public function getCommentaireInterne()
+    public function getCommentaireInterne(): ?string
     {
         return $this->commentaireInterne;
     }
@@ -284,7 +181,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setCommentaireExterne($commentaireExterne)
+    public function setCommentaireExterne(?string $commentaireExterne): self
     {
         $this->commentaireExterne = $commentaireExterne;
 
@@ -296,7 +193,7 @@ class Expertise
      *
      * @return string
      */
-    public function getCommentaireExterne()
+    public function getCommentaireExterne(): ?string
     {
         return $this->commentaireExterne;
     }
@@ -308,7 +205,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setDefinitif($definitif)
+    public function setDefinitif(bool $definitif): self
     {
         $this->definitif = $definitif;
 
@@ -320,33 +217,9 @@ class Expertise
      *
      * @return boolean
      */
-    public function getDefinitif()
+    public function getDefinitif(): bool
     {
         return $this->definitif;
-    }
-
-    /**
-     * Set nbHeuresAttEte
-     *
-     * @param integer $nbHeuresAttEte
-     *
-     * @return Expertise
-     */
-    public function setNbHeuresAttEte($nbHeuresAttEte)
-    {
-        $this->nbHeuresAttEte = $nbHeuresAttEte;
-
-        return $this;
-    }
-
-    /**
-     * Get nbHeuresAttEte
-     *
-     * @return integer
-     */
-    public function getNbHeuresAttEte()
-    {
-        return $this->nbHeuresAttEte;
     }
 
     /**
@@ -354,7 +227,7 @@ class Expertise
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -366,7 +239,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setVersion(\App\Entity\Version $idVersion = null): self
+    public function setVersion(?\App\Entity\Version $idVersion = null): self
     {
         $this->version = $idVersion;
 
@@ -390,7 +263,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setRallonge(\App\Entity\Rallonge $idRallonge = null): self
+    public function setRallonge(?\App\Entity\Rallonge $idRallonge = null): self
     {
         $this->rallonge = $idRallonge;
 
@@ -414,7 +287,7 @@ class Expertise
      *
      * @return Expertise
      */
-    public function setExpert(\App\Entity\Individu $expert = null)
+    public function setExpert(?\App\Entity\Individu $expert = null): self
     {
         $this->expert = $expert;
 
@@ -426,7 +299,7 @@ class Expertise
      *
      * @return \App\Entity\Individu
      */
-    public function getExpert()
+    public function getExpert(): ?\App\Entity\Individu
     {
         return $this->expert;
     }

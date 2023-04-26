@@ -30,7 +30,6 @@ use App\Entity\Session;
 use App\Entity\Compta;
 use App\Entity\Individu;
 use App\Entity\RapportActivite;
-use App\Entity\Rattachement;
 
 // Pour la suppression des projets RGPD
 use App\Entity\CollaborateurVersion;
@@ -54,7 +53,6 @@ class ServiceProjets
 
     public function __construct(
         private $prj_prefix,
-        private $ressources_conso_group,
         private $signature_directory,
         private $rapport_directory,
         private $fig_directory,
@@ -90,8 +88,7 @@ class ServiceProjets
         $em = $this->em;
         
         // Création du projet        
-        $session = null; // TODO - Virer les sessions !
-        $annee = ($session == null) ? $grdt->format('y') : $session->getAnneeSession();
+        $annee = $grdt->format('y');
 
         $projet = new Projet($type);
         $projet->setIdProjet($this->nextProjetId($annee, $type));
@@ -150,6 +147,9 @@ class ServiceProjets
         $sj = $this->sj;
         $em = $this->em;
         
+        // suppression des fichiers liés à la version
+        $this->__effacerDonnees($version);
+
         // Suppression des dac associés
          foreach ($version->getDac() as $dac)
         {
@@ -175,7 +175,8 @@ class ServiceProjets
             $em->remove($expertise);
         }
 
-        // TODO - Suppression des rallonges
+        // Suppression des rallonges
+        $this->__effacerRallonges($version);
         
         // Ne devrait pas arriver !
         $projet = $version->getProjet();
@@ -192,9 +193,6 @@ class ServiceProjets
             $em -> persist($projet);
             //$em->flush();
         }
-
-        // suppression des fichiers liés à la version
-        $this->effacerDonnees($version);
 
         // On supprime la version
         // Du coup la versionDerniere est mise à jour par l'EventListener
@@ -213,11 +211,8 @@ class ServiceProjets
      *
      *  - Les fichiers img_* et *.pdf du répertoire des figures
      *  - Le fichier de signatures s'il existe
-     *  - N'EFFACE PAS LE RAPPORT D'ACTIVITE !
-     *    cf. ServiceProjets pour cela
-     *  TODO - Rendre cette fonction privée, et pour cela modifier la commande Rgpd
-     *************************************************************/
-    public function effacerDonnees(Version $version): void
+     *********************************************************/ 
+    private function __effacerDonnees(Version $version): void
     {
         $sv = $this->sv;
         
@@ -232,6 +227,25 @@ class ServiceProjets
             unlink($fiche);
         }
     }
+
+    // effacer toutes les rallonges d'une version
+    private function __effacerRallonges(Version $version)
+    {
+        $em = $this->em;
+        
+        // Effacer les rallonges
+        foreach ( $version->getRallonge() as $r)
+        {
+            // Effacer les Dars !
+            foreach ($r->getDars() as $d )
+            {
+                $em->remove($d);
+            }
+            $em->remove($r);
+        }
+        $em->flush();
+    }
+
 
     /**************
      * Calcule le prochain id de projet, à partir des projets existants
@@ -265,77 +279,6 @@ class ServiceProjets
     * un "état" qui n'est pas utilisé dans les workflows mais qui peut être
     * affiché et qui a du sens pour les utilisateurs
     ************************************************************/
-    //public function getMetaEtat_SUPPR(Projet $p): string
-    //{
-        //$etat_projet = $p->getEtatProjet();
-        //$type_projet = $p->gettypeProjet();
-
-        //// Projet terminé
-        //if ($etat_projet == Etat::TERMINE) {
-            //return 'TERMINE';
-        //}
-
-        //// Projet non renouvelable:
-        ////    - Projet test   = toujours non renouvelable
-        ////    - Autres projets= sera bientôt terminé car expert a dit "refusé"
-        ////
-        //if ($etat_projet == Etat::NON_RENOUVELABLE && $type_projet != Projet::PROJET_TEST) {
-            //return 'REFUSE';
-        //}
-
-        //$veract  = $this->versionActive($p);
-        //$version = $p->derniereVersion();
-        //// Ne doit pas arriver: un projet a toujours une dernière version !
-        //// Peut-être la BD est-elle en rade donc on utilise le logger
-        //if ($version == null) {
-            //$this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
-                                            //$p->getIdProjet() . " version active: $veract n'a PAS de dernière version !");
-            //return 'STANDBY';
-        //}
-        //$etat_version   =   $version->getEtatVersion();
-
-        //if ($etat_version ==  Etat::EDITION_DEMANDE) {
-            //return 'EDITION';
-        //} elseif ($etat_version ==  Etat::EDITION_EXPERTISE) {
-            //return 'EXPERTISE';
-        //} elseif ($etat_version ==  Etat::EDITION_TEST) {
-            //return 'EDITION';
-        //} elseif ($etat_version ==  Etat::EXPERTISE_TEST) {
-            //return 'EXPERTISE';
-        //} elseif ($etat_version ==  Etat::ACTIF || $etat_version == Etat::ACTIF_TEST) {
-            //if ( $type_projet != Projet::PROJET_DYN )
-            //{
-                //// Afficher un signe particulier pour les projets non renouvelés en période de demande pour une session A
-                //$session = $this->ss->getSessionCourante();
-                //if ($session->getEtatSession() == Etat::EDITION_DEMANDE &&  $session->getLibelleTypeSession() === 'A') {
-                    //return 'NONRENOUVELE';
-                //} // Non renouvelé
-                //else {
-                    //return 'ACCEPTE';
-                //} // Projet ou rallonge accepté par le comité d'attribution
-            //}
-            //else
-            //{
-                //// TODO - Remettre le signe particulier 30 jours avant le renouvellement
-                //return 'ACCEPTE';
-            //}
-        //} elseif ($etat_version == Etat::ACTIF_TEST) {
-            //return 'ACCEPTE';
-        //} // projet-test non renouvelable
-        //elseif ($etat_version == Etat::EN_ATTENTE) {
-            //return 'ACCEPTE';
-        //} elseif ($etat_version == Etat::TERMINE) {
-            //if ($p->getNepasterminer()) {
-                //return 'AGARDER';
-            //} else {
-                //return 'STANDBY';
-            //}
-        //} elseif ($veract       == null) {
-            //return 'STANDBY';
-        //}
-    //}
-
-    /* PLUS SIMPLE POUR LES PROJETS DYNAMIQUES */
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
@@ -401,8 +344,6 @@ class ServiceProjets
       *       Utilise par ProjetController et AdminuxController, et aussi par StatistiquesController
       *
       * Param : $annee
-      *         $isRecupPrintemps (true/false, def=false) -> Calcule les heures récupérables au printemps
-      *         $isRecupAutomne (true/false, def=false)   -> Calcule les heures récupérables à l'Automne
       *
       * Return: [ $projets, $total ] Un tableau de tableaux pour les projets, et les données consolidées
       *
@@ -411,25 +352,6 @@ class ServiceProjets
       *        Cela peut conduire à une erreur à la marge dans les statistiques
       *
       */
-
-    // Ajoute les champs 'c','g','q', 'cp', 'stk' au tableau $p (pour projetsParAnnee)
-    // 'c' -> conso TOTALE (cpu + gpu consolidé)
-    // 'g' -> conso GPU normalisée
-    // 'q' -> quota
-    // 'cp' -> Conso totale en %age du quota
-    // 'stk'-> Quota de stockage en Ko
-    private function ppa_conso(&$p, &$annee)
-    {
-        $conso_cpu = $this->getConsoRessource($p['p'], 'cpu', $annee);
-        $conso_gpu = $this->getConsoRessource($p['p'], 'gpu', $annee);
-        $conso_stk = $this->getConsoRessource($p['p'], 'work_space', $annee);
-        $p['c'] = $conso_cpu[0] + $conso_gpu[0];
-        $p['q'] = $conso_cpu[1];
-        $p['g'] = $conso_gpu[0];
-        $p['cp'] = ($p['q']>0) ? (100.0 * $p['c']) / $p['q'] : 0;
-        $p['stk_c'] = $conso_stk[0];
-        $p['stk_q'] = $conso_stk[1];
-    }
 
     /***********
      * Renvoie la liste des projets dynamiques qui ont une version en cours cette année
@@ -602,359 +524,6 @@ class ServiceProjets
         return $versions;
          
      }
-
-    /***********
-     * Renvoie la liste des projets par année -
-     * $annee      = Année (4 charactères - ex. 2022)
-     * $isRecup... = Pour gérer les heures de récupération
-     * $sess_lbl   = Défaut 'AB' On ramène les projets de toute l'année, sessions A et B confondues
-     *               'A' Seulement session 'A'
-     *               'B' Seulement session 'B'
-     *
-     * Return: un tableau de deux tableaux:
-     *         - Le tableau des projets
-     *         - Le tableau des données consolidées
-     *            
-     *
-     ********************/
- 
-    /* VERSION PROVENANT DE gramc3 - SUPPRIMEE POUR L'INSTANT ! 
-    public function projetsParAnnee_SUPPR($annee, $isRecupPrintemps=false, $isRecupAutomne=false, string $sess_lbl = 'AB'): array
-    {
-        $em = $this->em;
-        $ss = $this->ss;
-
-        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
-        // (nombre de projets, heures demandées etc)
-        $a_filtrer = [ Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE ];
-
-        // Données consolidées - Projets de session
-        $total = [];
-        $total['sess'] = [];
-        $total['fil'] = [];
-
-        //$total['prj']         = 0;  // Nombre de projets (A ou B) (A JETER)
-        //$total['demHeuresA']  = 0;  // Heures demandées en A (A JETER)
-        //$total['attrHeuresA'] = 0;  // Heures attribuées en A (A JETER)
-        //$total['demHeuresB']  = 0;  // Heures demandées en B (A JETER))
-        $total['sess']['prj'] = 0;  // Nombre de projets (A ou B)
-        $total['penalitesA']  = 0;  // Pénalités de printemps (sous-consommation entre Janvier et Juin) (A JETER)
-        $total['penalitesB']  = 0;  // Pénalités d'Automne (sous-consommation l'été) (A JETER)
-        $total['rall']        = 0;  // Nombre de rallonges (A JETER))
-        //$total['demHeuresR']  = 0;  // Heures demandées dans des rallonges (A JETER)
-        //$total['attrHeuresR'] = 0;  // Heures attribuées dans des rallonges (A JETER)
-        //$total['consoHeuresP']= 0;           // Heures consommées - A JETER ASAP
-
-        $total['sess']['demHeuresA']  = 0;  // Heures demandées en A
-        $total['sess']['attrHeuresA'] = 0;  // Heures attribuées en A
-        $total['sess']['demHeuresB']  = 0;  // Heures demandées en B
-        $total['sess']['attrHeuresB'] = 0;  // Heures attribuées en B
-
-        // Données consolidées - projets tests
-        // Plus utilisées à partir de 2022
-        $total['prjTest']     = 0;  // Nombre de projets tests
-        $total['demHeuresT']  = 0;  // Heures demandées dans des projets tests
-        $total['attrHeuresT'] = 0;  // Heures attribuées dans des projets tests
-
-        // Données consolidées - projets fil de l'eau
-        $total['fil']['prj'] = 0;  // Nombre de projets (A ou B)
-        $total['fil']['demHeuresA']  = 0;  // Heures demandées en A
-        $total['fil']['attrHeuresA'] = 0;  // Heures attribuées en A
-        $total['fil']['demHeuresB']  = 0;  // Heures demandées en B
-        $total['fil']['attrHeuresB'] = 0;  // Heures attribuées en B
-
-        // Rallonges
-        $total['sess']['rall']        = 0;  // Nombre de rallonges
-        $total['sess']['demHeuresR']  = 0;  // Heures demandées dans des rallonges
-        $total['sess']['attrHeuresR'] = 0;  // Heures attribuées dans des rallonges
-        
-        // Rallonges - Projets Fil de l'eau
-        $total['fil']['rall']        = 0;  // Nombre de rallonges
-        $total['fil']['demHeuresR']  = 0;  // Heures demandées dans des rallonges
-        $total['fil']['attrHeuresR'] = 0;  // Heures attribuées dans des rallonges
-
-        // Données consolidées - globales
-        $total['demHeuresP']  = 0;  // Nombre d'heures demandées: A+B+Rallonges, sess+fil
-        $total['attrHeuresP'] = 0;  // Heures attribuées aux Projets: A+B+Rallonges-Pénalité, sess+fil
-        $total['recupHeuresP']= 0;  // Heures récupérables
-
-        // Conso - Projets Fil de l'eau
-        $total['fil']['consoHeuresCPU']= 0;  // Heures consommées - cpu
-        $total['fil']['consoHeuresGPU']= 0;  // Heures consommées - gpu
-
-        // Conso - Projets de session
-        $total['sess']['consoHeuresCPU']= 0;  // Heures consommées - cpu
-        $total['sess']['consoHeuresGPU']= 0;  // Heures consommées - gpu
-
-        // Stockage
-        $total['sess']['sondVolDonnPerm']= 0; // Demandes de stockage
-        $total['sess']['consoVolDonnPerm']= 0; // Demandes de stockage: occupation
-        $total['sess']['quotaVolDonnPerm']= 0; // Quota de stockage
-        $total['fil']['sondVolDonnPerm']= 0; // Demandes de stockage
-        $total['fil']['consoVolDonnPerm']= 0; // Demandes de stockage: occupation
-        $total['fil']['quotaVolDonnPerm']= 0; // Quota de stockage
-        
-        // Les rattachements
-        $rattachements = $em->getRepository(Rattachement::class)->findAll();
-        if ($rattachements == null) {
-            $rattachements = [];
-        }
-
-        $statsRattachements = [];
-        foreach ($rattachements as $rattachement) {
-            $statsRattachements[$rattachement->getLibelleRattachement()]    =   0;
-        }
-
-        // $annee = 2017, 2018, etc. (4 caractères)
-        $session_id_A = substr($annee, 2, 2) . 'A';
-        $session_id_B = substr($annee, 2, 2) . 'B';
-        $session_A = $this->em->getRepository(Session::class)->findOneBy(['idSession' => $session_id_A ]);
-        $session_B = $this->em->getRepository(Session::class)->findOneBy(['idSession' => $session_id_B ]);
-
-        if ( strpos($sess_lbl, 'A') !== false )
-        {
-            $versions_A= $this->em->getRepository(Version::class)->findBy(['session' => $session_A ]);
-        }
-        else
-        {
-            $versions_A = [];
-        }
-        if ( strpos($sess_lbl, 'B') !== false )
-        {
-            $versions_B= $this->em->getRepository(Version::class)->findBy(['session' => $session_B ]);
-        }
-        else
-        {
-            $versions_B = [];
-        }
-
-        // $mois est utilisé pour calculer les éventuelles pénalités d'été
-        // Si on n'est pas à l'année courante, on le met à 0 donc elles ne seront jamais calculées
-        $annee_courante = $this->grdt->showYear();
-        if ($annee == $annee_courante) {
-            $mois = $this->grdt->showMonth();
-        } else {
-            $mois = -1;
-        }
-
-        $projets= [];
-
-        // Boucle sur les versions de la session A
-        foreach ($versions_A as $v) {
-            if ($v->getTypeVersion() == 1 || $v->getTypeVersion() == null)
-            {
-                $type = 'sess';
-            }
-            else
-            {
-                $type = 'fil';
-            }
-            $p_id = $v->getProjet()->getIdProjet();
-            $p = [];
-            $p['p']        = $v->getProjet();
-            $p['metaetat'] = $this->getMetaEtat($p['p']);
-            $p['va']       = $v;
-            $p['penal_a']  = $v->getPenalHeures();
-            $p['labo']     = $v->getLabo();
-            $p['resp']     = $v->getResponsable();
-
-            // Ces champs seront renseignés en session B
-            $p['vb']      = null;
-            $p['penal_b'] = 0;
-            $p['attrete'] = 0;
-            $p['consoete']= 0;
-
-            $rallonges = $v->getRallonge();
-            $p['r'] = 0;
-            $p['attrib']     = $v->getAttrHeures();
-            $p['attrib']    -= $v->getPenalHeures();
-            foreach ($rallonges as $r) {
-                // filtrage
-                if (! in_array($v->getEtatVersion(), $a_filtrer))
-                {
-                    $total['rall']        += 1;
-
-                    //if ($type == 'sess')
-                    //{
-                    //    $total['demHeuresR']  += $r->getDemHeures();    // provisoire
-                    //    $total['attrHeuresR'] += $r->getAttrHeures();   // provisoire
-                    //}
-
-                    $total[$type]['rall']        += 1;
-                    $total[$type]['demHeuresR']  += $r->getDemHeures();
-                    $total[$type]['attrHeuresR'] += $r->getAttrHeures();
-                    $total['demHeuresP']  += $r->getDemHeures();
-                    $total['attrHeuresP'] += $r->getAttrHeures();
-                    
-                    $p['r']               += $r->getAttrHeures();
-                    $p['attrib']          += $r->getAttrHeures();
-                }
-            }
-
-            // filtrage
-            if (! in_array($v->getEtatVersion(), $a_filtrer))
-            {
-                $total[$type]['prj'] += 1;
-                $total['demHeuresP']  += $v->getDemHeures();
-                $total['attrHeuresP'] += $v->getAttrHeures();
-                $total[$type]['demHeuresA']  += $v->getDemHeures();
-                $total[$type]['attrHeuresA'] += $v->getAttrHeures();
-                $total['penalitesA']  += $v->getPenalHeures();
-                $total['attrHeuresP'] -= $v->getPenalHeures();
-
-            }
-            if ($v->getProjet()->isProjetTest()) {
-                // filtrage
-                if (! in_array($v->getEtatVersion(), $a_filtrer))
-                {
-                    $total['prjTest']     += 1;
-                    $total['demHeuresT']  += $v->getDemHeures();
-                    $total['attrHeuresT'] += $v->getAttrHeures();
-                }
-            }
-
-            // La conso
-            $this->ppa_conso($p, $annee);
-            
-            //$total['consoHeuresP'] += $p['c'];
-            $total[$type]['consoHeuresCPU'] += $p['c'] - $p['g'];
-            $total[$type]['consoHeuresGPU'] += $p['g'];
-            $total[$type]['sondVolDonnPerm']+= intval($v->getSondVolDonnPerm());
-            $total[$type]['consoVolDonnPerm']+= $p['stk_c'];
-            $total[$type]['quotaVolDonnPerm']+= $p['stk_q'];
-            
-            // Les rattachements
-            $ratt = $v->getPrjRattachement();
-            if (! empty($ratt)) {
-                $statsRattachements[$ratt->getLibelleRattachement()] += $p['c'];
-            }
-
-            // Récup de Printemps
-            if ($isRecupPrintemps==true) {
-                $p['recuperable']       = $this->ss->calc_recup_heures_printemps($p['c'], intval($p['attrib'])+intval($p['r']));
-                $total['recupHeuresP'] += ($v->getPenalHeures()==0) ? $p['recuperable'] : 0;
-            } else {
-                $p['recuperable'] = 0;
-            }
-
-            $projets[$p_id] = $p;
-        }
-
-        // Boucle sur les versions de la session B
-        foreach ($versions_B as $v) {
-
-            
-            if ($v->getTypeVersion() == 1 || $v->getTypeVersion() == null)
-            {
-                $type = 'sess';
-            }
-            else
-            {
-                $type = 'fil';
-            }
-            $p_id = $v->getProjet()->getIdProjet();
-            if (isset($projets[$p_id])) {
-                $p = $projets[$p_id];
-            } else {
-                $total[$type]['prj'] += 1;
-                $p = [];
-                $p['p']           = $v->getProjet();
-                $p['metaetat']    = $this->getMetaEtat($p['p']);
-                $p['va']          = null;
-                $p['penal_a']     = 0;
-                $p['recuperable'] = 0;
-                $p['r']      = 0;
-                $p['attrib'] = 0;
-                $p['labo']   = $v->getLabo();         // Si version A et B on choisit le labo
-                $p['resp']   = $v->getResponsable();  // et le responsable de la version B (pas obligatoirement le même)
-            }
-            $p['vb']      = $v;
-            $rallonges    = $v->getRallonge();
-            foreach ($rallonges as $r) {
-                // filtrage
-                if (! in_array($v->getEtatVersion(), $a_filtrer))
-                {
-                    $total[$type]['rall']        += 1;
-                    $total[$type]['demHeuresR']  += $r->getDemHeures();
-                    $total['demHeuresP']  += $r->getDemHeures();
-                    $total['attrHeuresP'] += $r->getAttrHeures();
-                    $total[$type]['attrHeuresR'] += $r->getAttrHeures();
-                    $p['r']               += $r->getAttrHeures();
-                    $p['attrib']          += $r->getAttrHeures();
-                }
-            }
-
-            // S'il y a eu une attrib en session A, on verifie que la demande B ne soit pas toomuch
-            if (!empty($p['va'])) {
-                $p['toomuch'] = $this->sv->is_demande_toomuch($p['va']->getAttrHeures(), $p['vb']->getDemHeures());
-            } else {
-                $p['toomuch'] = false;
-            }
-
-            $p['attrib'] += $v->getAttrHeures();
-
-            // Pénalités déja appliquée en session B
-            $p['penal_b'] = $v->getPenalHeures();
-            $p['attrib'] -= $p['penal_b'];
-
-            $total['demHeuresP']  += $v->getDemHeures();
-            $total['attrHeuresP'] += $v->getAttrHeures();
-            $total[$type]['demHeuresB']  += $v->getDemHeures();
-            $total[$type]['attrHeuresB'] += $v->getAttrHeures();
-            $total['penalitesB']  += $v->getPenalHeures();
-            $total['attrHeuresP'] -= $v->getPenalHeures();
-
-            // La conso (attention à ne pas compter deux fois la conso pour les projets déjà entamés !)
-            //
-            $this->ppa_conso($p, $annee);
-
-            // Les rattachements: seulement pour les Nouveaux projets également
-            //                    NB - Un projet qui change son rattachement entre A et B
-            //                         à partir de son état en session A !!!
-            //                         Ce cas exceptionnel est ignoré.
-            
-            // Ici également les quotas de stockage, le stockage à chaque session mais ça ne se cumule pas
-            // TODO - Si un projet demande plus de stockage en B qu'en A cela ne sera pas pris en compte !!!
-            //        Si un projet est renouvelé sa conso sera celle de la session A !
-            if ($this->sv->isNouvelle($v))
-            {
-                //$total['consoHeuresP'] += $p['c'];
-                $total[$type]['consoHeuresCPU'] += $p['c'] - $p['g'];
-                $total[$type]['consoHeuresGPU'] += $p['g'];
-                $total[$type]['sondVolDonnPerm']+= intval($v->getSondVolDonnPerm());
-                $total[$type]['consoVolDonnPerm']+= $p['stk_c'];
-                $total[$type]['quotaVolDonnPerm']+= $p['stk_q'];
-
-                $ratt = $v->getPrjRattachement();
-                if (! empty($ratt)) {
-                    $statsRattachements[$ratt->getLibelleRattachement()] += $p['c'];
-                }
-            }
-
-            // Pour le calcul des pénalités d'Automne
-            $p['attrete'] = $v->getAttrHeuresEte();
-
-            // Penalites d'automne. Elles dépendent de la consommation des mois de Juillet et d'Août
-            if ($isRecupAutomne==true) {
-                $d = $annee_courante.'-07-01';
-                $f = $annee_courante.'-09-01';
-                $p['consoete']          = $this->getConsoIntervalle($v->getProjet(), ['cpu','gpu'], [$d,$f]);
-                $p['recuperable']       = $ss->calc_recup_heures_automne($p['consoete'], $p['attrete']);
-                $total['recupHeuresP'] += ($v->getPenalHeures()==0) ? $p['recuperable'] : 0;
-
-            // Si recuPrintemps est à true, 'recuperable' est déjà calculé, ne pas y toucher
-            // NB - Oui il y a des gens qui ne consomment pas en A et qui demandent des heures en B !
-            } elseif ($isRecupPrintemps==false) {
-                $p['recuperable'] = 0;
-            }
-
-            $projets[$p_id] = $p;
-        }
-
-        $total['rattachements'] = $statsRattachements;
-        return [$projets,$total];
-    }
-    */
     
     /*
      * Appelle projetsParAnnee et renvoie les tableaux suivants, indexés par le critère
@@ -1124,368 +693,6 @@ class ServiceProjets
     }
 
     /*
-    *  Ajoute le champ 'c,q,f' au tableau $p:
-    *         c => conso
-    *         q => quota en octets
-    *         q => quota en To (nombre entier)
-    *
-    */
-    private function addConsoStockage(&$p, $annee, $ress): void
-    {
-        if ($ress === "") {
-            $p['q']  = 0;
-            $p['qt'] = 0;
-            $p['c']  = 0;
-            $p['ct'] = 0;
-            $p['cp'] = 0;
-        } else {
-            $conso = $this->getConsoRessource($p['p'], $ress, $annee);
-            $p['q']  = $conso[1];
-            $p['qt'] = intval($p['q']/(1024*1024*1024));
-            $p['c']  = $conso[0];
-            $p['ct'] = intval($p['c']/(1024*1024*1024));
-            $p['cp'] = ($p['q'] != 0) ? 100*$p['c']/$p['q'] : 0;
-        }
-    }
-
-    /**
-     * Liste tous les projets pour lesquels on a demandé des données en stockage ou en partage
-     *       Utilise par ProjetController
-     *
-     * Param : $annee
-     * Return: [ $projets, $total ] Un tableau de tableaux pour les projets, et les données consolidées
-     *
-     */
-    public function donneesParProjet($annee): array
-    {
-        $total   = [];
-        $projets = [];
-
-        $total['prj']     = 0;	// Nombre de projets
-        $total['sprj']    = 0;	// Nombre de projets ayant demandé du stockage
-        $total['pprj']    = 0;	// Nombre de projet ayant demandé du partage
-        $total['autostk'] = 0;	// Nombre de To attribués automatiquement (ie 1 To / projet)
-        $total['demstk']  = 0;	// Nombre de To demandés (> 1 To / projet)
-        $total['attrstk']  = 0; // Nombre de To alloués suite à une demande
-
-        // $annee = 2017, 2018, etc. (4 caractères)
-        $session_id_A = substr($annee, 2, 2) . 'A';
-        $session_id_B = substr($annee, 2, 2) . 'B';
-        $session_A = $this->em->getRepository(Session::class)->findOneBy(['idSession' => $session_id_A ]);
-        $session_B = $this->em->getRepository(Session::class)->findOneBy(['idSession' => $session_id_B ]);
-
-        $versions_A= $this->em->getRepository(Version::class)->findBy(['session' => $session_A ]);
-        $versions_B= $this->em->getRepository(Version::class)->findBy(['session' => $session_B ]);
-
-        /* Ressource utilisée pour déterminer l'occupation et le quota:
-         *
-         * Regarde le paramètre ressources_conso_group et prend la première de type 'stockage'
-         *         S'il y en a plusieurs... problème !
-         *         S'il n'y en a aucune... on ne fait rien
-         */
-        $ress = "";
-        $ressources = $this->ressources_conso_group;
-        if ($ressources != null) {
-            foreach ($ressources as $k=>$r) {
-                if ($r['type']==='stockage') {
-                    $ress = $r['ress'];
-                }
-            }
-        }
-
-        // Boucle sur les versions de la session B
-        $projets_b = [];
-        foreach ($versions_B as $v) {
-            $total['prj'] += 1;
-            $p = [];
-            $p_id = $v->getProjet()->getIdProjet();
-            $keep_it = $this->donneesParProjetFiltre($v, $p);
-            //if ($keep_it === true)
-            //{
-            $this->addConsoStockage($p, $annee, $ress);
-            if ($p['stk']) {
-                $total['sprj']    += 1;
-                $total['demstk']  += $p['sondVolDonnPermTo'];
-                $total['attrstk'] += $p['qt'];
-            } else {
-                $total['autostk'] += 1;
-            }
-            if ($p['ptg']) {
-                $total['pprj'] += 1;
-            }
-            $projets[$p_id] = $p;
-            //}
-            //else
-            if ($keep_it === false) {
-                $total['autostk'] += 1;
-            }
-            $projets_b[] = $p_id;
-        }
-
-        // Boucle sur les versions de la session A
-        foreach ($versions_A as $v) {
-            $p_id = $v->getProjet()->getIdProjet();
-            if (!in_array($p_id, $projets_b)) {
-                $p = [];
-                $total['prj'] += 1;
-
-                $keep_it = $this->donneesParProjetFiltre($v, $p);
-
-                //if ($keep_it === true) {
-                $this->addConsoStockage($p, $annee, $ress);
-                $projets[$p_id] = $p;
-                if ($p['stk']) {
-                    $total['sprj']    += 1;
-                    $total['demstk']  += $p['sondVolDonnPermTo'];
-                    $total['attrstk'] += $p['qt'];
-                } else {
-                    $total['autostk'] += 1;
-                }
-                if ($p['ptg']) {
-                    $total['pprj'] += 1;
-                }
-                //}
-                //else
-                if ($keep_it === false) {
-                    $total['autostk'] += 1;
-                }
-            }
-        }
-
-        return [$projets,$total];
-    }
-
-    /************************************
-    * calcul de la consommation et du quota d'une ressource à une date donnée
-    * N'est utilisée que par les méthodes de cette classe
-    *
-    * Renvoie [ $conso, $quota ]
-    * NOTE - Si la table est chargée à 8h00 du matin, toutes les consos de l'année courante seront = 0 avant 8h00
-    *
-    ************/
-    private function getConsoDate(Projet|CollaborateurVersion $projet, $ressource, \DateTime $date): array
-    {
-        if ($projet instanceof Projet) {
-            $loginName = strtolower($projet->getIdProjet());
-            $type = 2;
-        } else {
-            $loginName = strtolower($projet->getLoginname());
-            $type = 1;
-        }
-        $conso = 0;
-        $quota = 0;
-        $compta = $this->em->getRepository(Compta::class)->findOneBy(
-            [
-                'date'      => $date,
-                'ressource' => $ressource,
-                'loginname' => $loginName,
-                'type'      => $type
-            ]
-        );
-        if ($compta != null) {
-            $conso = $compta->getConso();
-            $quota = $compta->getQuota();
-        }
-
-        return [$conso, $quota];
-    }
-
-    /***********************
-    * calcul de la consommation et du quota d'une ressource (cpu, gpu, work_space, etc.)
-    *
-    * param $projet: Le projet
-    *       $ressource: La ressource
-    * param $annee_ou_date    : L'année ou la date
-    *       Si $annee_ou_date==null                -> On considère la date du jour
-    *       Si $annee_ou_date est annee courante   -> On considère la date du jour
-    *       Si $annee_ou_date est une autre année  -> On considère le 31 décembre de $annee_ou_date
-    *       Si $annee_ou_date est une DateTime     -> On considère la date
-    *       ATTENTION Si $annee_ou_date est un string qui représente une date... ça va merder !
-    *
-    * S'il n'y a pas de données à la date considérée (par exemple si c'est dans le futur), on renvoie [0,0]
-    *
-    * Renvoie [ $conso, $quota ]
-    *
-    * NOTE - Si la table est chargée à 8h00 du matin, toutes les consos seront mesurées à hier
-    *        Si on utilise avant 8h00 du matin toutes les consos sont à 0 !
-    *
-    *******************/
-    public function getConsoRessource(Projet|CollaborateurVersion $projet, $ressource, $annee_ou_date=null): array
-    {
-        //return [0,0];
-        $annee_ou_date_courante = $this->grdt->showYear();
-        if ($annee_ou_date==$annee_ou_date_courante || $annee_ou_date===null) {
-            $date  = $this->grdt;
-        } elseif (is_object($annee_ou_date)) {
-            $date = $annee_ou_date;
-        } else {
-            $date = new \DateTime($annee_ou_date . '-12-31');
-        }
-        return $this->getConsoDate($projet, $ressource, $date);
-    }
-
-    /*******
-    * calcul de la consommation cumulée d'une ou plusieurs ressources dans un intervalle de dates données
-    *
-    * params: $projet     -> Un projet
-    *         $ressources -> Un tableau de ressources
-    *         $dates      -> Un tableau de deux strings représentant des dates [debut,fin(
-    *
-    * Retourne: La somme de la consommation pour les deux ressources dans l'intervalle de dates considéré
-    *
-    * Prérequis: Il ne doit pas y avoir eu de remise à zéro dans l'intervalle
-    *
-    * TODO - Diminuer le nombre de requêtes SQL avec une seule requête plus complexe
-    *
-    ***********************/
-    public function getConsoIntervalle(Projet|CollaborateurVersion $projet, $ressources, $dates): int
-    {
-        if (! is_array($ressources) || ! is_array($dates)) {
-            $this->sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - \$ressources ou \$dates n'est pas un array");
-        }
-        if (count($ressources) < 1 || count($dates) < 2) {
-            $this->sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - \$ressources ou \$dates est un array trop petit");
-        }
-
-        $debut = new \DateTime($dates[0]);
-        $fin   = new \DateTime($dates[1]);
-
-        $conso_debut = 0;
-        $conso_fin   = 0;
-        foreach ($ressources as $r) {
-            //$this->sj->debugMessage('koukou '.$r.' '.$dates[0].' '.print_r($this->getConsoDate($r,$debut),true).$dates[1].' '.print_r($this->getConsoDate($r,$fin),true));
-            $conso_debut += $this->getConsoDate($projet, $r, $debut)[0];
-            $conso_fin   += $this->getConsoDate($projet, $r, $fin)[0];
-        }
-        // $conso_fin peut être nulle si la date de fin est dans le futur !
-        // Dans ce cas on renvoie 0
-        return ($conso_fin) ? $conso_fin-$conso_debut : 0;
-    }
-
-    /*******************
-    * calcul de la consommation "calcul" à une date donnée ou pour une année donnée
-    *
-    * Retourne: la consommation cpu + gpu à la date ou pour l'année donnée
-    *           Ne retourne pas le quota
-    *
-    *************************/
-    public function getConsoCalcul(Projet|CollaborateurVersion $projet, $annee_ou_date): int
-    {
-        $conso_gpu = $this->getConsoRessource($projet, 'gpu', $annee_ou_date);
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee_ou_date);
-        return $conso_gpu[0] + $conso_cpu[0];
-    }
-
-    /********
-     * La conso d'une version...
-     *****/
-    public function getConsoCalculVersion(Version $version): int
-    {
-        $projet = $version->getProjet();
-        $annee  = $version->getAnneeSession();
-        return $this->getConsoCalcul($projet, $annee);
-    }
-
-    /*******************
-    * calcul de la consommation "calcul" à une date donnée ou pour une année donnée, en pourcentage du quota
-    *
-    * Retourne: la consommation cpu + gpu à la date ou pour l'année donnée
-    *           en %age du quota cpu
-    *
-    *************************/
-    public function getConsoCalculP(Projet|CollaborateurVersion $projet, $annee_ou_date=null): float
-    {
-        $conso_gpu = $this->getConsoRessource($projet, 'gpu', $annee_ou_date);
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee_ou_date);
-        if ($conso_cpu[1] <= 0) {
-            return 0;
-        } else {
-            return 100.0*($conso_gpu[0] + $conso_cpu[0])/$conso_cpu[1];
-        }
-    }
-
-    /***************
-    * Renvoie la consommation calcul (getConsoCalcul() de l'année et du mois
-    *
-    * params: $projet
-    *         $annee (2019 ou 19)
-    *         $mois (0..11)
-    *
-    * Retourne: La conso cpu+gpu, ou 0 si le mois se situe dans le futur
-    *
-    **************************/
-    public function getConsoMois(Projet|CollaborateurVersion $projet, $annee, $mois) : int
-    {
-        $now = $this->grdt;
-        $annee_courante = $now->showYear();
-        $mois_courant   = $now->showMonth();
-        $mois += 1;	// 0..11 -> 1..12 !
-
-        // 2019 - 2000 !
-        if (($annee==$annee_courante || abs($annee-$annee_courante)==2000) && $mois==$mois_courant)
-        {
-            $conso_fin = $this->getConsoCalcul($projet, $now);
-        }
-        else
-        {
-            // Pour décembre on mesure la consomation au 31 car il y a risque de remise à zéro le 1er Janvier
-            // Du coup on ignore la consommation du 31 Décembre...
-            if ($mois==12) {
-                $d = strval($annee)."-12-31";
-                $conso_fin = $this->getConsoCalcul($projet, new \DateTime($d));
-            //App::getLogger()->error("koukou1 " . $this->getIdProjet() . "$d -> $conso_fin");
-            }
-            // Pour les autres mois on prend la conso du 1er du mois suivant
-            else {
-                $m = strval($mois + 1);
-                $conso_fin = $this->getConsoCalcul($projet, new \DateTime($annee.'-'.$m.'-01'));
-            }
-        }
-
-        // Pour Janvier on prend zéro, pas la valeur au 1er Janvier
-        // La remise à zéro ne se fait jamais le 1er Janvier
-        if ($mois==1)
-        {
-            $conso_debut = 0;
-        }
-        else
-        {
-            $conso_debut = $this->getConsoCalcul($projet, new \DateTime("$annee-$mois-01"));
-        }
-        if ($conso_fin>$conso_debut)
-        {
-            return $conso_fin-$conso_debut;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    /*
-     * Renvoie le quota seul (pas la conso) des ressources cpu
-     *
-     * param : $projet, $annee ou $date (cf getConsoRessource)
-     * return: La consommation "calcul" pour l'année
-     *
-     */
-    public function getQuota(Projet $projet, $annee=null): int
-    {
-        $conso_cpu = $this->getConsoRessource($projet, 'cpu', $annee);
-        return $conso_cpu[1];
-    }
-
-    /********
-     * Le quota d'une version...
-     *****/
-    public function getQuotaCalculVersion(Version $version): int
-    {
-        $projet = $version->getProjet();
-        $annee  = $version->getAnneeSession();
-        return $this->getQuota($projet, $annee);
-    }
-
-    /*
      * Le user connecté a-t-il accès à $projet ?
      * Si OBS (donc ADMIN) ou PRESIDENT = La réponse est Oui
      * Si VALIDEUR et le projet est de type 4 (dynamique) = La réponse est OUI
@@ -1568,7 +775,7 @@ class ServiceProjets
      * Création des répertoires de données
      *
      ************************************************************/
-    public function createDirectories($annee = null, $session = null): void
+    /*public function createDirectories($annee = null, $session = null): void
     {
         $rapport_directory = $this->rapport_directory;
         if ($rapport_directory != null) {
@@ -1620,7 +827,7 @@ class ServiceProjets
             unlink($dir);
             mkdir($dir);
         }
-    }
+    }*/
 
     /************************************************
      * Renvoie le chemin vers le rapport d'activité s'il existe, null s'il n'y a pas de RA
@@ -1632,9 +839,6 @@ class ServiceProjets
     public function getRapport(Projet $projet, $annee): ?string
     {
         $rapport_directory = $this->rapport_directory;
-        //if ( $annee == null )
-        //    $annee  = $this->getAnneeSession()-1;
-
         $dir    =  $rapport_directory;
         if ($dir == null) {
             return null;
@@ -1720,7 +924,9 @@ class ServiceProjets
      *         - Pas collaborateurs
      *         - Pas d'expertises
      *         - Pas de privilèges
+     *         - Pas de users
      *
+     * Efface les Users correspondants à ces individus !
      * Renvoie un tableau contenant les clones des individus effacés
      * TODO - Un peu zarbi tout de même
      */
@@ -1736,7 +942,6 @@ class ServiceProjets
         $individus = $repo_ind->findAll();
         foreach ($individus as $individu) {
             if ( $individu -> getAdmin() ) continue;
-            if ( $individu -> getPresident() ) continue;
             if ( $individu -> getObs() ) continue;
             if ( $individu -> getExpert() ) continue;
             
@@ -1747,7 +952,19 @@ class ServiceProjets
             foreach ($em->getRepository(Sso::class)->findBy(['individu' => $individu]) as $sso) {
                 $em->remove($sso);
             }
+            
+            foreach ($individu -> getUser() as $u)
+            {
+                $em->remove($u);
+            }
 
+            foreach ($individu -> getClessh() as $k)
+            {
+                $em->remove($k);
+            }
+
+            // TODO - Supprimer les invitations... ne devraient pas exister mais il fuadrait le vérifier !
+            
             $this->sj->infoMessage("L'individu " . $individu . ' a été effacé ');
             $em->remove($individu);
         }
@@ -1756,60 +973,8 @@ class ServiceProjets
         return $individus_effaces;
     }
 
-    /**
-    * calculVersionDerniere
-    *
-    * NOTE - la B.D. doit être cohérente, c-à-d que s'il y a des flush à faire, ils doivent
-    *        être faits en entrant dans cette fonction
-    *        Inversement, cette fonction refait si nécessaire le flush du projet afin de garder la cohérence
-    *
-    * @return \App\Entity\Version
-    */
-
-
-    // On réécrit cette fonction car le tri doit se faire sur le NbVersion plutôt que sur la session
-    // (indispensable pour les projets dynamiques, s'il y a un jour des projets de session il faudra que le NbVersion soit géré)
-    //public function calculVersionDerniere_SUPPR(Projet $projet): ?Version
-    //{
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1");
-        //if ($projet->getVersion() == null) {
-            //return null;
-        //}
-
-        //$iterator = $projet->getVersion()->getIterator();
-        ////$cnt = count(iterator_to_array($iterator));
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou1.1 " . $cnt);
-
-        //$iterator->uasort(function ($a, $b) {
-            //if ($a->getSession() == null) {
-                //return true;
-            //} elseif ($b->getSession() == null) {
-                //return false;
-            //} else {
-                //return strcmp($a->getSession()->getIdSession(), $b->getSession()->getIdSession());
-            //}
-        //});
-
-        //$sortedVersions =  iterator_to_array($iterator) ;
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou2");
-        //$result = end($sortedVersions);
-        ////$this->sj->debugMessage( __FILE__ . ":" . __LINE__ . " coucou3 ".$result);
-
-        //if (! $result instanceof Version) {
-            //return null;
-        //}
-
-        //// update BD
-        //$projet->setVersionDerniere($result);
-        //$em = $this->em;
-        //$em->persist($projet);
-        //$em->flush();
-
-        //return $result;
-    //}
-
     /*
-     * Calcul de la dernière version d'un projet - Utilisé par App\EventListener\ProjetDerniereVersion
+     * Calcul de la dernière version d'un projet - Utilisé par \App\EventListener\ProjetDerniereVersion
      */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
@@ -1820,14 +985,16 @@ class ServiceProjets
 
         $iterator = $projet->getVersion()->getIterator();
 
-        $iterator->uasort(function ($a, $b) {
-            if ($a->getNbVersion() == null)
+        $iterator->uasort(function ($a, $b)
+        {
+            $sj = $this->sj;
+            if ($a->getNbVersion() === null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $a = PAS DE NbVersion");
             }
-            if ($b->getNbVersion() == null)
+            if ($b->getNbVersion() === null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $version = PAS DE NbVersion");
+                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $b = PAS DE NbVersion");
             }
             return strcmp($a->getNbVersion(), $b->getNbVersion());
         });
@@ -1837,7 +1004,8 @@ class ServiceProjets
         if ($result === false) return null;
         
         // On met à jour projet si nécessaire
-        if ($projet->getVersionDerniere() != $result)
+        //dd($projet->getVersionDerniere(),$result);
+        if ($projet->getVersionDerniere() !== $result)
         {
             $projet->setVersionDerniere($result);
             $em = $this->em;

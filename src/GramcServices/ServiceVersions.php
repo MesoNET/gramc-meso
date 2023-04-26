@@ -69,13 +69,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class ServiceVersions
 {
     public function __construct(
-                                private $attrib_seuil_a,
                                 private $prj_prefix,
                                 private $rapport_directory,
                                 private $fig_directory,
                                 private $signature_directory,
-                                private $coll_login,
-                                private $nodata,
                                 private $max_fig_width,
                                 private $max_fig_height,
                                 private $max_size_doc,
@@ -91,14 +88,14 @@ class ServiceVersions
                                 private TokenStorageInterface $tok,
                                 private GramcDate $grdt,
                                 private EntityManagerInterface $em
-                                )
-    {
-        $this->attrib_seuil_a = intval($this->attrib_seuil_a);
-    }
+                                ) {}
 
     /****************
      * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
-     *    - Création de la version
+     *    - Création de la version:
+     *       * Si c'est la première version, création ex-nihilo
+     *       * Sinon, clonage de la dernière version du projet
+     *       * Choix du numéro de version
      *    - Création des Dac associés
      *    - Si nécessaire, création des User associés
      *
@@ -116,7 +113,153 @@ class ServiceVersions
         $token = $this->tok->getToken();
         $em = $this->em;
 
-        $session = null; // A virer
+        $versions = $em->getRepository(Version::class)->findVersions($projet);
+
+        // Si première version du projet 
+        if (count($versions) === 0)
+        {
+            $version = new Version();
+            $version->setEtatVersion(Etat::EDITION_DEMANDE);
+            // On fixe aussi le type de la version (cf getVersionType())
+            // important car le type du projet peut changer (en théorie))
+            // En pratique PROJET_DYN est le SEUL TYPE supporté
+            $version->setProjet($projet);
+            $version->setTypeVersion($projet->getTypeProjet());
+    
+            $version->setNbVersion("01");
+            $version->setIdVersion("01" . $projet->getIdProjet());
+    
+            // Le laboratoire associé est celui du responsable
+            $moi = $token->getUser();
+            $this->setLaboResponsable($version, $moi);
+    
+            // Affectation de l'utilisateur connecté en tant que responsable
+            $cv = new CollaborateurVersion($moi);
+            $cv->setVersion($version);
+            $cv->setResponsable(true);
+            $cv->setDeleted(false);
+        
+            // Ecriture de collaborateurVersion dans la BD
+            $em->persist($cv);
+
+            // Ecriture de la version dans la BD
+            $em->persist($version);
+            $em->flush();
+
+            // La dernière version est fixée par l'EventListener
+            // TODO - mais ici cela ne fonctionne pas car lors du persist de la version de projet n'est pas dans la BD 
+            $projet->setVersionDerniere($version);
+            $em->persist( $projet);
+            $em->flush($projet);
+    
+            // Création du répertoire pour les images
+            $dir = $this->imageDir($version);        
+
+            // Création de nouveaux User pour le responsable (1 User par serveur)
+            // NOTE - ils seront créés seulement lors de la première version
+            //        car pour un utilisateur donné il n'y a qu'un user/serveur, même avec plusieurs versions
+            $serveurs = $sr->getServeurs();
+            foreach ($serveurs as $s)
+            {
+                $su->getUser($moi, $projet, $s);
+            }
+
+        }
+
+        // Sinon, c'est un renouvellement
+        else
+        {
+            $verder = $projet->getVersionDerniere();
+
+            $old_dir = $this->imageDir($verder);
+    
+            // Clonage de la version à renouveler
+            $version = clone $verder;
+
+            // Changement du numéro de version et de l'Id - Tout le reste est identique
+            $nb = $this->__incrNbVersion($version->getNbVersion());
+            $version->setNbVersion($nb);
+            $version->setIdVersion($nb.$projet->getIdProjet());
+
+            // Ecriture de la version dans la BD
+            $em->persist($version);
+            $em->flush();
+
+            // images: On reprend les images "img_expose" de la version précédente
+            //         On ne REPREND PAS les images "img_justif_renou" !!!
+            $new_dir = $this->imageDir($version);
+            for ($id=1;$id<4;$id++)
+            {
+                $f='img_expose_'.$id;
+                $old_f = $old_dir . '/' . $f;
+                $new_f = $new_dir . '/' . $f;
+                if (is_file($old_f)) {
+                    $rvl = copy($old_f, $new_f);
+                    if ($rvl==false) {
+                        $sj->errorMessage("VersionController:erreur dans la fonction copy $old_f => $new_f");
+                    }
+                }
+            }
+
+            // Nouveaux collaborateurVersion
+            $collaborateurVersions = $verder->getCollaborateurVersion();
+            foreach ($collaborateurVersions as $collaborateurVersion)
+            {
+                // ne pas reprendre un collaborateur marqué comme supprimé
+                if ($collaborateurVersion->getDeleted()) continue;
+    
+                $newCollaborateurVersion = clone $collaborateurVersion;
+                $newCollaborateurVersion->setVersion($version);
+                $em->persist($newCollaborateurVersion);
+            }
+            $em->flush();
+        }
+
+        // Création de nouveaux Dac (1 Dac par ressource)
+        $ressources = $sroc->getRessources();
+        foreach ($ressources as $r)
+        {
+            $dac = new Dac();
+            $dac->setVersion($version);
+            $dac->setRessource($r);
+            $em->persist($dac);
+            $version->addDac($dac);
+        }
+        $em->flush();
+
+        return $version;
+    }
+
+    /******
+     * Incrémentation du numéro de version lors d'un renouvellement
+     *********************************************/
+    private function __incrNbVersion(string $nbVersion): string
+    {
+        $n = intval($nbVersion);
+        $n += 1;
+        return sprintf('%02d', $n);
+    }
+
+    /****************
+     * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
+     *    - Création de la version
+     *    - Création des Dac associés
+     *    - Si nécessaire, création des User associés
+     *
+     * Params: $projet le projet associé 
+     *    
+     * Retourne: La nouvelle version
+     * 
+     ************************************************/
+
+    public function creerVersion_SUPPR(Projet $projet): Version
+    {
+        $su = $this->su;
+        $sr = $this->sr;
+        $sroc = $this->sroc;
+        $token = $this->tok->getToken();
+        $em = $this->em;
+
         $version = new Version();
         $version->setEtatVersion(Etat::EDITION_DEMANDE);
         // setProjet fixe aussi le type de la version (cf getVersionType())
@@ -124,17 +267,9 @@ class ServiceVersions
         // En pratique PROJET_DYN est le SEUL TYPE supporté
         $version->setProjet($projet);
         $type = $projet->getTypeProjet();
-        if ($type == Projet::PROJET_DYN)
-        {
+
             $version->setNbVersion("01");
             $version->setIdVersion("01" . $projet->getIdProjet());
-        }
-        else
-        {
-            $version->setSession($session);
-            $version->setNbVersion("01");
-            $version->setIdVersion($session->getIdSession() . $projet->getIdProjet());
-        }
 
         // Le laboratoire associé est celui du responsable
         $moi = $token->getUser();
@@ -182,42 +317,6 @@ class ServiceVersions
         $em->flush();
 
         return $version;
-    }
-
-    /*********
-     * Utilisé seulement en session B
-     * renvoie true si l'attribution en A est supérieure à ATTRIB_SEUIL_A et la demande en B supérieure à attr_heures_a / 2
-     *
-     * param  id_version, $attr_heures_a, $attr_heures_b
-     * return true/false
-     *
-     **************************/
-    public function is_demande_toomuch($attr_heures_a, $dem_heures_b): bool
-    {
-        // Si demande en A = 0, no pb (il s'agit d'un nouveau projet apparu en B)
-        if ($attr_heures_a==0) {
-            return false;
-        }
-
-        // Si demande en B supérieure à attribution en A, pb
-        if ($dem_heures_b > $attr_heures_a) {
-            return true;
-        }
-
-        // Si attribution inférieure au seuil, la somme ne doit pas dépasser 1,5 * seuil
-        if ($attr_heures_a < $this->attrib_seuil_a) {
-            if (floatval($dem_heures_b + $attr_heures_a) > $this->attrib_seuil_a * 1.5) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if (intval($dem_heures_b) > (intval($attr_heures_a)/2)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
     }
 
     /************************************
@@ -546,7 +645,7 @@ class ServiceVersions
      *
      * param = $version  Version
      *
-     * return = Le chemin complet (que le fichier existe ou non)
+     * return = Le chemin complet du fichier (que le fichier existe ou non)
      *
      ************************************/
      public function getSignePath(Version $version): string
@@ -564,7 +663,7 @@ class ServiceVersions
      *******************************************/
     public function getSigneDir(Version $version): string
     {
-        $dir = $this->signature_directory . '/' . $version->getSession();
+        $dir = $this->signature_directory . '/' . $version->getProjet();
         if (! is_dir($dir))
         {
             if (file_exists($dir) && is_file($dir))
@@ -694,37 +793,6 @@ class ServiceVersions
     }
 
     /*********************************************************
-     * Synchroniser les flags Deleted d'un collaborateurVersion
-     * NB - Les flags $delt et $delb sont inutlisés actuellement
-     **********************************************************/
-    private function syncDeleted( Version $version, Individu $individu, bool $delt, bool $delb, bool $deleted): void
-    {
-        $em = $this->em;
-        $sj = $this->sj;
-        
-        $cv = $this->TrouverCollaborateur($version, $individu);
-        if ($cv->getDelt() != $delt) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$delt => $delt");
-            $cv -> setDelt($delt);
-            $em->persist($cv);
-            $em->flush();
-        }
-        if ($cv->getDelb() != $delb) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$delb => $delb");
-            $cv -> setDelb($delb);
-            $em->persist($cv);
-            $em->flush();
-        }
-        if ($cv->getDeleted() != $deleted) {
-            $sj->debugMessage("ServiceVersion:syncDeleted \$deleted => $deleted");
-            $cv -> setDeleted($deleted);
-            $em->persist($cv);
-            $em->flush();
-        }
-
-    }
-
-    /*********************************************************
      * modifier les logins d'un collaborateur d'une version
      ***********************************************************/
     private function modifierLogins(Projet $projet, Individu $individu, array $logins): void
@@ -755,36 +823,18 @@ class ServiceVersions
     /*******
     * Retourne true si la version correspond à un Nouveau projet
     *
-    *      - session A -> On vérifie que l'année de création est la même que l'année de la session
-    *      - session B -> En plus on vérifie qu'il n'y a pas eu une version en session A
+    *      On vérifie que le numéro est 1 !
     *
-    *****/
+    **************************************************************/
     public function isNouvelle(Version $version): bool
     {
-        // Un projet test ne peut être renouvelé donc il est obligatoirement nouveau !
-        if ($version->isProjetTest()) {
+        if ($version->getNbVersion() === 1)
+        {
             return true;
         }
-
-        $idVersion      = $version->getIdVersion();
-        $anneeSession   = substr($idVersion, 0, 2);	// 19, 20 etc
-        $typeSession    = substr($idVersion, 2, 1);   // A, B
-        $anneeProjet    = substr($idVersion, -5, 2);  // 19, 20 etc qq soit le préfixe
-        $numero         = substr($idVersion, -3, 3);  // 001, 002 etc.
-
-        if ($anneeProjet != $anneeSession) {
+        else
+        {
             return false;
-        } elseif ($typeSession == 'A') {
-            return true;
-        } else {
-            $type_projet = $version->getProjet()->getTypeProjet();
-            $idVersionA  = $anneeSession . 'A' . $this->prj_prefix[$type_projet] . $anneeProjet . $numero;
-
-            if (0 < $this->em->getRepository(Version::class)->exists($idVersionA)) {
-                return false; // Il y a une version précédente
-            } else {
-                return true; // Non il n'y en a pas donc on est bien sur une nouvelle version
-            }
         }
     }
 
@@ -799,6 +849,8 @@ class ServiceVersions
      **************************************************************/
     public function isAnnee(Version $version, int $annee):bool
     {
+        // Fonction désactivée pour l'instant
+        return true;
         $grdt = $this->grdt;
         
         if ($version->getTypeVersion()==Projet::PROJET_DYN)
@@ -806,21 +858,35 @@ class ServiceVersions
             $annee_courante = intval($grdt->showYear());
             
             // Si pas de date de début, la version n'a pas démarré
-            if ($version->getStartDate() == null) return false;
+            if ($version->getStartDate() === null)
+            {
+                return false;
+            }
+            else
+            {
+                $s = $version->getStartDate();
+            }
 
             // Si pas de date de fin, la version est en cours
-            return $annee == $annee_courante;
+            // Le résultat est le même que si elle s'arrêtait aujourd'hui
+            if ($version->getEndDate() === null)
+            {
+                $e = $grdt->getNew();
+            }
+            else
+            {
+                $e = $version->getEndDate();
+            }
 
             // Si les deux sont spécifiés, on vérifie s'il y a chevauchement avec l'année
-            $j1 = new \Datetime(strval($annee).'-01-01');
-            $d31 = new \Datetime(strval($annee+1).'-12-31');
-
-            $s = $version->getStartDate();
-            $e = $version->getEndDate();
+            $j1 = new \DateTime($grdt->showYear() . '-01-01');
+            $d31 = new \DateTime($grdt->showYear() . '-12-31');
 
             // Si $s ou $e sont dans l'intervalle on renvoie true
             if ($s>=$j1 && $s<=$d31) return true;
             if ($e>=$j1 && $e<=$d31) return true;
+
+            //if ($version->getIdVersion() === '02M23017') {dd($version->getIdVersion(),$s,$e,$j1,$d31);};
 
             // Sinon on renvoie false
             return false;
@@ -1136,9 +1202,12 @@ class ServiceVersions
     }
 
     /********************************************************************
-     * Génère et renvoie un form pour modifier les demandes de ressources
-     ********************************************************************/
-    public function getRessourceForm(Version $version): FormInterface
+     * Génère et renvoie un form pour modifier les demandes ou attributions de ressources
+     *
+     * $version = La version associée aux Dac
+     * $attribution = Si true les formulaires présentent l'attribution, sinon la demande (défaut) 
+     ********************************************************************************************/
+    public function getRessourceForm(Version $version, bool $attribution = false): FormInterface
     {
         $sj = $this->sj;
         $em = $this->em;
@@ -1147,8 +1216,9 @@ class ServiceVersions
         $form = $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, [ 'ressource' => $this->prepareRessources($version) ])
                    ->add('ressource', CollectionType::class, [
-                       'entry_type' =>  DacType::class,
-                       'label' =>  true,
+                       'entry_type' => DacType::class,
+                       'entry_options' => [ 'attribution' => $attribution ],
+                       'label' => true,
                    ])
                    ->getForm();
         return $form;
@@ -1165,10 +1235,17 @@ class ServiceVersions
         $val = true;
         foreach ( $ressource_forms as &$dac)
         {
-            if ($dac->getDemande() < 0)
+            if ($dac->getDemande() < 0 )
             {
                 $val = false;
-                $dac->setdemande(0);
+                $dac->setDemande(0);
+                break;
+            }
+            if ($dac->getAttribution() < 0 )
+            {
+                $val = false;
+                $dac->setAttribution(0);
+                break;
             }
         }
         return $val;
@@ -1246,11 +1323,7 @@ class ServiceVersions
                     $logins[$k] = $u->getLogin();
                 }
                 $individuForm->setLogins($logins);
-                $individuForm->setLogint($cv->getLogint());
-                $individuForm->setLoginb($cv->getLoginb());
                 $individuForm->setResponsable($cv->getResponsable());
-                $individuForm->setDelt($cv->getDelt());
-                $individuForm->setDelb($cv->getDelb());
                 $individuForm->setDeleted($cv->getDeleted());
 
                 if ($individuForm->getResponsable() == true) {
@@ -1274,7 +1347,6 @@ class ServiceVersions
      ***********************************************************************/
     public function validateIndividuForms(array $individu_forms, $definitif = false) : bool
     {
-        $coll_login = $this->coll_login;
         $resp_peut_modif_collabs = $this->resp_peut_modif_collabs;
         $one_login = false;
 
@@ -1313,11 +1385,8 @@ class ServiceVersions
         }
 
         // Personne n'a de login !
-        // Seulement si $coll_login est true
-        if ($coll_login) {
-            if ($definitif == true && $one_login == false) {
-                return false;
-            }
+        if ($definitif == true && $one_login == false) {
+            return false;
         }
 
         if ($individu_forms != []) {
@@ -1529,4 +1598,92 @@ class ServiceVersions
                                    ->getForm();
         return $collaborateur_form;
     }
+
+    /**
+     * Validation du formulaire de version
+     *
+     *    param = Version
+     *            
+     *    return= Un array contenant la "todo liste", ie la liste de choses à faire pour que le formulaire soit validé
+     *            Un array vide [] signifie: "Formulaire validé"
+     *
+     **/
+    public function validateVersion(Version $version): array
+    {
+        $em   = $this->em;
+
+        $todo   =   [];
+        if ($version->getPrjTitre() == null) {
+            $todo[] = 'prj_titre';
+        }
+        // Il faut qu'au moins une ressource ait une demande non nulle
+        $dacs = $version->getDac();
+        $dem = false;
+        foreach ($dacs as $d)
+        {
+            if ($d->getDemande() != 0)
+            {
+                $dem = true;
+                break;
+            }
+        }
+        if ($dem == false)$todo[] = 'ressources';
+        
+        if ($version->getPrjThematique() == null) {
+            $todo[] = 'prj_id_thematique';
+        }
+        if ($version->getCodeNom() == null) {
+            $todo[] = 'code_nom';
+        }
+        if ($version->getCodeLicence() == null) {
+            $todo[] = 'code_licence';
+        }
+
+        // TODO - Automatiser cela avec le formulaire !
+        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_DYN) {
+            if ($version->getPrjExpose() == null) {
+                $todo[] = 'prj_expose';
+            }
+
+            // s'il s'agit d'un renouvellement
+            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
+                $todo[] = 'prj_justif_renouv';
+            }
+
+            // Centres nationaux
+            if ($version->getPrjGenciCentre()     == null
+                || $version->getPrjGenciMachines() == null
+                || $version->getPrjGenciHeures()   == null
+                || $version->getPrjGenciDari()     == null) {
+                $todo[] = 'genci';
+            };
+        }
+
+        if ($version->getProjet()->getTypeProjet()==Projet::PROJET_SESS) {
+            if ($version->getPrjExpose() == null) {
+                $todo[] = 'prj_expose';
+            }
+
+            // s'il s'agit d'un renouvellement
+            if (count($version->getProjet()->getVersion()) > 1 && $version->getPrjJustifRenouv() == null) {
+                $todo[] = 'prj_justif_renouv';
+            }
+
+            // Centres nationaux
+            if ($version->getPrjGenciCentre()     == null
+                || $version->getPrjGenciMachines() == null
+                || $version->getPrjGenciHeures()   == null
+                || $version->getPrjGenciDari()     == null) {
+                $todo[] = 'genci';
+            };
+        }
+
+        // Validation des formulaires des collaborateurs
+        if (! $this->validateIndividuForms($this->prepareCollaborateurs($version), true)) {
+            $todo[] = 'collabs';
+        }
+
+        return $todo;
+    }
+
 }

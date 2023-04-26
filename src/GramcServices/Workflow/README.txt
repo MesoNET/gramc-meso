@@ -13,7 +13,7 @@ Un workflow est défini par:
 L'arrivée d'un signal provoque, ou pas, un changement d'état de l'objet, et est accompagnée d'un code arbitraire, défini dans une classe dérivée.
    
 
-1/ Implémentation du workflow
+2/ Implémentation du workflow
 -----------------------------
 
 Le workflow est implémenté dans les classes dérivant de la classe \AppBundle\Workflow\Workflow, sous forme d'un tableau de tableaux:

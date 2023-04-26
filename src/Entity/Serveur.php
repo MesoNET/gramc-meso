@@ -89,7 +89,7 @@ class Serveur
      *
      * @return string
      */
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->nom;
     }
@@ -196,7 +196,7 @@ class Serveur
      * @param string
      * @return Sso
      */
-    public function setDesc(string $desc): Serveur
+    public function setDesc(?string $desc): Serveur
     {
         $this->desc = $desc;
         return $this;
@@ -218,7 +218,7 @@ class Serveur
      * @param string
      * @return Serveur
      */
-    public function setAdmname(string $admname): Serveur
+    public function setAdmname(?string $admname): Serveur
     {
         $this->admname = $admname;
         return $this;

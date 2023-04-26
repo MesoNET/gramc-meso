@@ -116,9 +116,15 @@ class DonneesFacturation
     /*
      * Renvoie la consomation du projet entre deux dates
      * Renvoie -1 s'il y a une incohérence de dates
+     *
+     *
+     * TODO - A REFAIRE COMPLETEMENT POUR LES PROJETS DYNAMIQUES !!!!!
+     *
+     * 
      */
     public function getConsoPeriode(Projet $projet, \Datetime $debut_periode, \DateTime $fin_periode): int
     {
+        return 0;
         // conso en début de période, ie date de début à 0h00
         // Avant le 20 Janvier on considère que la conso vaut 0
         // (la RAZ a eu lieu début Janvier)

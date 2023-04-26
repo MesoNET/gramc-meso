@@ -46,7 +46,6 @@ class LoginController extends AbstractController
      * Login "remote" - saml2 (shibboleth) ou openid (iam)
      * 
      * @Route("/login", name="remlogin",methods={"GET"})
-     * Method({"GET"})
      */
     public function remLoginAction(Request $request): Response
     {
@@ -97,7 +96,6 @@ class LoginController extends AbstractController
 
     /** 
      * @Route("/erreur_login", name="erreur_login",methods={"GET"})
-     * Method({"GET"})
      */
     public function erreur_loginAction(Request $request): Response
     {
@@ -107,7 +105,6 @@ class LoginController extends AbstractController
     /**
      * @Route("/login_choice", name="connexion", methods={"GET","POST"})
      *
-     * Method({"GET", "POST"})
      */
     public function loginChoiceAction(Request $request): Response
     {
@@ -222,7 +219,6 @@ class LoginController extends AbstractController
      *
      * @Route("/{id}/sudo", name="sudo", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
     public function sudoAction(Request $request, Individu $individu): Response
     {

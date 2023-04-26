@@ -74,60 +74,31 @@ services:
                 entity: 'App\Entity\Version'
 
     # SERVICES GRAMC
-    App\GramcServices\GramcDate:
-        arguments: ["%recup_printemps_d%","%recup_printemps_f%",
-                    "%recup_automne_d%",  "%recup_automne_f%"]
-
     App\GramcServices\DonneesFacturation:
         arguments: ['%dfct_directory%']
 
-    App\GramcServices\GramcGraf\Calcul:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-     
-    App\GramcServices\GramcGraf\Stockage:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-
-    App\GramcServices\GramcGraf\CalculTous:
-        arguments: ['ressources_conso_group','ressources_conso_user']
-     
-    App\GramcServices\ServiceSessions:
-        arguments: ['%recup_attrib_seuil%',
-                    '%recup_conso_seuil%',
-                    '%recup_attrib_quant%',
-                    '%nosession%' ]
-
     App\GramcServices\ServiceProjets:
         arguments: ["%prj_prefix%",
-                    "%ressources_conso_group%",
                     "%signature_directory%",
                     "%rapport_directory%",
                     "%fig_directory%",
                     "%dfct_directory%"]
 
     App\GramcServices\ServiceVersions:
-        arguments: ['%attrib_seuil_a%',
-                    "%prj_prefix%",
+        arguments: ["%prj_prefix%",
                     "%rapport_directory%",
                     "%fig_directory%",
                     "%signature_directory%",
-                    "%coll_login%",
-                    "%nodata%",
                     "%max_fig_width%",
                     "%max_fig_height%",
                     "%max_size_doc%",
                     "%resp_peut_modif_collabs%" ]
         
     App\GramcServices\ServiceMenus:
-        arguments: [ "%max_rall%","%nodata%","%nosession%" ]
+        arguments: [ "%max_rall%" ]
         
     App\GramcServices\ServiceNotifications:
-        arguments: [ "%mailfrom%","%noedition_expertise%" ]
-
-    App\GramcServices\ServiceExperts\ServiceExperts:
-        arguments: [ "%max_expertises_nb%" ]
-
-    App\GramcServices\ServiceExperts\ServiceExpertsRallonge:
-        arguments: [ "%max_expertises_nb%" ]
+        arguments: [ "%mailfrom%" ]
 
     App\GramcServices\ServiceInvitations:
         arguments: [ "%invit_duree%" ]
@@ -138,20 +109,17 @@ services:
     App\GramcServices\Cron\GramcCronTask\TempsStdbyCronTask:
         arguments: [ "%dyn_duree_post%"]
 
-    App\Controller\VersionSpecController:
+    App\Controller\VersionController:
         arguments: [ "%dyn_duree%", "%dyn_duree_post%" ]
         
     App\Controller\ExpertiseController:
-        arguments: [ "%dyn_duree%","%max_expertises_nb%" ]
+        arguments: [ "%dyn_duree%" ]
 
     # Formulaires, validateurs, securité
     App\Form\:
         resource: '../src/Form/*'
         exclude: '../src/Form/IndividuForm/*'
         tags: ["form.type"]
-
-    App\Form\IndividuFormType:
-        arguments: [ "%coll_login%", "%nodata%" ]
 
     App\Validator\Constraints\PagesNumberValidator:
         arguments: [ "%max_page_nb%" ]
@@ -177,27 +145,6 @@ services:
     App\Command\Rgpd:
         tags: ["console.command"]
 
-    App\Command\NettCompta:
-        tags: ["console.command"]
-
-    App\Command\AddCompta:
-        arguments: ["%kernel.debug%"]
-        tags: ["console.command"]
-
     App\Command\Brouillage:
         arguments: ["%kernel.debug%"]
-        tags: ["console.command"]
-
-    App\Command\KeepOnly:
-        arguments: ["%kernel.debug%"]
-        tags: ["console.command"]
-
-    App\Command\InitTypeVersion:
-        tags: ["console.command"]
-
-    App\Command\InitLimitDate:
-        arguments: [ "%dyn_duree%" ]
-        tags: ["console.command"]
-
-    App\Command\InitRessources:
         tags: ["console.command"]

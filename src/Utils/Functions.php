@@ -24,10 +24,8 @@
 
 namespace App\Utils;
 
-//use App\App;
 use App\Entity\Journal;
 use App\Entity\Individu;
-use App\Entity\Templates;
 use App\Entity\Session;
 use App\Entity\Version;
 use App\Entity\Projet;

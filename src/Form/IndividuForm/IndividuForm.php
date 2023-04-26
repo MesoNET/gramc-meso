@@ -44,10 +44,6 @@ class IndividuForm
 {
     // Un tableau associatif, indexé par les noms de serveurs
     protected $logins = [];
-    protected $logint;
-    protected $loginb;
-    protected $delt;
-    protected $delb;
     protected $deleted;
     protected $responsable;
 
@@ -66,8 +62,6 @@ class IndividuForm
         {
             $this->logins[$n] = false;
         }
-        $this->delt = false;
-        $this->delb = false;
         $this->deleted = false;
         $this->responsable = false;
         if ($individu != null) {
@@ -84,12 +78,6 @@ class IndividuForm
     public function __toString()
     {
         $output = '';
-        if ($this->getDelt() == true) {
-            $output .= 'FERMER LE COMPTE TURPAN ';
-        }
-        if ($this->getDelb() == true) {
-            $output .= 'FERMER LE COMPTE BOREALE ';
-        }
         if ($this->getDeleted() == true) {
             $output .= 'SUPPRIMER COLLABORATEUR ';
         }
@@ -115,25 +103,6 @@ class IndividuForm
         return $this;
     }
     
-    public function getLogint()
-    {
-        return $this->logint;
-    }
-    public function setLogint($logint)
-    {
-        $this->logint = $logint;
-        return $this;
-    }
-    public function getLoginb()
-    {
-        return $this->loginb;
-    }
-    public function setLoginb($loginb)
-    {
-        $this->loginb = $loginb;
-        return $this;
-    }
-
     public function getResponsable()
     {
         return $this->responsable;
@@ -141,26 +110,6 @@ class IndividuForm
     public function setResponsable($responsable)
     {
         $this->responsable = $responsable;
-        return $this;
-    }
-
-    public function getDelt()
-    {
-        return $this->delt;
-    }
-    public function setDelt($delt)
-    {
-        $this->delt = $delt;
-        return $this;
-    }
-
-    public function getDelb()
-    {
-        return $this->delb;
-    }
-    public function setDelb($delb)
-    {
-        $this->delb = $delb;
         return $this;
     }
 

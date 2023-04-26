@@ -58,7 +58,7 @@ class VersionRepository extends \Doctrine\ORM\EntityRepository
     public function findVersions($projet)
     {
         return $this->getEntityManager()
-        ->createQuery('SELECT partial v.{idVersion,etatVersion,prjTitre,prjLLabo,demHeures,attrHeures}  FROM App:Version v WHERE ( v.projet = :projet AND NOT v.etatVersion = :annule) ORDER BY v.idVersion ASC')
+        ->createQuery('SELECT partial v.{idVersion,etatVersion,prjTitre,prjLLabo}  FROM App:Version v WHERE ( v.projet = :projet AND NOT v.etatVersion = :annule) ORDER BY v.idVersion ASC')
         ->setParameter('annule', Etat::getEtat('ANNULE'))
         ->setParameter('projet', $projet)
         ->getResult();

@@ -36,6 +36,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Individu
  *
+ * Le "compte gramc-meso"...
+ *
  * @ORM\Table(name="individu", uniqueConstraints={@ORM\UniqueConstraint(name="mail", columns={"mail"})}, indexes={@ORM\Index(name="id_labo", columns={"id_labo"}), @ORM\Index(name="id_statut", columns={"id_statut"}), @ORM\Index(name="id_etab", columns={"id_etab"})})
  * @ORM\Entity(repositoryClass="App\Repository\IndividuRepository")
  * @ORM\HasLifecycleCallbacks()
@@ -70,7 +72,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
         $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
         $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rattachement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
@@ -206,15 +207,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Rattachement", mappedBy="expert")
-     */
-    private $rattachement;
-
-    ///////////////////////////////////////
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
      * @ORM\OneToMany(targetEntity="\App\Entity\Sso", mappedBy="individu")
      */
     private $sso;
@@ -261,7 +253,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
     * @ORM\PrePersist
     */
-    public function setInitialMajStamp()
+    public function setInitialMajStamp(): void
     {
         $this->creationStamp = new \DateTime();
     }
@@ -270,11 +262,16 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     public function __toString()
     {
-        if ($this->getPrenom() != null ||  $this->getNom() != null) {
+        if ($this->getPrenom() !== null ||  $this->getNom() != null)
+        {
             return $this->getPrenom() . ' ' . $this->getNom();
-        } elseif ($this->getMail() != null) {
+        }
+        elseif ($this->getMail() !== null)
+        {
             return $this->getMail();
-        } else {
+        }
+        else
+        {
             return 'sans prénom, nom et mail';
         }
     }
@@ -284,18 +281,22 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /* Pour verifier que deux objets sont égaux, utiliser cet interface et pas == ! */
     public function isEqualTo(UserInterface $user) : bool
     {
-        if ($user == null || !$user instanceof Individu) {
+        if ($user === null || !$user instanceof Individu)
+        {
             return false;
         }
 
-        if ($this->idIndividu !== $user->getId()) {
+        if ($this->idIndividu !== $user->getId())
+        {
             return false;
-        } else {
+        }
+        else
+        {
             return true;
         }
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->idIndividu;
     }
@@ -324,30 +325,36 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     {
         $roles[] = 'ROLE_DEMANDEUR';
 
-        if ($this->getAdmin() == true) {
+        if ($this->getAdmin() === true)
+        {
             $roles[] = 'ROLE_ADMIN';
             $roles[] = 'ROLE_OBS';
             $roles[] = 'ROLE_ALLOWED_TO_SWITCH';
         }
 
-        if ($this->getPresident() == true) {
+        if ($this->getPresident() === true)
+        {
             $roles[] = 'ROLE_PRESIDENT';
             $roles[] = 'ROLE_EXPERT';
         }
 
-        elseif ($this->getExpert() == true) {
+        elseif ($this->getExpert() === true)
+        {
             $roles[] = 'ROLE_EXPERT';
         }
 
-        if ($this->getValideur() == true) {
+        if ($this->getValideur() === true)
+        {
             $roles[] = 'ROLE_VALIDEUR';
         }
 
-        if ($this->getObs() == true) {
+        if ($this->getObs() === true)
+        {
             $roles[] = 'ROLE_OBS';
         }
 
-        if ($this->getSysadmin() == true) {
+        if ($this->getSysadmin() === true)
+        {
             $roles[] = 'ROLE_SYSADMIN';
             $roles[] = 'ROLE_OBS';
         }
@@ -364,7 +371,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setCreationStamp($creationStamp)
+    public function setCreationStamp(\Datetime $creationStamp): self
     {
         $this->creationStamp = $creationStamp;
 
@@ -376,7 +383,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return \DateTime
      */
-    public function getCreationStamp()
+    public function getCreationStamp(): \Datetime
     {
         return $this->creationStamp;
     }
@@ -388,7 +395,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setNom($nom)
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
 
@@ -400,7 +407,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return string
      */
-    public function getNom()
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -412,7 +419,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setPrenom($prenom)
+    public function setPrenom(?string $prenom): self
     {
         $this->prenom = $prenom;
 
@@ -424,7 +431,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return string
      */
-    public function getPrenom()
+    public function getPrenom(): ?string
     {
         return $this->prenom;
     }
@@ -436,7 +443,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setMail($mail)
+    public function setMail(string $mail): self
     {
         // Suppression des accents et autres ç
         // voir https://stackoverflow.com/questions/1284535/php-transliteration
@@ -452,7 +459,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return string
      */
-    public function getMail()
+    public function getMail(): string
     {
         return $this->mail;
     }
@@ -464,37 +471,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setAdmin($admin)
+    public function setAdmin(bool $admin): self
     {
         $this->admin = $admin;
-
-        return $this;
-    }
-
-    /**
-     * Set sysadmin
-     *
-     * @param boolean $sysadmin
-     *
-     * @return Individu
-     */
-    public function setSysadmin($sysadmin)
-    {
-        $this->sysadmin = $sysadmin;
-
-        return $this;
-    }
-
-    /**
-     * Set obs
-     *
-     * @param boolean $obs
-     *
-     * @return Individu
-     */
-    public function setObs($obs)
-    {
-        $this->obs = $obs;
 
         return $this;
     }
@@ -504,9 +483,23 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getAdmin()
+    public function getAdmin(): bool
     {
         return $this->admin;
+    }
+
+    /**
+     * Set sysadmin
+     *
+     * @param boolean $sysadmin
+     *
+     * @return Individu
+     */
+    public function setSysadmin(bool $sysadmin): self
+    {
+        $this->sysadmin = $sysadmin;
+
+        return $this;
     }
 
     /**
@@ -514,9 +507,23 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getSysadmin()
+    public function getSysadmin(): bool
     {
         return $this->sysadmin;
+    }
+
+    /**
+     * Set obs
+     *
+     * @param boolean $obs
+     *
+     * @return Individu
+     */
+    public function setObs(bool $obs): self
+    {
+        $this->obs = $obs;
+
+        return $this;
     }
 
     /**
@@ -524,7 +531,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getObs()
+    public function getObs(): bool
     {
         return $this->obs;
     }
@@ -536,7 +543,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setExpert($expert)
+    public function setExpert(bool $expert): self
     {
         $this->expert = $expert;
 
@@ -548,7 +555,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getExpert()
+    public function getExpert(): bool
     {
         return $this->expert;
     }
@@ -560,7 +567,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setValideur($valideur)
+    public function setValideur(bool $valideur): self
     {
         $this->valideur = $valideur;
 
@@ -572,7 +579,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getValideur()
+    public function getValideur(): bool
     {
         return $this->valideur;
     }
@@ -584,7 +591,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setPresident($president)
+    public function setPresident(bool $president): self
     {
         $this->president = $president;
         return $this;
@@ -595,7 +602,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getPresident()
+    public function getPresident(): bool
     {
         return $this->president;
     }
@@ -607,7 +614,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setDesactive($desactive)
+    public function setDesactive(bool $desactive): self
     {
         $this->desactive = $desactive;
 
@@ -619,7 +626,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return boolean
      */
-    public function getDesactive()
+    public function getDesactive(): bool
     {
         return $this->desactive;
     }
@@ -629,7 +636,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return integer
      */
-    public function getIdIndividu()
+    public function getIdIndividu(): int
     {
         return $this->idIndividu;
     }
@@ -641,7 +648,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setStatut(\App\Entity\Statut $statut = null)
+    public function setStatut(?\App\Entity\Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -653,7 +660,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return \App\Entity\Statut
      */
-    public function getStatut()
+    public function getStatut(): ?\App\Entity\Statut
     {
         return $this->statut;
     }
@@ -665,7 +672,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setLabo(\App\Entity\Laboratoire $labo = null)
+    public function setLabo(?\App\Entity\Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -677,7 +684,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return \App\Entity\Laboratoire
      */
-    public function getLabo()
+    public function getLabo(): ?\App\Entity\Laboratoire
     {
         return $this->labo;
     }
@@ -689,7 +696,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setEtab(\App\Entity\Etablissement $etab = null)
+    public function setEtab(?\App\Entity\Etablissement $etab = null)
     {
         $this->etab = $etab;
 
@@ -701,7 +708,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return \App\Entity\Etablissement
      */
-    public function getEtab()
+    public function getEtab(): ?\App\Entity\Etablissement
     {
         return $this->etab;
     }
@@ -742,44 +749,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getThematique()
     {
         return $this->thematique;
-    }
-
-    /**
-     * Add rattachement
-     *
-     * @param \App\Entity\Rattachement $rattachement
-     *
-     * @return Individu
-     */
-    public function addRattachement(\App\Entity\Rattachement $rattachement): self
-    {
-        if (! $this->rattachement->contains($rattachement))
-        {
-            $this->rattachement[] = $rattachement;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove rattachement
-     *
-     * @param \App\Entity\Rattachement $rattachement
-     */
-    public function removeRattachement(\App\Entity\Rattachement $rattachement): self
-    {
-        $this->rattachement->removeElement($rattachement);
-        return $this;
-    }
-
-    /**
-     * Get rattachement
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRattachement()
-    {
-        return $this->rattachement;
     }
 
     /**
@@ -1019,19 +988,25 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     // TODO - Revoir cette fonction !!!!
     //        Suppression de Functions::warningMessage pas cool
+    // NE SERT A RIEN - VIREE !
+/*
     public function getEtablissement()
     {
         $server =  Request::createFromGlobals()->server;
-        if ($server->has('REMOTE_USER') || $server->has('REDIRECT_REMOTE_USER')) {
+        if ($server->has('REMOTE_USER') || $server->has('REDIRECT_REMOTE_USER'))
+        {
             $eppn = '';
-            if ($server->has('REMOTE_USER')) {
+            if ($server->has('REMOTE_USER'))
+            {
                 $eppn =  $server->get('REMOTE_USER');
             }
-            if ($server->has('REDIRECT_REMOTE_USER')) {
+            if ($server->has('REDIRECT_REMOTE_USER'))
+            {
                 $eppn =  $server->get('REDIRECT_REMOTE_USER');
             }
             preg_match('/^.+@(.+)$/', $$eppn, $matches);
-            if ($matches[0] != null) {
+            if ($matches[0] != null)
+            {
                 return $matches[0];
             }
             //else
@@ -1039,30 +1014,37 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         }
         return 'aucun établissement connu';
     }
+*/
 
-    public function isExpert()
+    public function isExpert(): bool
     {
         return $this->expert;
     }
 
     ////
 
-    public function isPermanent()
+    public function isPermanent(): bool
     {
         $statut = $this->getStatut();
-        if ($statut != null && $statut->isPermanent()) {
+        if ($statut != null && $statut->isPermanent())
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
-    public function isFromLaboRegional()
+    public function isFromLaboRegional(): bool
     {
         $labo = $this->getLabo();
-        if ($labo != null && $labo->isLaboRegional()) {
+        if ($labo != null && $labo->isLaboRegional())
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -1073,8 +1055,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     {
         $ssos = $this->getSso();
         $eppn = [];
-        foreach ($ssos as $sso) {
-            $eppn[] =   $sso->getEppn();
+        foreach ($ssos as $sso)
+        {
+            $eppn[] = $sso->getEppn();
         }
         return $eppn;
     }
@@ -1083,9 +1066,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     public function peutCreerProjets()
     {
-        if ($this->isPermanent() && $this->isFromLaboRegional()) {
+        if ($this->isPermanent() && $this->isFromLaboRegional())
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }

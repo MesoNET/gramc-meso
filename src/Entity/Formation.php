@@ -7,6 +7,10 @@ use App\Repository\FormationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Formation
+ *
+ * Ecrans Formation, permet de déclarer le nombre de personnes intéressées par les formations à venir
+ * 
  * @ORM\Entity(repositoryClass=FormationRepository::class)
  */
 class Formation
@@ -63,7 +67,7 @@ class Formation
      */
     private $endDate;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -75,7 +79,7 @@ class Formation
      *
      * @return Formation
      */
-    public function addRallonge(\App\Entity\FormationVersion $formationVersion): self
+    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion): self
     {
         if (! $this->formationVersion->contains($formationVersion))
         {

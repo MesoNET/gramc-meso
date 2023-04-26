@@ -54,7 +54,6 @@ class ParamController extends AbstractController
      * Lists all param entities.
      *
      * @Route("/", name="param_index", methods={"GET"})
-     * Method("GET")
      */
     public function indexAction()
     {
@@ -71,7 +70,6 @@ class ParamController extends AbstractController
      * Creates a new param entity.
      *
      * @Route("/new", name="param_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
     public function newAction(Request $request)
     {
@@ -97,7 +95,6 @@ class ParamController extends AbstractController
      * Finds and displays a param entity.
      *
      * @Route("/{id}/show", name="param_show", methods={"GET"})
-     * Method("GET")
      */
     public function showAction(Param $param)
     {
@@ -113,7 +110,6 @@ class ParamController extends AbstractController
      * Displays a form to edit an existing param entity.
      *
      * @Route("/{id}/edit", name="param_edit", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
     public function editAction(Request $request, Param $param)
     {
@@ -137,7 +133,6 @@ class ParamController extends AbstractController
     /**
      *
      * @Route("/avancer", name="param_avancer", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
     public function avancerAction(Request $request)
     {
@@ -192,7 +187,6 @@ class ParamController extends AbstractController
      * Deletes a param entity.
      *
      * @Route("/{id}", name="param_delete", methods={"DELETE"})
-     * Method("DELETE")
      */
     public function deleteAction(Request $request, Param $param)
     {
