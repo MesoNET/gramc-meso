@@ -73,6 +73,9 @@ services:
                 event: 'postUpdate'
                 entity: 'App\Entity\Version'
 
+    App\EventSubscriber\:
+        resource: '../src/EventSubscriber/*'
+        
     # SERVICES GRAMC
     App\GramcServices\DonneesFacturation:
         arguments: ['%dfct_directory%']
