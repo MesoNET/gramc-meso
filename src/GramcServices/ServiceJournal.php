@@ -51,8 +51,7 @@ class ServiceJournal
         private TokenStorageInterface $tok,
         private AuthorizationCheckerInterface $ac,
         private EntityManagerInterface $em
-    ) {
-    }
+    ) {}
 
     /**
      * Ecrire quelque chose dans le journal
@@ -75,23 +74,27 @@ class ServiceJournal
         $journal->setStamp(new \DateTime());
 
         // Si l'erreur provient de l'API, getUser() n'est pas un Individu
-        if ($token != null && $token->getUser() != null && $token->getUser() instanceof Individu) {
+        if ($token !== null && $token->getUser() !== null && $token->getUser() instanceof Individu)
+        {
             $journal->setIndividu($token->getUser());
-            //$journal->setIdIndividu($token->getUser()->getId());
-        } else {
-            //$journal->setIdIndividu(null);
+        }
+        else
+        {
             $journal->setIndividu(null);
         }
 
-        if ($rs->getCurrentRequest() != null)
+        if ($rs->getCurrentRequest() !==null)
         {
             $journal->setGramcSessId($rs->getCurrentRequest()->getSession()->getId());
         }
 
-        if ($rs->getMainRequest() != null
-        && $rs->getMainRequest()->getClientIp() != null) {
+        if ($rs->getMainRequest() !== null
+        && $rs->getMainRequest()->getClientIp() !== null)
+        {
             $ip = $rs->getMainRequest()->getClientIp();
-        } else {
+        }
+        else
+        {
             $ip = '0.0.0.0';
         }
 
@@ -101,12 +104,15 @@ class ServiceJournal
         $journal->setType(Journal::LIBELLE[$niveau]);
 
         // nous testons des problèmes de Doctrine pour éviter une exception
-        //if( App::getEnvironment() != 'test' )
+        //if( App::getEnvironment() !== 'test' )
         //{
-        if ($em->isOpen()) {
+        if ($em->isOpen())
+        {
             $em->persist($journal);
             $em->flush();
-        } else {
+        }
+        else
+        {
             $log->error('Entity manager closed, message = ' . $message);
         }
         //}
@@ -164,19 +170,23 @@ class ServiceJournal
 
     /************************
      * Ecrit un message dans le journal (niveau warning)
-     * Lance une exception
+     * Puis lance une exception
      * L'exception n'est pas la même suivant qu'on est authentifié ou pas
      *
      **************************************/
     public function throwException($text = null)
     {
-        if ($text != null) {
+        if ($text !== null)
+        {
             $this->warningMessage("EXCEPTION " . $text);
         }
 
-        if ($this->ac->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if ($this->ac->isGranted('IS_AUTHENTICATED_FULLY'))
+        {
             throw new AccessDeniedHttpException();
-        } else {
+        }
+        else
+        {
             throw new InsufficientAuthenticationException();
         }
     }

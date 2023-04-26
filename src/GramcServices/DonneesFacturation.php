@@ -65,7 +65,7 @@ class DonneesFacturation
                         continue;
                     }
                     // On ne garde que les fichiers dfctN.pdb avec N=1..9
-                    if (preg_match('/^dfct[123456789]\.pdb$/', $entry)===1) {
+                    if (preg_match('/^dfct[123456789]\.pdb$/', $entry) === 1) {
                         $dfct_files[] = $entry;
                     }
                     sort($dfct_files);
@@ -98,13 +98,13 @@ class DonneesFacturation
     {
         $f = $this->getDirName($projet, $annee) . '/dfct'.$nb.'.pdb';
         if (is_file($f)) {
-            if ($new==false) {
+            if ($new === false) {
                 return $f;
             } else {
                 return '';
             }
         } else {
-            if ($new==true) {
+            if ($new === true) {
                 return $f;
             } else {
                 return '';
@@ -167,7 +167,7 @@ class DonneesFacturation
         }
 
         $numeros = $this->getNbEmises($projet, $annee);
-        if (count($numeros)==0) {
+        if (count($numeros) === 0) {
             $nb = 1;
         } else {
             sort($numeros, SORT_NUMERIC);
@@ -176,7 +176,7 @@ class DonneesFacturation
 
         $path = $this->getPath($projet, $annee, $nb, true);
 
-        if ($path=='') {
+        if ($path === '') {
             $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . " getPath renvoie vide ($projet $annee $nb");
         }
 

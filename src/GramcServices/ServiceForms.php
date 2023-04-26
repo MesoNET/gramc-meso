@@ -60,13 +60,17 @@ class ServiceForms
     {
         $violations = $this->vl->validate($data, $constraintes);
 
-        if (count($violations)>0) {
+        if (count($violations) > 0)
+        {
             $errors = "<strong>Erreurs : </strong>";
-            foreach ($violations as $violation) {
+            foreach ($violations as $violation)
+            {
                 $errors .= $violation->getMessage() .' ';
             }
             return $errors;
-        } else {
+        }
+        else
+        {
             return "OK";
         }
     }

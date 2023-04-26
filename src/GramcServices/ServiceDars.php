@@ -53,7 +53,7 @@ class ServiceDars
     {
         $em = $this->em;
         $dars = $em->getRepository(Dac::class)->findBy(['rallonge' => $r, 'ressource' => $r]);
-        if (count($dars) == 0)
+        if (count($dars) === 0)
         {
             $d = new Dar();
             $d->setRessource($r);
@@ -62,7 +62,7 @@ class ServiceDars
             $em->persist($d);
             $em->flush($d);
         }
-        elseif (count($dars) == 1)
+        elseif (count($dars) === 1)
         {
             $d = $dars[0];
         }

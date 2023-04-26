@@ -66,13 +66,13 @@ class ServiceExpertises
         $attrib = false;
         foreach ($data as $dac)
         {
-            if ($dac->getAttribution() != 0)
+            if ($dac->getAttribution() !== 0)
             {
                 $attrib = true;
                 break;
             }
         }
-        if ($attrib == false)
+        if ($attrib === false)
         {
             foreach ($data as $dac)
             {
@@ -105,13 +105,13 @@ class ServiceExpertises
         $attrib = false;
         foreach ($data as $dar)
         {
-            if ($dar->getAttribution() != 0)
+            if ($dar->getAttribution() !== 0)
             {
                 $attrib = true;
                 break;
             }
         }
-        if ($attrib == false)
+        if ($attrib === false)
         {
             foreach ($data as $dar)
             {

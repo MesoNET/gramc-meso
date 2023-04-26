@@ -240,85 +240,6 @@ class ServiceVersions
         return sprintf('%02d', $n);
     }
 
-    /****************
-     * Création d'une nouvelle version liée à un projet existant, c'est-à-dire:
-     *    - Création de la version
-     *    - Création des Dac associés
-     *    - Si nécessaire, création des User associés
-     *
-     * Params: $projet le projet associé 
-     *    
-     * Retourne: La nouvelle version
-     * 
-     ************************************************/
-
-    public function creerVersion_SUPPR(Projet $projet): Version
-    {
-        $su = $this->su;
-        $sr = $this->sr;
-        $sroc = $this->sroc;
-        $token = $this->tok->getToken();
-        $em = $this->em;
-
-        $version = new Version();
-        $version->setEtatVersion(Etat::EDITION_DEMANDE);
-        // setProjet fixe aussi le type de la version (cf getVersionType())
-        // important car le type du projet peut changer (en théorie))
-        // En pratique PROJET_DYN est le SEUL TYPE supporté
-        $version->setProjet($projet);
-        $type = $projet->getTypeProjet();
-
-            $version->setNbVersion("01");
-            $version->setIdVersion("01" . $projet->getIdProjet());
-
-        // Le laboratoire associé est celui du responsable
-        $moi = $token->getUser();
-        $this->setLaboResponsable($version, $moi);
-
-        // Ecriture de la version dans la BD
-        $em->persist($version);
-        $em->flush($version);
-
-        // La dernière version est fixée par l'EventListener
-        // TODO - mais ici cela ne fonctionne pas
-        $projet->setVersionDerniere($version);
-        $em->persist( $projet);
-        $em->flush($projet);
-
-        // Affectation de l'utilisateur connecté en tant que responsable
-        $cv = new CollaborateurVersion($moi);
-        $cv->setVersion($version);
-        $cv->setResponsable(true);
-        $cv->setDeleted(false);
-        
-        // Ecriture de collaborateurVersion dans la BD
-        $em->persist($cv);
-        $em->flush();
-
-        // Création de nouveaux User pour le responsable (1 User par serveur)
-        // NOTE - En pratique ils seront créés seulement lors de la première version
-        //        car pour un utilisateur donné il n'y a qu'un user/serveur, même avec plusieurs versions
-        $serveurs = $sr->getServeurs();
-        foreach ($serveurs as $s)
-        {
-            $su->getUser($moi, $projet, $s);
-        }
-
-        // Création de nouveaux Dac (1 Dac par ressource)
-        $ressources = $sroc->getRessources();
-        foreach ($ressources as $r)
-        {
-            $dac = new Dac();
-            $dac->setVersion($version);
-            $dac->setRessource($r);
-            $em->persist($dac);
-            $version->addDac($dac);
-        }
-        $em->flush();
-
-        return $version;
-    }
-
     /************************************
      *
      * informations à propos d'une image liée à une version
@@ -1089,14 +1010,6 @@ class ServiceVersions
                    ->add('formation', CollectionType::class, [
                        'entry_type'     =>  FormationVersionType::class,
                        'label'          =>  true,
-                       //'allow_add'      =>  true,
-                       //'allow_delete'   =>  true,
-                       //'prototype'      =>  true,
-                       //'required'       =>  true,
-                       //'by_reference'   =>  false,
-                       //'delete_empty'   =>  true,
-                       //'attr'         => ['data-acro' => "profil-horiz",],
-                       //'entry_options' =>['text_fields' => $text_fields]
                     ])
                     ->getForm();
     }
@@ -1251,28 +1164,6 @@ class ServiceVersions
         return $val;
     }
 
-    /***************************************
-     * Traitement des formulaires des ressources
-     *
-     * $ressource_forms = Tableau contenant un formulaire par ressource
-     * $version        = La version considérée
-     ****************************************************************/
-/*    public function handleRessourceForms(array $ressource_forms, Version $version): void
-    {
-        $em   = $this->em;
-        $sj   = $this->sj;
-        $sval = $this->vl;
-
-        //dd($ressource_forms);
-        // On fait la modification sur la version passée en paramètre
-        foreach ($ressource_forms as $idac)
-        {
-            $version->addDac($idac);
-        }
-        $em->persist($version);
-        $em->flush();
-    }
-*/
     /*********************************************
      *
      * LES COLLABORATEURS
@@ -1551,11 +1442,6 @@ class ServiceVersions
                         }
                     }
                 }
-    
-                // Ligne vide - Pas la peine de logguer
-                // elseif ($individu_form->getMail() == null && $id == null) {
-                //    $sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' nouvel utilisateur vide ignoré');
-                //}
             } // foreach $individu_form
         } // foreach $versions
     }
@@ -1682,8 +1568,6 @@ class ServiceVersions
         if (! $this->validateIndividuForms($this->prepareCollaborateurs($version), true)) {
             $todo[] = 'collabs';
         }
-
         return $todo;
     }
-
 }
