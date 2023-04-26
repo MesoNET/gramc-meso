@@ -32,7 +32,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-const VERSION = "0.5.2";
+const VERSION = "0.6.0";
 
 /*
  * Cette classe garde des informations pouvant être reprises par
@@ -51,9 +51,12 @@ class ServiceInfos
     public function gramc_date($format): GramcDate|string
     {
         $d = $this->grdte;
-        if ($format == 'raw') {
+        if ($format === 'raw')
+        {
             return $d;
-        } else {
+        }
+        else
+        {
             return $d->format($format);
         }
     }
@@ -68,9 +71,12 @@ class ServiceInfos
 
     public function tronquer_chaine(?string $s, string|int $l): ?string
     {
-        if (grapheme_strlen($s)>=intval($l)) {
+        if (grapheme_strlen($s)>=intval($l))
+        {
             return grapheme_substr($s, 0, intval($l)).'...';
-        } else {
+        }
+        else
+        {
             return $s;
         }
     }
