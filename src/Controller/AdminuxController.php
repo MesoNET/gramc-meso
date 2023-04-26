@@ -32,6 +32,7 @@ use App\Entity\Version;
 use App\Entity\Rallonge;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
+use App\Entity\Laboratoire;
 use App\Entity\User;
 use App\Entity\Serveur;
 use App\Entity\Ressource;
@@ -1734,7 +1735,7 @@ class AdminuxController extends AbstractController
         }
     }
 
-    // Si un des dac/dar a son todof true, on le met à false et on renvoir true
+    // Si un des dac/dar a son todof true, on le met à false et on renvoie true
     private function __clrTodof(\Doctrine\Common\Collections\Collection $dacdars, Ressource $ressource): bool
     {
         $em = $this->em;
@@ -1777,6 +1778,90 @@ class AdminuxController extends AbstractController
         }
     }
 
+    /**
+     * get adresses IP
+     *
+     * @Route("/adresseip/get", name="get_adresseip", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * Exemples de données POST (fmt json):
+     *             ''
+     *             ou
+     *             '{ "labo" : true     }' -> Toutes les adresses IP, associées à un acronyme de laboratoire
+     *             ou
+     *             '{ "verif" : true }' --> Si true, ne renvoie que les adresses utiles au mésocentre connecté
+     *
+     */
+    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "labo": true }' https://.../adminux/adresseip/get
+
+    public function adresseipGetAction(Request $request): Response
+    {
+        $em = $this->em;
+        $sp = $this->sp;
+        $sj = $this->sj;
+        $token = $this->tok->getToken();
+        $grdt = $this->grdt;
+        $labo_rep= $em->getRepository(Laboratoire::class);
+
+        $content  = json_decode($request->getContent(), true);
+        //print_r($content);
+        if ($content === null) {
+            $labo = false;
+            $verif = false;
+        }
+        else
+        {
+            $labo = (isset($content['labo'])) ? $content['labo'] : false;
+            $verif = (isset($content['verif']))? $content['verif']: false;
+        }
+
+        if ($verif === false)
+        {
+            $labos = $labo_rep->findAll();
+        }
+        else
+        {
+            $moi = $token->getUser();
+            if ($moi === null)
+            {
+                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - non connecté");
+                return new Response(json_encode(['KO' => 'Erreur interne']));
+            }
+            $labos = $labo_rep->findByAdmname($moi->getUserIdentifier());
+        }
+            
+
+        $adresses = [];
+
+        if ($labo === true)
+        {
+            foreach ($labos as $l)
+            {
+                $adr_lab = [];
+                foreach ($l->getAdresseip() as $adr)
+                {
+                    $adr_lab[] = $adr->getAdresse();
+                }
+                $adresses[$l->getAcroLabo()] = $adr_lab;
+            }
+        }
+        else
+        {
+            foreach ($labos as $l)
+            {
+                foreach ($l->getAdresseip() as $adr)
+                {
+                    if (! in_array($adr->getAdresse(),$adresses))
+                    {
+                        $adresses[] = $adr->getAdresse();
+                    }
+                }
+            }
+        }
+        
+        $sj -> infoMessage(__METHOD__ . " OK");
+        return new Response(json_encode($adresses));
+    }
+    
     /**
      * SEULEMENT EN DEBUG: modifie la date
      *

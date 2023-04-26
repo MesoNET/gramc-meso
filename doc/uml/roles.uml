@@ -1,0 +1,12 @@
+@startuml
+
+title =Les rôles définis par gramc-meso0\nLe code se trouve dans src/Entity/Individu
+
+package Rôles <<Frame>> {
+ROLE_OBS --> ROLE_DEMANDEUR
+ROLE_ADMIN --> ROLE_OBS
+ROLE_SYSADMIN --> ROLE_OBS
+ROLE_VALIDEUR --> ROLE_OBS
+}
+
+@enduml

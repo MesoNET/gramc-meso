@@ -313,13 +313,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     /* LES ROLES DEFINIS DANS L'APPLICATION
      *     - ROLE_DEMANDEUR = Peut demander des ressoureces - Le minimum
-     *     - ROLE_ADMIN     = Peut paramétrer l'application et intervenir dans les projets ou le workflow
-     *     - ROLE_OBS       = Peut tout observer, mais ne peut agir
-     *     - ROLE_EXPERT    = Peut être affecté à un projet pour expertise (NON UTILISE)
-     *     - ROLE_PRESIDENT = Peut affecter les experts à des projets (NON UTILISE)
-     *     - ROLE_VALIDEUR  = Peut valider des projets dynamiques
+     *     - ROLE_OBS       = Peut observer beaucoup de choses, mais ne peut agir
+     *     - ROLE_ADMIN     = Un OBS qui peut AUSSI paramétrer l'application et intervenir dans les projets ou le workflow
+     *     - ROLE_VALIDEUR  = Un OBS qui peut AUSSI paramétrer certaines choses (laboratoires) et valider des projets dynamiques
      *     - ROLE_SYSADMIN  = Administrateur système, est observateur et reçoit certains mails
      *     - ROLE_ALLOWED_TO_SWITCH = Peut changer d'identité (actuellement kifkif admin)
+     *     - ROLE_EXPERT    = Peut être affecté à un projet pour expertise (NON UTILISE)
+     *     - ROLE_PRESIDENT = Peut affecter les experts à des projets (NON UTILISE)
      */
     public function getRoles(): array
     {
@@ -346,6 +346,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         if ($this->getValideur() === true)
         {
             $roles[] = 'ROLE_VALIDEUR';
+            $roles[] = 'ROLE_OBS';
         }
 
         if ($this->getObs() === true)

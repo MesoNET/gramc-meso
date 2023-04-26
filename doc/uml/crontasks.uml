@@ -1,0 +1,26 @@
+@startuml
+
+title =Les objets utilisés pour les tâches cron de gramc-meso0\nLe code se trouve dans src/GramcServices/Cron
+
+package crontasks <<Frame>> {
+    class Cron {
+        
+    }
+    class CronTaskBase {
+        {abstract} # void cronExecute()
+        
+    }
+    class TempsCronTask <<Passage en STANDBY>> {
+        
+    }
+    class TempsStdbyCronTask <<notifications avant suppression)>> {
+        
+    }
+    TempsCronTask --> CronTaskBase
+    TempsStdbyCronTask --> CronTaskBase
+    CronTaskBase "2" --o "1" Cron
+    
+
+}
+
+@enduml

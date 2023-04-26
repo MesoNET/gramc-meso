@@ -416,7 +416,6 @@ class IndividuController extends AbstractController
             }
             catch (UniqueConstraintViolationException $e)
             {
-                //dd("merde");
                 $exc = true;
             };
 

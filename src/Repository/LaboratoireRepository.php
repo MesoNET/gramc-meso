@@ -38,4 +38,20 @@ class LaboratoireRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
     }
+
+    /**************************
+     * 
+     * Renvoie tous les laboratoires pour lesquels on  au moins un user demandant un login sur un serveur géré par $admname
+     *
+     **************/ 
+    function findByAdmname(string $admname)
+    {
+        $dql = 'SELECT l FROM App:Laboratoire l, App:User u, App:Serveur s, App:Individu i WHERE u.loginname IS NOT NULL AND u.serveur = s AND u.individu = i AND l.idLabo = i.labo AND s.admname = :admname';
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->setParameter('admname', $admname )->getResult();
+                 
+        /*select distinct l.acro_labo, a.adresse from user as u, serveur as s, laboratoire as l, individu as i, adresseip as a,
+        collaborateurVersion as cv  where u.loginname is not null and u.id_serveur=s.nom and u.id_individu=i.id_individu
+        and l.id_labo=i.id_labo and l.id_labo=a.id_labo and s.admname="apiuft" order by l.acro_labo;*/
+    }
 }
