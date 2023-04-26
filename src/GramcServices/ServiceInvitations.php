@@ -40,7 +40,7 @@ class ServiceInvitations
     /*****************************
      * Ces deux fonctions sont pompées sur https://stackoverflow.com/questions/1846202/how-to-generate-a-random-unique-alphanumeric-string/13733588#13733588
      **********************************************************************************************/
-    private function crypto_rand_secure($min, $max)
+    private function crypto_rand_secure($min, $max): int
     {
         $range = $max - $min;
         if ($range < 1) return $min; // not so random...
@@ -49,14 +49,16 @@ class ServiceInvitations
         $bytes = (int) ($log / 8) + 1; // length in bytes
         $bits = (int) $log + 1; // length in bits
         $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
-        do {
+        do
+        {
             $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
             $rnd = $rnd & $filter; // discard irrelevant bits
-        } while ($rnd > $range);
+        }
+        while ($rnd > $range);
         return $min + $rnd;
     }
 
-    private function getToken($length)
+    private function getToken($length): string
     {
         $token = "";
         $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

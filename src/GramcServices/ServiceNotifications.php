@@ -46,7 +46,7 @@ class ServiceNotifications
         protected ServiceJournal $sj,
         protected EntityManagerInterface $em
     ) {
-        $this->token    = $tok->getToken();
+        $this->token = $tok->getToken();
     }
 
     /*****
@@ -73,8 +73,8 @@ class ServiceNotifications
      *********/
     public function sendMessage($twig_sujet, $twig_contenu, $params, $users = null): void
     {
-        $twig    = $this->twig;
-        $body    = $twig->render($twig_contenu, $params);
+        $twig = $this->twig;
+        $body = $twig->render($twig_contenu, $params);
         $subject = $twig->render($twig_sujet, $params);
         $this->sendRawMessage($subject, $body, $users);
     }
@@ -89,12 +89,12 @@ class ServiceNotifications
      *********/
     public function sendMessageFromString($twig_sujet, $twig_contenu, $params, $users = null): void
     {
-        $twig         = $this->twig;
-        $sujet_tmpl   = $twig->createTemplate($twig_sujet);
+        $twig = $this->twig;
+        $sujet_tmpl = $twig->createTemplate($twig_sujet);
         $contenu_tmpl = $twig->createTemplate($twig_contenu);
         
-        $body       =   $twig->render($contenu_tmpl, $params);
-        $subject    =   $twig->render($sujet_tmpl, $params);
+        $body = $twig->render($contenu_tmpl, $params);
+        $subject = $twig->render($sujet_tmpl, $params);
         $this->sendRawMessage($subject, $body, $users);
     }
 
@@ -108,8 +108,8 @@ class ServiceNotifications
         $message -> from($this->mailfrom);
 
         if ($users != null) {
-            $real_users =   [];
-            $mails      =   [];
+            $real_users = [];
+            $mails = [];
 
             foreach ($users as $user)
             {
@@ -164,11 +164,11 @@ class ServiceNotifications
             // return [ 'subject'  =>  $message->getSubject(), 'contenu' => $message->getBody(), 'to'  => $to  ]; // debug only
             $this->sj->infoMessage('email "' . $message->getSubject() . '" envoyé à ' . $to);
 
-	    // Envoi du message
-	    try {
+        // Envoi du message
+        try {
                $this->mailer->send($message);
-	    }
-	    catch ( \Exception $e ) { };
+        }
+        catch ( \Exception $e ) { };
         } else {
             $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ . 'email "' . $message->getSubject() . '" envoyé à une liste vide de destinataires');
         }
@@ -178,13 +178,13 @@ class ServiceNotifications
 
     // Renvoie la liste d'utilisateurs associés à un rôle et un objet
     // Params: $mail_roles = liste de roles (A,d,P etc. cf ci-dessous)
-    //         $objet      = version (pour E/R) ou thématique (pour ET) ou null (pour les autres roles)
+    //         $objet = version (pour E/R) ou thématique (pour ET) ou null (pour les autres roles)
     // Output: Liste d'individus (pour passer à sendMessage)
     //
 
     public function mailUsers($mail_roles = [], $objet = null): array
     {
-        $em    = $this->em;
+        $em = $this->em;
         $users = [];
         foreach ($mail_roles as $mail_role)
         {
@@ -193,7 +193,7 @@ class ServiceNotifications
                 case 'D': // demandeur
                     $user = $this->token->getUser();
                     if ($user != null) {
-                        $users  =  array_merge($users, [ $user ]);
+                        $users = array_merge($users, [ $user ]);
                     } else {
                         $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ ." Utilisateur n'est pas connecté !");
                     }
@@ -237,7 +237,7 @@ class ServiceNotifications
                         $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ .' Objet null pour expert');
                         break;
                     }
-                    $new_users  = $objet->getExperts();
+                    $new_users = $objet->getExperts();
                     //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts : " . Functions::show($new_users) );
                     if ($new_users == null) {
                         $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." Aucun expert pour l'objet " . $objet . ' !');
@@ -246,12 +246,12 @@ class ServiceNotifications
                             $new_users = $new_users->toArray();
                         }
                         //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts après toArray : " . Functions::show($new_users) );
-                        $users  =  array_merge($users, $new_users);
+                        $users = array_merge($users, $new_users);
                     }
                     break;
 
                 case 'V': // Valideurs
-                    $new_users  = $em->getRepository(Individu::class)->getValideurs();
+                    $new_users = $em->getRepository(Individu::class)->getValideurs();
                     
                     //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts : " . Functions::show($new_users) );
                     if ($new_users == null) {
@@ -261,7 +261,7 @@ class ServiceNotifications
                             $new_users = $new_users->toArray();
                         }
                         //$this->sj->debugMessage(__METHOD__ .":" . __LINE__ .  " experts après toArray : " . Functions::show($new_users) );
-                        $users  =  array_merge($users, $new_users);
+                        $users = array_merge($users, $new_users);
                     }
                     break;
 
@@ -270,14 +270,14 @@ class ServiceNotifications
                         $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ .' Objet null pour responsable');
                         break;
                     }
-                    $new_users  = $objet->getResponsables();
+                    $new_users = $objet->getResponsables();
                     if ($new_users == null) {
                         $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." Aucun responsable pour l'objet " . $objet . ' !');
                     } else {
                         if (! is_array($new_users)) {
                             $new_users = $new_users->toArray();
                         }
-                        $users  =  array_merge($users, $new_users);
+                        $users = array_merge($users, $new_users);
                     }
                     break;
             }
@@ -292,7 +292,7 @@ class ServiceNotifications
 
     public function usersToMail($users, $warning = false): array
     {
-        $mail   =   [];
+        $mail = [];
 
         if ($users == null) {
             if ($warning == true) {
@@ -303,7 +303,7 @@ class ServiceNotifications
 
         foreach ($users as $user) {
             if ($user != null && $user instanceof Individu) {
-                $user_mail =  $user->getMail();
+                $user_mail = $user->getMail();
                 if ($user_mail != null) {
                     $mail[] = $user_mail;
                 } else {

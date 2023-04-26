@@ -58,9 +58,6 @@ class ServiceSessions
      * Utilisation depuis un contrôleur:
      *             $data = $ss->selectAnnee($request);
      *
-     * TODO = Ne pas utiliser Functions::createFormBuilder
-     *        Donner un nom au formulaire
-     *
      *******************/
 
     public function selectAnnee(Request $request, $annee = null): array

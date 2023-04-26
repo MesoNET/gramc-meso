@@ -53,7 +53,7 @@ class ServiceDacs
     {
         $em = $this->em;
         $dacs = $em->getRepository(Dac::class)->findBy(['version' => $v, 'ressource' => $r]);
-        if (count($dacs) == 0)
+        if (count($dacs) === 0)
         {
             $d = new Dac();
             $d->setRessource($r);
@@ -62,7 +62,7 @@ class ServiceDacs
             $em->persist($d);
             $em->flush($d);
         }
-        elseif (count($dacs) == 1)
+        elseif (count($dacs) === 1)
         {
             $d = $dacs[0];
         }

@@ -106,14 +106,13 @@ class ServiceProjets
 
       
     }
+
     /****************
      * Suppression d'un projet, en commençant par supprimer les objets User
-     * Cette fonction est privée car elle avant de supprimer un projet on doit supprimer
-     * les versions associées
      *
      * Params: $p Le projet à supprimer
      ************************************************/
-    private function supprimerProjet(Projet $projet) : void
+    private function __supprimerProjet(Projet $projet) : void
     {
         $em = $this->em;
 
@@ -180,7 +179,7 @@ class ServiceProjets
         
         // Ne devrait pas arriver !
         $projet = $version->getProjet();
-        if ($projet == null)
+        if ($projet === null)
         {
             $sj->warningMessage(__METHOD__ . ':' . __LINE__ . " version " . $idVersion . " sans projet supprimée");
         }
@@ -200,9 +199,9 @@ class ServiceProjets
         $em->flush();
 
         // Si pas d'autre version, on supprime le projet
-        if ($projet != null && $projet->getVersion() != null && count($projet->getVersion()) == 0)
+        if ($projet !== null && $projet->getVersion() !== null && count($projet->getVersion()) === 0)
         {
-            $this->supprimerProjet($projet);
+            $this->__supprimerProjet($projet);
         }
     }
 
@@ -223,7 +222,8 @@ class ServiceProjets
 
         // Les signatures
         $fiche = $sv->getSigne($version);
-        if ( $fiche != null) {
+        if ( $fiche !== null)
+        {
             unlink($fiche);
         }
     }
@@ -259,7 +259,8 @@ class ServiceProjets
      ***************/
     private function nextProjetId($annee, $type): string
     {
-        if (intval($annee) >= 2000) {
+        if (intval($annee) >= 2000)
+        {
             $annee = $annee - 2000;
         }
 
@@ -285,23 +286,17 @@ class ServiceProjets
         $type_projet = $p->gettypeProjet();
 
         // Projet terminé
-        if ($etat_projet == Etat::TERMINE)
+        if ($etat_projet === Etat::TERMINE)
         {
             return 'TERMINE';
         }
-
-        // Projet non renouvelable (refusé)
-        //if ($etat_projet == Etat::NON_RENOUVELABLE)
-        //{
-        //    return 'REFUSE';
-        //}
 
         //$veract  = $this->versionActive($p);
         $verder = $p->derniereVersion();
 
         // Ne doit pas arriver: un projet a toujours une dernière version !
         // Peut-être la BD est-elle en rade donc on utilise le logger
-        if ($verder == null)
+        if ($verder === null)
         {
             $this->log->error(__METHOD__ . ":" . __LINE__ . "Incohérence dans la BD: le projet " .
                                             $p->getIdProjet() . " version active: $p n'a PAS de dernière version !");
@@ -309,29 +304,29 @@ class ServiceProjets
         }
 
         $etat_version   =   $verder->getEtatVersion();
-        if ($etat_version ==  Etat::EDITION_DEMANDE)
+        if ($etat_version ===  Etat::EDITION_DEMANDE)
         {
             return 'EDITION';
         }
-        elseif ($etat_version ==  Etat::EDITION_EXPERTISE)
+        elseif ($etat_version ===  Etat::EDITION_EXPERTISE)
         {
             return 'EXPERTISE';
         }
-        elseif ($etat_version ==  Etat::ACTIF)
+        elseif ($etat_version ===  Etat::ACTIF)
         {
             return 'ACCEPTE';
         }
 
         // quelques jours avant la fin du projet: le projet est encore actif mais il
         // se grouiller de le renouveler si on veut continuer
-        elseif ($etat_version == Etat::ACTIF_R)
+        elseif ($etat_version === Etat::ACTIF_R)
         {
             return 'NONRENOUVELE';
         }
 
         // Si la dernière version est terminée et le projet renouvelable, il est en standby
         // ie on ne peut pas calculer mais on peut encore renouveler
-        elseif ($etat_version == Etat::TERMINE)
+        elseif ($etat_version === Etat::TERMINE)
         {
             return 'STANDBY';
         }
@@ -449,7 +444,7 @@ class ServiceProjets
             $repkey = 0;
             foreach($noms as $nr)
             {
-                if ( $p['attribution'][$nr] != 0)
+                if ( $p['attribution'][$nr] !== 0)
                 {
                     $repkey += 2 ** $c;
                 }
@@ -458,9 +453,6 @@ class ServiceProjets
             $repartition[$type][$repkey] += 1;
         }
             
-        //$rt = &$repart[$type];
-        //arsort($rt,SORT_NUMERIC);        // tri, les plus grosses valeurs d'abord
-        //while (end($rt)===0) array_pop($rt); // vire les valeurs nulles
         return [$projets,$total, $repartition];
     }
 
@@ -476,10 +468,6 @@ class ServiceProjets
         $sroc = $this->sroc;
         $em = $this->em;
         
-        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
-        // (nombre de projets, heures demandées etc)
-        //$a_filtrer = [ Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE ];
-
         // Les versions qui ont été actives une partie de l'année
         // Elles sont triées selon la date de démarrage (les plus récentes en dernier)
         $versions = $this->getVersionsDynParAnnee($annee);
@@ -507,7 +495,7 @@ class ServiceProjets
          
         $ttes_versions = $this->em->getRepository(Version::class)->findBy(['typeVersion' => Projet::PROJET_DYN ]);
 
-        if ($annee == 0)
+        if ($annee === 0)
         {
             return $ttes_versions;
         }
@@ -546,6 +534,9 @@ class ServiceProjets
      *        Si $sess_lbl vaut AB on renvoie AUSSI les projets fil de l'eau
      *        On ne tient PAS compte des versions en état EDITION_DEMANDE
      *
+     * TODO - Utilisé par les statistiques mais les statistiques sont à refaire
+     *        La notion de session est supprimée ($sess_lbl) donc sans doute à réécrire
+     *
 
      */
     public function projetsParCritere($annee, $sess_lbl, $critere): array
@@ -573,17 +564,17 @@ class ServiceProjets
 
         // Remplissage des quatre tableaux précédents
         foreach ($projets as $p) {
-            $v    = ($p['vb']==null) ? $p['va'] : $p['vb'];
+            $v    = ($p['vb'] === null) ? $p['va'] : $p['vb'];
 
             // Filtrage !
             if (in_array($v->getEtatVersion(), $a_filtrer)) continue;
-            if ($sess_lbl != 'AB' && $v->getTypeVersion() != 1)
+            if ($sess_lbl !== 'AB' && $v->getTypeVersion() !== 1)
             {
                 continue;
             }
             
             $acro = $v -> $critere();
-            if ($acro == "") {
+            if ($acro === "") {
                 $acro = "Autres";
             }
 
@@ -627,13 +618,13 @@ class ServiceProjets
             
             $liste_projets[$acro][] = $p['p']->getIdProjet();
 
-            if ($p['va'] != null) {
+            if ($p['va'] !== null) {
                 $dem_heures[$acro] += $p['va']->getDemHeuresTotal();
             }
-            if ($p['vb'] != null) {
+            if ($p['vb'] !== null) {
                 $dem_heures[$acro] += $p['vb']->getDemHeuresTotal();
             }
-            //if ($acro=='LA') echo 'LA '.$p['p']->getIdProjet().' ';
+
             $attr_heures[$acro] += $p['attrib'];
             $conso[$acro]       += $p['c'];
             $conso_gpu[$acro]   += $p['g'];
@@ -673,20 +664,20 @@ class ServiceProjets
         $p['dataMetaDataFormat'] = $v->getDataMetaDataFormat();
         $p['dataNombreDatasets'] = $v->getDataNombreDatasets();
         $p['dataTailleDatasets'] = $v->getDataTailleDatasets();
-        if ($p['sondVolDonnPerm']   != null
-            && $p['sondVolDonnPerm'] != '< 1To'
-            && $p['sondVolDonnPerm'] != '1 To'
+        if ($p['sondVolDonnPerm']   !== null
+            && $p['sondVolDonnPerm'] !== '< 1To'
+            && $p['sondVolDonnPerm'] !== '1 To'
             && strpos($p['sondVolDonnPerm'], 'je ne sais') === false
             ) {
             $keep_it = $p['stk'] = true;
         }
-        if ($p['dataMetaDataFormat'] != null && strstr($p['dataMetaDataFormat'], 'intéressé') == false) {
+        if ($p['dataMetaDataFormat'] !== null && strstr($p['dataMetaDataFormat'], 'intéressé') === false) {
             $keep_it = $p['ptg'] = true;
         }
-        if ($p['dataNombreDatasets'] != null && strstr($p['dataNombreDatasets'], 'intéressé') == false) {
+        if ($p['dataNombreDatasets'] !== null && strstr($p['dataNombreDatasets'], 'intéressé') === false) {
             $keep_it = $p['ptg'] = true;
         }
-        if ($p['dataTailleDatasets'] != null && strstr($p['dataTailleDatasets'], 'intéressé') == false) {
+        if ($p['dataTailleDatasets'] !== null && strstr($p['dataTailleDatasets'], 'intéressé') === false) {
             $keep_it = $p['ptg'] = true;
         }
         return $keep_it;
@@ -708,7 +699,7 @@ class ServiceProjets
         {
             return true;
         }
-        elseif ($projet->getTypeProjet() == Projet::PROJET_DYN)
+        elseif ($projet->getTypeProjet() === Projet::PROJET_DYN)
         {
             return true;
         }
@@ -728,7 +719,7 @@ class ServiceProjets
         $user = $this->token->getUser();
         foreach ($projet->getVersion() as $version)
         {
-            if ($this->userVersionACL($version, $user)==true)
+            if ($this->userVersionACL($version, $user) === true)
             {
                 return true;
             }
@@ -755,7 +746,7 @@ class ServiceProjets
         foreach ($version->getRallonge() as $rallonge)
         {
             //$e = $rallonge->getExpert();
-            //if ($e != null && $user->isEqualTo($rallonge->getExpert())) return true;
+            //if ($e !== null && $user->isEqualTo($rallonge->getExpert())) return true;
             if ($rallonge->isExpertDe($user))
             {
                 return true;
@@ -771,64 +762,6 @@ class ServiceProjets
         return false;
     }
 
-    /********************************
-     * Création des répertoires de données
-     *
-     ************************************************************/
-    /*public function createDirectories($annee = null, $session = null): void
-    {
-        $rapport_directory = $this->rapport_directory;
-        if ($rapport_directory != null) {
-            $this->createDirectory($rapport_directory);
-        } else {
-            $this->sj->throwException(__METHOD__ . ":" . __FILE__ . " rapport_directory est null !");
-        }
-
-        $signature_directory = $this->signature_directory;
-        if ($signature_directory != null) {
-            $this->createDirectory($signature_directory);
-        } else {
-            $this->sj->throwException(__METHOD__ . ":" . __FILE__ . " signature_directory est null !");
-        }
-
-        $fig_directory = $this->fig_directory;
-        if ($fig_directory != null) {
-            $this->createDirectory($fig_directory);
-        } else {
-            $this->sj->throwException(__METHOD__ . ":" . __FILE__ . " fig_directory est null !");
-        }
-
-        $dfct_directory = $this->dfct_directory;
-        if ($dfct_directory != null) {
-            $this->createDirectory($dfct_directory);
-        } else {
-            $this->sj->throwException(__METHOD__ . ":" . __FILE__ . " dfct_directory est null !");
-        }
-
-        if ($session == null) {
-            $session = $this->ss->getSessionCourante();
-        }
-        if ($annee == null) {
-            $annee   = $session->getAnneSession() + 2000;
-        }
-
-        # Création des répertoires pour l'année ou la session demandée
-        $this->createDirectory($rapport_directory . '/' . $annee);
-        $this->createDirectory($signature_directory . '/' . $session->getIdSession());
-        $this->createDirectory($dfct_directory . '/' . $annee);
-    }
-
-    private function createDirectory($dir): void
-    {
-        if ($dir != null && ! file_exists($dir)) {
-            mkdir($dir);
-        } elseif ($dir != null && ! is_dir($dir)) {
-            $this->sj->errorMessage(__METHOD__ . ":" . __FILE__ . " " . $dir . " n'est pas un répertoire ! ");
-            unlink($dir);
-            mkdir($dir);
-        }
-    }*/
-
     /************************************************
      * Renvoie le chemin vers le rapport d'activité s'il existe, null s'il n'y a pas de RA
      *
@@ -840,7 +773,7 @@ class ServiceProjets
     {
         $rapport_directory = $this->rapport_directory;
         $dir    =  $rapport_directory;
-        if ($dir == null) {
+        if ($dir === null) {
             return null;
         }
 
@@ -868,10 +801,10 @@ class ServiceProjets
                                 ]
         );
 
-        if ($rapportActivite == null) {
+        if ($rapportActivite === null) {
             return false;
         }
-        if ($this->getRapport($projet, $annee) == null) {
+        if ($this->getRapport($projet, $annee) === null) {
             return false;
         } else {
             return true;
@@ -892,7 +825,7 @@ class ServiceProjets
                                 ]
         );
 
-        if ($rapportActivite != null) {
+        if ($rapportActivite !== null) {
             return  intdiv($rapportActivite->getTaille(), 1024);
         } else {
             return  0;
@@ -910,10 +843,10 @@ class ServiceProjets
         $versionB   = $this->em->getRepository(Version::class)->findOneBy([ 'idVersion' => $subAnnee . 'B' . $projet->getIdProjet(), 'projet' => $projet ]);
 
         $versions = [];
-        if ($versionA != null) {
+        if ($versionA !== null) {
             $versions['A'] = $versionA;
         }
-        if ($versionB != null) {
+        if ($versionB !== null) {
             $versions['B'] = $versionB;
         }
         return $versions;
@@ -979,7 +912,7 @@ class ServiceProjets
     public function calculVersionDerniere(Projet $projet): ?Version
     {
         $sj = $this->sj;
-        if ($projet->getVersion() == null) {
+        if ($projet->getVersion() === null) {
             $sj->throwException(__METHOD__ . ':' . __LINE__ . " Projet $projet = PAS DE VERSION");
         }
 
@@ -1026,8 +959,8 @@ class ServiceProjets
         $versionActive = $projet->getVersionActive();
 
         // Si le projet est terminé = renvoyer null
-        if ($projet->getEtatProjet() == Etat::TERMINE) {
-            if ($versionActive != null) {
+        if ($projet->getEtatProjet() === Etat::TERMINE) {
+            if ($versionActive !== null) {
                 $projet->setVersionActive(null);
                 $em->persist($projet);
                 // $em->flush();
@@ -1036,8 +969,8 @@ class ServiceProjets
         }
 
         // Vérifie que la version active est vraiment active
-        if ($versionActive != null &&
-          ($versionActive->getEtatVersion() == Etat::ACTIF || $versionActive->getEtatVersion() == Etat::ACTIF_R || $versionActive->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE)
+        if ($versionActive !== null &&
+          ($versionActive->getEtatVersion() === Etat::ACTIF || $versionActive->getEtatVersion() === Etat::ACTIF_R || $versionActive->getEtatVersion() === Etat::NOUVELLE_VERSION_DEMANDEE)
           ) {
             return $versionActive;
         }
@@ -1045,18 +978,18 @@ class ServiceProjets
         // Sinon on la recherche, on la garde, puis on la renvoie
         $result = null;
         foreach (array_reverse($projet->getVersion()->toArray()) as $version) {
-            if ($version->getEtatVersion() == Etat::ACTIF ||
-                $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                $version->getEtatVersion() == Etat::ACTIF_R ||
-                $version->getEtatVersion() == Etat::EN_ATTENTE ||
-                $version->getEtatVersion() == Etat::ACTIF_TEST) {
+            if ($version->getEtatVersion() === Etat::ACTIF ||
+                $version->getEtatVersion() === Etat::NOUVELLE_VERSION_DEMANDEE ||
+                $version->getEtatVersion() === Etat::ACTIF_R ||
+                $version->getEtatVersion() === Etat::EN_ATTENTE ||
+                $version->getEtatVersion() === Etat::ACTIF_TEST) {
                 $result = $version;
                 break;
             }
         }
 
         // update BD
-        if ($versionActive != $result) { // seulement s'il y a un changement
+        if ($versionActive !== $result) { // seulement s'il y a un changement
             $projet->setVersionActive($result);
             $em->persist($projet);
             //$em->flush();
@@ -1080,7 +1013,7 @@ class ServiceProjets
          $vnt = [];
          foreach ($versions as $v)
          {
-             if ($v->getEtatVersion() != Etat::ANNULE && $v->getEtatVersion() != Etat::TERMINE)
+             if ($v->getEtatVersion() !== Etat::ANNULE && $v->getEtatVersion() !== Etat::TERMINE)
              {
                  $vnt[] = $v;
              }
@@ -1098,7 +1031,7 @@ class ServiceProjets
         $sdac = $this->sdac;
         
         $version = $projet->getVersionActive();
-        if ($version ===null) return false;
+        if ($version === null) return false;
 
         foreach ($version->getDac() as $dac)
         {
