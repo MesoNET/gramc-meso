@@ -136,7 +136,11 @@ services:
         arguments:
             $knl_debug: '%kernel.debug%'
             $mode_auth: '%mode_auth%'
-    
+
+    # Cron
+    App\GramcServices\Cron\GramcCronTask\InvitCronTask:
+        arguments: [ "%invit_duree%" ]
+        
     # Commandes
     app.gramc.sendamail:
         class: App\Command\Sendamail
