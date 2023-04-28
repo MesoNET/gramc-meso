@@ -75,8 +75,7 @@ class Version4Workflow extends Workflow
                 Signal::CLK_VAL_EXP_KO  => new Version4Transition(
                     Etat::REFUSE,
                     Signal::CLK_VAL_EXP_KO,
-                    [ 'V' => 'validation_refusee',
-                      'A' => 'validation_pour_admin' ]
+                    [ 'V' => 'validation_refusee' ]
                 ),
                 Signal::CLK_FERM        => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 Signal::CLK_ARR         => new Version4Transition(Etat::EDITION_DEMANDE, Signal::CLK_ARR),

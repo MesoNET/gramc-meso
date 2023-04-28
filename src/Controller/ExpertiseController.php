@@ -479,11 +479,16 @@ class ExpertiseController extends AbstractController
 
         // ACL
         $moi = $token->getUser();
-        if (is_string($moi)) {
+        if (is_string($moi))
+        {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
-        } elseif ($expertise->getExpert() === null) {
+        }
+        elseif ($expertise->getExpert() === null)
+        {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . " aucun expert pour l'expertise " . $expertise);
-        } elseif (! $expertise->getExpert()->isEqualTo($moi)) {
+        }
+        elseif (! $expertise->getExpert()->isEqualTo($moi))
+        {
             $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $moi .
                 " n'est pas un expert de l'expertise " . $expertise . ", c'est " . $expertise->getExpert());
         }
@@ -554,7 +559,7 @@ class ExpertiseController extends AbstractController
 
         $validation =  $expertise->getValidation();
         $rtn = null;
-        $signal = ($validation === 1) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
+        $signal = ($validation === true) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $version->getProjet());
         if ($rtn !== true)

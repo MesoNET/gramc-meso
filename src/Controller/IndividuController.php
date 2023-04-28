@@ -677,7 +677,7 @@ class IndividuController extends AbstractController
      * @Route("/{id}/plus_sysadmin", name="plus_sysadmin", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function plusSysadminAction(Request $request, Individu $individu): Respone
+    public function plusSysadminAction(Request $request, Individu $individu): Response
     {
         $individu->setSysadmin(false);
         $em = $this->em;
