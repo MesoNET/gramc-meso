@@ -6,17 +6,16 @@
 
 
 {% macro upload_images(version, images) %}
-
 {% import "default/icone.html.twig" as icones %}
 
-    <div class="figures">
+    <div class="figures" style="stroke:black">
         {% for img in images %}
         <div class="figure">
                 <div id = "{{img.name}}">
                     {% if img.contents is defined  %}
                         <img class="figure_image" src="data:image/jpg;base64,{{ img.contents }}" data-width="{{ img.width }}" data-height="{{ img.height }}" alt="{{img.displayName}}" title="cliquez pour afficher la figure en taille réelle">
                     {% else %}
-                        <img class="figure_image" src="toto.jpg" >
+                        {{ icones.indefinit }}
                     {% endif %}
                 </div>
                 <p>{{img.displayName}} <a class="fileremover"  {% if img.contents is defined %}style="display:inline"{% else %}style="display:none"{% endif %} href="#" data-href="{{path('version_supprimer_fichier', { 'id' : version.idVersion, 'filename' : img.name }) }}">{{icones.supprimer}}</a></p>
