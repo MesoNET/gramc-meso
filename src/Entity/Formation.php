@@ -67,7 +67,7 @@ class Formation
      */
     private $endDate;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

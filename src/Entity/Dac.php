@@ -104,12 +104,12 @@ class Dac
      *
      * @return integer
      */
-    public function getIdDac(): int
+    public function getIdDac(): ?int
     {
         return $this->idDac;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idDac;
     }
@@ -179,7 +179,7 @@ class Dac
      *
      * @return integer
      */
-    public function getDemande(): int
+    public function getDemande(): ?int
     {
         return $this->demande;
     }
@@ -201,7 +201,7 @@ class Dac
      *
      * @return integer
      */
-    public function getAttribution(): int
+    public function getAttribution(): ?int
     {
         return $this->attribution;
     }
@@ -223,7 +223,7 @@ class Dac
      *
      * @return integer
      */
-    public function getConsommation(): int
+    public function getConsommation(): ?int
     {
         return $this->consommation;
     }

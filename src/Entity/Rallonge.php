@@ -142,7 +142,7 @@ class Rallonge implements Demande
     /////////////////////////////////////////////////////////////////////////////
 
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->getIdRallonge();
     }
@@ -219,12 +219,12 @@ class Rallonge implements Demande
      *
      * @return integer
      */
-    public function getEtatRallonge(): int
+    public function getEtatRallonge(): ?int
     {
         return $this->etatRallonge;
     }
 
-    public function getEtat(): int
+    public function getEtat(): ?int
     {
         return $this->getEtatRallonge();
     }
@@ -272,7 +272,7 @@ class Rallonge implements Demande
      *
      * @return string
      */
-    public function getIdRallonge(): string
+    public function getIdRallonge(): ?string
     {
         return $this->idRallonge;
     }
@@ -463,7 +463,7 @@ class Rallonge implements Demande
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatRallonge/setEtatRallonge !
      ***************************************************/
-    public function getObjectState(): int
+    public function getObjectState(): ?int
     {
         return $this->getEtatRallonge();
     }
@@ -518,7 +518,7 @@ class Rallonge implements Demande
         }
     }
 
-    public function getLibelleEtatRallonge(): string
+    public function getLibelleEtatRallonge(): ?string
     {
         return Etat::getLibelle($this->getEtatRallonge());
     }

@@ -96,12 +96,12 @@ class Dar
      *
      * @return integer
      */
-    public function getIdDar(): int
+    public function getIdDar(): ?int
     {
         return $this->idDar;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idDar;
     }
@@ -171,7 +171,7 @@ class Dar
      *
      * @return integer
      */
-    public function getDemande(): int
+    public function getDemande(): ?int
     {
         return $this->demande;
     }
@@ -193,7 +193,7 @@ class Dar
      *
      * @return integer
      */
-    public function getAttribution(): int
+    public function getAttribution(): ?int
     {
         return $this->attribution;
     }

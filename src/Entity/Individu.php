@@ -296,14 +296,14 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         }
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idIndividu;
     }
 
     // implementation UserInterface
-    public function getUserIdentifier(): string { return $this->getId();}
-    public function getUsername(): string { return $this->getMail();}
+    public function getUserIdentifier(): ?string { return $this->getId();}
+    public function getUsername(): ?string { return $this->getMail();}
     public function getSalt(): ?string { return null;}
     public function getPassword(): ?string { return "";}
     public function eraseCredentials() {}
@@ -460,7 +460,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return string
      */
-    public function getMail(): string
+    public function getMail(): ?string
     {
         return $this->mail;
     }
@@ -637,7 +637,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return integer
      */
-    public function getIdIndividu(): int
+    public function getIdIndividu(): ?int
     {
         return $this->idIndividu;
     }

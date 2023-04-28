@@ -124,7 +124,7 @@ class Publication
      *
      * @return string
      */
-    public function getRefbib(): string
+    public function getRefbib(): ?string
     {
         return $this->refbib;
     }
@@ -196,7 +196,7 @@ class Publication
      *
      * @return integer
      */
-    public function getAnnee(): int
+    public function getAnnee(): ?int
     {
         return $this->annee;
     }
@@ -255,7 +255,7 @@ class Publication
     /**
      * Get doi, cleaned
      *************************************/
-    public function getDoiCleaned(): string
+    public function getDoiCleaned(): ?string
     {
         $doi = $this->getDoi();
         $prf = 'https://doi.org/';

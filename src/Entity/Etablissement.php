@@ -105,7 +105,7 @@ class Etablissement
      *
      * @return string
      */
-    public function getLibelleEtab(): string
+    public function getLibelleEtab(): ?string
     {
         return $this->libelleEtab;
     }
@@ -115,7 +115,7 @@ class Etablissement
      *
      * @return integer
      */
-    public function getIdEtab(): int
+    public function getIdEtab(): ?int
     {
         return $this->idEtab;
     }

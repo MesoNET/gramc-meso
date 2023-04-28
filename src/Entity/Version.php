@@ -868,7 +868,7 @@ class Version implements Demande
      *
      * @return string
      */
-    public function getIdVersion(): string
+    public function getIdVersion(): ?string
     {
         return $this->idVersion;
     }
@@ -956,7 +956,7 @@ class Version implements Demande
      *
      * @return string
      */
-    public function getNbVersion(): int
+    public function getNbVersion(): ?int
     {
         return $this->nbVersion;
     }
@@ -1352,7 +1352,7 @@ class Version implements Demande
 
     // MetaEtat d'une version (et du projet associé)
     // Ne sert que pour l'affichage des états de version
-    public function getMetaEtat(): string
+    public function getMetaEtat(): ?string
     {
         $etat = $this->getEtatVersion();
 
@@ -1629,7 +1629,7 @@ class Version implements Demande
     {
         return $this->getEtatVersion();
     }
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->getIdVersion();
     }

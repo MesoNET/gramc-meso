@@ -117,7 +117,7 @@ class Clessh
      *
      * @return integer
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -203,7 +203,7 @@ class Clessh
      *
      * @return string
      */
-    public function getNom(): string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -226,7 +226,7 @@ class Clessh
      *
      * @return string
      */
-    public function getPub(): string
+    public function getPub(): ?string
     {
         return $this->pub;
     }
@@ -249,7 +249,7 @@ class Clessh
      *
      * @return string
      */
-    public function getEmp(): string
+    public function getEmp(): ?string
     {
         return $this->emp;
     }

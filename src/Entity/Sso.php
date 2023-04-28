@@ -58,11 +58,11 @@ class Sso
      *
      * @return string
      */
-    public function getEppn(): string
+    public function getEppn(): ?string
     {
         return $this->eppn;
     }
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->getEppn();
     }

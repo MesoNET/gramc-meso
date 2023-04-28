@@ -44,7 +44,7 @@ class Journal
     /**
      * @var \App\Entity\Individu
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="journal")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="journal",cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu",onDelete="SET NULL")
      * })
@@ -171,7 +171,7 @@ class Journal
      *
      * @return string
      */
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -195,7 +195,7 @@ class Journal
      *
      * @return string
      */
-    public function getMessage(): string
+    public function getMessage(): ?string
     {
         return $this->message;
     }
@@ -243,7 +243,7 @@ class Journal
      *
      * @return string
      */
-    public function getIp(): string
+    public function getIp(): ?string
     {
         return $this->ip;
     }
@@ -253,7 +253,7 @@ class Journal
      *
      * @return integer
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -299,7 +299,7 @@ class Journal
      *
      * @return integer
      */
-    public function getNiveau(): int
+    public function getNiveau(): ?int
     {
         return $this->niveau;
     }

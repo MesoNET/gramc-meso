@@ -130,12 +130,12 @@ class Ressource
      *
      * @return integer
      */
-    public function getIdRessource(): int
+    public function getIdRessource(): ?int
     {
         return $this->idRessource;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idRessource;
     }

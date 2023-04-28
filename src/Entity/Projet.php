@@ -176,7 +176,7 @@ class Projet
      */
     private $tetatProjet;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->getIdProjet();
     }
@@ -204,7 +204,7 @@ class Projet
      *
      * @return integer
      */
-    public function getEtatProjet(): int
+    public function getEtatProjet(): ?int
     {
         return $this->etatProjet;
     }
@@ -228,7 +228,7 @@ class Projet
      *
      * @return integer
      */
-    public function getTypeProjet(): int
+    public function getTypeProjet(): ?int
     {
         return $this->typeProjet;
     }
@@ -252,7 +252,7 @@ class Projet
      *
      * @return string
      */
-    public function getIdProjet(): string
+    public function getIdProjet(): ?string
     {
         return $this->idProjet;
     }
@@ -348,7 +348,7 @@ class Projet
      *
      * @return integer
      */
-    public function getTetatProjet(): int
+    public function getTetatProjet(): ?int
     {
         return $this->tetatProjet;
     }
@@ -509,7 +509,7 @@ class Projet
      * Fonctions utiles pour la class Workflow
      * Autre nom pour getEtatProjet/setEtatProjet !
      ***************************************************/
-    public function getObjectState(): int
+    public function getObjectState(): ?int
     {
         return $this->getEtatProjet();
     }
@@ -638,7 +638,7 @@ class Projet
     /////////////////////////////////////////////////////
 
 
-    public function getEtat(): int
+    public function getEtat(): ?int
     {
         return $this->getEtatProjet();
     }

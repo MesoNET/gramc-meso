@@ -85,7 +85,7 @@ class Invitation
      *
      * @return integer
      */
-    public function getIdInvitation(): int
+    public function getIdInvitation(): ?int
     {
         return $this->idInvitation;
     }
@@ -157,7 +157,7 @@ class Invitation
      *
      * @return string
      */
-    public function getClef(): string
+    public function getClef(): ?string
     {
         return $this->clef;
     }

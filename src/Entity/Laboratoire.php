@@ -115,7 +115,7 @@ class Laboratoire
         }
     }
 
-    public function getId():int
+    public function getId(): ?int
     {
         return $this->getIdLabo();
     }
@@ -139,7 +139,7 @@ class Laboratoire
      *
      * @return integer
      */
-    public function getNumeroLabo(): int
+    public function getNumeroLabo(): ?int
     {
         return $this->numeroLabo;
     }
@@ -163,7 +163,7 @@ class Laboratoire
      *
      * @return string
      */
-    public function getAcroLabo(): string
+    public function getAcroLabo(): ?string
     {
         return $this->acroLabo;
     }
@@ -187,7 +187,7 @@ class Laboratoire
      *
      * @return string
      */
-    public function getNomLabo(): string
+    public function getNomLabo(): ?string
     {
         return $this->nomLabo;
     }

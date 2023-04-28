@@ -113,7 +113,7 @@ class FormationVersion
      *
      * @return integer
      */
-    public function getNombre(): int
+    public function getNombre(): ?int
     {
         return $this->nombre;
     }
@@ -123,7 +123,7 @@ class FormationVersion
      *
      * @return integer
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

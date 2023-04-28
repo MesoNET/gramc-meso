@@ -156,8 +156,8 @@ class IndividuController extends AbstractController
         $Thematique                 =   $individu->getThematique();
         $erreurs  =   [];
 
-        // utilisateur peu actif peut être effacé sauf s'il peut se connecter
-        if ($CollaborateurVersion == null && $Expertise == null && $Rallonge == null && count($Sso) == 0)
+        // utilisateur peu actif peut être effacé
+        if ($CollaborateurVersion == null && $Expertise == null && $Rallonge == null)
         {
 
             foreach ($individu->getThematique() as $item) {
@@ -181,7 +181,7 @@ class IndividuController extends AbstractController
             }
 
             $request->getSession()->getFlashbag()->add("flash info",$individu. " supprimé");
-            $sj->infoMessage('Utilisateur ' . $individu . ' (' .  $individu->getIdIndividu() . ') effacé ');
+            $sj->infoMessage("Utilisateur $individu effacé");
             return $this->redirectToRoute('individu_gerer');
         }
 

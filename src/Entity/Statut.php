@@ -76,12 +76,12 @@ class Statut
      *
      * @return integer
      */
-    public function getIdStatut(): int
+    public function getIdStatut(): ?int
     {
         return $this->idStatut;
     }
 
-    public function getId():int
+    public function getId(): ?int
     {
         return $this->getIdStatut();
     }
@@ -129,7 +129,7 @@ class Statut
      *
      * @return string
      */
-    public function getLibelleStatut(): string
+    public function getLibelleStatut(): ?string
     {
         return $this->libelleStatut;
     }

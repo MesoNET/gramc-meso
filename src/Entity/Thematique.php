@@ -75,7 +75,7 @@ class Thematique
 
     //////////////////////////////////////////////////////////
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->getIdThematique();
     }
@@ -116,7 +116,7 @@ class Thematique
      *
      * @return string
      */
-    public function getLibelleThematique(): string
+    public function getLibelleThematique(): ?string
     {
         return $this->libelleThematique;
     }
@@ -126,7 +126,7 @@ class Thematique
      *
      * @return integer
      */
-    public function getIdThematique(): int
+    public function getIdThematique(): ?int
     {
         return $this->idThematique;
     }

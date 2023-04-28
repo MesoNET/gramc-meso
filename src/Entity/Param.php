@@ -81,7 +81,7 @@ class Param
      *
      * @return string
      */
-    public function getCle(): string
+    public function getCle(): ?string
     {
         return $this->cle;
     }
@@ -102,12 +102,12 @@ class Param
      *
      * @return string
      */
-    public function getVal(): string
+    public function getVal(): ?string
     {
         return $this->val;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
