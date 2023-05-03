@@ -16,9 +16,7 @@ security:
                     apicriann:
                        password: '%env(PASSWORD_APICRIANN)%'
                        roles: 'ROLE_ADMIN'
-        #users_in_memory: { memory: null }
         gramc_provider:
-            #id: App\Security\GramcUserProvider
             entity:
                 class: App\Entity\Individu
                 property: idIndividu
@@ -69,7 +67,7 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
-    access_control:
-          - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
+    # access_control:
+        # - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
