@@ -88,7 +88,7 @@ class RallongeController extends AbstractController
     ) {}
 
     /**
-     * Rallonges dynamiques
+     * Affichage des rallonges dynamiques
      *
      * @Route("/dynamiques", name="rallonge_dynamique", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
@@ -144,50 +144,7 @@ class RallongeController extends AbstractController
     }
 
     /**
-     * Lists all rallonge entities.
-     *
-     * @Route("/", name="rallonge_index", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function indexAction(): Response
-    {
-        $em = $this->em;
-
-        $rallonges = $em->getRepository(Rallonge::class)->findAll();
-
-        return $this->render('rallonge/index.html.twig', array(
-            'rallonges' => $rallonges,
-        ));
-    }
-
-    /**
-     * Creates a new rallonge entity.
-     *
-     * @Route("/new", name="rallonge_new", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function newAction(Request $request): Response
-    {
-        $rallonge = new Rallonge();
-        $form = $this->createForm('App\Form\RallongeType', $rallonge);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->persist($rallonge);
-            $em->flush();
-
-            return $this->redirectToRoute('rallonge_show', array('id' => $rallonge->getId()));
-        }
-
-        return $this->render('rallonge/new.html.twig', array(
-            'rallonge' => $rallonge,
-            'form' => $form->createView(),
-        ));
-    }
-
-    /**
-     * Creates a new rallonge entity.
+     * Nouvelle rallonge
      *
      * @Route("/{id}/creation", name="nouvelle_rallonge", methods={"GET"})
      * @ Security("is_granted('ROLE_ADMIN')")
@@ -217,48 +174,7 @@ class RallongeController extends AbstractController
     }
 
     /**
-     * Finds and displays a rallonge entity.
-     *
-     * @Route("/{id}/show", name="rallonge_show", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function showAction(Rallonge $rallonge): Response
-    {
-        $deleteForm = $this->createDeleteForm($rallonge);
-
-        return $this->render('rallonge/show.html.twig', array(
-            'rallonge' => $rallonge,
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
-    /**
-     * Displays a form to edit an existing rallonge entity.
-     *
-     * @Route("/{id}/edit", name="rallonge_edit", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function editAction(Request $request, Rallonge $rallonge): Response
-    {
-        $deleteForm = $this->createDeleteForm($rallonge);
-        $editForm = $this->createForm('App\Form\RallongeType', $rallonge);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->em->flush();
-
-            return $this->redirectToRoute('rallonge_edit', array('id' => $rallonge->getId()));
-        }
-
-        return $this->render('rallonge/edit.html.twig', array(
-            'rallonge' => $rallonge,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
-    /**
-     * Displays a form to edit an existing rallonge entity.
+     * Afficher une rallonge
      *
      * @Route("/{id}/consulter", name="consulter_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
@@ -292,7 +208,7 @@ class RallongeController extends AbstractController
     }
 
     /**
-    * Displays a form to edit an existing rallonge entity.
+    * Modifier une rallonge.
     *
     * @Route("/{id}/modifier", name="modifier_rallonge", methods={"GET","POST"})
     * @Security("is_granted('ROLE_DEMANDEUR')")
@@ -455,42 +371,5 @@ class RallongeController extends AbstractController
             'projet'    => $projet,
         ]
         );
-    }
-
-    /**
-     * Deletes a rallonge entity.
-     *
-     * @Route("/{id}", name="rallonge_delete", methods={"DELETE"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("DELETE")
-     */
-    public function deleteAction(Request $request, Rallonge $rallonge): Response
-    {
-        $form = $this->createDeleteForm($rallonge);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->remove($rallonge);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('rallonge_index');
-    }
-
-    /**
-     * Creates a form to delete a rallonge entity.
-     *
-     * @param Rallonge $rallonge The rallonge entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Rallonge $rallonge):FormInterface
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('rallonge_delete', array('id' => $rallonge->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
     }
 }

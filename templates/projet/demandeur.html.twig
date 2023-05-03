@@ -103,12 +103,12 @@
         <td>
             <a href="{{ path('consulter_rallonge', { 'id': rallonge.idRallonge })}}"
             {% if serviceRallonges.getMetaEtat(rallonge) == 'EDITION' %}
-                title="Consulter cette rallonge" >
+                title="Consulter cette demande d'extension" >
                 {{ icones.modifier }}
 
 
             {% else %}
-                title="Consulter cette rallonge" >{{icones.details}}
+                title="Consulter cette demande d'extension" >{{icones.details}}
             {% endif %}
             </a>
         </td>
@@ -116,7 +116,7 @@
             {% if num_rallonge == 1 %}
                 <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension</span></strong>
             {% else %}
-                <strong><span title="ou demande au fil de l'eau, ou rallonge">Rallonge {{ num_rallonge }}</span></strong>
+                <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension {{ num_rallonge }}</span></strong>
             {% endif %}
         </td>
         {% set num_rallonge = num_rallonge + 1 %}

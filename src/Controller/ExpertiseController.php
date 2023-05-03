@@ -377,8 +377,8 @@ class ExpertiseController extends AbstractController
                         $dars = $ressource_form->getData()['ressource'];
                         foreach ($dars as $d)
                         {
-                            $em->persist($d);
                             $d->setAttribution(0);
+                            $em->persist($d);
                         }
                         $em->flush();
                     }
@@ -387,8 +387,8 @@ class ExpertiseController extends AbstractController
                         $dacs = $ressource_form->getData()['ressource'];
                         foreach ($dacs as $d)
                         {
-                            $em->persist($d);
                             $d->setAttribution(0);
+                            $em->persist($d);
                         }
                         $em->flush();
                     }
@@ -597,7 +597,7 @@ class ExpertiseController extends AbstractController
 
         $validation =  $expertise->getValidation();
         $rtn = null;
-        $signal = ($validation === 1) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
+        $signal = ($validation === true) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $rallonge);
         if ($rtn !== true)
