@@ -20,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -165,6 +166,7 @@ class LoginController extends AbstractController
         }
 
         // Etablir la liste des users pouvant se connecter de cette manière
+        // Tous !
         $repository = $this->em->getRepository(Individu::class);
         /*
         $experts    = $repository->findBy(['expert'   => true ]);
@@ -186,7 +188,7 @@ class LoginController extends AbstractController
         }
         ksort($choices);
     
-        $form = Functions::createFormBuilder($ff)
+        $form = $ff->createBuilder(FormType::class, null)
             ->add(
                 'data',
                 ChoiceType::class,
@@ -198,17 +200,23 @@ class LoginController extends AbstractController
             ->getForm();
 
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid())
+        // NOTE - Pas de validation du CSRF, ce sera fait par GramcAuthenticator
+        //        Donc pas de isValid())
+        if ($form->isSubmitted() /*&& $form->isValid()*/)
         {
             // Rediriger là où on veut aller
             if( $request->getSession()->has('url') )
+            {
+                //dd($request->getSession()->get('url'));
                 return $this->redirect( $request->getSession()->get('url') );
+            }
 
             // Ou vers l'accueil
             else
+            {
+                //dd('accueil');
                 return $this->redirectToRoute('accueil');
-            
+            }
         }
                          
         return $this->render('login/connexion_dbg.html.twig', array( 'form' => $form->createView())  );
