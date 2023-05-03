@@ -1,10 +1,51 @@
 {% extends 'default/base.html.twig' %}
 
 {% block body %}
-<section>
-<h2>Modification d'un laboratoire</h2>
+<section id="laboratoire">
     {% import "default/macros.html.twig" as gramcmacros %}
     {{ gramcmacros.menu(menu) }}
+
+    {% if formSadr != null %}
+        <div id="s_adr" class="submitdyn inputrond" >
+            {% if (laboratoire.adresseip | length != 0) %}        
+                <h2>Supprimer une plage d'adresses</h2>
+                <p class="centrage"><em>Décochez les adresses que vous souhaitez supprimer</em></p>
+                
+                {% form_theme formSadr 'foundation_5_layout.html.twig' %}
+                {{ form_start(formSadr) }}
+                <fieldset>{{ form_widget(formSadr) }}</fieldset>
+                {{ form_end(formSadr) }}
+
+            {% else %}
+
+                <div class="information attention"><em>Ce laboratoire n'est pas associé à
+                au moins une plage d'IP, les utilisateurs auront probablement des ennuis de connection</em></div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if formAdr != null %}
+    <div id="a_adr">
+        <h2>Ajouter une plage d'adresses IP</h2>
+        
+            {{ form_start(formAdr) }}
+            <table>
+                <tr>
+                    <th>{{ form_label(formAdr.adresse)}}</th>
+                    <td>{{form_widget(formAdr.adresse)}}
+                        {{ form_errors(formAdr.adresse) }}
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td class="inputrond submitdyn">{{ form_widget(formAdr.submit) }}{{ form_widget(formAdr.reset) }}</td>
+                </tr>
+            </table>
+            {{ form_end(formAdr) }}
+    {% endif %}
+    </div>
+
+    <h2>Modification d'un laboratoire</h2>
     <div class="information">
         <p>Le numéro d'ordre permet de <strong>trier</strong> les laboratoires à votre convenance. Si vous ne spécifiez rien, ils seront triés
             en ordre alphabétique du nom")</p>

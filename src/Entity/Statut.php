@@ -66,11 +66,22 @@ class Statut
 
     //////////////////////////////////////////////////////
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getLibelleStatut();
     }
-    public function getId()
+    
+    /**
+     * Get idStatut
+     *
+     * @return integer
+     */
+    public function getIdStatut(): ?int
+    {
+        return $this->idStatut;
+    }
+
+    public function getId(): ?int
     {
         return $this->getIdStatut();
     }
@@ -82,7 +93,7 @@ class Statut
      *
      * @return Statut
      */
-    public function setIdStatut($idStatut)
+    public function setIdStatut(int $idStatut): self
     {
         $this->idStatut = $idStatut;
 
@@ -98,15 +109,6 @@ class Statut
     {
         $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    /**
-     * Get idStatut
-     *
-     * @return integer
-     */
-    public function getIdStatut()
-    {
-        return $this->idStatut;
-    }
 
     /**
      * Set libelleStatut
@@ -115,7 +117,7 @@ class Statut
      *
      * @return Statut
      */
-    public function setLibelleStatut($libelleStatut)
+    public function setLibelleStatut(string $libelleStatut): self
     {
         $this->libelleStatut = $libelleStatut;
 
@@ -127,7 +129,7 @@ class Statut
      *
      * @return string
      */
-    public function getLibelleStatut()
+    public function getLibelleStatut(): ?string
     {
         return $this->libelleStatut;
     }
@@ -139,7 +141,7 @@ class Statut
      *
      * @return Statut
      */
-    public function setPermanent($permanent)
+    public function setPermanent(bool $permanent): self
     {
         $this->permanent = $permanent;
 
@@ -151,7 +153,7 @@ class Statut
      *
      * @return boolean
      */
-    public function getPermanent()
+    public function getPermanent(): bool
     {
         return $this->permanent;
     }
@@ -161,9 +163,9 @@ class Statut
      *
      * @return boolean
      */
-    public function isPermanent()
+    public function isPermanent(): bool
     {
-        return $this->permanent;
+        return $this->getPermanent();
     }
 
     /**

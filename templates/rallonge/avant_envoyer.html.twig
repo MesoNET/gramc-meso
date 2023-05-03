@@ -6,7 +6,7 @@
     <section>
         <div class="information attention">
             <h2>Envoi de la demande pas possible actuellement</h2>
-            <p>Votre demande de rallonge pour le projet {{  projet }} (session {{ session }}) ne <strong>peut pas</strong> être envoyée pour expertise en l'état.
+            <p>Votre demande d'extension pour le projet {{  projet }} ne <strong>peut pas</strong> être envoyée pour expertise en l'état.
             Merci de corriger les erreurs:</p>
             {% for erreur in erreurs %}
                 <p><strong>ERREUR:</strong> {{ erreur }}</p>
@@ -16,12 +16,13 @@
             <a class="lien_actif" href="{{ path( 'consulter_rallonge', { 'id': rallonge.idRallonge } )}}" title="Retourner à la rallonge">Retourner</a>
         </li></ul></nav>
     </section>
-    {% else %}
+
+{% else %}
 
     <section>
-        <h2>Projet {{ projet }}, session {{   session }}: Confirmation d'envoi d'une demande de rallonge</h2>
+        <h2>Projet {{ projet }}, version {{ rallonge.version.nbversion}}: Confirmation d'envoi d'une demande d'extension</h2>
         <div class="information">
-            <h2>Attention</h2>Vous êtes sur le point d'envoyer votre demande pour expertise.<br>
+            <h2>Attention</h2>Vous êtes sur le point d'envoyer votre demande en validation.<br>
 
         </div>
         <nav>
@@ -34,12 +35,8 @@
                 </li>
             </ul>
         </nav>
-
     </section>
 
-
 {% endif %}
-
-
 
 {% endblock %}

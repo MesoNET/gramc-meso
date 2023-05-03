@@ -96,12 +96,12 @@ class Dar
      *
      * @return integer
      */
-    public function getIdDar(): int
+    public function getIdDar(): ?int
     {
         return $this->idDar;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idDar;
     }
@@ -125,7 +125,7 @@ class Dar
      *
      * @return Dar
      */
-    public function setRallonge(\App\Entity\Rallonge $rallonge): self
+    public function setRallonge(?\App\Entity\Rallonge $rallonge): self
     {
         $this->rallonge = $rallonge;
 
@@ -137,7 +137,7 @@ class Dar
      *
      * @return \App\Entity\Rallonge
      */
-    public function getRallonge(): \App\Entity\Rallonge
+    public function getRallonge(): ?\App\Entity\Rallonge
     {
         return $this->rallonge;
     }
@@ -149,7 +149,7 @@ class Dar
      *
      * @return Dar
      */
-    public function setRessource(\App\Entity\Ressource $ressource): self
+    public function setRessource(?\App\Entity\Ressource $ressource): self
     {
         $this->ressource = $ressource;
 
@@ -161,7 +161,7 @@ class Dar
      *
      * @return \App\Entity\Ressource
      */
-    public function getRessource()
+    public function getRessource(): ?\App\Entity\Ressource
     {
         return $this->ressource;
     }
@@ -171,7 +171,7 @@ class Dar
      *
      * @return integer
      */
-    public function getDemande(): int
+    public function getDemande(): ?int
     {
         return $this->demande;
     }
@@ -182,7 +182,7 @@ class Dar
      * @param int
      * @return Dar
      */
-    public function setDemande(int $demande): Self
+    public function setDemande(int $demande): self
     {
         $this->demande = $demande;
         return $this;
@@ -193,7 +193,7 @@ class Dar
      *
      * @return integer
      */
-    public function getAttribution(): int
+    public function getAttribution(): ?int
     {
         return $this->attribution;
     }
@@ -204,7 +204,7 @@ class Dar
      * @param integer
      * @return Dar
      */
-    public function setAttribution(int $attribution): Self
+    public function setAttribution(int $attribution): self
     {
         $this->attribution = $attribution;
         return $this;
@@ -217,7 +217,7 @@ class Dar
      *
      * @return Version
      */
-    public function setTodof(bool $todof): Self
+    public function setTodof(bool $todof): self
     {
         $this->todof = $todof;
 

@@ -64,7 +64,7 @@ use Symfony\Component\Form\Esxtension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Doctrine\ORM\EntityManagerInterface;
 
-include_once(__DIR__.'/../../jpgraph/JpGraph.php');
+//include_once(__DIR__.'/../../jpgraph/JpGraph.php');
 
 /**
  * Statistiques controller.
@@ -143,8 +143,6 @@ class StatistiquesController extends AbstractController
         $menu[] = $sm->statistiquesLaboratoire();
         $menu[] = $sm->statistiquesEtablissement($annee);
         $menu[] = $sm->statistiquesThematique($annee);
-        $menu[] = $sm->statistiquesMetathematique($annee);
-        $menu[] = $sm->statistiquesRattachement($annee);
         $menu[] = $sm->statistiquesCollaborateur($annee);
         $menu[] = $sm->statistiquesRepartition();
 
@@ -195,8 +193,6 @@ class StatistiquesController extends AbstractController
         //$menu[] = $sm->statistiquesLaboratoire();
         //$menu[] = $sm->statistiquesEtablissement($annee);
         //$menu[] = $sm->statistiquesThematique($annee);
-        //$menu[] = $sm->statistiquesMetathematique($annee);
-        //$menu[] = $sm->statistiquesRattachement($annee);
         //$menu[] = $sm->statistiquesCollaborateur($annee);
         //$menu[] = $sm->statistiquesRepartition();
 
@@ -663,33 +659,6 @@ class StatistiquesController extends AbstractController
         return $this->parCritere($request, "getAcroThematique", "thématique");
     }
 
-    /**
-     * @Route("/metathematique", name="statistiques_metathematique",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function metathematiqueAction(Request $request): Response
-    {
-        return $this->parCritere($request, "getAcroMetaThematique", "métathématique");
-    }
-
-    /**
-     * @Route("/rattachement", name="statistiques_rattachement",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function rattachementAction(Request $request): Response
-    {
-        return $this->parCritere($request, "getAcroRattachement", "rattachement");
-    }
-
-    /**
-     * @Route("/{annee}/rattachement_csv", name="statistiques_rattachement_csv",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function rattachementCSVAction(Request $request, $annee)
-    {
-        return $this->parCritereCSV($request, $annee, "getAcroRattachement", "rattachement");
-    }
-
     /* Cette fonction est appelée par laboratoireCSVAction, etablissementCSVAction etc. */
     private function parCritereCSV(Request $request, $annee, $critere, $titre): Response
     {
@@ -740,15 +709,6 @@ class StatistiquesController extends AbstractController
         }
 
         return Functions::csv($sortie, "statistiques_$titre.csv");
-    }
-
-    /**
-     * @Route("/{annee}/metathematique_csv", name="statistiques_métathématique_csv",methods={"GET","POST"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     */
-    public function metathematiqueCSVAction(Request $request, $annee): Response
-    {
-        return $this->parCritereCSV($request, $annee, "getAcroMetaThematique", "métathématique");
     }
 
     /**

@@ -1,0 +1,479 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/macros_docattaches.html.twig" as gramcdocmacros %}
+{% import "default/macros_conso.html.twig" as gramcconsomacros %}
+
+{% import "default/icone.html.twig" as icones %}
+
+{% block myjavascripts %}
+    <script src="{{ asset('js/projet.js') }}"></script>
+{% endblock myjavascripts %}
+
+{% block body %}
+
+    <section id="consulter_projet" style="stroke:black">
+
+        <div class="top_body">
+            {% if app.debug and not pdf is defined %}
+                <div class="info_debug">
+                    <strong>DEBUG</strong>
+                    <p>Type du projet {{projet.id}} = <strong>{{ projet.typeprojet}}</strong></p>
+                    <p>Etat du projet {{projet.id }}= <strong>{{ projet.getEtatProjet }}</strong></p>
+                    <p>Type de la version {{version.id}} = <strong>{{ version.typeversion}}</strong></p>
+                    <p>Etat de la version {{version.idVersion }} = <strong>{{ version.getEtatVersion }}</strong></p>
+                </div>
+            {% endif %}
+            {% if version.majInd != null and not pdf is defined %}
+                <em>Dernière modification par {{ version.majInd }}
+                    le {{ version.majStamp|date('Y-m-d H:i:s') }}</em>
+            {% endif %}
+        </div>
+
+        <h2>
+            Projet : {{ projet }}
+            (version {{ version.nbversion }})
+            <br>
+            <small>
+                <em>{{ version.getMetaEtat }}
+                    {% if version.etat == 5 or version.etat == 6 %} jusqu'au {{version.limitdate|date('Y-m-d')}}{% endif %}
+                    {% if version.etat == 2 or version.etat == 3 %} <br>Les ressources seront attribuées jusqu'au {{"now"|date_modify("+365 day")|date('Y-m-d')}} (au moins){% endif %}
+                    {% if version.etat == 7 %} <br>avant le {{version.limitdate|date('d-m-Y')}}{% endif %}
+                    {% if version.etat == 8 %} <br>Peut être renouvelé jusqu'au {{version.limitdate|date_modify("+365 day")|date('Y-m-d')}}{% endif %}
+                </em>
+            </small>
+        </h2>
+
+        {% if version_form is defined %}
+            <section class="historique inputrond submitdyn">
+                <h3>Version :
+                </h3> {{ form_start(version_form) }} {{ form_widget(version_form.version) }}{{ form_widget(version_form.submit) }} {{ form_end(version_form) }}
+            </section>
+        {% endif %}
+
+        {% if version.collaborateur(app.token.user) or is_granted('ROLE_ADMIN') %}
+            <div class="menu">
+                {{ gramcmacros.menu(menu) }}
+            </div>
+        {% endif %}
+
+        {% if version.collaborateur(app.token.user) and not pdf is defined %}
+            <div class="information ok">
+                <h2>Liste de choses à faire</h2>
+                <ol>
+                    {% for m in menu %}
+                        {% if m.todo is defined %}
+                            <li>{{ m.todo|raw }}</li>
+                        {%endif %}
+                    {% endfor %}
+                </ol>
+            </div>
+        {% endif %}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="separateur"></div>
+        {% endif %}
+
+        {% if not pdf is defined %}
+            <section class="supplement">
+    
+            <a title="Version pdf" class="lien_supplementaire" target="_blank" href="{{ path('version_pdf', { 'id' : version.idVersion }) }}"> {{icones.pdf}}
+                <p>Version pdf</p>
+            </a>
+
+            {% if rapport_dactivite %}
+                {% if ( rapport_1 != null   ) %}
+                    <a title="Rapport d'activité 2021" class="lien_supplementaire" target="_blank" href="{{ path('rapport', { 'id' : version.idVersion, 'annee' : version.getAnneeSession() - 1 }) }}"> {{icones.pdf}}
+                        <p>Rapport d'activité {{ version.getAnneeSession - 1 }}</p>
+                    </a>
+                {%  endif %}
+      
+                {% if ( rapport != null ) %}
+                    <a class="lien_supplementaire" target="_blank" href="{{ path('rapport', { 'id' : version.idVersion, 'annee' : version.getAnneeSession() }) }}"> {{icones.pdf}}
+                        <p>Rapport d'activité {{ version.getAnneeSession }}</p>
+                    </a>
+                {%  endif %}
+            {% endif %}
+            {% if fichier_attache %}
+                {% if document != null %}
+                    <a class="lien_supplementaire" target="_blank" href="{{ path('document', { 'id' : version.idVersion }) }}"> {{icones.pdf}}
+                        <p>Document attaché</p>
+                    </a>
+                {% endif %}
+            {% endif %}
+   
+            {# Pour les figures (pour les iframes de conso ?) #}
+            <div id="dialog"></div>
+            
+            {# Pour deboguer les fonctions de generation de graphes de conso1
+                <img src="data:image/png;base64, {{ conso1 }}" />
+                <img src="data:image/png;base64, {{ conso2 }}" />
+            #}
+            </section>
+        {% endif %}
+    
+{% if pdf is defined %}
+    <div id="I" class="details">
+        <h3>Présentation générale</h3>
+{% else %}
+    <details id="I">
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Présentation générale</summary>
+{% endif %}
+
+        <div class="chapitre">
+        <table class="table_vertical">
+            <tbody>
+                <tr>
+                    <th>Titre</th>
+                    <td>{{ version.prjTitre }}</td>
+                </tr>
+
+                <tr>
+                    <th>Thématique</th>
+                    <td>{{ version.prjThematique }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Laboratoire et responsable du projet :</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Mail</th>
+                    <th>Statut</th>
+                    <th>Laboratoire *</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>{{version.getResponsable }}</td>
+
+                    <td>{% if ( not version.getResponsable == null ) %} 
+                        {{version.getResponsable.Mail }}
+                    {% endif %}</td>
+
+                    <td>{% if ( not version.getResponsable == null ) %}
+                        {{version.getResponsable.Statut }}
+                    {% endif %}</td>
+
+                    <td>{{version.getPrjLLabo }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="info_supplementaire">* Le laboratoire associé au projet est le laboratoire du responsable</p>
+        <h4>Personnes participant au projet :</h4>
+        
+        <table>
+            <thead>
+                <tr>
+                    {# Il y a au moins UN collaborateur (le responsable !) #}
+                    {% for s in serviceServeurs.getServeurs %}
+                        <th>{{s}}</th>
+                    {% endfor %}
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Mail</th>
+                    <th>Statut</th>
+                    <th>Laboratoire</th>
+                    <th>Établissement</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for cv in version.CollaborateurVersion %}
+                    {% if not cv.deleted %}
+                        <tr style="stroke:black;">
+                            {% for s in serviceServeurs.getServeurs %}
+                                {% set u=serviceUsers.getUser(cv.collaborateur,version.projet,s) %}
+                                <td>{% if u.login %}oui{% else %}-{%endif%}</td>
+                            {%endfor%}
+
+                            <td>{{ cv.Collaborateur.prenom }}</td>
+
+                            <td>{{ cv.Collaborateur.nom }}</td>
+
+                            <td>{{ cv.Collaborateur.mail }}</td>
+
+                            <td>
+                                {% if( not ( cv.Collaborateur.statut == null ) ) %} {{ cv.Collaborateur.statut }}
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if( not ( cv.Collaborateur.labo == null ) ) %} {{ cv.Collaborateur.labo.getAcroLabo }}
+                                {% endif %}
+                            </td>
+                            
+                            <td>{{ cv.Collaborateur.etab }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if version.prjFinancement != null %}
+        <h4>Financement :</h4>
+        <p class="financement">{{ version.prjFinancement }}</p>
+        {% endif %}
+
+        <h4>Utilisation des moyens de calcul de GENCI :</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Centre</th>
+                    <th>Machine</th>
+                    <th>Heures accordées</th>
+                    <th>N° de projet</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>{{ version.prjGenciCentre }}</td>
+
+                    <td>{{ version.prjGenciMachines }}</td>
+
+                    <td>{{ version.prjGenciHeures }}</td>
+
+                    <td>{{ version.prjGenciDari }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% if pdf is defined %}
+    <div id="II" class="details">
+        <h3>Description scientifique du projet de recherche</h3>
+{% else %}
+    <details id="II">
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Description scientifique du projet de recherche</summary>
+{% endif %}
+
+    <div class="chapitre">
+
+        {% if not ( version.prjJustifRenouv == null ) %}
+
+            <h4>Justification du renouvellement :</h4>
+            <div class="description">
+                <p>{{ version.prjJustifRenouv | e | nl2br }}</p>
+                {{ gramcdocmacros.display_images(img_justif_renou) }}
+            </div>
+
+        {% endif %}
+
+        <h4>Exposé Scientifique :</h4>
+        <div class="description"><p>{{ version.prjExpose | e | nl2br}}</p>
+            {{ gramcdocmacros.display_images(img_expose) }}
+        </div>
+
+    </div>
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% if pdf is defined %}
+    <div id="III" class="details">
+        <h3>Description technique du projet</h3>
+{% else %}
+    <details id="III">
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Description technique du projet</summary>
+{% endif %}
+
+    <div class="chapitre">
+
+        <h4>Description du code de calcul :</h4>
+        <div class="tableaux">
+            <table class="table_vertical">
+                <tbody>
+                    <tr>
+                        <th>Nom du code</th>
+                        <td>{{ version.codeNom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Licence</th>
+                        <td>{{ version.codeLicence }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% if pdf is defined %}
+    <div class="details">
+        <h3>Formation</h3>
+{% else %}
+    <details>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Formation</summary>
+{% endif %}
+    <div class="chapitre">
+
+        {% if version.formationversion|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Intitulé</th>
+                    <th>Nombre de personnes intéressées</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vf in version.formationversion %}
+                <tr>
+                    <td>{{vf.formation.acroform}}</td>
+                    <td>{{vf.formation.nomform}}</td>
+                    <td>{{vf.nombre}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>Autres demandes</td>
+                    <td><em>Oups, code à écrire</em></td>
+                </tr>
+            </tbody>
+        </table>
+        {% else %}
+        <p class="centrage"><em>Pas de formation demandée pour ce projet !</em></p>
+        {% endif %}
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% for d in version.dac %}
+
+    {% if pdf is defined %}
+        <div class="details">
+            <h3>{{serviceRessources.getnomcomplet(d.ressource)}}</h3>
+    {% else %}
+        <details>
+            <summary>{{icones.plus_summary}}{{icones.trait_summary}}{{serviceRessources.getnomcomplet(d.ressource)}}</summary>
+    {% endif %}
+        <div class="chapitre">
+            <table class="table_vertical">
+                <tbody>
+                    <tr>
+                        <th>Demande ({{d.ressource.unite}})</th>
+                        <td>{{ serviceDacs.getDemandeConsolidee(d)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                    <tr>
+                        <th>Attribution ({{d.ressource.unite}})</th>
+                        <td>{{ serviceDacs.getAttributionConsolidee(d)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% if pdf is defined %}
+        </div>
+    {% else %}
+        </details>
+    {% endif %}
+{% endfor %}
+
+{% if version.etat in [ 4, 5, 6, 9 ] %}
+
+{% if pdf is defined %}
+    <div class="details">
+        <h3>Commentaire des valideurs</h3>
+{% else %}
+    <details>
+        <summary>{{icones.plus_summary}}{{icones.trait_summary}}Commentaire des valideurs</summary>
+{% endif %}
+
+    <div class="chapitre">
+
+        <h4>Demande initiale</h4>
+        {% for expertise in version.expertise %}
+        <table class="table_vertical">
+            <tbody>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') or version.isExpertDe(app.user) %}
+                    <tr>
+                        <th>Commentaire pour le responsable</th>
+                        <td>{{ expertise.commentaireExterne | e | nl2br}}</td>
+                    </tr>
+                    <tr>
+                        <th>Commentaire pour le comité</th>
+                        <td>{{ expertise.commentaireInterne | e | nl2br}}</td>
+                    </tr>
+                     <tr>
+                        <th>Validé par</th>
+                        <td>{{ expertise.expert | e | nl2br}}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th style="width: 12em;">Commentaire</th>
+                        <td>{{ expertise.commentaireExterne | e | nl2br}}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% endfor %}
+
+        {% if version.rallonge is not empty %}
+        <h4><span title="ou demande au file de l'eau ou rallonge">Demandes d'extension</span> :</h4>
+        <table class="table_vertical">
+            <tbody>
+            {% for r in version.rallonge %}
+                {% for d in r.dar %}
+                    <tr>
+                        <th>Demande pour {{serviceRessources.getnomcomplet(d.ressource)}} ({{d.ressource.unite}})</th>
+                        <td>{{ (d.demande)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                    <tr>
+                        <th>Attribution pour {{serviceRessources.getnomcomplet(d.ressource)}} ({{d.ressource.unite}})</th>
+                        <td>{{ (d.attribution)|number_format(0, ',', ' ')|replace({' ':'&nbsp;'})|raw }}</td>
+                    </tr>
+                {% endfor %}
+                {% if is_granted('ROLE_ADMIN') or version.isExpertDe(app.user) %}
+                <tr>
+                    <th>Commentaire pour le responsable</th>
+                    <td>{{ r.commentaireExterne | e | nl2br}}</td>
+                </tr>
+                <tr>
+                    <th>Commentaire pour le comité</th>
+                    <td>{{ r.commentaireInterne | e | nl2br}}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <th style="witdh: 15em">Commentaire</th>
+                    <td>{{ r.commentaireExterne | e | nl2br}}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        <br>
+    </div>
+
+{% if pdf is defined %}
+    </div>
+{% else %}
+    </details>
+{% endif %}
+
+{% endif %}
+
+</section>
+{% endblock %}

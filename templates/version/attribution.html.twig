@@ -1,0 +1,63 @@
+{% extends 'default/base.html.twig' %}
+
+
+{% import "default/macros_panneau_enregistrer.html.twig" as panneau_enregistrer %}
+
+{% block body %}
+
+<section id="section_modifierProjet">
+
+    <h1>Modification des attributions pour la version {{ version }}</h1>
+
+    {% if not erreurs == null %}
+        <div class="information attention">
+            <h2>ATTENTION</h2>
+            <p>Vous devez corriger les erreurs avant d'envoyer en expertise</p>
+            {% for erreur in erreurs %}
+            <p><strong>ERREUR</strong>: {{ erreur }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {{ form_start(edit_form) }}
+
+   {% for form in ressource_form.children.ressource.children %}
+        <h2>{{serviceRessources.getnomcomplet(form.vars.data.ressource)}}</h2>
+    
+        <div class="information ok">
+            <p>{{ form.vars.data.ressource.desc|raw|nl2br }}</p>
+            {% if form.vars.data.ressource.docurl != null %}
+            <br><p><strong>Documentation technique</strong>: <a href="{{form.vars.data.ressource.docurl}}">{{form.vars.data.ressource.docurl}}</a></p>
+            {% endif %}
+        </div>
+    
+        <div class="inputs"  id="{{serviceRessources.getnomcomplet(form.vars.data.ressource,'__')}}" >
+            <div class="input">
+            <strong>{{ form.vars.data.ressource.unite }}:</strong>
+            {{ form_widget( form.attribution) }}
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Les boutons pour enregistrer / fermer #}
+    {{ panneau_enregistrer.panneau_enregistrer(edit_form,false) }}
+
+    {{ form_end(edit_form) }}
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+{% endblock %}

@@ -51,37 +51,9 @@ class CollaborateurVersion
     /**
      * @var boolean
      *
-     * @ORM\Column(name="delt", type="boolean", nullable=false, options={"comment":"login Turpan à supprimer"})
-     */
-    private $delt = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="delb", type="boolean", nullable=false, options={"comment":"login Boreale à supprimer"})
-     */
-    private $delb = false;
-
-    /**
-     * @var boolean
-     *
      * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"comment":"supprimé prochainement"})
      */
     private $deleted = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="logint", type="boolean", nullable=false, options={"comment":"login sur Turpan"}))
-     */
-    private $logint = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="loginb", type="boolean", nullable=false, options={"comment":"login sur Boreale"}))
-     */
-    private $loginb = false;
 
     /**
      * @var \App\Entity\Statut
@@ -145,14 +117,8 @@ class CollaborateurVersion
     public function __toString()
     {
         $output = '{';
-        if ($this->getResponsable() == true) {
+        if ($this->getResponsable() === true) {
             $output .= 'responsable:';
-        }
-        if ($this->getLogint() == true) {
-            $output .= 'login TURPAN:';
-        }
-        if ($this->getLoginb() == true) {
-            $output .= 'login BOREALE:';
         }
         $output .= 'version=' . $this->getVersion() .':';
         $output .= 'id=' . $this->getId() . ':';
@@ -165,11 +131,6 @@ class CollaborateurVersion
 
     public function __construct(Individu $individu = null, Version $version = null)
     {
-        $this->logint = false;
-        $this->loginb = false;
-        $this->delt = false;
-        $this->delb = false;
-        
         $this->responsable = false;
 
         if ($individu != null) {
@@ -191,7 +152,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setResponsable($responsable)
+    public function setResponsable(bool $responsable): self
     {
         $this->responsable = $responsable;
 
@@ -203,57 +164,9 @@ class CollaborateurVersion
      *
      * @return boolean
      */
-    public function getResponsable()
+    public function getResponsable(): bool
     {
         return $this->responsable;
-    }
-
-    /**
-     * Set delt
-     *
-     * @param boolean $delt
-     *
-     * @return CollaborateurVersion
-     */
-    public function setDelt($delt)
-    {
-        $this->delt = $delt;
-
-        return $this;
-    }
-
-    /**
-     * Get delt
-     *
-     * @return boolean
-     */
-    public function getDelt()
-    {
-        return $this->delt;
-    }
-
-    /**
-     * Set delb
-     *
-     * @param boolean $delb
-     *
-     * @return CollaborateurVersion
-     */
-    public function setDelb($delb)
-    {
-        $this->delb = $delb;
-
-        return $this;
-    }
-
-    /**
-     * Get delb
-     *
-     * @return boolean
-     */
-    public function getDelb()
-    {
-        return $this->delb;
     }
 
     /**
@@ -263,7 +176,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setDeleted($deleted)
+    public function setDeleted(bool $deleted): self
     {
         $this->deleted = $deleted;
 
@@ -275,57 +188,9 @@ class CollaborateurVersion
      *
      * @return boolean
      */
-    public function getDeleted()
+    public function getDeleted(): bool
     {
         return $this->deleted;
-    }
-
-    /**
-     * Set logint
-     *
-     * @param boolean $logint
-     *
-     * @return CollaborateurVersion
-     */
-    public function setLogint($logint)
-    {
-        $this->logint = $logint;
-
-        return $this;
-    }
-
-    /**
-     * Get logint
-     *
-     * @return boolean
-     */
-    public function getLogint()
-    {
-        return $this->logint;
-    }
-
-    /**
-     * Set loginb
-     *
-     * @param boolean $loginb
-     *
-     * @return CollaborateurVersion
-     */
-    public function setLoginb($loginb)
-    {
-        $this->loginb = $loginb;
-
-        return $this;
-    }
-
-    /**
-     * Get loginb
-     *
-     * @return boolean
-     */
-    public function getLoginb()
-    {
-        return $this->loginb;
     }
 
     /**
@@ -333,7 +198,7 @@ class CollaborateurVersion
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -345,7 +210,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setStatut(\App\Entity\Statut $statut = null)
+    public function setStatut(?\App\Entity\Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -357,7 +222,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Statut
      */
-    public function getStatut()
+    public function getStatut(): ?\App\Entity\Statut
     {
         return $this->statut;
     }
@@ -369,7 +234,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setVersion(\App\Entity\Version $version = null)
+    public function setVersion(?\App\Entity\Version $version = null): self
     {
         $this->version = $version;
 
@@ -381,7 +246,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Version
      */
-    public function getVersion()
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
     }
@@ -393,7 +258,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setLabo(\App\Entity\Laboratoire $labo = null)
+    public function setLabo(?\App\Entity\Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -405,7 +270,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Laboratoire
      */
-    public function getLabo()
+    public function getLabo(): ?\App\Entity\Laboratoire
     {
         return $this->labo;
     }
@@ -417,7 +282,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setEtab(\App\Entity\Etablissement $etab = null)
+    public function setEtab(?\App\Entity\Etablissement $etab = null): self
     {
         $this->etab = $etab;
 
@@ -429,7 +294,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Etablissement
      */
-    public function getEtab()
+    public function getEtab(): ?\App\Entity\Etablissement
     {
         return $this->etab;
     }
@@ -441,7 +306,7 @@ class CollaborateurVersion
      *
      * @return CollaborateurVersion
      */
-    public function setCollaborateur(\App\Entity\Individu $collaborateur = null)
+    public function setCollaborateur(?\App\Entity\Individu $collaborateur = null): self
     {
         $this->collaborateur = $collaborateur;
 
@@ -453,7 +318,7 @@ class CollaborateurVersion
      *
      * @return \App\Entity\Individu
      */
-    public function getCollaborateur(): Individu
+    public function getCollaborateur(): ?\App\Entity\Individu
     {
         return $this->collaborateur;
     }

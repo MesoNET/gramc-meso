@@ -38,5 +38,5 @@ interface Demande
 
 //    public function setAttrHeures($attrHeures);
 //    public function setDemHeures($demHeures);
-    public function setEtat($etat);
+    public function setEtat(int $etat): self;
 }

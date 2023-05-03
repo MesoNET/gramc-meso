@@ -27,16 +27,13 @@
 
     <div class="formulaire">
     {{ form_start( form  )  }}
-    <table>
-        <tr><td class="center" ><label><strong>projet </strong></label></td><td>{{ form_widget( form.projet ) }}</td></tr>
-        <tr class="inputrond"><td class="center" ><label> <strong>Type de document </strong></td><td>{{ form_widget( form.type ) }}</td></tr>
-        <tr><td class="center" ><label><strong>Session (def {{def_sess}})</strong><br><small>Pour une fiche projet</small> </td><td></label>{{ form_widget( form.session ) }}</td></tr>
-        <tr><td class="center" ><label> <strong>Année (def {{def_annee}})</strong><br><small>Pour un rapport d'activité</small></label></td><td>{{ form_widget( form.annee) }}</td></tr>
-        <tr class="inputrond" ><td class="center" ><label><strong>Fichier à téléverser</strong></td><td>{{ form_widget( form.file) }}</td></tr>
-        <tr class="inputrond submitdyn"><td>&nbsp;</td><td><input name="submit" value="Téléverser" type="submit"></td></tr>
+    <table id="telgen">
+        <tr><td class="center" ><label><strong>Version</strong></label></td><td>{{ form_widget( form.version ) }}</td></tr>
+        <tr class="inputrond submitdyn"><td class="center" ><label> <strong>Type de document </strong></td><td>{{ form_widget( form.type ) }} {{ form_widget( form.televerser ) }}</td></tr>
+        <tr class="inputrond submitdyn"><td class="center" ><strong>Attribution</strong></td><td>{{ form_widget( form.attribution )}}</td></tr>
     </table>
     {{ form_end(form) }}
-    
+{#    
     <h2>Modifier l'attribution de la version</h2>
 
     <div class="information attention">
@@ -69,7 +66,7 @@
             </li>
         </ul>
     </nav>
-
+#}
 </section>
 
 {% endblock body %}

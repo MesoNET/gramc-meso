@@ -38,7 +38,7 @@
                 </a>
             </td>
             {% endif %}
-            <td>{% if form.numeroform<10 %}{{ form.numeroform }}{% else %} <em>aucun</em> (n°{{form.numeroform}}){% endif %}</td>
+            <td>{{ form.numeroform }}</td>
             <td> {{ form.acroform }}</td>
             <td>{{ form.nomform }}</td>
             <td>{{ form.startdate|date("d/m/Y") }}</td>

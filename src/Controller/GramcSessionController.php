@@ -48,8 +48,6 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
-use App\GramcServices\PropositionExperts\PropositionExpertsType1;
-use App\GramcServices\PropositionExperts\PropositionExpertsType2;
 use App\GramcServices\GramcDate;
 use App\Security\User\UserChecker;
 
@@ -83,6 +81,8 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Symfony\Component\HttpKernel\Kernel;
+
 use Twig\Environment;
 
 /////////////////////////////////////////////////////
@@ -104,11 +104,8 @@ class GramcSessionController extends AbstractController
         private ServicePhpSessions $sps,
         private ServiceProjets $sp,
         private ServiceSessions $ss,
-        private PropositionExpertsType1 $pe1,
-        private PropositionExpertsType2 $pe2,
         private GramcDate $sd,
         private ServiceVersions $sv,
-        private ProjetWorkflow $pw,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private TokenStorageInterface $ts,
@@ -119,7 +116,7 @@ class GramcSessionController extends AbstractController
 
     /**
      * @Route("/admin/accueil",name="admin_accueil", methods={"GET"})
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
+     * @Security("is_granted('ROLE_OBS')")
     **/
 
     public function adminAccueilAction(): Response
@@ -140,38 +137,16 @@ class GramcSessionController extends AbstractController
         $menu1[] = $sm->gererIndividu();
         $menu1[] = $sm->gererInvitations();
 
-        $menu2 = [];
-        if ($this->getParameter('nosession')==false)
-        {
-            $menu2[] = $sm->gererSessions();
-            $menu2[] = $sm->bilanSession();
-
-            $menu2[] = $sm->mailToResponsablesRallonge();
-            $menu2[] = $sm->mailToResponsables();
-            $menu2[] = $sm->mailToResponsablesFiche();
-
-            $menu3[] = $sm->projetsSession();
-            $menu3[] = $sm->projetsAnnee();
-        }
-        //$menu3[] = $sm->projetsTous();
         $menu3[] = $sm->projetsDyn();
         $menu3[] = $sm->rallongesDyn();
-
-        if ($this->getParameter('nodata')==false) {
-            $menu3[] = $sm->projet_donnees();
-        }
         $menu3[] = $sm->televersementGenerique();
 
         $menu4[] = $sm->gererFormations();
         $menu4[] = $sm->gererLaboratoires();
-        if ($this->getParameter('norattachement')==false) $menu4[] = $sm->gererRattachements();
         $menu4[] = $sm->gererThematiques();
         $menu4[] = $sm->gererServeurs();
         $menu4[] = $sm->gererResources();
-        //$menu4[] = $sm->gererMetathematiques();
 
-        //$menu5[] = $sm->bilanAnnuel();
-        //$menu5[] = $sm->statistiques();
         $menu5[] = $sm->statistiquesDyn();
         $menu5[] = $sm->statistiquesFormation();
         $menu5[] = $sm->publicationsAnnee();
@@ -184,7 +159,6 @@ class GramcSessionController extends AbstractController
         $menu6[] = $sm->nettoyerRgpd();
 
         return $this->render('default/accueil_admin.html.twig', ['menu1' => $menu1,
-                                                                // 'menu2' => $menu2,
                                                                 'menu3' => $menu3,
                                                                 'menu4' => $menu4,
                                                                 'menu5' => $menu5,
@@ -219,19 +193,6 @@ class GramcSessionController extends AbstractController
         $token = $this->ts->getToken();
         
         $session = null;
-        if ($this->getParameter('nosession')==false)
-        {
-            // Lors de l'installation, aucune session n'existe: redirection
-            // vers l'écran de création de session, le seul qui fonctionne !
-            $session= $ss->getSessionCourante();
-            if ($session == null) {
-                if ($this->ac->isGranted('ROLE_ADMIN')) {
-                    return $this->redirectToRoute('gerer_sessions');
-                }
-                return $this->redirectToRoute('projet_accueil');
-            }
-        }
-
         if ($token != null)
         {
             $individu = $token->getUser();
@@ -249,23 +210,6 @@ class GramcSessionController extends AbstractController
         }
 
         return $this->render('default/accueil.html.twig');
-    }
-
-    /**
-     * @Route("/president", name="president_accueil", methods={"GET"} )
-     * @Security("is_granted('ROLE_PRESIDENT')")
-     */
-    public function presidentAccueilAction(): Response
-    {
-        $sm     = $this->sm;
-        $menu[] = $sm->affecterExperts();
-        
-        if ($this->getParameter('noedition_expertise')==false) {
-            $menu[] = $sm->commSess();
-        }
-        $menu[] = $sm->affecterExpertsRallonges();
-        /* $menu[] = $sm->affectation_test(); */
-        return $this->render('default/president.html.twig', ['menu' => $menu]);
     }
 
     /**
@@ -601,10 +545,11 @@ class GramcSessionController extends AbstractController
      *********************************************/
     public function infoAction(Request $request): Response
     {
+        $sf_version = Kernel::VERSION;
         ob_start();
         phpinfo();
         $info = ob_get_clean();
-        return $this->render('default/phpinfo.html.twig', [ 'info' => $info ]);
+        return $this->render('default/phpinfo.html.twig', [ 'sfversion' => $sf_version, 'info' => $info ]);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////

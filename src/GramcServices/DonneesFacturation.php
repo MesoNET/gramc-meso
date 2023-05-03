@@ -65,7 +65,7 @@ class DonneesFacturation
                         continue;
                     }
                     // On ne garde que les fichiers dfctN.pdb avec N=1..9
-                    if (preg_match('/^dfct[123456789]\.pdb$/', $entry)===1) {
+                    if (preg_match('/^dfct[123456789]\.pdb$/', $entry) === 1) {
                         $dfct_files[] = $entry;
                     }
                     sort($dfct_files);
@@ -98,13 +98,13 @@ class DonneesFacturation
     {
         $f = $this->getDirName($projet, $annee) . '/dfct'.$nb.'.pdb';
         if (is_file($f)) {
-            if ($new==false) {
+            if ($new === false) {
                 return $f;
             } else {
                 return '';
             }
         } else {
-            if ($new==true) {
+            if ($new === true) {
                 return $f;
             } else {
                 return '';
@@ -116,9 +116,15 @@ class DonneesFacturation
     /*
      * Renvoie la consomation du projet entre deux dates
      * Renvoie -1 s'il y a une incohérence de dates
+     *
+     *
+     * TODO - A REFAIRE COMPLETEMENT POUR LES PROJETS DYNAMIQUES !!!!!
+     *
+     * 
      */
     public function getConsoPeriode(Projet $projet, \Datetime $debut_periode, \DateTime $fin_periode): int
     {
+        return 0;
         // conso en début de période, ie date de début à 0h00
         // Avant le 20 Janvier on considère que la conso vaut 0
         // (la RAZ a eu lieu début Janvier)
@@ -161,7 +167,7 @@ class DonneesFacturation
         }
 
         $numeros = $this->getNbEmises($projet, $annee);
-        if (count($numeros)==0) {
+        if (count($numeros) === 0) {
             $nb = 1;
         } else {
             sort($numeros, SORT_NUMERIC);
@@ -170,7 +176,7 @@ class DonneesFacturation
 
         $path = $this->getPath($projet, $annee, $nb, true);
 
-        if ($path=='') {
+        if ($path === '') {
             $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . " getPath renvoie vide ($projet $annee $nb");
         }
 

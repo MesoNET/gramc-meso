@@ -25,6 +25,8 @@
 namespace App\Controller;
 
 use App\Entity\Laboratoire;
+use App\Entity\Adresseip;
+
 use App\Utils\Functions;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +35,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormInterface;
+
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -56,7 +64,7 @@ class LaboratoireController extends AbstractController
         $em = $this->em;
 
         // Si on n'est pas admin on n'a pas accès au menu
-        $menu = $ac->isGranted('ROLE_ADMIN') ? [ ['ok' => true,'name' => 'ajouter_laboratoire' ,'lien' => 'Ajouter un laboratoire','commentaire'=> 'Ajouter un laboratoire'] ] : [];
+        $menu = ($ac->isGranted('ROLE_ADMIN') or $ac->isGranted('ROLE_VALIDEUR')) ? [ ['ok' => true,'name' => 'ajouter_laboratoire' ,'lien' => 'Ajouter un laboratoire','commentaire'=> 'Ajouter un laboratoire'] ] : [];
 
         return $this->render(
             'laboratoire/liste.html.twig',
@@ -71,8 +79,7 @@ class LaboratoireController extends AbstractController
      * Ajoute un nouveau laboratoire
      *
      * @Route("/ajouter", name="ajouter_laboratoire", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
     public function ajouterAction(Request $request): Response
     {
@@ -83,7 +90,7 @@ class LaboratoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->em;
             $em->persist($laboratoire);
-            if (Functions::Flush($em,$request)) return $this->redirectToRoute('gerer_laboratoires');
+            if (Functions::Flush($em,$request)) return $this->redirectToRoute('modifier_laboratoire', [ 'id' => $laboratoire->getId() ]);
         }
 
         return $this->render(
@@ -104,11 +111,10 @@ class LaboratoireController extends AbstractController
     /**
      * Modifie un laboratoire
      *
-     * @Route("/{id}/modify", name="modifier_laboratoire", methods={"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
+     * @Route("/{id}/modifier", name="modifier_laboratoire", methods={"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
-    public function modifyAction(Request $request, Laboratoire $laboratoire): Response
+    public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
         $em = $this->em;
         $editForm = $this->createForm('App\Form\LaboratoireType', $laboratoire, ['modifier' => true ]);
@@ -117,6 +123,14 @@ class LaboratoireController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             if (Functions::Flush($em,$request)) return $this->redirectToRoute('gerer_laboratoires');
         }
+
+        // Ajout d'une plage d'IP
+        $formAdr = $this->ajoutAdresseIp($request, $laboratoire);
+        if ($formAdr === null) return $this->redirectToRoute('modifier_laboratoire', [ 'id' => $laboratoire->getId() ]);
+
+        // Suppression d'une plage d'IP
+        $formSadr = $this->supprAdressesIp($request, $laboratoire);
+        if ($formSadr === null) return $this->redirectToRoute('modifier_laboratoire', [ 'id' => $laboratoire->getId() ]);
 
         return $this->render(
             'laboratoire/modif.html.twig',
@@ -129,16 +143,96 @@ class LaboratoireController extends AbstractController
                         ] ],
             'laboratoire' => $laboratoire,
             'form' => $editForm->createView(),
+            'formAdr' => $formAdr->createView(),
+            'formSadr' => $formSadr->createView()
             ]
         );
+    }
+
+    /*********************************
+     * 
+     * Ajout d'une nouvelle plage ip - Si le formulaire est traité on renvoie null, ce qui
+     * provoquera une redirection
+     *
+     **************************************/
+    private function ajoutAdresseIp(Request $request, Laboratoire $laboratoire) : ?FormInterface
+    {
+        $em = $this->em;
+        $adresseip = new Adresseip();
+        $adresseip->setLabo($laboratoire);
+        $formAdr = $this->createForm('App\Form\AdresseipType', $adresseip, ['widget_laboratoire' => false]);
+        $formAdr->handleRequest($request);
+
+        if ($formAdr->isSubmitted() && $formAdr->isValid()) {
+            $em->persist($adresseip);
+            try
+            {
+                $em->flush($adresseip);
+                
+            }
+            catch ( \Exception $e) {
+                $msg = "Ajout impossible - Adresse dupliquée ?";
+                $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+            }
+
+            return null;
+
+        }
+        return $formAdr;        
+    }
+
+    /*********************************
+     * 
+     * Suppression d'une ou plusieurs plages IP - Si le formulaire est traité on renvoie null, ce qui
+     * provoquera une redirection
+     *
+     **************************************/
+    private function supprAdressesIp(Request $request, Laboratoire $laboratoire) : ?FormInterface
+    {
+        $em = $this->em;
+        
+        $adresses = $laboratoire->getAdresseip();
+        $adresses_old = clone $adresses;
+
+        $formSadr = $this->createFormBuilder($laboratoire)
+            ->add(
+                'Adresseip',
+                EntityType::class,
+                [
+                'label' => 'Les plages IP de ce laboratoire: ',
+                'multiple' => true,
+                'expanded' => true,
+                'class' => Adresseip::class,
+                'choices' => $laboratoire->getAdresseip(),
+                'choice_label' => function ($s) { return $s->getAdresse(); },
+                ]
+            )
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer' ])
+            ->add('reset', ResetType::class, ['label' => 'Annuler' ])
+            ->getForm();
+
+        $formSadr->handleRequest($request);
+
+        if ($formSadr->isSubmitted() && $formSadr->isValid())
+        {
+            foreach ($adresses_old as $adr)
+            {
+                if ( !$adresses->contains($adr))
+                {
+                    $em->remove($adr);
+                }
+            }
+            $em->flush();
+            return null;
+        }
+        return $formSadr;        
     }
 
     /**
      * Supprime un laboratoire
      *
      * @Route("/{id}/supprimer", name="supprimer_laboratoire", methods={"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("DELETEEEE")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {
@@ -149,7 +243,8 @@ class LaboratoireController extends AbstractController
             $em->flush();
         }
         catch ( \Exception $e) {
-            $request->getSession()->getFlashbag()->add("flash erreur",$e->getMessage());
+            $msg = "Suppression impossbile - Il reste probablement des individus appartenant à ce laboratoire";
+            $request->getSession()->getFlashbag()->add("flash erreur",$msg);
         }
         
         return $this->redirectToRoute('gerer_laboratoires');

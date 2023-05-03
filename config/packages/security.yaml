@@ -16,17 +16,15 @@ security:
                     apicriann:
                        password: '%env(PASSWORD_APICRIANN)%'
                        roles: 'ROLE_ADMIN'
-        #users_in_memory: { memory: null }
         gramc_provider:
-            #id: App\Security\GramcUserProvider
             entity:
                 class: App\Entity\Individu
                 property: idIndividu
-                
-            
-    # pas d'encoder car pas de password on utilise la Fédération ESR pour se conneceter
+    
+    # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
+    # InMemoryUser: les mots de passe sont hashés - cf env.dist
+    # cf. https://symfony.com/doc/5.4/security.html
     password_hashers:
-        Symfony\Component\Security\Core\User\User: plaintext
         App\Entity\Individu: plaintext
         Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
     
@@ -69,7 +67,7 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
-    access_control:
-          - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
+    # access_control:
+        # - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

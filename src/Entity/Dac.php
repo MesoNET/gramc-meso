@@ -100,24 +100,16 @@ class Dac
     private $consommation = 0;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="groupname", type="string", nullable=true, options={"comment":"Nom de groupe ou autre objet associé au projet"})
-     * 
-     */
-    private $groupname;
-
-    /**
      * Get idDac
      *
      * @return integer
      */
-    public function getIdDac(): int
+    public function getIdDac(): ?int
     {
         return $this->idDac;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idDac;
     }
@@ -141,7 +133,7 @@ class Dac
      *
      * @return Dac
      */
-    public function setVersion(\App\Entity\Version $version): self
+    public function setVersion(?\App\Entity\Version $version): self
     {
         $this->version = $version;
 
@@ -153,7 +145,7 @@ class Dac
      *
      * @return \App\Entity\Version
      */
-    public function getVersion(): \App\Entity\Version
+    public function getVersion(): ?\App\Entity\Version
     {
         return $this->version;
     }
@@ -165,7 +157,7 @@ class Dac
      *
      * @return Dac
      */
-    public function setRessource(\App\Entity\Ressource $ressource): self
+    public function setRessource(?\App\Entity\Ressource $ressource): self
     {
         $this->ressource = $ressource;
 
@@ -177,7 +169,7 @@ class Dac
      *
      * @return \App\Entity\Ressource
      */
-    public function getRessource()
+    public function getRessource(): ?\App\Entity\Ressource
     {
         return $this->ressource;
     }
@@ -187,7 +179,7 @@ class Dac
      *
      * @return integer
      */
-    public function getDemande(): int
+    public function getDemande(): ?int
     {
         return $this->demande;
     }
@@ -198,7 +190,7 @@ class Dac
      * @param int
      * @return Dac
      */
-    public function setDemande(int $demande): Self
+    public function setDemande(int $demande): self
     {
         $this->demande = $demande;
         return $this;
@@ -209,7 +201,7 @@ class Dac
      *
      * @return integer
      */
-    public function getAttribution(): int
+    public function getAttribution(): ?int
     {
         return $this->attribution;
     }
@@ -220,7 +212,7 @@ class Dac
      * @param integer
      * @return Dac
      */
-    public function setAttribution(int $attribution): Self
+    public function setAttribution(int $attribution): self
     {
         $this->attribution = $attribution;
         return $this;
@@ -231,7 +223,7 @@ class Dac
      *
      * @return integer
      */
-    public function getConsommation(): int
+    public function getConsommation(): ?int
     {
         return $this->consommation;
     }
@@ -242,34 +234,12 @@ class Dac
      * @param integer
      * @return Dac
      */
-    public function setConsommation(int $consommation): Self
+    public function setConsommation(int $consommation): self
     {
         $this->consommation = $consommation;
         return $this;
     }
 
-    /**
-     * Get groupname
-     *
-     * @return string
-     */
-    public function getGroupName(): string
-    {
-        return $this->groupname;
-    }
-
-    /**
-     * Set groupname
-     *
-     * @param string
-     * @return Dac
-     */
-    public function setGroupName(string $groupname): Self
-    {
-        $this->unite = $groupname;
-        return $this;
-    }
-    
     /**
      * Set todof
      *
@@ -277,7 +247,7 @@ class Dac
      *
      * @return Version
      */
-    public function setTodof(bool $todof): Self
+    public function setTodof(bool $todof): self
     {
         $this->todof = $todof;
 

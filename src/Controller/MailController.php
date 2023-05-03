@@ -27,7 +27,6 @@ use App\Entity\Sso;
 use App\Entity\Journal;
 use App\Entity\Projet;
 use App\Entity\Version;
-use App\Entity\Session;
 
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceNotifications;
@@ -146,7 +145,6 @@ class MailController extends AbstractController
     /**
      * @Route("/{id}/mail_to_responsables_rallonge",name="mail_to_responsables_rallonge", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
-     * Method({"GET", "POST"})
     **/
     public function mailToResponsablesRallonge(Request $request, Session $session): Response
     {
@@ -174,7 +172,6 @@ class MailController extends AbstractController
     /**
      * @Route("/{id}/mail_to_responsables",name="mail_to_responsables", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
-     * Method({"GET", "POST"})
     **/
     public function mailToResponsablesAction(Request $request, Session $session): Response
     {
@@ -336,107 +333,6 @@ class MailController extends AbstractController
         return $responsables;
     }
 
-    /***********************************************************
-     *
-     * Renvoie la liste des responsables de projet (et des projets) qui n'ont pas (encore)
-     * renouvelé leur projet pour la session $session
-     *
-     ************************************************************/
-    private function getResponsables(Session $session): array
-    {
-        $sp = $this->sp;
-        $sj = $this->sj;
-        $em = $this->em;
-
-        $type_session = $session->getLibelleTypeSession();
-        if ($type_session =='B') {
-            $annee = $session->getAnneeSession();
-        } else {
-            $annee = $session->getAnneeSession() - 1;
-        }
-
-        $responsables = [];
-        $projets = [];
-        $all_projets = $em->getRepository(Projet::class)->findAll();
-
-        foreach ($all_projets as $projet) {
-            if ($projet->isProjetTest()) {
-                continue;
-            }
-            if ($projet->getEtatProjet() == Etat::TERMINE ||  $projet->getEtatProjet() == Etat::ANNULE) {
-                continue;
-            }
-            $derniereVersion = $projet->derniereVersion();
-            $versionActive = $projet->getVersionActive();
-            if ($derniereVersion == null) continue;
-            if ($versionActive == null) continue;
-            if ($derniereVersion->getSession() == null) continue;
-            if ($derniereVersion->getSession()->getAnneeSession() != $annee) continue;
-            if ($derniereVersion->getEtatVersion() == Etat::ACTIF || $derniereVersion->getEtatVersion() == Etat::TERMINE)
-            {
-                if ($type_session == 'A') {
-                    $responsable    =  $derniereVersion->getResponsable();
-                    if ($responsable != null) {
-                        $ind = $responsable->getIdIndividu();
-                        $responsables[$ind]['selform']                         = $this->getSelForm($responsable)->createView();
-                        $responsables[$ind]['responsable']                     = $responsable;
-                        $responsables[$ind]['projets'][$projet->getIdProjet()] = $projet;
-                        if (!isset($responsables[$ind]['max_attr'])) {
-                            $responsables[$ind]['max_attr'] = 0;
-                        }
-                        $attr = $projet->getVersionActive()->getAttrHeures();
-                        if ($attr>$responsables[$ind]['max_attr']) {
-                            $responsables[$ind]['max_attr']=$attr;
-                        }
-                    }
-                }
-
-                # Session de type B = On ne s'intéresse qu'aux projets qui ont une forte consommation
-                else
-                {
-                    if ($derniereVersion->getSession()->getLibelleTypeSession() == 'B') continue;
-
-                    $conso = $sp->getConsoCalculVersion($derniereVersion);
-
-                    if ($derniereVersion->getAttrHeures() > 0) {
-                        $rapport = $conso / $derniereVersion->getAttrHeures() * 100;
-                    } else {
-                        $rapport = 0;
-                    }
-
-                    if ($rapport > $this->getParameter('conso_seuil_1')) {
-                        $responsable = $derniereVersion->getResponsable();
-                        if ($responsable != null) {
-                            $ind = $responsable->getIdIndividu();
-                            $responsables[$ind]['selform'] = $this->getSelForm($responsable)->createView();
-                            $responsables[$ind]['responsable'] = $responsable;
-                            $responsables[$ind]['projets'][$projet->getIdProjet()] = $projet;
-                            if (!isset($responsables[$ind]['max_attr'])) {
-                                $responsables[$ind]['max_attr'] = 0;
-                            }
-                            $attr = $projet->getVersionActive()->getAttrHeuresTotal();
-                            if ($attr>$responsables[$ind]['max_attr']) {
-                                $responsables[$ind]['max_attr'] = $attr;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // On trie $responsables en commençant par les responsables qui on le plus d'heures attribuées !
-        usort($responsables, "self::compAttr");
-        return $responsables;
-    }
-
-    // Pour le tri des responsables en commençant par celui qui a la plus grosse (attribution)
-    private static function compAttr($a, $b): int
-    {
-        if ($a['max_attr']==$b['max_attr']) {
-            return 0;
-        }
-        return ($a['max_attr'] > $b['max_attr']) ? -1 : 1;
-    }
 
     /***
      * Renvoie un formulaire avec une case à cocher, rien d'autre

@@ -2,7 +2,7 @@
 
 {% block body %}
     <section>
-        <h2>Projet {{ version.projet }}, session {{ version.session }}: Confirmation de suppression</h2>
+        <h2>Projet {{ version.projet }}, version {{ version.nbversion }}: Confirmation de suppression</h2>
         <div class="information attention">
             <h2>Attention</h2>Vous êtes sur le point de supprimer un projet ou la dernière version d'un projet.<br>
         </div>
@@ -13,7 +13,7 @@
                     <a class="lien_actif" href="{{ path( 'projet_accueil' ) }}" title="Annuler et retourner à votre projet">ANNULER</a>
                 </li>
                 <li>
-                    <a class="lien_actif" href="{{ path( 'version_supprimer', { 'id': version.idVersion, 'rtn' : rtn } ) }}" title="Supprimer le projet ou la dernière version">SUPPRIMER</a>
+                    <a class="lien_actif" href="{{ path( 'version_supprimer', { 'id': version.idVersion } ) }}" title="Supprimer le projet ou la dernière version">SUPPRIMER</a>
                 </li>
             </ul>
         </nav>

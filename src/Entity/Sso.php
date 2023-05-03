@@ -58,11 +58,11 @@ class Sso
      *
      * @return string
      */
-    public function getEppn()
+    public function getEppn(): ?string
     {
         return $this->eppn;
     }
-    public function getId()
+    public function getId(): ?string
     {
         return $this->getEppn();
     }
@@ -73,7 +73,7 @@ class Sso
      * @param string
      * @return Sso
      */
-    public function setEppn($eppn)
+    public function setEppn(string $eppn): self
     {
         $this->eppn = $eppn;
         return $this;
@@ -86,7 +86,7 @@ class Sso
      *
      * @return Sso
      */
-    public function setIndividu(\App\Entity\Individu $idIndividu = null)
+    public function setIndividu(?\App\Entity\Individu $idIndividu = null)
     {
         $this->individu = $idIndividu;
 
@@ -98,12 +98,12 @@ class Sso
      *
      * @return \App\Entity\Individu
      */
-    public function getIndividu()
+    public function getIndividu(): ?\App\Entity\Individu
     {
         return $this->individu;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getEppn();
     }

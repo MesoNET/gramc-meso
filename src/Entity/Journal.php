@@ -37,14 +37,14 @@ class Journal
     /**
      * @var integer
      *
-     * @ORM\Column(name="id_individu", type="integer", nullable=true)
+     * @    ORM\Column(name="id_individu", type="integer", nullable=true)
      */
-    private $idIndividu;
+//    private $idIndividu;
 
     /**
      * @var \App\Entity\Individu
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="journal")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="journal",cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu",onDelete="SET NULL")
      * })
@@ -111,22 +111,22 @@ class Journal
      *
      * @return Journal
      */
-    public function setIdIndividu($idIndividu)
-    {
-        $this->idIndividu = $idIndividu;
+    //public function setIdIndividu(?int $idIndividu): self
+    //{
+        //$this->idIndividu = $idIndividu;
 
-        return $this;
-    }
+        //return $this;
+    //}
 
     /**
      * Get idIndividu
      *
      * @return integer
      */
-    public function getIdIndividu()
+/*    public function getIdIndividu(): ?int
     {
         return $this->idIndividu;
-    }
+    }*/
 
     /**
      * Set gramcSessId
@@ -135,7 +135,7 @@ class Journal
      *
      * @return Journal
      */
-    public function setGramcSessId($gramcSessId)
+    public function setGramcSessId(?string $gramcSessId): self
     {
         $this->gramcSessId = $gramcSessId;
 
@@ -147,7 +147,7 @@ class Journal
      *
      * @return string
      */
-    public function getGramcSessId()
+    public function getGramcSessId(): ?string
     {
         return $this->gramcSessId;
     }
@@ -159,7 +159,7 @@ class Journal
      *
      * @return Journal
      */
-    public function setType($type)
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -171,7 +171,7 @@ class Journal
      *
      * @return string
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -183,7 +183,7 @@ class Journal
      *
      * @return Journal
      */
-    public function setMessage($message)
+    public function setMessage(string $message): self
     {
         $this->message = $message;
 
@@ -195,7 +195,7 @@ class Journal
      *
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): ?string
     {
         return $this->message;
     }
@@ -207,7 +207,7 @@ class Journal
      *
      * @return Journal
      */
-    public function setStamp($stamp)
+    public function setStamp(\Datetime $stamp): self
     {
         $this->stamp = $stamp;
 
@@ -219,7 +219,7 @@ class Journal
      *
      * @return \DateTime
      */
-    public function getStamp()
+    public function getStamp(): \Datetime
     {
         return $this->stamp;
     }
@@ -231,7 +231,7 @@ class Journal
      *
      * @return Journal
      */
-    public function setIp($ip)
+    public function setIp(string $ip): self
     {
         $this->ip = $ip;
 
@@ -243,7 +243,7 @@ class Journal
      *
      * @return string
      */
-    public function getIp()
+    public function getIp(): ?string
     {
         return $this->ip;
     }
@@ -253,7 +253,7 @@ class Journal
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -264,7 +264,7 @@ class Journal
      * @param \App\Entity\Individu $individu
      * @return Journal
      */
-    public function setIndividu(\App\Entity\Individu $individu = null)
+    public function setIndividu(?\App\Entity\Individu $individu = null): self
     {
         $this->individu = $individu;
 
@@ -276,7 +276,7 @@ class Journal
      *
      * @return \App\Entity\Individu
      */
-    public function getIndividu()
+    public function getIndividu(): ?\App\Entity\Individu
     {
         return $this->individu;
     }
@@ -287,7 +287,7 @@ class Journal
      * @param integer $niveau
      * @return Journal
      */
-    public function setNiveau($niveau)
+    public function setNiveau(int $niveau): self
     {
         $this->niveau = $niveau;
 
@@ -299,7 +299,7 @@ class Journal
      *
      * @return integer
      */
-    public function getNiveau()
+    public function getNiveau(): ?int
     {
         return $this->niveau;
     }

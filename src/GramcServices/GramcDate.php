@@ -43,10 +43,6 @@ use Doctrine\ORM\EntityManagerInterface;
 class GramcDate extends GramcDateTime
 {
     public function __construct(
-        private $recup_printemps_d,
-        private $recup_printemps_f,
-        private $recup_automne_d,
-        private $recup_automne_f,
         private ServiceParam $sp,
         private EntityManagerInterface $em
     ) {
@@ -58,67 +54,9 @@ class GramcDate extends GramcDateTime
     public function getNew(): GramcDate
     {
         $date = new GramcDate(
-            $this->recup_printemps_d,
-            $this->recup_printemps_f,
-            $this->recup_automne_d,
-            $this->recup_automne_f,
             $this->sp,
             $this->em
         );
         return $date;
-    }
-
-
-    // Sommes-nous en periode de récupération des heures de printemps ?
-    // param $annee Année considérée - Si non année courante, on renvoie false
-    // return true/false
-    public function isRecupPrintemps($annee): bool
-    {
-        // Pas de paramètres: renvoie false
-        if ($this->recup_printemps_d == 0) {
-            return false;
-        }
-        if ($this->recup_printemps_f == 0) {
-            return false;
-        }
-
-        // annee non courante = renvoie false
-        if ($annee!=$this->showYear() && $annee-2000!=$this->showYear()) {
-            return false;
-        }
-
-        $m = intval($this->showMonth());
-        if ($m >= intval($this->recup_printemps_d) && $m < intval($this->recup_printemps_f)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Sommes-nous en periode de récupération des heures d'automne ?
-    // param $annee Année considérée - Si non année courante, on renvoie false
-    // return true/false
-    public function isRecupAutomne($annee): bool
-    {
-        // Pas de paramètres: renvoie false
-        if ($this->recup_automne_d == 0) {
-            return false;
-        }
-        if ($this->recup_automne_f == 0) {
-            return false;
-        }
-
-        // annee non courante = renvoie false
-        if ($annee!=$this->showYear() && $annee-2000!=$this->showYear()) {
-            return false;
-        }
-
-        $m = intval($this->showMonth());
-
-        if ($m >= intval($this->recup_automne_d) && $m < intval($this->recup_automne_f)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

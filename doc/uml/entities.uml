@@ -1,0 +1,208 @@
+@startuml
+
+title =Les principales entités de gramc-meso0\nLe code se trouve dans src/Entity
+
+package Classes <<Frame>> {
+
+    together {
+        class Expertise
+        class Ressource
+        class Dac
+        class Version
+        class Ressource
+        class Serveur
+        class User
+    }
+    
+
+    class Projet {
+        - int typeProjet
+        - int etatProjet
+        - string idProjet
+        - string idProjet
+        - Version versionActive
+        - Version versionDerniere
+        + string getIdProjet()
+    }
+    
+    class Version <<traçabilité>> {
+        - string idVersion
+        ...
+        - int etatVersion
+        - date datActif
+        ...
+        - string prjTitre
+        - string prjExpose
+        - string prjJustifRenouv
+        - string prjFinancement
+        
+        - string codeNom
+        - string codeLicence
+        - string codeDependances
+        
+        + string getIdVersion()
+    }
+
+    class Rallonge <<modif d'une version>> {
+        - string idRallonge
+        - int etatRallonge
+        - string prjJustifRallonge
+    }
+    
+    class Individu <<Compte sur <b>gramc</b> >>{
+        - int id
+        - string nom
+        - string prenom
+        - string mail
+        - string statut
+        - string labo
+        - string etablissement
+        
+        - bool admin
+        - bool valid
+        - bool obs
+        - bool sysadmin
+        
+        + getNom()
+        + {method} ...
+    
+        + getRoles()
+    }
+    
+    class CollaborateurVersion <<Collaborateur>>{
+        - string labo
+        - string statut
+        - string etablissement
+    }
+
+    class FormationVersion <<Demandes de formation>>{
+        - int nombre
+    }
+
+    class Formation <<formation>> {
+        - int numero_form
+        - string acro_form
+        - string nom_form
+        - date start_date
+        - date end_date
+    }
+
+    class Expertise <<Décisions des valideurs>> {
+        - string commentaireExterne
+        - string commentaireInterne
+        
+        - bool validation
+        - bool definitif
+        + getValidation()
+    }
+
+    class Clessh <<Trousseau de clés>> {
+        - string nom
+        - string pub
+        - string emp
+        - bool rvk
+    }
+
+    together {
+        class Statut
+        class Laboratoire
+        class Etablissement
+        class Adresseip
+    }
+    
+'    note "Un compte par individu et par projet !" as N3
+'    User .. N3
+'    N3 .. CollaborateurVersion
+
+    class Serveur {
+        - string nom
+        - string desc
+        - string admname
+    }
+    
+    class User <<Comptes sur un serveur>> {
+        - string loginname
+        - bool login
+        - bool CGU
+        - bool dply
+        + getLoginName()
+    }
+
+    class Ressource {
+        - string nom
+        - string desc
+        - string unite
+        - int maxDem
+        - int co2
+    }
+
+    class Dac <<Demande, Attribution, Consommation>> {
+        - int demande
+        - int attribution
+        - int consommation
+    }
+
+    class Dar <<Demande, Attribution pour Rallonges>> {
+        - int demande
+        - int attribution
+    }
+
+    Projet  "1" o-- "1..v" Version
+    Individu "1" o-- "0..n" CollaborateurVersion
+    Individu "1" o-- "0..n" Sso
+    Individu "1" o-- "0..n" Laboratoire
+    Adresseip "0..n" o-- "1" Laboratoire
+    Individu "1" o-- "0..n" Statut
+    Individu "1" o-- "0..n" Etablissement
+    Individu "1" o-- "0..n" Clessh
+    
+    Version "1" o-- "0..n" CollaborateurVersion
+    Version "0..n" o-- Thématique
+    Version "0..n" o-- "0..n" Publication
+    Version "1" o-- "r" Dac
+    Version "1" o-- "0..n" Rallonge
+    Version "1" o-- "f" FormationVersion
+    Formation "1" o-- "0..n" FormationVersion
+
+    Rallonge "1" o-- "r"  Dar
+    
+    Expertise "1" -- "1" Individu
+    Expertise "1" -- "0..1" Version
+    Expertise "1" -- "0..1" Rallonge
+    
+    User "0..n" --o "1" Clessh
+    User "0..n" -- "1" Serveur
+    User "0..n" -- "1" Projet
+    User "0..s*p" -- "1" Individu
+    
+    Serveur "1" o-- "0..n" Ressource: r ressources s serveurs
+    Ressource "1" o-- "0..n" Dac
+    Ressource "1" o-- "0..n" Dar
+
+    class Compta <<Données de conso>>{
+        - date date;
+        - string ressource
+        - int conso
+        - int quota
+        + int getConso()
+    }
+
+    class Invitation <<Avoir la bonne @ mail>> {
+       - string clef
+       - date creationStamp
+       + string getClef()
+    }
+
+    Individu "1" -- "1" Invitation : invited
+    Individu "1" -- "1" Invitation : inviting
+
+    ' Supprimé pour alléger la figure
+    ' interface UserInterface
+    ' Individu --|> UserInterface
+    ' Individu "2" o-- "1" Invitation
+    ' class Sso <<Fede Identité>>{
+    '     - string eppn
+    ' }
+    
+}
+@enduml

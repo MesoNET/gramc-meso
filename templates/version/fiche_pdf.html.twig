@@ -24,7 +24,7 @@
 
 {% block body %}
 
-<h1>{{mesoc}} - Session d'attribution {{ session }}</h1>
+<h1>{{mesoc}} - Demande de ressources</h1>
 <hr class="retour" />
 
 <h2>{{ projet.titre }}</h2>
@@ -32,7 +32,9 @@
 <table>
     <tbody>
         <tr><th>Projet</th><td>{{ projet }}</td></tr>
-        <tr><th>Heures demandées</th><td>{{ version.demHeures }} heures monoprocesseur</td></tr>
+        {% for d in version.dac %}
+            <tr><th>Heures demandées sur {{serviceRessources.nomcomplet(d.ressource)}}</th><td>{{d.demande}} {{d.ressource.unite}}</td></tr>
+        {% endfor %}
         <tr><th>Responsable</th><td>{{ version.responsable }}</td></tr>
         <tr><th>Courriel</th><td>{{ version.responsable.mail }}</td></tr>
         <tr><th>Laboratoire</th><td>{{ version.labo }}</td></tr>
@@ -48,8 +50,7 @@
 {{mesoc}} se réserve le droit de publier sur son site Web les informations figurant sur cette fiche,
 à savoir le nom et le laboratoire du responsable du projet, ainsi que le résumé ci-dessus.
 <br/>
-Toutes les autres informations seront traitées de manière confidentielle par le Comité d'attribution, y compris le rapport
-annuel d'activité si le responsable du projet en fait la demande
+Toutes les autres informations seront traitées de manière confidentielle par {{ mesoc}}
 </p>
 </div>
 {% endblock body %}

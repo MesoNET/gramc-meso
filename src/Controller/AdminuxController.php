@@ -30,9 +30,9 @@ use App\GramcServices\Etat;
 use App\Entity\Projet;
 use App\Entity\Version;
 use App\Entity\Rallonge;
-use App\Entity\Session;
 use App\Entity\Individu;
 use App\Entity\CollaborateurVersion;
+use App\Entity\Laboratoire;
 use App\Entity\User;
 use App\Entity\Serveur;
 use App\Entity\Ressource;
@@ -90,96 +90,6 @@ class AdminuxController extends AbstractController
     ) {}
 
     /**
-     * Met à jour les données de comptabilité à partir d'un unique fichier csv
-     *
-     * format date, loginname, ressource, type, consommation, quota
-     * ressource = cpu, gpu, home, etc.
-     * type      = user ou group unix
-     * @Route("/compta_update_batch", name="compta_update_batch", methods={"PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     */
-
-    // exemple: curl --netrc -T path/to/file.csv https://.../adminux/compta_update_batch
-    
-    public function UpdateComptaBatchAction(Request $request): Response
-    {
-
-        /****** NON IMPLEMENTE ACTUELLEMENT ********/
-        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
-
-        $em = $this->em;
-        $sj = $this->sj;
-        
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Forbidden because of parameter noconso");
-        }
-        $conso_repository = $em->getRepository(Compta::class);
-
-        $putdata = fopen("php://input", "r");
-        //$input = [];
-
-        while ($ligne  =   fgetcsv($putdata)) {
-            if (sizeof($ligne) < 5) {
-                continue;
-            } // pour une ligne erronée ou incomplète
-
-            $date       =   $ligne[0]; // 2019-02-05
-            $date       =   new \DateTime($date . "T00:00:00");
-            $loginname  =   $ligne[1]; // login
-            $ressource  =   $ligne[2]; // cpu, gpu, ...
-            $type   =   $ligne[3]; // user, group
-            if ($type=="user") {
-                $type_nb = Compta::USER;
-            } elseif ($type=="group") {
-                $type_nb = Compta::GROUP;
-            } else {
-                $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - type de ligne bizarre: $type");
-                return new Response('KO');
-            }
-
-            $compta =  $conso_repository->findOneBy([ 'date' => $date, 'loginname' =>  $loginname,  'ressource' => $ressource, 'type' => $type_nb ]);
-            if ($compta == null) { // new item
-                $compta = new Compta();
-                $compta->setDate($date);
-                $compta->setLoginname($loginname);
-                $compta->setRessource($ressource);
-                $compta->setType($type_nb);
-                $em->persist($compta);
-            }
-
-            $conso  =   $ligne[4]; // consommation
-
-            if (array_key_exists(5, $ligne)) {
-                $quota  =   $ligne[5];
-            } // quota
-            else {
-                $quota  =   -1;
-            }
-
-
-            $compta->setConso($conso);
-            $compta->setQuota($quota);
-
-            //$input[]    =   $compta;
-            //return new Response( Functions::show( $ligne ) );
-        }
-
-        try {
-            $em->flush();
-        }
-        catch (\Exception $e)
-        {
-            $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - Mise à jour de la compta incomplète");
-            return new Response('KO');
-        }
-
-        //return new Response( Functions::show( $conso_repository->findAll() ) );
-        $sj -> infoMessage(__METHOD__ . "Compta mise à jour");
-        return $this->render('consommation/conso_update_batch.html.twig');
-    }
-
-    /**
      * Met à jour la consommation pour un projet donné
      *
      * @Route("/projet/setconso", name="set_conso", methods={"POST"})
@@ -188,20 +98,15 @@ class AdminuxController extends AbstractController
      */
 
     // exemple: curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
-    public function setconsoAction(Request $request, LoggerInterface $lg): Response
+    public function setconsoAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $sroc = $this->sroc;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true)
-        {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null)
+        if ($content === null)
         {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
@@ -275,7 +180,7 @@ class AdminuxController extends AbstractController
         else
         {
             $version = $projet->getVersionActive();
-            if ($version == null)
+            if ($version === null)
             {
                 $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de version active pour $projet");
                 return new Response(json_encode(['KO' => 'Pas de version active']));
@@ -321,18 +226,14 @@ class AdminuxController extends AbstractController
      */
 
     // exemple: curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
-    public function setloginnameAction(Request $request, LoggerInterface $lg): Response
+    public function setloginnameAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -357,18 +258,18 @@ class AdminuxController extends AbstractController
 
         $error = [];
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $error[]    =   'No Projet ' . $idProjet;
         }
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[]    =   'No idIndividu ' . $idIndividu;
         }
 
         $loginname_p = $su -> parseLoginname($loginname);
         $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-        if ($serveur == null)
+        if ($serveur === null)
         {
            $error[] = 'No serveur ' . $loginname_p['serveur'];
         }
@@ -385,7 +286,7 @@ class AdminuxController extends AbstractController
         }
 
         $u = $su->getUser($individu, $projet, $serveur);
-        if ( $u->getLogin() == false)
+        if ( $u->getLogin() === false)
         {
             $msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
             $sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
@@ -415,63 +316,6 @@ class AdminuxController extends AbstractController
 
         $sj -> infoMessage(__METHOD__ . "user $u modifié");
         return new Response(json_encode('OK'));
-
-
-            //$versions = $projet->getVersion();
-        //$i=0;
-        //foreach ($versions as $version)
-        //{
-            //// $version->getIdVersion()."\n";
-            //if ($version->getEtatVersion() == Etat::ACTIF             ||
-                //$version->getEtatVersion() == Etat::ACTIF_TEST        ||
-                //$version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                //$version->getEtatVersion() == Etat::EN_ATTENTE
-              //)
-            //{
-              //foreach ($version->getCollaborateurVersion() as $cv)
-              //{
-                  //$collaborateur  =  $cv->getCollaborateur() ;
-                  //if ($collaborateur != null && $collaborateur->isEqualTo($individu))
-                  //{
-                      //$user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      //foreach ($cv->getUser() as $u)
-                      //{                     
-                          //if ($serveur === $u->getServeur())
-                          //{
-                              //if ( $u->getLogin() == false)
-                              //{
-                                  //$msg = "L'ouverture de compte n'a pas été demandée pour ce collaborateur";
-                                  //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
-                                  //return new Response(json_encode(['KO' => $msg]));
-                              //}
-                              //if ( $u->getLoginname() != 'nologin' && $u->getLoginname() != null)
-                              //{
-                                  //$msg = "Commencez par appeler clearloginname";
-                                  //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - $msg ");
-                                  //return new Response(json_encode(['KO' => $msg]));
-                              //}
-                              
-                              //$u->setLoginname($loginname_p['loginname']);
-                              //$em->persist($u);
-                              //$em->flush();
-                              //$i += 1;
-                              //break; // Sortir de la boucle sur les cv
-                          //}
-                      //}
-                  //}
-               //}
-            //}
-        //}
-        //if ($i > 0 )
-        //{
-            //$sj -> infoMessage(__METHOD__ . "$i versions modifiées");
-            //return new Response(json_encode(['OK' => "$i versions modifiees"]));
-        //}
-        //else
-        //{
-            //$sj->warningMessage(__METHOD__ . ':' . __FILE__ . " - Mauvais projet ou mauvais idIndividu !");
-            //return new Response(json_encode(['KO' => 'Mauvais projet ou mauvais idIndividu !' ]));
-        //}
     }
 
     /**
@@ -485,19 +329,13 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "bob@serveur", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
 
-    public function setpasswordAction(Request $request, LoggerInterface $lg): Response
+    public function setpasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
-        //$sp = $this->sp;
-        //$rep= $em->getRepository(Projet::class);
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -593,17 +431,13 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto" }' https://.../adminux/users/clearpassword
 
-    public function clearpasswordAction(Request $request, LoggerInterface $lg): Response
+    public function clearpasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (parametre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage("__METHOD__ . ':' . __FILE__ .  - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de donnees']));
         }
@@ -671,18 +505,14 @@ class AdminuxController extends AbstractController
 
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto@SERVEUR", "projet":"P1234" }' https://.../adminux/utilisateurs/clearloginname
 
-    public function clearloginnameAction(Request $request, LoggerInterface $lg): Response
+    public function clearloginnameAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $token = $this->tok->getToken();
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (parametre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de donnees']));
         }
@@ -733,35 +563,8 @@ class AdminuxController extends AbstractController
         $sdac = $this->sdac;
         $em = $this->em;
 
-        //$attr  = $v->getAttrHeuresTotal();
-        //$attrUft = $v->getAttrHeuresUft();
-        //$attrCriann = $v->getAttrHeuresCriann();
-
-        $session = $v->getSession();
-        $id_session = '';
-        if ($session != null)
-        {
-            $id_session = $session -> getIdSession();
-            $annee = 2000 + $session->getAnneeSession();
-    
-            // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
-            // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-            if ($session->getTypeSession()) {
-                $id_va = $v->getAutreIdVersion();
-                $va = $em->getRepository(Version::class)->find($id_va);
-                if ($va != null) {
-                    $attr += $va->getAttrHeures();
-                    $attr -= $va->getPenalHeures();
-                    foreach ($va->getRallonge() as $r) {
-                        $attr += $r->getAttrHeures();
-                    }
-                }
-            }
-        }
-
         $r = [];
         $r['idProjet']        = $v->getProjet()->getIdProjet();
-        $r['idSession']       = $id_session;
         $r['idVersion']       = $v->getIdVersion();
         $r['etatVersion']     = $v->getEtatVersion();
         $r['etatProjet']      = $v->getProjet()->getEtatProjet();
@@ -794,23 +597,13 @@ class AdminuxController extends AbstractController
         }
         
         $resp = $v->getResponsable();
-        $r['mail']            = $resp == null ? null : $resp->getMail();
-        //$r['attrHeures']      = $attr;
-        //$r['attrHeures@TURPAN'] = $attrUft;
-        //$r['attrHeures@BOREALE'] = $attrCriann;
-        
-        // supprime dans cette version $r['sondVolDonnPerm'] = $v->getSondVolDonnPerm();
-        // Pour le déboguage
-        // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
-        // supprime provisoirement $r['quota'] = $sp->getConsoRessource($v->getProjet(), 'cpu', $annee)[1];
+        $r['mail']            = $resp === null ? null : $resp->getMail();
         if ($long)
         {
             $r['titre']      = $v->getPrjTitre();
-            //$r['resume']   = $v->getPrjResume();
             $r['expose']     = $v->getPrjExpose();
             $r['labo']       = $v->getPrjLLabo();
             $r['idLabo']     = $resp->getLabo()->getId();
-            //$r['metadonnees'] = $v->getDataMetaDataFormat();
             if ($v->getPrjThematique() != null)
             {
                 $r['thematique'] = $v->getPrjThematique()->getLibelleThematique();
@@ -863,7 +656,6 @@ class AdminuxController extends AbstractController
      *
      * Données renvoyées pour versionActive et versionDerniere:
      *          idProjet    P01234
-     *          idSession   20A
      *          idVersion   20AP01234
      *          mail        mail du responsable de la version
      *          attrHeures  Heures cpu attribuées
@@ -883,7 +675,7 @@ class AdminuxController extends AbstractController
 
         $content  = json_decode($request->getContent(), true);
         //print_r($content);
-        if ($content == null) {
+        if ($content === null) {
             $id_projet = null;
             $long = false;
 
@@ -894,7 +686,7 @@ class AdminuxController extends AbstractController
 
         $p_tmp = [];
         $projets = [];
-        if ($id_projet == null) {
+        if ($id_projet === null) {
             $projets = $rep->findNonTermines();
         } else {
             $p = $rep->findOneBy(["idProjet" => $id_projet]);
@@ -936,7 +728,7 @@ class AdminuxController extends AbstractController
      * Exemples de données POST (fmt json):
      *             ''
      *             ou
-     *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES quelque soit la session
+     *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES
      *
      *             '{ "projet" : "P01234" }'
      *             ou
@@ -975,9 +767,8 @@ class AdminuxController extends AbstractController
      *                 resume      prjResume
      *                 labo        prjLLabo
      *                 metadonnees dataMetaDataFormat
-     *                 thematique  metathematique (ATTENTION ! PAS la thématique au sens de Calmip, mais la Metathématique)
      *
-     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "session" : "20A" }' https://.../adminux/version/get
+     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234" }' https://.../adminux/version/get
      *
      */
      public function versionGetAction(Request $request): Response
@@ -985,29 +776,21 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
-        $nosession = $this->getParameter('nosession');
         
         $versions = [];
 
         $content  = json_decode($request->getContent(),true);
-        if ($content == null)
+        if ($content === null)
         {
             $id_projet = null;
-            $id_session= null;
             $id_version = null;
             $long = false;
         }
         else
         {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
-            $id_session = (isset($content['session']))? $content['session']: null;
             $id_version = (isset($content['version']))? $content['version']: null;
             $long = (isset($content['long']))? $content['long']: false;
-        }
-
-        if ($id_session != null && $nosession == true)
-        {
-            return new Response(json_encode(['KO' => 'Les sessions sont désactivées']));
         }
         
         $v_tmp = [];
@@ -1020,64 +803,27 @@ class AdminuxController extends AbstractController
         }
         
         // Tous les projets actifs
-        elseif ($id_projet == null && $id_session == null)
+        elseif ($id_projet === null && $id_session === null)
         {
-            if ($nosession == false)
-            {
-                $sessions = $em->getRepository(Session::class)->get_sessions_non_terminees();
-                foreach ($sessions as $sess)
-                {
-                    //$versions = $em->getRepository(Version::class)->findSessionVersionsActives($sess);
-                    $v_tmp = array_merge($v_tmp,$em->getRepository(Version::class)->findSessionVersions($sess));
-                }
-            }
-            else
-            {
-                $v_tmp = $em->getRepository(Version::class)->findAll();
-            }
-        }
-
-        // Tous les projets d'une session particulière  (on filtre les projets annulés)
-        elseif ($id_projet == null)
-        {
-            $sess  = $em->getRepository(Session::class)->find($id_session);
-            $v_tmp = $em->getRepository(Version::class)->findSessionVersions($sess);
+            $v_tmp = $em->getRepository(Version::class)->findAll();
         }
 
         // La version active d'un projet donné
-        elseif ($id_session == null)
+        else
         {
             $projet = $em->getRepository(Projet::class)->find($id_projet);
             if ($projet != null) $v_tmp[]= $projet->getVersionActive();
         }
 
-        // Une version particulière
-        else
+        // On ne garde que les versions actives... ou presque actives
+        $etats = [Etat::ACTIF, Etat::EN_ATTENTE, Etat::NOUVELLE_VERSION_DEMANDEE];
+        foreach ($v_tmp as $v)
         {
-            //$projet = $em->getRepository(Projet::class)->find($id_projet);
-            //$sess  = $em->getRepository(Session::class)->find($id_session);
-            //$v_tmp[] = $em->getRepository(Version::class)->findOneVersion($sess,$projet);
-        }
-
-        // SEULEMENT si session n'est pas spécifié: On ne garde que les versions actives... ou presque actives
-        if ( $id_session == null )
-        {
-            $etats = [Etat::ACTIF, Etat::EN_ATTENTE, Etat::NOUVELLE_VERSION_DEMANDEE, Etat::ACTIF_TEST];
-            foreach ($v_tmp as $v)
+            if ($v === null) continue;
+            if (in_array($v->getEtatVersion(),$etats,true))
             {
-                if ($v == null) continue;
-                if (in_array($v->getEtatVersion(),$etats,true))
-                {
-                    $versions[] = $v;
-                }
+                $versions[] = $v;
             }
-        }
-
-        // Si la session est spécifiée: On renvoie la version demandée, quelque soit son état
-        // On renvoie aussi l'état de la version et l'état de la session
-        else
-        {
-            $versions = $v_tmp;
         }
 
         $retour = [];
@@ -1085,74 +831,15 @@ class AdminuxController extends AbstractController
         foreach ($versions as $v)
         {
             if ($v==null) continue;
-            
-            ///////////////$attr  = $v->getAttrHeures() - $v->getPenalHeures();
-            //$attr = 0;
-            //foreach ($v->getRallonge() as $r)
-            //{
-                //$attr += $r->getAttrHeures();
-            //}
 
-            // A JETER
-            //$attrUft = $v->getAttrHeuresUft();
-            //$attrCriann = $v->getAttrHeuresCriann();
-            // FIN A JETER
-            
-            // Pour une session de type B = Aller chercher la version de type A correspondante et ajouter les attributions
-            // TODO - Des fonctions de haut niveau (au niveau projet par exemple) ?
-            if ($v->getsession() != null && $v->getSession()->getTypeSession())
-            {
-                $id_va = $v->getAutreIdVersion();
-                $va = $em->getRepository(Version::class)->find($id_va);
-                if ($va != null)
-                {
-                    $attr += $va->getAttrHeures();
-                    $attr -= $va->getPenalHeures();
-                    foreach ($va->getRallonge() as $r)
-                    {
-                        $attr += $r->getAttrHeures();
-                    }
-                }
-            }
             $r = $this->__getVersionInfo($v,$long);
             $r['idProjet']        = $v->getProjet()->getIdProjet();
-            $r['idSession']       = $v->getSession()!=null ? $v->getSession()->getIdSession() : 'N/A';
             $r['idVersion']       = $v->getIdVersion();
             $r['etatVersion']     = $v->getEtatVersion();
             $r['etatProjet']      = $v->getProjet()->getEtatProjet();
             $r['mail']            = $v->getResponsable()->getMail();
             
-            //$r['attrHeures']      = $attr;
-            // A JETER
-            //$r['attrHeures@TURPAN'] = $attrUft;
-            //$r['attrHeures@BOREALE'] = $attrCriann;
-            // FIN A JETER
-
-            // Conso et quota sur TURPAN et BOREALE
-            //$c_turpan = $sp->getConsoRessource($v->getProjet(),'cpu' . '@TURPAN');
-            //$c_boreale = $sp->getConsoRessource($v->getProjet(),'cpu' . '@BOREALE');
-            
-            // A JETER
-            //$r['quota@TURPAN'] = $c_turpan[1];
-            //$r['conso@TURPAN'] = $c_turpan[0];
-            //$r['quota@BOREALE'] = $c_boreale[1];
-            //$r['conso@BOREALE'] = $c_boreale[0];
-            // FIN A JETER
-
-            //if ($long)
-            //{
-                //$r['titre']       = $v->getPrjTitre();
-                //$r['resume']      = $v->getPrjResume();
-                //$r['labo']        = $v->getPrjLLabo();
-                //$r['metadonnees'] = $v->getDataMetaDataFormat();
-                //$r['thematique']  = $v->getAcroMetaThematique();
-            //}
-            
-            // Pour le déboguage
-            // if ($r['quota'] != $r['attrHeures']) $r['attention']="INCOHERENCE";
-
             $retour[] = $r;
-            //$retour[] = $v->getIdVersion();
         };
 
         // print_r est plus lisible pour le déboguage
@@ -1160,143 +847,6 @@ class AdminuxController extends AbstractController
         $sj -> infoMessage(__METHOD__ . " OK");
         return new Response(json_encode($retour));
 
-     }
-
-    /**
-     * Changer le quota de la version active d'un projet
-     *
-     * @Route("/projets/setquota", name="set_quota", methods={"POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Exemples de données POST (fmt json):
-     *
-     *             '{ "projet" : "P01234", "session" : "20A", "quota" : "10000"}' -> La version 20AP01234 à condition que ce soit bien la version active !
-     *
-     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "session" : "20A", "quota" : "10000" }' https://.../adminux/projets/setquota
-     */
-     public function projetsSetQuotaAction(Request $request): Response
-     {
-        $em = $this->em;
-        $sp = $this->sp;
-        $sj = $this->sj;
-
-        /****** SUPPRIME CAR PAS DE QUOTAS DANS CETTE VERSION *****/
-        return new Response(json_encode(['KO' => 'FONCTIONNALITE NON IMPLEMENTEE']));
-
-
-        // todo - Si ce paramètre n'existe pas ça va planter
-        $ressources_conso_group = $this->getParameter('ressources_conso_group');
-
-        // On recherche les ressources marquées "calcul"
-        // On initialise le tableau à 'cpu', ou 'cpu','gpu'
-        $ressources = [];
-        foreach ($ressources_conso_group as $ress)
-        {
-            if (array_key_exists('type', $ress) && $ress['type'] === 'calcul')
-            {
-                if (array_key_exists('ress', $ress))
-                {
-                    $ressources = explode(',',$ress['ress']);
-                }
-            }
-        }
-
-        $content  = json_decode($request->getContent(),true);
-        if ($content == null)
-        {
-            $sj -> errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
-            return new Response(json_encode(['KO' => 'Pas de données']));
-        }
-
-        $idProjet  = (isset($content['projet'])) ? $content['projet'] : null;
-        $idSession = (isset($content['session']))? $content['session']: null;
-        $quota      = (isset($content['quota']))? $content['quota']: null;
-
-        if ($idProjet === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de projet spécifié");
-            return new Response(json_encode(['KO' => 'Pas de projet spécifié']));
-        }
-        if ($idSession === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de session spécifiée");
-            return new Response(json_encode(['KO' => 'Pas de session spécifiée']));
-        }
-        if ($quota === null)
-        {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de quota spécifié");
-            return new Response(json_encode(['KO' => 'Pas de quota spécifié']));
-        }
-        else
-        {
-            $quota = intval($quota);
-            if ($quota < 0)
-            {
-                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - quota doit être un entier positif >= 0");
-                return new Response(json_encode(['KO' => 'quota doit être un entier positif >= 0']));
-            }
-        }
-
-        $projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => $idProjet]);
-        if ($projet === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de projet $idProjet");
-            return new Response(json_encode(['KO' => "Pas de projet $idProjet"]));
-        }
-
-        $session = $em->getRepository(Session::class)->findOneBy(['idSession' => $idSession]);
-        if ($session === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de session $idSession");
-            return new Response(json_encode(['KO' => "Pas de session $idSession"]));
-        }
-
-        $idVersion = $idSession . $idProjet;
-        $version = $em->getRepository(Version::class)->findOneBy(['idVersion' => $idVersion]);
-        if ($version === null) {
-            $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de version $idVersion");
-            return new Response(json_encode(['KO' => "Pas de version $idVersion"]));
- 
-        }
-
-        $veract = $sp->versionActive($projet);
-        if ($veract != $version) {
-            $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " La version active de $idProjet est $veract, on ne peut pas changer le quota de $idVersion");
-            return new Response(json_encode(['KO' => "La version active de $idProjet est $veract, on ne peut pas changer le quota de $idVersion"]));
-        }
-
-        // Toutes les vérifications sont terminées, on peut changer le quota
-        // Cela revient à écrire directement dans la table de conso
-        // On écrit le même quota pour toutes les ressources "calcul"
-
-        $date = $this->grdt;  // aujourd'hui
-        $loginname = strtolower($idProjet); // Le projet traduit en groupe unix
-        $type = 2;                          // Un groupe, pas un utilisateur
-        foreach ($ressources as $ress)
-        {
-            $compta = $em->getRepository(Compta::class)->findOneBy(
-                [
-                    'date'      => $date,
-                    'ressource' => $ress,
-                    'loginname' => $loginname,
-                    'type'      => $type
-                ]);
-
-            // Si pas de compta on crée l'objet (nouveau projet pas encore de compta) !
-            if ($compta === null) {
-                $compta = new Compta();
-                $compta ->setDate($date)
-                        ->setRessource($ress)
-                        ->setLoginname($loginname)
-                        ->setType(2)
-                        ->setConso(0);
-            }
-
-            $compta->setQuota($quota);
-            $em->persist($compta);
-            $em->flush();
-        }
-        
-        // OK
-        $sj->infoMessage(__METHOD__ . " Le quota de $idVersion est maintenant $quota");
-        return new Response(json_encode(['OK' => "Le quota de $idVersion est maintenant $quota"]));
      }
 
     /**
@@ -1320,9 +870,7 @@ class AdminuxController extends AbstractController
      *
      *             '{ "projet" : "P01234", "mail" : "toto@exemple.fr" }' -> rien ou toto si toto avait un login sur ce projet
      *
-     * Par défaut on ne considère QUE les version actives et dernières de chaque projet non terminé
-     * MAIS si on AJOUTE un PARAMETRE "session" : "20A" on travaille sur la session passée en paramètres (ici 20A)
-     * (on ne considère PAS les projets tests (type==2))
+     * On ne considère QUE les version actives et dernières de chaque projet non terminé
      *
      * On renvoie pour chaque version considérée, la liste des collaborateurs
      * tels que loginname != null (login créé, peut-être à supprimer si login==false),
@@ -1344,7 +892,7 @@ class AdminuxController extends AbstractController
      *
      */
 
-    // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null, "session" : "19A" }' https://.../adminux/utilisateurs/get
+    // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null }' https://.../adminux/utilisateurs/get
     public function utilisateursGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1352,38 +900,34 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($raw_content == '' || $raw_content == '{}') {
+        if ($raw_content === '' || $raw_content === '{}') {
             $content = null;
         } else {
             $content  = json_decode($request->getContent(), true);
         }
-        if ($content == null) {
+        if ($content === null) {
             $id_projet = null;
-            $id_session= null;
             $mail      = null;
         } else {
             $id_projet  = (isset($content['projet'])) ? $content['projet'] : null;
             $mail       = (isset($content['mail'])) ? $content['mail'] : null;
-            $id_session = (isset($content['session'])) ? $content['session'] : null;
         }
-        //return new Response(json_encode([$id_projet,$id_session]));
 
-        // $sessions  = $em->getRepository(Session::class)->get_sessions_non_terminees();
         $users = [];
         $projets = [];
 
         // Tous les collaborateurs de tous les projets non terminés
-        if ($id_projet == null && $mail == null) {
+        if ($id_projet === null && $mail === null) {
             $projets = $em->getRepository(Projet::class)->findNonTermines();
         }
 
         // Tous les projets dans lesquels une personne donnée a un login
-        elseif ($id_projet == null) {
+        elseif ($id_projet === null) {
             $projets = $em->getRepository(Projet::class)->findNonTermines();
         }
 
         // Tous les collaborateurs d'un projet
-        elseif ($mail == null) {
+        elseif ($mail === null) {
             $p = $em->getRepository(Projet::class)->find($id_projet);
             if ($p != null) {
                 $projets[] = $p;
@@ -1411,46 +955,22 @@ class AdminuxController extends AbstractController
         foreach ($projets as $p) {
             $id_projet = $p->getIdProjet();
             
-            // Si session non spécifiée, on prend toutes les versions de chaque projet !
+            // On prend toutes les versions de chaque projet !
             $vs = [];
             $vs_labels = [];
-            if ($id_session==null) {
-                if ($p->getVersionDerniere() == null) {
-                    $this->sj->warningMessage("ATTENTION - Projet $p SANS DERNIERE VERSION !");
-                    continue;   // oups, projet bizarre
-                } else {
-                    $vs[] = $p->getVersionDerniere();
-                    $vs_labels[] = 'derniere';
-                }
-                if ($p->getVersionActive() != null) {
-                    $vs[] = $p->getVersionActive();
-                    $vs_labels[] = 'active';
-                }
 
-                // Toutes les versions
-                // TODO - Viré le 24 Février 2022 - Peut-être qu'on le remettra
-                // à condition d'employer un paramètre particulier à la requête
-                // Par exemple id_session = all déclenche l'envoi de la totalité des versions des projets non terminés
-                // alors que id_session = null déclenche l'envoi des versions DERNIERE et ACTIVE seulement
-                
-                //foreach ($p->getVersion() as $v) {
-                //    // ne pas compter deux fois les versions dernière + active
-                //    if (in_array($v,$vs)) continue;
-                //    $vs[] = $v;
-                //    $vs_labels[] = $v->getIdVersion();
-                //}
+            if ($p->getVersionDerniere() === null) {
+                $this->sj->warningMessage("ATTENTION - Projet $p SANS DERNIERE VERSION !");
+                continue;   // oups, projet bizarre
+            } else {
+                $vs[] = $p->getVersionDerniere();
+                $vs_labels[] = 'derniere';
+            }
+            if ($p->getVersionActive() != null) {
+                $vs[] = $p->getVersionActive();
+                $vs_labels[] = 'active';
             }
 
-            // Sinon, on prend la version de cette session... si elle existe
-            else {
-                $id_version = $id_session . $id_projet;
-                $req        = $em->getRepository(Version::class)->findBy(['idVersion' =>$id_version]);
-                //return new Response(json_encode($req[0]));
-                if ($req != null) {
-                    $vs[] = $req[0];
-                    $vs_labels[] = $id_version;
-                }
-            }
 
             // $vs contient au moins une version
             $i = 0; // i=0 -> version dernière, $i=1 -> version active
@@ -1492,10 +1012,6 @@ class AdminuxController extends AbstractController
                     // Les loginnames au niveau version
                     $loginnames = $su -> collaborateurVersion2LoginNames($cv);
 
-                    // Provisoire...
-                    //$loginnames['TURPAN']['login'] = $cv->getLogint();
-                    //$loginnames['BOREALE']['login'] = $cv->getLoginb();
-                    
                     // Au niveau projet = On prend si possible les loginnames de la dernière version
                     if (!isset($prj_info['loginnames']))
                     {
@@ -1504,8 +1020,6 @@ class AdminuxController extends AbstractController
                     
                     $v_info = [];
                     $v_info['version'] = $v->getIdVersion();
-                    //$v_info['logint'] = $cv->getLogint();   // A JETER
-                    //$v_info['loginb'] = $cv->getloginb();   // A JETER
                     
                     $v_info['loginnames'] = $loginnames;
                     $v_info['deleted'] = $cv->getDeleted();
@@ -1538,11 +1052,8 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $sj->infoMessage(__METHOD__ . " No projet $idProjet");
             return new Response(json_encode(['KO' => 'No Projet ' . $idProjet ]));
         }
@@ -1558,7 +1069,7 @@ class AdminuxController extends AbstractController
                 foreach ($version->getCollaborateurVersion() as $cv)
                 {
                     $collaborateur  = $cv->getCollaborateur() ;
-                    if ($collaborateur != null)
+                    if ($collaborateur !== null)
                     {
                         $prenom     = $collaborateur->getPrenom();
                         $nom        = $collaborateur->getNom();
@@ -1604,10 +1115,6 @@ class AdminuxController extends AbstractController
         }
         else
         {
-            if ($this->getParameter('noconso')==true) {
-                throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-            }
-    
             $annee_courante = $grdt->showYear();
             $sp      = $this->sp;
             $projets = $sp->projetsParAnnee($annee_courante)[0];
@@ -1618,7 +1125,7 @@ class AdminuxController extends AbstractController
                 // On ne s'occupe pas des projets terminés ou annulés
                 // TODO - Tester sur l'état plutôt que sur le meta état,
                 //        le méta état est censé être fait SEULEMENT pour l'affichage !
-                if ( $p['metaetat'] == "TERMINE" ) continue;
+                if ( $p['metaetat'] === "TERMINE" ) continue;
                 if ($p['attrib'] != $p['q']) {
                     $msg .= $p['p']->getIdProjet() . "\t" . $p['attrib'] . "\t\t" . $p["q"] . "\n";
                 }
@@ -1646,20 +1153,12 @@ class AdminuxController extends AbstractController
      * curl --netrc -H "Content-Type: application/json" https://.../adminux/utilisateurs/checkpassword
      *
      */
-    public function checkPasswordAction(Request $request, LoggerInterface $lg): Response
+    public function checkPasswordAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $grdt = $this->grdt;
         $users = $em->getRepository(User::class)->findAll();
         $rusers = [];
@@ -1675,7 +1174,7 @@ class AdminuxController extends AbstractController
             }
             
             // Si nécessaire on marque le user comme expiré, mais on ne supprime rien
-            if ($user->getPassexpir() <= $grdt && $user->getExpire() == false)
+            if ($user->getPassexpir() <= $grdt && $user->getExpire() === false)
             {
                 $user->setExpire(true);
                 $em->persist($user);
@@ -1684,7 +1183,7 @@ class AdminuxController extends AbstractController
             }
 
             // On ne devrait jamais rentrer dans le if mais on ajoute de la robustesse
-            if ($user->getPassexpir() > $grdt && $user->getExpire() == true)
+            if ($user->getPassexpir() > $grdt && $user->getExpire() === true)
             {
                 $user->setExpire(false);
                 $em->persist($user);
@@ -1723,7 +1222,7 @@ class AdminuxController extends AbstractController
         {
             $loginname_p = $su -> parseLoginname($prm);
             $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-            if ($serveur == null)
+            if ($serveur === null)
             {
                return false;
             }
@@ -1764,7 +1263,7 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
         
-        if ($raw_content == '' || $raw_content == '{}')
+        if ($raw_content === '' || $raw_content === '{}')
         {
             $content = null;
         }
@@ -1773,7 +1272,7 @@ class AdminuxController extends AbstractController
             $content  = json_decode($request->getContent(), true);
         }
         
-        if ($content == null) {
+        if ($content === null) {
             $rvk = 0;
         }
         else
@@ -1803,8 +1302,8 @@ class AdminuxController extends AbstractController
             $r_c['pub'] = $c->getPub();
             $r_c['rvk'] = $c->getrvk();
 
-            if ( $rvk === 1 && $r_c['rvk'] == false) continue;
-            if ( $rvk === -1 && $r_c['rvk'] == true) continue;
+            if ( $rvk === 1 && $r_c['rvk'] === false) continue;
+            if ( $rvk === -1 && $r_c['rvk'] === true) continue;
             $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
             $r_c['empreinte'] = $c->getEmp();
 
@@ -1852,12 +1351,8 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -1882,12 +1377,12 @@ class AdminuxController extends AbstractController
 
         $error = [];
         $projet      = $em->getRepository(Projet::class)->find($idProjet);
-        if ($projet == null) {
+        if ($projet === null) {
             $error[]    =   'No Projet ' . $idProjet;
         }
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[]    =   'No idIndividu ' . $idIndividu;
         }
 
@@ -1902,7 +1397,7 @@ class AdminuxController extends AbstractController
             $loginname_p['serveur'] = '';
         }
         $serveur = $em->getRepository(Serveur::class)->findOneBy( ["nom" => $loginname_p['serveur']]);
-        if ($serveur == null)
+        if ($serveur === null)
         {
            $error[] = 'No serveur ' . $loginname_p['serveur'];
         }
@@ -1922,10 +1417,10 @@ class AdminuxController extends AbstractController
         $i=0;
         foreach ($versions as $version) {
             // $version->getIdVersion()."\n";
-            if ($version->getEtatVersion() == Etat::ACTIF             ||
-                $version->getEtatVersion() == Etat::ACTIF_TEST        ||
-                $version->getEtatVersion() == Etat::NOUVELLE_VERSION_DEMANDEE ||
-                $version->getEtatVersion() == Etat::EN_ATTENTE
+            if ($version->getEtatVersion() === Etat::ACTIF             ||
+                $version->getEtatVersion() === Etat::ACTIF_TEST        ||
+                $version->getEtatVersion() === Etat::NOUVELLE_VERSION_DEMANDEE ||
+                $version->getEtatVersion() === Etat::EN_ATTENTE
               )
               {
               foreach ($version->getCollaborateurVersion() as $cv)
@@ -1933,7 +1428,7 @@ class AdminuxController extends AbstractController
                   $collaborateur  =  $cv->getCollaborateur() ;
                   if ($collaborateur != null && $collaborateur->isEqualTo($individu)) {
                       $user = $em->getRepository(User::class)->findOneByLoginname($loginname);
-                      if ($user == null)
+                      if ($user === null)
                       {
                           $msg = "L'utilisateur $loginname n'existe pas";
                           $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - $msg");
@@ -1974,12 +1469,8 @@ class AdminuxController extends AbstractController
         $sj = $this->sj;
         $su = $this->su;
 
-        if ($this->getParameter('noconso')==true) {
-            throw new AccessDeniedException("Accès interdit (paramètre noconso)");
-        }
-
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -1999,12 +1490,12 @@ class AdminuxController extends AbstractController
         $error = [];
 
         $individu = $em->getRepository(Individu::class)->find($idIndividu);
-        if ($individu == null) {
+        if ($individu === null) {
             $error[] = 'No idIndividu ' . $idIndividu;
         }
 
         $cle = $em->getRepository(Clessh::class)->find($idCle);
-        if ($cle == null) {
+        if ($cle === null) {
             $error[] = 'No Cle ' . $idCle;
         }
         else
@@ -2034,7 +1525,7 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -X GET https://.../adminux/cron/execute
-    public function cronAction(Request $request, LoggerInterface $lg): Response
+    public function cronAction(Request $request): Response
     {
         $cr = $this->cr;
         $cr->execute();
@@ -2141,7 +1632,7 @@ class AdminuxController extends AbstractController
      *
      */
     // curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN" }' https://.../adminux/todo/done
-    public function setdoneAction(Request $request, LoggerInterface $lg): Response
+    public function setdoneAction(Request $request): Response
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -2149,7 +1640,7 @@ class AdminuxController extends AbstractController
         $sroc = $this->sroc;
 
         $content  = json_decode($request->getContent(), true);
-        if ($content == null) {
+        if ($content === null) {
             $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
             return new Response(json_encode(['KO' => 'Pas de données']));
         }
@@ -2244,7 +1735,7 @@ class AdminuxController extends AbstractController
         }
     }
 
-    // Si un des dac/dar a son todof true, on le met à false et on renvoir true
+    // Si un des dac/dar a son todof true, on le met à false et on renvoie true
     private function __clrTodof(\Doctrine\Common\Collections\Collection $dacdars, Ressource $ressource): bool
     {
         $em = $this->em;
@@ -2275,9 +1766,9 @@ class AdminuxController extends AbstractController
      */
 
     // curl --netrc -X GET https://.../adminux/gramcdate/get
-    public function getDateAction(Request $request, LoggerInterface $lg): Response
+    public function getDateAction(Request $request): Response
     {
-        if ($this->getParameter('kernel.debug') == false)
+        if ($this->getParameter('kernel.debug') === false)
         {
             return new Response(json_encode(['KO' => 'Seulement en debug !']));
         }
@@ -2287,6 +1778,90 @@ class AdminuxController extends AbstractController
         }
     }
 
+    /**
+     * get adresses IP
+     *
+     * @Route("/adresseip/get", name="get_adresseip", methods={"POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * Exemples de données POST (fmt json):
+     *             ''
+     *             ou
+     *             '{ "labo" : true     }' -> Toutes les adresses IP, associées à un acronyme de laboratoire
+     *             ou
+     *             '{ "verif" : true }' --> Si true, ne renvoie que les adresses utiles au mésocentre connecté
+     *
+     */
+    // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "labo": true }' https://.../adminux/adresseip/get
+
+    public function adresseipGetAction(Request $request): Response
+    {
+        $em = $this->em;
+        $sp = $this->sp;
+        $sj = $this->sj;
+        $token = $this->tok->getToken();
+        $grdt = $this->grdt;
+        $labo_rep= $em->getRepository(Laboratoire::class);
+
+        $content  = json_decode($request->getContent(), true);
+        //print_r($content);
+        if ($content === null) {
+            $labo = false;
+            $verif = false;
+        }
+        else
+        {
+            $labo = (isset($content['labo'])) ? $content['labo'] : false;
+            $verif = (isset($content['verif']))? $content['verif']: false;
+        }
+
+        if ($verif === false)
+        {
+            $labos = $labo_rep->findAll();
+        }
+        else
+        {
+            $moi = $token->getUser();
+            if ($moi === null)
+            {
+                $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - non connecté");
+                return new Response(json_encode(['KO' => 'Erreur interne']));
+            }
+            $labos = $labo_rep->findByAdmname($moi->getUserIdentifier());
+        }
+            
+
+        $adresses = [];
+
+        if ($labo === true)
+        {
+            foreach ($labos as $l)
+            {
+                $adr_lab = [];
+                foreach ($l->getAdresseip() as $adr)
+                {
+                    $adr_lab[] = $adr->getAdresse();
+                }
+                $adresses[$l->getAcroLabo()] = $adr_lab;
+            }
+        }
+        else
+        {
+            foreach ($labos as $l)
+            {
+                foreach ($l->getAdresseip() as $adr)
+                {
+                    if (! in_array($adr->getAdresse(),$adresses))
+                    {
+                        $adresses[] = $adr->getAdresse();
+                    }
+                }
+            }
+        }
+        
+        $sj -> infoMessage(__METHOD__ . " OK");
+        return new Response(json_encode($adresses));
+    }
+    
     /**
      * SEULEMENT EN DEBUG: modifie la date
      *
@@ -2307,14 +1882,14 @@ class AdminuxController extends AbstractController
     // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
 
-    public function setDateAction(Request $request, LoggerInterface $lg): Response
+    public function setDateAction(Request $request): Response
     {
         $grdt = $this->grdt;
         $cr = $this->cr;
         $sj = $this->sj;
         $em = $this->em;
         
-        if ($this->getParameter('kernel.debug') == false)
+        if ($this->getParameter('kernel.debug') === false)
         {
             return new Response(json_encode(['KO' => 'Seulement en debug !']));
         }
@@ -2324,7 +1899,7 @@ class AdminuxController extends AbstractController
             $rel = false;
             $cron = false;
             $content  = json_decode($request->getContent(), true);
-            if ($content == null)
+            if ($content === null)
             {
                 $sj->errorMessage(__METHOD__ . ':' . __FILE__ . " - Pas de données");
                 return new Response(json_encode(['KO' => 'Pas de données']));
@@ -2348,7 +1923,7 @@ class AdminuxController extends AbstractController
             }
             
             $grdt_now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
-            if ($grdt_now == null)
+            if ($grdt_now === null)
             {
                 $grdt_now = new Param();
                 $grdt_now->setCle('now');

@@ -78,23 +78,6 @@
             <p>Publications</p>
         </a>
 
-        {# SUPPRIME POUR L'INSTANT
-        {% if noconso==false %}
-            {% if not isNouvelle %}
-                    <a class="conso" title="consommation {{anneePrec}}" data-href="{{ absolute_url(path('projet_conso', { 'id': expertise.version.projet.idProjet, 'annee' : anneePrec })) }}">
-                        {{icones.consommation}}
-                        <p>Conso {{anneePrec}}</p>
-                    </a>
-                {% if version.session.libelleTypeSession == 'B' %}
-                        <a class="conso" title="Consommation {{anneeCour}}" data-href="{{ absolute_url(path('projet_conso', { 'id': expertise.version.projet.idProjet, 'annee' : anneeCour })) }}">
-                            {{icones.consommation}}
-                            <p>Conso {{anneeCour}}</p>
-                        </a>
-                {% endif %}
-            {% endif %}
-        {% endif %}
-        #}
-        
     </div>
     <hr class="retour" />
 
@@ -183,9 +166,7 @@
 
     {{ form_end(edit_form) }}
 
-    {% if noconso==false %}
     <div id="dialog-compta" class="graphique"></div>
-    {% endif %}
 
 </section>
 {% endblock %}

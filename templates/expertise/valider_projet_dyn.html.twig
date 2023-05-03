@@ -4,54 +4,51 @@
 
 {% block body %}
 
-<section>
+<section id="section_validation_expertise">
     <h1>Confirmation d'envoi de la validation</h1>
 
     <div class="information ok">Merci de vérifier votre validation avant envoi définitif</div>
 
-    <table class="projet">
-        <tbody>
-            <tr>
-                <th>Numéro de projet</th>
-                <td>{{ version.projet }}</td>
-            </tr>
-            <tr>
-                <th>Validation</th>
-                <td>
-                    <strong>
+    <div class="recapitulatif">
+        <div class="premiere_partie">
+            <div>
+                <h4>Numéro de projet :</h4>
+                <p>{{ expertise.version.projet }}</p>
+            </div>
+            <div>
+                <h4>Validation :</h4>
+                    <p><strong>
                         {% if( expertise.validation == 0 ) %}
                         REFUSER ET FERMER LE PROJET
                         {% elseif( expertise.validation == 1 ) %}
                         ACCEPTER
                         {% endif %}
-                    </strong>
-                </td>
-            </tr>
-            {% for d in version.dac %}
-            <tr>
-                <th>Ressources attribuées sur {{ serviceRessources.nomcomplet(d.ressource)}}</th>
-                <td>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <th>Commentaire interne</th>
-                <td>{{ expertise.commentaireInterne }}</td>
-            </tr>
-            <tr>
-                <th>Commentaire pour le responsable </th>
-                <td>{{ expertise.commentaireExterne }}</td>
-            </tr>
-        </tbody>
-    </table>
+                    </strong></p>
+            </div>
 
-    <div class="information ok notifications">
-        <h2>Notifications</h2>
-{#        <p>Si le projet est <strong>accepté</strong>,
-        un courriel sera envoyé au responsable de projet avec votre commentaire<br>
-        <p>Si le projet est <strong>refusé</strong>, le président du comité d'attribution devra prendre contact avec l'utilisateur.</p>
-#}
-        <p>Un courriel sera envoyé au responsable de projet avec votre décision et votre commentaire</p>
-    </div>
+            {% for d in version.dac %}
+            <div>
+                <h4>Ressources attribuées sur {{ serviceRessources.nomcomplet(d.ressource)}}</h4>
+                <p>{{ d.attribution}}&nbsp;{{ d.ressource.unite}}</p>
+            </div>
+            {% endfor %}
+
+            <div class="deuxieme_partie">
+                <div class="commentaire">
+                        <h4>Commentaire interne :</h4>
+                        <p>{{ expertise.commentaireInterne }}</p>
+                </div>
+                <div class="commentaire">
+                        <h4>Commentaire envoyé au responsable :</h4>
+                        <p>{{ expertise.commentaireExterne }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="information ok notifications">
+            <h2>Notifications</h2>
+            <p>Un courriel sera envoyé au responsable de projet avec votre décision et votre commentaire</p>
+        </div>
 
         <div class="information attention inputrond submitdyn" >
             <strong>Confirmez-vous votre décision ? </strong><br>
@@ -59,5 +56,6 @@
             {{ form_widget(edit_form)  }}
             {{ form_end(edit_form) }}
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

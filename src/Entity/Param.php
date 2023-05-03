@@ -69,7 +69,7 @@ class Param
      * @param string $cle
      * @return Param
      */
-    public function setCle($cle)
+    public function setCle(string $cle): self
     {
         $this->cle = $cle;
 
@@ -81,7 +81,7 @@ class Param
      *
      * @return string
      */
-    public function getCle()
+    public function getCle(): ?string
     {
         return $this->cle;
     }
@@ -91,7 +91,7 @@ class Param
      * @param string $val
      * @return Param
      */
-    public function setVal($val)
+    public function setVal(string $val): self
     {
         $this->val = $val;
 
@@ -102,11 +102,12 @@ class Param
      *
      * @return string
      */
-    public function getVal()
+    public function getVal(): ?string
     {
         return $this->val;
     }
-    public function getId()
+
+    public function getId(): ?int
     {
         return $this->id;
     }

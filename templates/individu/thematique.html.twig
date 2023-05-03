@@ -23,14 +23,6 @@
         <h2> Thématiques</h2>
         <p><em>Cocher une ou plusieurs cases pour associer cet expert aux thématiques correspondantes.</em></p>
         {{ form_widget(form.thematique) }}
-
-        {% if norattachement == false %}
-        <h2> Rattachements</h2>
-        <p><em>Cocher une ou plusieurs cases pour associer cet expert aux rattachements correspondants.</em></p>
-        {{ form_widget(form.rattachement) }}
-
-        {% endif %}
-
         {{ form_widget(form.submit) }}{{ form_widget(form.reset) }}
         {{ form_end(form) }}
     </div>

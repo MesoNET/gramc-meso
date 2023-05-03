@@ -32,7 +32,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-const VERSION = "0.5.2";
+const VERSION = "0.6.0";
 
 /*
  * Cette classe garde des informations pouvant être reprises par
@@ -41,52 +41,7 @@ const VERSION = "0.5.2";
  ******/
 class ServiceInfos
 {
-    private $sessions_non_terminees = null;
-    private $session_courante = null;
-    private $etat_session_courante = null;
-    private $libelle_etat_session_courante = null;
-    private $id_session_courante = null;
-
-    public function __construct(private GramcDate $grdte, private EntityManagerInterface $em)
-    {
-        $this->sessions_non_terminees =
-            $em->getRepository(Session::class)->get_sessions_non_terminees();
-
-        if (isset($this->sessions_non_terminees[0])) {
-            $this->session_courante = $this->sessions_non_terminees[0];
-        }
-
-        if ($this->session_courante != null) {
-            $this->etat_session_courante  =  $this->session_courante->getEtatSession();
-            if (array_key_exists($this->etat_session_courante, Etat::LIBELLE_ETAT)) {
-                $this->libelle_etat_session_courante = Etat::LIBELLE_ETAT[$this->etat_session_courante];
-            } else {
-                $this->libelle_etat_session_courante = "UNKNOWN";
-            }
-            $this->id_session_courante = $this->session_courante->getIdSession();
-        }
-    }
-
-    public function getLibelleEtatSessionCourante(): ?string
-    {
-        return $this->libelle_etat_session_courante;
-    }
-
-    public function getSessionCourante(): Session
-    {
-        return $this->session_courante;
-    }
-
-
-    public function getEtatSessionCourante(): int
-    {
-        return $this->etat_session_courante;
-    }
-
-    public function sessions_non_terminees(): ?array
-    {
-        return $this->sessions_non_terminees;
-    }
+    public function __construct(private GramcDate $grdte, private EntityManagerInterface $em) {}
 
     public function mail_replace($mail): string
     {
@@ -96,26 +51,15 @@ class ServiceInfos
     public function gramc_date($format): GramcDate|string
     {
         $d = $this->grdte;
-        if ($format == 'raw') {
+        if ($format === 'raw')
+        {
             return $d;
-        } else {
+        }
+        else
+        {
             return $d->format($format);
         }
     }
-
-    public function prochaine_session_saison(): array
-    {
-        $annee        = 2000 + intval(substr($this->id_session_courante, 0, 2));
-        $type         = substr($this->id_session_courante, 2, 1);
-        $mois_courant = intval($this->gramc_date('m'));
-        $result['annee']=$annee;
-        if ($type == 'A') {
-            $result['type']='P';
-        } else {
-            $result['type']='A';
-        }
-        return $result;
-    } //  function prochaine_session_saison()
 
     // TODO - strftime est obsolète à partir de php 8.1 !
     public function strftime_fr($format, $date): string
@@ -127,28 +71,15 @@ class ServiceInfos
 
     public function tronquer_chaine(?string $s, string|int $l): ?string
     {
-        if (grapheme_strlen($s)>=intval($l)) {
+        if (grapheme_strlen($s)>=intval($l))
+        {
             return grapheme_substr($s, 0, intval($l)).'...';
-        } else {
+        }
+        else
+        {
             return $s;
         }
     }
-
-
-    public function cette_session(): array
-    {
-        $aujourdhui    = $this->gramc_date('raw');
-        $fin_sess_date = $this->session_courante->getDateFinSession();
-        $interval   = date_diff($aujourdhui, $fin_sess_date);
-        $duree      = $interval->format('%R%a-%H');
-        $jours      = intval($duree);
-        return array( 'jours' => $jours, 'fin_sess' => $fin_sess_date->format("d/m/Y") );
-    } // function cette_session()
-
-    public function prochaine_session(): string
-    {
-        return $this->session_courante->getDateDebutSession()->format("d/m/Y");
-    } // function prochaine_session
 
     public function getVersion(): string
     {

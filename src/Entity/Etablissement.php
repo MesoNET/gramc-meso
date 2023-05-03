@@ -93,7 +93,7 @@ class Etablissement
      *
      * @return Etablissement
      */
-    public function setLibelleEtab($libelleEtab)
+    public function setLibelleEtab(string $libelleEtab): self
     {
         $this->libelleEtab = $libelleEtab;
 
@@ -105,7 +105,7 @@ class Etablissement
      *
      * @return string
      */
-    public function getLibelleEtab()
+    public function getLibelleEtab(): ?string
     {
         return $this->libelleEtab;
     }
@@ -115,7 +115,7 @@ class Etablissement
      *
      * @return integer
      */
-    public function getIdEtab()
+    public function getIdEtab(): ?int
     {
         return $this->idEtab;
     }

@@ -119,11 +119,7 @@ class PublicationController extends AbstractController
                 return  new Response('nopubli');
             }
         }
-        //return new Response( 'no form submitted' );
-
         $form = $this->createForm(PublicationType::class, $publication, ['csrf_protection' => true]);
-
-        //return $this->render('publication/form.html.twig', [ 'form' => $form->createView() ]);
 
         return new Response(json_encode('no form submitted'));
     }
@@ -216,7 +212,7 @@ class PublicationController extends AbstractController
             [
             'publications' => $projet->getPubli(),
             'projet'    => $projet,
-        ]
+            ]
         );
     }
 

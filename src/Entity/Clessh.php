@@ -25,6 +25,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Individu;
+use App\Entity\User;
 
 /**
  * Sso
@@ -60,7 +62,7 @@ class Clessh
      * @var \App\Entity\Individu
      *
      * ORM\Column(name="id_individu", type="integer")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="clessh")
+     * @ORM\ManyToOne(targetEntity="Individu",inversedBy="clessh")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
      * })
@@ -71,7 +73,7 @@ class Clessh
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="clessh")
+     * @ORM\OneToMany(targetEntity="User", mappedBy="clessh")
      */
     private $user;
 
@@ -115,7 +117,7 @@ class Clessh
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -123,11 +125,11 @@ class Clessh
     /**
      * Set individu
      *
-     * @param \App\Entity\Individu $individu
+     * @param Individu $individu
      *
      * @return Clessh
      */
-    public function setIndividu(\App\Entity\Individu $individu = null)
+    public function setIndividu(?Individu $individu = null): self
     {
         $this->individu = $individu;
 
@@ -139,7 +141,7 @@ class Clessh
      *
      * @return \App\Entity\Individu
      */
-    public function getIndividu()
+    public function getIndividu(): ?Individu
     {
         return $this->individu;
     }
@@ -163,7 +165,7 @@ class Clessh
     /**
      * Remove user
      *
-     * @param \App\Entity\User $user
+     * @param User $user
      *
      * @return clessh
      */
@@ -190,7 +192,7 @@ class Clessh
      *
      * @return Clessh
      */
-    public function setNom($nom)
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
         return $this;
@@ -201,7 +203,7 @@ class Clessh
      *
      * @return string
      */
-    public function getNom()
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -213,20 +215,20 @@ class Clessh
      *
      * @return Clessh
      */
-    public function setPub($pub)
+    public function setPub(string $pub): self
     {
         $this->pub = $pub;
         return $this;
     }
 
     /**
-     * Get emp
+     * Get pub
      *
      * @return string
      */
-    public function getEmp()
+    public function getPub(): ?string
     {
-        return $this->emp;
+        return $this->pub;
     }
 
     /**
@@ -236,20 +238,20 @@ class Clessh
      *
      * @return Clessh
      */
-    public function setEmp($emp)
+    public function setEmp(string $emp): self
     {
         $this->emp = $emp;
         return $this;
     }
 
     /**
-     * Get pub
+     * Get emp
      *
      * @return string
      */
-    public function getPub()
+    public function getEmp(): ?string
     {
-        return $this->pub;
+        return $this->emp;
     }
 
     /**
@@ -259,7 +261,7 @@ class Clessh
      *
      * @return Version
      */
-    public function setRvk($rvk)
+    public function setRvk(bool $rvk): self
     {
         $this->rvk = $rvk;
 
@@ -271,7 +273,7 @@ class Clessh
      *
      * @return boolean
      */
-    public function getRvk()
+    public function getRvk():bool 
     {
         return $this->rvk;
     }

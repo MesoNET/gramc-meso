@@ -50,10 +50,13 @@ class ServicePhpSessions
         $dir = session_save_path();
         $scan = scandir($dir);
         $result = true;
-        foreach ($scan as $filename) {
-            if ($filename != '.' && $filename != '..') {
+        foreach ($scan as $filename)
+        {
+            if ($filename != '.' && $filename != '..')
+            {
                 $path = $dir . '/' . $filename;
-                if (@unlink($path)==false) {
+                if (@unlink($path) === false)
+                {
                     Functions::errorMessage(__METHOD__ . ':' . __LINE__ . " Le fichier $path n'a pas pu être supprimé !");
                     $result = false;
                 }
@@ -84,8 +87,10 @@ class ServicePhpSessions
         $save = $_SESSION;
 
         $time = time();
-        foreach ($scan as $filename) {
-            if ($filename != '.' && $filename != '..') {
+        foreach ($scan as $filename)
+        {
+            if ($filename != '.' && $filename != '..')
+            {
                 $atime = fileatime($dir . '/' . $filename);
                 $mtime = filemtime($dir . '/' . $filename);
                 $ctime = filectime($dir . '/' . $filename);
@@ -95,7 +100,8 @@ class ServicePhpSessions
                 $heures= intVal($diff/60);
                 $contents = file_get_contents($dir . '/' . $filename);
                 session_decode($contents);
-                if (! array_key_exists('_sf2_attributes', $_SESSION)) {
+                if (! array_key_exists('_sf2_attributes', $_SESSION))
+                {
                     $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Une session autre que gramc3 !");
                 }
                 else
@@ -122,7 +128,7 @@ class ServicePhpSessions
                         $individu = null;
                         $rest_individu = null;                        
                     }
-                    if ($individu == null && $rest_individu == null) {
+                    if ($individu === null && $rest_individu === null) {
                         $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Problème d'individu ");
                     //dd($secu_data);
                     }

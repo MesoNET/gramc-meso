@@ -85,7 +85,7 @@ class Invitation
      *
      * @return integer
      */
-    public function getIdInvitation()
+    public function getIdInvitation(): ?int
     {
         return $this->idInvitation;
     }
@@ -97,7 +97,7 @@ class Invitation
      *
      * @return Invitation
      */
-    public function setInviting(Individu $inviting)
+    public function setInviting(?\App\Entity\Individu $inviting): self
     {
         $this->inviting = $inviting;
 
@@ -109,7 +109,7 @@ class Invitation
      *
      * @return \App\Entity\Individu
      */
-    public function getInviting()
+    public function getInviting(): ?\App\Entity\Individu
     {
         return $this->inviting;
     }
@@ -121,7 +121,7 @@ class Invitation
      *
      * @return Invitation
      */
-    public function setInvited(Individu $invited)
+    public function setInvited(?\App\Entity\Individu $invited): self
     {
         $this->invited = $invited;
 
@@ -133,7 +133,7 @@ class Invitation
      *
      * @return \App\Entity\Individu
      */
-    public function getInvited()
+    public function getInvited(): ?\App\Entity\Individu
     {
         return $this->invited;
     }
@@ -145,7 +145,7 @@ class Invitation
      *
      * @return Invitation
      */
-    public function setClef($clef)
+    public function setClef(string $clef): self
     {
         $this->clef = $clef;
 
@@ -157,7 +157,7 @@ class Invitation
      *
      * @return string
      */
-    public function getClef()
+    public function getClef(): ?string
     {
         return $this->clef;
     }
@@ -169,7 +169,7 @@ class Invitation
      *
      * @return Invitation
      */
-    public function setCreationStamp($creationStamp)
+    public function setCreationStamp( \Datetime $creationStamp): self
     {
         $this->creationStamp = $creationStamp;
 
@@ -181,7 +181,7 @@ class Invitation
      *
      * @return \DateTime
      */
-    public function getCreationStamp()
+    public function getCreationStamp(): \DateTime
     {
         return $this->creationStamp;
     }

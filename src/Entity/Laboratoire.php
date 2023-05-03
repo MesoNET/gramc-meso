@@ -44,6 +44,7 @@ class Laboratoire
     {
         $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
         $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->adresseip = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -93,6 +94,14 @@ class Laboratoire
      */
     private $individu;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="\App\Entity\Adresseip", mappedBy="labo", cascade={"remove"} )
+     * 
+     */
+    private $adresseip;
+
     public function __toString(): string
     {
         if ($this->getAcroLabo() != null && $this->getNomLabo() != null) {
@@ -106,7 +115,7 @@ class Laboratoire
         }
     }
 
-    public function getId():int
+    public function getId(): ?int
     {
         return $this->getIdLabo();
     }
@@ -118,7 +127,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setNumeroLabo($numeroLabo): self
+    public function setNumeroLabo(int $numeroLabo): self
     {
         $this->numeroLabo = $numeroLabo;
 
@@ -130,7 +139,7 @@ class Laboratoire
      *
      * @return integer
      */
-    public function getNumeroLabo(): int
+    public function getNumeroLabo(): ?int
     {
         return $this->numeroLabo;
     }
@@ -142,7 +151,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setAcroLabo($acroLabo): self
+    public function setAcroLabo(string $acroLabo): self
     {
         $this->acroLabo = $acroLabo;
 
@@ -154,7 +163,7 @@ class Laboratoire
      *
      * @return string
      */
-    public function getAcroLabo(): string
+    public function getAcroLabo(): ?string
     {
         return $this->acroLabo;
     }
@@ -166,7 +175,7 @@ class Laboratoire
      *
      * @return Laboratoire
      */
-    public function setNomLabo($nomLabo): self
+    public function setNomLabo(string $nomLabo): self
     {
         $this->nomLabo = $nomLabo;
 
@@ -178,7 +187,7 @@ class Laboratoire
      *
      * @return string
      */
-    public function getNomLabo(): string
+    public function getNomLabo(): ?string
     {
         return $this->nomLabo;
     }
@@ -229,6 +238,43 @@ class Laboratoire
     public function getCollaborateurVersion()
     {
         return $this->collaborateurVersion;
+    }
+
+    /**
+     * Add adresseip
+     *
+     * @param \App\Entity\Adresseip $adresseip
+     *
+     * @return Projet
+     */
+    public function addAdresseip(\App\Entity\Adresseip $adresseip): self
+    {
+        if (! $this->adresseip->contains($adresseip)) {
+            $this->adresseip[] = $adresseip;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove adresseip
+     *
+     * @param \App\Entity\Adresseip $adresseip
+     */
+    public function removeAdresseip(\App\Entity\Adresseip $adresseip): self
+    {
+        $this->adresseip->removeElement($adresseip);
+        return $this;
+    }
+
+    /**
+     * Get adresseip
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAdresseip()
+    {
+        return $this->adresseip;
     }
 
     /**

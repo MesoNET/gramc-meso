@@ -50,18 +50,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class IndividuFormType extends AbstractType implements DataMapperInterface
 {
-    private $coll_login;
-    private $nodata;
-
-    // Utilisation des paramètres coll_login et nodata
-    // On pourrait aussi passer par $options de buildForm, sauf que le formulaire est construit la plupart du temps par
-    // l'intermédiaire d'un CollectionType, et je ne sais pas comment passer les paramètres
-    // TODO - Maintenant je sais !!!
-    public function __construct($coll_login, $nodata)
-    {
-        $this -> coll_login = $coll_login;
-        $this -> nodata = $nodata;
-    }
 
     /**
      * {@inheritdoc}
@@ -69,24 +57,21 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         //dd($options);
-        if ($this->coll_login == true)
+        $noms = $options['srv_noms'];
+        if (count($noms) > 0)
         {
-            $noms = $options['srv_noms'];
-            if (count($noms) > 0)
+            foreach ($noms as $n)
             {
-                foreach ($noms as $n)
-                {
-                    $builder->add(
-                        'login_'.$n,
-                        CheckboxType::class,
-                        [
-                            'label'     => $n,
-                            //'mapped' => true,
-                            'required'  => false,
-                            'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur '.$n ]
-                        ]
-                    );
-                }
+                $builder->add(
+                    'login_'.$n,
+                    CheckboxType::class,
+                    [
+                        'label'     => $n,
+                        //'mapped' => true,
+                        'required'  => false,
+                        'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur '.$n ]
+                    ]
+                );
             }
         };
         $builder->setDataMapper($this);

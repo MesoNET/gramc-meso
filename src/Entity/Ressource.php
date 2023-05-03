@@ -87,7 +87,7 @@ class Ressource
     /**
      * @var desc
      *
-     * @ORM\Column(name="descr", type="string", length=2000)
+     * @ORM\Column(name="descr", type="string", length=2000, nullable=true)
      * 
      */
     private $desc;
@@ -130,12 +130,12 @@ class Ressource
      *
      * @return integer
      */
-    public function getIdRessource(): int
+    public function getIdRessource(): ?int
     {
         return $this->idRessource;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->idRessource;
     }
@@ -147,7 +147,7 @@ class Ressource
      *
      * @return Ressource
      */
-    public function setServeur(\App\Entity\Serveur $serveur): Self
+    public function setServeur(?\App\Entity\Serveur $serveur): self
     {
         $this->serveur = $serveur;
 
@@ -254,7 +254,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setNom(?string $nom): Self
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
         return $this;
@@ -276,7 +276,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setDesc(string $desc): Self
+    public function setDesc(?string $desc): self
     {
         $this->desc = $desc;
         return $this;
@@ -298,7 +298,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setDocUrl(?string $docUrl): Self
+    public function setDocUrl(?string $docUrl): self
     {
         $this->docUrl = $docUrl;
         return $this;
@@ -320,7 +320,7 @@ class Ressource
      * @param string
      * @return Ressource
      */
-    public function setUnite(?string $unite): Self
+    public function setUnite(?string $unite): self
     {
         $this->unite = $unite;
         return $this;
@@ -342,7 +342,7 @@ class Ressource
      * @param int
      * @return Ressource
      */
-    public function setMaxDem(?int $maxDem): Self
+    public function setMaxDem(?int $maxDem): self
     {
         $this->maxDem = $maxDem;
         return $this;
@@ -364,7 +364,7 @@ class Ressource
      * @param int
      * @return Ressource
      */
-    public function setCo2(int $co2): Self
+    public function setCo2(?int $co2): self
     {
         $this->co2 = $co2;
         return $this;

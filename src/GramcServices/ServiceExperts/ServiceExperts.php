@@ -34,7 +34,6 @@ use App\Interfaces\Demande;
 use App\Form\ChoiceList\ExpertChoiceLoader;
 
 use App\Entity\Thematique;
-use App\Entity\Rattachement;
 use App\GramcServices\Etat;
 use App\Utils\Functions;
 
@@ -72,16 +71,12 @@ class ServiceExperts
     protected $notifications = null;
     private $form_buttons = null;
     private $thematiques = null;
-    private $rattachements = null;
     private $demandes = null;
 
     public function __construct(
-        protected $max_expertises_nb,
         protected FormFactoryInterface $formFactory,
         protected ServiceNotifications $sn,
         protected ServiceJournal $sj,
-        protected PropositionExpertsType1 $pe1,
-        protected PropositionExpertsType2 $pe2,
         protected LoggerInterface $lg,
         protected EntityManagerInterface $em
     ) {}
@@ -177,109 +172,6 @@ class ServiceExperts
         return $this->thematiques;
     }
 
-    /*********************************************
-     * getTableauRattachements = Calcule et renvoie le tableau des rattachements,
-     * avec pour chacun la liste des experts associés et
-     * le nombre de projets affectés au rattachement
-     *
-     * return: Le tableau des rattachements
-     *
-     ***************************************************/
-    public function getTableauRattachements()
-    {
-        $em       = $this->em;
-        $demandes = $this->demandes;
-        if ($this->rattachements==null) {
-            // Construction du tableau des thématiques
-            $rattachements = [];
-            foreach ($em->getRepository(Rattachement::class)->findAll() as $rattachement) {
-                foreach ($rattachement->getExpert() as $expert) {
-                    if ($expert->getExpert() == false) {
-                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " $expert" . " est supprimé de la thématique pour ce projet" . $rattachement);
-                        //Functions::noRattachement($expert);
-                        $expert->removeRattachement($rattachement);
-                    }
-                }
-                $rattachements[ $rattachement->getIdRattachement() ] =
-                    ['rattachement' => $rattachement, 'experts' => $rattachement->getExpert(), 'projets' => 0 ];
-            }
-
-            // Remplissage avec le nb de demandes par thématiques
-            foreach ($demandes as $demande) {
-                $etatDemande    =   $demande->getEtat();
-                if ($etatDemande == Etat::EDITION_DEMANDE || $etatDemande == Etat::ANNULE) {
-                    continue;
-                }
-
-                if ($demande->getPrjRattachement() != null) {
-                    $rattachements[ $demande->getPrjRattachement()->getIdRattachement() ]['projets']++;
-                }
-            }
-            $this->rattachements = $rattachements;
-        }
-        return $this->rattachements;
-    }
-
-    /*********************************************
-     * traitementFormulaires
-     * Traite les formulaires d'affectation des experts pour les demandes sélectionnées
-     * Retourne un bool: Si true, notifications envoyées, si false pas de notifications envoyées
-     *
-     ********/
-    public function traitementFormulaires(Request $request): bool
-    {
-        $this->clearNotifications();
-        $demandes = $this->demandes;
-
-        // Traitements différentiés suivant le bouton sur lequel on a cliqué
-        $form_buttons = $this->getFormButtons();
-        foreach ($demandes as $demande) {
-            $etatDemande    =   $demande->getEtat();
-            if ($etatDemande == Etat::EDITION_DEMANDE || $etatDemande == Etat::ANNULE) {
-                continue;
-            }
-
-            // La demande est-elle sélectionnée ? - Si non on ignore
-            $selform = $this->getSelForm($demande);
-            $selform->handleRequest($request);
-            if ($selform->getData() == null || $selform->getData()['sel']==false) {
-                continue;
-            }
-
-            // traitement du formulaire d'affectation
-            $forms   = $this->getExpertForms($demande);
-
-            $experts_affectes = [];
-            foreach ($forms as $f) {
-                $f->handleRequest($request);
-                $experts_affectes[] = $f->getData()['expert'];
-            }
-
-            if ($form_buttons->get('sub2')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-            } elseif ($form_buttons->get('sub1')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-                $this->addNotification($demande);
-            } elseif ($form_buttons->get('sub3')->isClicked()) {
-                $this->addExpertiseToDemande($demande);
-            } elseif ($form_buttons->get('sub4')->isClicked()) {
-                $this->affecterExpertsToDemande($experts_affectes, $demande);
-                $this->remExpertiseFromDemande($demande);
-            } else {
-                continue;
-            }
-        }
-
-        if ($form_buttons->get('sub1')->isClicked()) {
-            $this->notifierExperts();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     /**
      * Si pas déjà fait, crée une expertise pour un rallonge ou une version
      *
@@ -289,8 +181,6 @@ class ServiceExperts
      *********/
     public function newExpertiseIfPossible(Version|Rallonge $objet): void
     {
-        $pe1 = $this->pe1;
-        $pe2 = $this->pe2;
         $lg  = $this->lg;
         $sj = $this->sj;
         $em  = $this->em;
@@ -314,34 +204,6 @@ class ServiceExperts
             }
 
             Functions::sauvegarder($expertise, $em, $lg);
-        }
-    }
-
-    /**
-    * Ajoute une expertise à la demande
-    * Si on atteint le paramètre max_expertises_nb, ne fait rien
-    * TODO - Si on atteint le paramètre max_expertises_nb, envoyer un message d'erreur !
-    *
-    * param = $demande
-    * Return= rien
-    *
-    ****/
-    private function addExpertiseToDemande($demande)
-    {
-        $expertises = $demande->getExpertise()->toArray();
-        if (count($expertises)< $this->max_expertises_nb) {
-            $expertise  =   new Expertise();
-            $expertise->setVersion($demande);
-
-            // Attention, l'algorithme de proposition des experts dépend du type de projet
-            // TODO Actuellement on ne propose pas d'expertise à ce moment
-            //      Il faudra améliorer l'algorithme de proposition
-            //$expert = $demande->getProjet()->proposeExpert();
-            //if ($expert != null)
-            //{
-            //	$expertise->setExpert( $expert );
-            //}
-            Functions::sauvegarder($expertise, $this->em);
         }
     }
 

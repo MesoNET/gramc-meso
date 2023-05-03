@@ -259,26 +259,4 @@ class ServiceRallonges
         }
         return $val;
     }
-
-    /***************************************
-     * Traitement des formulaires des ressources
-     *
-     * $ressource_forms = Tableau contenant un formulaire par ressource
-     * $version        = La version considérée
-     ****************************************************************/
-/*    public function handleRessourceForms(array $ressource_forms, Version $rallonge): void
-    {
-        $em   = $this->em;
-        $sj   = $this->sj;
-        $sval = $this->vl;
-
-        //dd($ressource_forms);
-        // On fait la modification sur la version passée en paramètre
-        foreach ($ressource_forms as $idar)
-        {
-            $rallonge->addDar($idar);
-        }
-        $em->persist($rallonge);
-        $em->flush();
-    }*/
 }
