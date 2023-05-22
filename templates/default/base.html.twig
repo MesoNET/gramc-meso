@@ -226,9 +226,11 @@
                 {% else %}
                     <span>gramc-meso {{ infos.VERSION }} - design <a href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8" target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
                 {% endif %}
-                &nbsp;-&nbsp;<a href="{{ path('mentions_legales') }}" class="lien_footer" title="Lire les mentions légales">Mentions légales</a>&nbsp;-&nbsp;
-                {% if mesoc_cgu != null %}
-                <a href="{{ mesoc_cgu }}" class="lien_footer" title="Lire les cgu du calculateur">cgu</a>
+                {% if mentions_legales != null %}
+                    &nbsp;<a href="{{ asset(mentions_legales) }}" target="_blank" class="lien_footer" title="Lire les mentions légales"> Mentions légales </a>
+                {% endif %}
+                {% if mesoc_cga != null %}
+                    &nbsp;<a href="{{ asset(mesoc_cga) }}" target="_blank" class="lien_footer" title="Lire les conditions Générales d'Attribution">cga</a>
                 {% endif %}
             </div>
 

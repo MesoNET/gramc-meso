@@ -713,6 +713,7 @@ class VersionController extends AbstractController
 
         $projet  = $version->getProjet();
 
+        // NOTE - devrait être CGA plutôt que CGU...
         $form = Functions::createFormBuilder($ff)
                 ->add(
                     'CGU',

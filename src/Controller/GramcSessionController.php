@@ -166,14 +166,6 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/mentions_legales", name="mentions_legales", methods={"GET"} )
-     */
-    public function mentionsAction(): Response
-    {
-        return $this->render('default/mentions.html.twig');
-    }
-
-    /**
     * @Route("/aide", name="aide", methods={"GET"} )
     */
     public function aideAction(): Response
