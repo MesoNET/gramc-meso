@@ -145,6 +145,19 @@ class CollaborateurVersion
         }
     }
 
+    /*
+     *  Lors du clonage d'un CollaborateurVersion, on recherche les informations
+     * sur le collaborateur, car elles peuvent avoir changé
+     *
+     */
+    public function __clone()
+    {
+        $individu = $this->getCollaborateur();
+        $this->statut = $individu->getStatut();
+        $this->labo = $individu->getLabo();
+        $this->etab = $individu->getEtab();
+    }
+        
     /**
      * Set responsable
      *

@@ -8,7 +8,8 @@ parameters:
     # Identifications diverses du mésocentre et de la documentation
     mesoc: MESONET
     mesoc_web: 'https://www.mesonet.fr'
-    mesoc_cgu: 'https://www.mesonet.fr/cgu'
+    mesoc_cga: 'cga.pdf'
+    mentions_legales: 'mentions_legales.pdf'
     mesoc_visu: 'https://www.mesonet.fr'
     mesoc_attrib: 'https://www.mesonet.fr'
     mesoc_merci: 'https://www.mesonet.fr'
