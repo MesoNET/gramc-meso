@@ -1262,14 +1262,10 @@ class Version implements Demande
      *
      * @return \App\Entity\Laboratoire
      */
+     // TODO - Wrapper vers getPrjLLabo, ne sert à rien !
     public function getLabo(): ?\App\Entity\Laboratoire
     {
-        foreach ($this->getCollaborateurVersion() as $item) {
-            if ($item->getResponsable() === true) {
-                return $item->getLabo();
-            }
-        }
-        return null;
+        return $this->getPrjLLabo();
     }
 
     public function getExpert(): ?\App\Entity\Individu
