@@ -155,3 +155,7 @@ services:
     App\Command\Brouillage:
         arguments: ["%kernel.debug%"]
         tags: ["console.command"]
+
+    App\Command\CronCmd:
+        tags: ["console.command"]
+
