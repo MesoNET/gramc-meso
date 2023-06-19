@@ -39,8 +39,10 @@ class InvitCronTask extends CronTaskBase
         $age_max = new \DateInterval($invit_duree);
         $invitations = $em->getRepository(Invitation::class)->findAll();
         $cpt = 0;
+        $j = 0;
         foreach ($invitations as $i)
         {
+            $j++;
             $stamp = $i->getCreationStamp();
             $date_max = $stamp->add($age_max);
             if ($date_max->getTimestamp() < $grdt->getTimestamp())
@@ -53,7 +55,7 @@ class InvitCronTask extends CronTaskBase
         if ($cpt > 0)
         {
             $em->flush();
-            $sj->warningMessage(__METHOD__ .':' . __LINE__ . " Suppression de $cpt invitations");
+            $sj->infoMessage(__METHOD__ .':' . __LINE__ . " Suppression de $cpt/$j invitations");
         }
     }
 }
