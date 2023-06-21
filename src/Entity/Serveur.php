@@ -77,6 +77,14 @@ class Serveur
     private $desc;
 
     /**
+     * @var cguUrl
+     *
+     * @ORM\Column(name="cgu_url", type="string", nullable=true, length=200)
+     * 
+     */
+    private $cguUrl;
+
+    /**
      * @var admname
      *
      * @ORM\Column(name="admname", type="string", length=20, nullable=true, options={"comment":"username symfony pour l'api"}) )
@@ -199,6 +207,28 @@ class Serveur
     public function setDesc(?string $desc): Serveur
     {
         $this->desc = $desc;
+        return $this;
+    }
+
+    /**
+     * Get cguUrl
+     *
+     * @return string
+     */
+    public function getCguUrl(): ?string
+    {
+        return $this->cguUrl;
+    }
+
+    /**
+     * Set cguUrl
+     *
+     * @param string
+     * @return Ressource
+     */
+    public function setCguUrl(?string $cguUrl): self
+    {
+        $this->cguUrl = $cguUrl;
         return $this;
     }
 
