@@ -103,6 +103,7 @@ class UserController extends AbstractController
         // TODO - Traitement d'erreur si serveur est null
         $serveur_nom = $user->getServeur()->getNom();
         $serveur_cgu = $user->getServeur()->getCguUrl();
+        if ($serveur_cgu === null) $serveur_cgu = "";
         
         return $this->render('user/modif.html.twig', array(
             'user' => $user,
