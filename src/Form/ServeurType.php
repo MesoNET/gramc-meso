@@ -45,6 +45,7 @@ class ServeurType extends AbstractType
         $builder
             ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:', 'disabled' => $options['modifier']])
             ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :' ])
+            ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :' ])
             ->add('admname', TextType::class,
                   ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :']);
 

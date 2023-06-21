@@ -14,12 +14,6 @@ parameters:
     mesoc_attrib: 'https://www.mesonet.fr'
     mesoc_merci: 'https://www.mesonet.fr'
     mesoc_formation: 'https://www.mesonet.fr'
-
-    # TOSO - Dans la B.D. !!!
-    serveur_cgu:
-       TURPAN: 'https://www.mesonet.fr/turpan/cgu'
-       BOREAL: 'https://www.mesonet.fr/boreal/cgu'
-    
     mesoc_address: 'MESONET - GENCI - 6 bis rue Auguste Vitu 75015 PARIS'
 
     # Types de cles ssh autorises
