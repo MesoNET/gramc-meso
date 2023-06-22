@@ -32,8 +32,8 @@
             {% endif %}
             <td>{{ r.serveur }}</td>
             <td>{{ r.nom }}
-            <td> {{ gramcmacros.tronquer_chaine_2(r.desc) }}</td>
-            <td> {{ gramcmacros.tronquer_chaine_2(r.docurl,15) }}</td>
+            <td>{{ gramcmacros.tronquer_chaine_2(r.desc) }}</td>
+            <td>{% if r.docurl == "" %}{{ icones.refuse }} {% else %} {{ icones.valide }} <a href="{{ r.docurl }}" target="_blank">{{ gramcmacros.tronquer_chaine_2(r.docurl,10) }} </a></td>{% endif %}
             <td> {{ r.maxDem }}</td>
             <td> {{ r.unite }}</td>
             <td> {{ r.co2}}</td>
