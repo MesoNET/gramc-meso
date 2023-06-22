@@ -11,7 +11,7 @@
     <table id="serveurs" >
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Nom</th><th>Description</th><th>Nom API</th>
+            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Nom</th><th>Description</th><th>CGU</th><th>Nom API</th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +31,7 @@
             {% endif %}
             <td>{{ s.nom }}
             <td> {{ s.desc }}</td>
+            <td>{% if s.cguurl == "" %}{{icones.refuse}}{% else %}{{icones.valide}} <a href="{{ s.cguurl }}" target="_blank">{{ gramcmacros.tronquer_chaine_2(s.cguurl) }}</a>{% endif %}</td>
             <td>{{ s.admname }}</td>
         </tr>
     {% endfor %}
