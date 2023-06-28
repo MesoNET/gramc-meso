@@ -1079,12 +1079,12 @@ tbody tr.rallonge{
 /* CODE DE COULEUR POUR MARQUER DES INCOHERENCES ENTRE ATTRIBUTIONS ET QUOTAS
  * OU POUR MARQUER DES CONSOS IMPORTANTES*/
 
-.conso_seuil_1 td {
+.conso_seuil_1 {
     color: #FF9E00;
     font-weight: bold;
     }
 
-.conso_seuil_2 td {
+.conso_seuil_2 {
     color: red;
     font-weight: bold;
     }
