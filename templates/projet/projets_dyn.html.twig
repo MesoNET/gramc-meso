@@ -173,8 +173,21 @@
                                     <span title="Cette attribution n'a pas été prise en compte par le centre hébergeur">
                                         {{icones.attention(20,20)}}
                                     </span>
-                                {%endif%}                                
-                                {{ serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) }}
+                                {%endif%}
+                                {% if serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) > 0 %}
+                                    {% set cp = 100 * item.dacs[serviceRessources.nomcomplet(r)].getConsommation() / serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)]) %}
+                                {% else %}
+                                    {% set cp = 0 %}
+                                {% endif %}
+                                {% set ccp='' %}
+                                {% if cp > conso_seuil_1 %}
+                                    {% set ccp = 'class=conso_seuil_1' %}
+                                {% endif %}
+                                {% if cp > conso_seuil_2 %}
+                                    {% set ccp = 'class=conso_seuil_2' %}
+                                {% endif %}
+
+                                <span title="attribution">{{ serviceDacs.getAttributionConsolidee(item.dacs[serviceRessources.nomcomplet(r)])}}</span> - <span title="Consommation ({{cp|number_format(0, ',', ' ')}} %)" {{ccp}}>{{ item.dacs[serviceRessources.nomcomplet(r)].getConsommation()}}</span>
                             {% else %}
                                 &nbsp;-&nbsp;
                             {% endif %} </td>
