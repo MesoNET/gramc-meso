@@ -81,11 +81,22 @@
                     <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
                         {{icones.attention(20,20)}}
                     </span>
-                {%endif%}   
-                <span title="Attribution">{{ serviceDacs.getAttributionConsolidee(dacs[nr])}}</span>&nbsp;-&nbsp;<span title="Consommation">{{ dacs[nr].consommation }}
-                    {% if dacs[nr].consommation > 0 %}
-                        ({{100*dacs[nr].consommation/dacs[nr].attribution}} %)
-                    {% endif %}
+                {%endif%}
+                {% if serviceDacs.getAttributionConsolidee(dacs[nr]) > 0 %}
+                    {% set cp = 100 * dacs[nr].getConsommation() / serviceDacs.getAttributionConsolidee(dacs[nr]) %}
+                {% else %}
+                    {% set cp = 0 %}
+                {% endif %}
+                {% set ccp='' %}
+                {% if cp > conso_seuil_1 %}
+                    {% set ccp = 'class=conso_seuil_1' %}
+                {% endif %}
+                {% if cp > conso_seuil_2 %}
+                    {% set ccp = 'class=conso_seuil_2' %}
+                {% endif %}
+ 
+                <span title="Attribution">{{ serviceDacs.getAttributionConsolidee(dacs[nr])}}</span>&nbsp;-&nbsp;<span title="Consommation"  {{ccp}}>{{ dacs[nr].consommation }}
+                        ({{ cp|number_format(0, ',', ' ') }} %)
                 </span>
                 </td>
         {% endfor %}
