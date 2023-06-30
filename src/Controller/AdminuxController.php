@@ -687,7 +687,7 @@ class AdminuxController extends AbstractController
         $p_tmp = [];
         $projets = [];
         if ($id_projet === null) {
-            $projets = $rep->findNonTermines();
+            $projets = $rep->findNonTermines(true);
         } else {
             $p = $rep->findOneBy(["idProjet" => $id_projet]);
             if ($p != null) {
