@@ -41,11 +41,14 @@ use App\Entity\Session;
  */
 class ProjetRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findNonTermines()
+    // Renvoie les projets non annulés et non terminés
+    // Si $tous vaut true, renvoie AUSSI les projets terminés, mais PAS les projets annulés
+    public function findNonTermines(bool $tous = false)
     {
+        $etat = ($tous) ? 'INVALIDE' : 'TERMINE';
         return $this->getEntityManager()
                    ->createQuery('SELECT p FROM App:Projet p WHERE ( NOT p.etatProjet = :termine AND NOT p.etatProjet = :annule)')
-                   ->setParameter('termine', Etat::getEtat('TERMINE'))
+                   ->setParameter('termine', Etat::getEtat($etat))
                    ->setParameter('annule', Etat::getEtat('ANNULE'))
                    ->getResult();
     }

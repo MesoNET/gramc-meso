@@ -58,6 +58,7 @@ class Etat
 
     public const   LIBELLE_ETAT=
         [
+            self::INVALIDE                  =>  'INVALIDE',
             self::CREE_ATTENTE              =>  'CREE_ATTENTE',
             self::EDITION_DEMANDE           =>  'EDITION_DEMANDE',
             self::EDITION_EXPERTISE         =>  'EDITION_EXPERTISE',
