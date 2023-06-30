@@ -32,7 +32,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-const VERSION = "0.6.6";
+const VERSION = "0.6.7";
 
 /*
  * Cette classe garde des informations pouvant être reprises par
