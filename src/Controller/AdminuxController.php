@@ -1588,6 +1588,7 @@ class AdminuxController extends AbstractController
     private function __getTodo(\Doctrine\Common\Collections\Collection $dacdars, Version $v, Rallonge $r=null): array
     {
         $sroc = $this->sroc;
+        $data = [];
         
         foreach ($dacdars as $d)
         {
@@ -1605,7 +1606,6 @@ class AdminuxController extends AbstractController
             }
             if ( ! $this->checkUser($serveur)) continue;
 
-            $data = [];
             if ($d->getTodof())
             {
                 $data['action'] = 'attribution';
