@@ -49,7 +49,7 @@ Installer le code de gramc-meso:
 ----
 
 ```
-git clone https://github.com/calmip/gramc-meso
+git clone https://github.com/MesoNET/gramc-meso
 cd gramc-meso
 ```
 
@@ -70,8 +70,8 @@ Le répertoire data:
 - peut appartenir à root
 - Les sous-répertoires data/* *doivent* appartenir à `www-data`
 ~~~~
-     chown root.root data
-     chown -R www-data.www-data data/*
+     chown root:root data
+     chown -R www-data:www-data data/*
 ~~~~
 
 ## Répertoire var
