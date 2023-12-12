@@ -124,7 +124,7 @@ class VersionController extends AbstractController
         private GramcDate $sd,
         private ServiceVersions $sv,
         private ServiceExperts $se,
-        private Projet4Workflow $p4w,
+        private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
         private ValidatorInterface $vl,
         private TokenStorageInterface $tok,
@@ -699,7 +699,7 @@ class VersionController extends AbstractController
 
         if ($version->getTypeVersion() === Projet::PROJET_DYN)
         {
-            $projetWorkflow = $this->p4w;
+            $projetWorkflow = $this->pw4;
         }
         else
         {
@@ -1363,7 +1363,7 @@ class VersionController extends AbstractController
         $dyn_duree = $this->dyn_duree;
         $dyn_duree_post = $this->dyn_duree_post;
         $projet_workflow = $this->pw4;
-        $grdt = $this->grdt;
+        $sd = $this->sd;
         $em = $this->em;
 
 
@@ -1381,13 +1381,13 @@ class VersionController extends AbstractController
         $version->setPrjGenciDari('');
         $version->setPrjGenciHeures(0);
         $version->setPrjGenciMachines('');
-        $version->setStartDate($grdt);
+        $version->setStartDate($sd);
         $version->setPrjJustifRenouv(null);
         $version->setCgu(0);
 
         // On fixe la date limite à la date d'aujourd'hui + dyn_duree jours, mais c'est provisoire
         // La startDate et la LimitDate seront fixées de manière définitive lorsqu'on validera la version
-        $version->setLimitDate($grdt->getNew()->add(new \DateInterval($dyn_duree)));
+        $version->setLimitDate($sd->getNew()->add(new \DateInterval($dyn_duree)));
 
         // Etat initial d'une version
         $version->setEtatVersion(Etat::EDITION_DEMANDE);
