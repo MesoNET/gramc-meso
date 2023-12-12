@@ -908,6 +908,7 @@ class ServiceProjets
 
     /*
      * Calcul de la dernière version d'un projet - Utilisé par \App\EventListener\ProjetDerniereVersion
+     * TODO : Eclaircir le mismatch nbversion string / int
      */ 
     public function calculVersionDerniere(Projet $projet): ?Version
     {
@@ -921,15 +922,19 @@ class ServiceProjets
         $iterator->uasort(function ($a, $b)
         {
             $sj = $this->sj;
+            
+            $nba=$a->getNbVersion();
             if ($a->getNbVersion() === null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $a = PAS DE NbVersion");
+                $nba = 0;
             }
+            
+            $nbb=$b->getNbVersion();
             if ($b->getNbVersion() === null)
             {
-                $sj->throwException(__METHOD__ . ':' . __LINE__ . " Version $b = PAS DE NbVersion");
+                $nbb = 0;
             }
-            return strcmp($a->getNbVersion(), $b->getNbVersion());
+            return ($nba > $nbb);
         });
 
         $sortedVersions =  iterator_to_array($iterator) ;
