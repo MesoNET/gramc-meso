@@ -47,17 +47,18 @@ class Dar
     private $idDar;
 
     /**
-     * @var \App\Entity\Rallonge
      *
+     * @ORM\Column(name="id_rallonge", type="string", length=15)
      * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge",inversedBy="dar")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
+     *
      * })
      */
     private $rallonge;
 
     /**
-     * @var \App\Entity\Ressource
+     * @var Ressource
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dar")
      * @ORM\JoinColumns({
@@ -121,11 +122,11 @@ class Dar
     /**
      * Set rallonge
      *
-     * @param \App\Entity\Rallonge $rallonge
+     * @param Rallonge $rallonge
      *
      * @return Dar
      */
-    public function setRallonge(?\App\Entity\Rallonge $rallonge): self
+    public function setRallonge(?Rallonge $rallonge): self
     {
         $this->rallonge = $rallonge;
 
@@ -135,9 +136,9 @@ class Dar
     /**
      * Get rallonge
      *
-     * @return \App\Entity\Rallonge
+     * @return Rallonge
      */
-    public function getRallonge(): ?\App\Entity\Rallonge
+    public function getRallonge(): ?Rallonge
     {
         return $this->rallonge;
     }
@@ -145,11 +146,11 @@ class Dar
     /**
      * Set ressource
      *
-     * @param \App\Entity\Ressource $ressource
+     * @param Ressource $ressource
      *
      * @return Dar
      */
-    public function setRessource(?\App\Entity\Ressource $ressource): self
+    public function setRessource(?Ressource $ressource): self
     {
         $this->ressource = $ressource;
 
@@ -159,9 +160,9 @@ class Dar
     /**
      * Get ressource
      *
-     * @return \App\Entity\Ressource
+     * @return Ressource
      */
-    public function getRessource(): ?\App\Entity\Ressource
+    public function getRessource(): ?Ressource
     {
         return $this->ressource;
     }
@@ -230,6 +231,11 @@ class Dar
      * @return boolean
      */
     public function getTodof(): bool
+    {
+        return $this->todof;
+    }
+
+    public function isTodof(): ?bool
     {
         return $this->todof;
     }

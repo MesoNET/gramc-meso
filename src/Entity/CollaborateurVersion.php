@@ -335,4 +335,14 @@ class CollaborateurVersion
     {
         return $this->collaborateur;
     }
+
+    public function isResponsable(): ?bool
+    {
+        return $this->responsable;
+    }
+
+    public function isDeleted(): ?bool
+    {
+        return $this->deleted;
+    }
 }

@@ -28,7 +28,7 @@ security:
                 property: idIndividu
     
     # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
-    # InMemoryUser: les mots de passe sont hashés - cf env.dist
+    # InMemoryUser: les mots de passe sont hashés - cf .env.dist
     # cf. https://symfony.com/doc/5.4/security.html
     password_hashers:
         App\Entity\Individu: plaintext

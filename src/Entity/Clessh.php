@@ -24,6 +24,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Individu;
 use App\Entity\User;
@@ -274,6 +276,11 @@ class Clessh
      * @return boolean
      */
     public function getRvk():bool 
+    {
+        return $this->rvk;
+    }
+
+    public function isRvk(): ?bool
     {
         return $this->rvk;
     }

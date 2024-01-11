@@ -24,6 +24,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\GramcServices\Etat;
@@ -56,7 +59,7 @@ class Projet
         self::PROJET_SESS => 'S',
         self::PROJET_TEST =>  'T',
         self::PROJET_FIL =>  'F',
-        self::PROJET_FIL =>  'D',
+        self::PROJET_DYN =>  'D',
     ];
 
     /**
