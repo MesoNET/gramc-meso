@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240110133505 extends AbstractMigration
+final class Version20240111153326 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,7 +24,7 @@ final class Version20240110133505 extends AbstractMigration
         $this->addSql('CREATE TABLE clessh (id INT AUTO_INCREMENT NOT NULL, id_individu INT DEFAULT NULL, nom VARCHAR(20) NOT NULL, pub VARCHAR(5000) NOT NULL, emp VARCHAR(100) NOT NULL, rvk TINYINT(1) NOT NULL, INDEX IDX_7E54547CE3FC35B (id_individu), UNIQUE INDEX nom_individu (id_individu, nom), UNIQUE INDEX pubuniq (emp), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE collaborateurVersion (id INT AUTO_INCREMENT NOT NULL, id_coll_statut SMALLINT DEFAULT NULL, id_version VARCHAR(13) DEFAULT NULL, id_coll_labo INT DEFAULT NULL, id_coll_etab INT DEFAULT NULL, id_collaborateur INT DEFAULT NULL, responsable TINYINT(1) NOT NULL, deleted TINYINT(1) NOT NULL COMMENT \'supprimé prochainement\', INDEX id_coll_labo (id_coll_labo), INDEX id_coll_statut (id_coll_statut), INDEX id_coll_etab (id_coll_etab), INDEX collaborateur_collaborateurprojet_fk (id_collaborateur), INDEX id_version (id_version), UNIQUE INDEX id_version_2 (id_version, id_collaborateur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE dac (id_dac INT AUTO_INCREMENT NOT NULL, id_ressource INT DEFAULT NULL, id_version VARCHAR(13) NOT NULL, demande INT NOT NULL COMMENT \'demande, l\'\'unité est celle de la ressource associée\', attribution INT NOT NULL COMMENT \'attribution, l\'\'unité est celle de la ressource associée\', todof TINYINT(1) NOT NULL, consommation INT NOT NULL COMMENT \'consommation, l\'\'unité est celle de la ressource associée\', INDEX IDX_18C2D0EA13AAF963 (id_ressource), PRIMARY KEY(id_dac)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE dar (id_dar INT AUTO_INCREMENT NOT NULL, id_rallonge VARCHAR(15) DEFAULT NULL, id_ressource INT DEFAULT NULL, demande INT NOT NULL COMMENT \'demande, l\'\'unité est celle de la ressource associée\', attribution INT NOT NULL COMMENT \'attribution, l\'\'unité est celle de la ressource associée\', todof TINYINT(1) NOT NULL, INDEX IDX_7272F018E3D1DEE5 (id_rallonge), INDEX IDX_7272F01813AAF963 (id_ressource), PRIMARY KEY(id_dar)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE dar (id_dar INT AUTO_INCREMENT NOT NULL, id_ressource INT DEFAULT NULL, id_rallonge VARCHAR(15) NOT NULL, demande INT NOT NULL COMMENT \'demande, l\'\'unité est celle de la ressource associée\', attribution INT NOT NULL COMMENT \'attribution, l\'\'unité est celle de la ressource associée\', todof TINYINT(1) NOT NULL, INDEX IDX_7272F01813AAF963 (id_ressource), PRIMARY KEY(id_dar)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE etablissement (id_etab INT AUTO_INCREMENT NOT NULL, libelle_etab VARCHAR(50) NOT NULL, PRIMARY KEY(id_etab)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE expertise (id INT AUTO_INCREMENT NOT NULL, id_version VARCHAR(13) DEFAULT NULL, id_rallonge VARCHAR(15) DEFAULT NULL, id_expert INT DEFAULT NULL, validation INT NOT NULL, commentaire_interne TEXT DEFAULT NULL, commentaire_externe TEXT DEFAULT NULL, definitif TINYINT(1) NOT NULL, INDEX IDX_229ADF8BE3D1DEE5 (id_rallonge), INDEX version_expertise_fk (id_version), INDEX expert_expertise_fk (id_expert), INDEX id_version (id_version), INDEX id_expert (id_expert), UNIQUE INDEX id_version_2 (id_version, id_expert), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE formation (id INT AUTO_INCREMENT NOT NULL, numero_form INT DEFAULT NULL, acro_form VARCHAR(15) DEFAULT NULL, nom_form VARCHAR(100) DEFAULT NULL, start_date DATETIME NOT NULL, end_date DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -55,7 +55,6 @@ final class Version20240110133505 extends AbstractMigration
         $this->addSql('ALTER TABLE collaborateurVersion ADD CONSTRAINT FK_B49A55AD3208B7A FOREIGN KEY (id_coll_etab) REFERENCES etablissement (id_etab)');
         $this->addSql('ALTER TABLE collaborateurVersion ADD CONSTRAINT FK_B49A55ADC9246DB6 FOREIGN KEY (id_collaborateur) REFERENCES individu (id_individu)');
         $this->addSql('ALTER TABLE dac ADD CONSTRAINT FK_18C2D0EA13AAF963 FOREIGN KEY (id_ressource) REFERENCES ressource (id_ressource)');
-        $this->addSql('ALTER TABLE dar ADD CONSTRAINT FK_7272F018E3D1DEE5 FOREIGN KEY (id_rallonge) REFERENCES rallonge (id_rallonge)');
         $this->addSql('ALTER TABLE dar ADD CONSTRAINT FK_7272F01813AAF963 FOREIGN KEY (id_ressource) REFERENCES ressource (id_ressource)');
         $this->addSql('ALTER TABLE expertise ADD CONSTRAINT FK_229ADF8B61817AB3 FOREIGN KEY (id_version) REFERENCES version (id_version)');
         $this->addSql('ALTER TABLE expertise ADD CONSTRAINT FK_229ADF8BE3D1DEE5 FOREIGN KEY (id_rallonge) REFERENCES rallonge (id_rallonge)');
@@ -99,7 +98,6 @@ final class Version20240110133505 extends AbstractMigration
         $this->addSql('ALTER TABLE collaborateurVersion DROP FOREIGN KEY FK_B49A55AD3208B7A');
         $this->addSql('ALTER TABLE collaborateurVersion DROP FOREIGN KEY FK_B49A55ADC9246DB6');
         $this->addSql('ALTER TABLE dac DROP FOREIGN KEY FK_18C2D0EA13AAF963');
-        $this->addSql('ALTER TABLE dar DROP FOREIGN KEY FK_7272F018E3D1DEE5');
         $this->addSql('ALTER TABLE dar DROP FOREIGN KEY FK_7272F01813AAF963');
         $this->addSql('ALTER TABLE expertise DROP FOREIGN KEY FK_229ADF8B61817AB3');
         $this->addSql('ALTER TABLE expertise DROP FOREIGN KEY FK_229ADF8BE3D1DEE5');

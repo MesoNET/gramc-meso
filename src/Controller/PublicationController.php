@@ -49,9 +49,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Publication controller.
- *
- * @Route("publication")
  */
+#[Route(path: 'publication')]
 class PublicationController extends AbstractController
 {
     public function __construct(
@@ -66,10 +65,10 @@ class PublicationController extends AbstractController
     /**
      * Autocomplete publication
      *
-     * @Route("/autocomplete", name="publication_autocomplete", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method({"POST","GET"})
      */
+    #[Route(path: '/autocomplete', name: 'publication_autocomplete', methods: ['GET', 'POST'])]
     public function autocompleteAction(Request $request): Response
     {
         $sj = $this->sj;
@@ -127,10 +126,9 @@ class PublicationController extends AbstractController
     /**
      * Lists all publication entities.
      *
-     * @Route("/", name="publication_index", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/', name: 'publication_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -143,9 +141,9 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/gerer",name="gerer_publications", methods={"GET","POST"} )
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/gerer', name: 'gerer_publications', methods: ['GET', 'POST'])]
     public function gererAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
         $sj = $this->sj;
@@ -202,9 +200,9 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/consulter",name="consulter_publications", methods={"GET"} )
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/{id}/consulter', name: 'consulter_publications', methods: ['GET'])]
     public function consulterAction(Projet $projet, Request $request): Response
     {
         return $this->render(
@@ -217,10 +215,10 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Route("/annee",name="publication_annee", methods={"GET","POST"} )
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/annee', name: 'publication_annee', methods: ['GET', 'POST'])]
     public function AnneeAction(Request $request): Response
     {
         $ss    = $this->ss;
@@ -240,10 +238,10 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Route("/{annee}/annee_csv",name="publication_annee_csv", methods={"GET","POST"} )
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{annee}/annee_csv', name: 'publication_annee_csv', methods: ['GET', 'POST'])]
     public function AnneeCsvAction($annee): Response
     {
         $em    = $this->em;
@@ -274,10 +272,9 @@ class PublicationController extends AbstractController
     /**
      * Creates a new publication entity.
      *
-     * @Route("/new", name="publication_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/new', name: 'publication_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $publication = new Publication();
@@ -301,10 +298,9 @@ class PublicationController extends AbstractController
     /**
      * Finds and displays a publication entity.
      *
-     * @Route("/{id}/show", name="publication_show", methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/show', name: 'publication_show', methods: ['GET'])]
     public function showAction(Publication $publication): Response
     {
         $deleteForm = $this->createDeleteForm($publication);
@@ -318,10 +314,9 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      *
-     * @Route("/{id}/edit", name="publication_edit", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Publication $publication): Response
     {
         $deleteForm = $this->createDeleteForm($publication);
@@ -345,10 +340,10 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      *
-     * @Route("/{id}/{projet}/modify", name="modifier_publication", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/{projet}/modify', name: 'modifier_publication', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
         $sj = $this->sj;
@@ -382,9 +377,8 @@ class PublicationController extends AbstractController
      * Deletes a publication entity.
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}", name="publication_delete", methods={"DELETE"})
-     * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'publication_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Publication $publication): Response
     {
         $form = $this->createDeleteForm($publication);
@@ -403,9 +397,8 @@ class PublicationController extends AbstractController
      * Deletes a publication entity.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * @Route("/{id}/{projet}/supprimer", name="supprimer_publication", methods={"GET","DELETE"})
-     * Method({ "GET","DELETE"})
      */
+    #[Route(path: '/{id}/{projet}/supprimer', name: 'supprimer_publication', methods: ['GET', 'DELETE'])]
     public function supprimerAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
         $ac = $this->ac;

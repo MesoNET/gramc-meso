@@ -39,262 +39,225 @@ use App\Interfaces\Demande;
  *        Emmanuel, 27/3/23
  *
  ************************************************************/
-
 /**
  * Version
- *
- * @ORM\Table(name="version", indexes={@ORM\Index(name="etat_version", columns={"etat_version"}), @ORM\Index(name="id_projet", columns={"id_projet"}), @ORM\Index(name="prj_id_thematique", columns={"prj_id_thematique"})})
- * @ORM\Entity(repositoryClass="App\Repository\VersionRepository")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'version')]
+#[ORM\Index(name: 'etat_version', columns: ['etat_version'])]
+#[ORM\Index(name: 'id_projet', columns: ['id_projet'])]
+#[ORM\Index(name: 'prj_id_thematique', columns: ['prj_id_thematique'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\VersionRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Version implements Demande
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="etat_version", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'etat_version', type: 'integer', nullable: true)]
     private $etatVersion = Etat::EDITION_DEMANDE;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="type_version", type="integer", nullable=true, options={"comment":"type du projet associé (le type du projet peut changer)"})
      */
+    #[ORM\Column(name: 'type_version', type: 'integer', nullable: true, options: ['comment' => 'type du projet associé (le type du projet peut changer)'])]
     private $typeVersion;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_l_labo", type="string", length=300, nullable=true)
      */
+    #[ORM\Column(name: 'prj_l_labo', type: 'string', length: 300, nullable: true)]
     private $prjLLabo = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_titre", type="string", length=500, nullable=true)
      */
+    #[ORM\Column(name: 'prj_titre', type: 'string', length: 500, nullable: true)]
     private $prjTitre = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_financement", type="string", length=100, nullable=true)
      */
+    #[ORM\Column(name: 'prj_financement', type: 'string', length: 100, nullable: true)]
     private $prjFinancement = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_genci_machines", type="string", length=60, nullable=true)
      */
+    #[ORM\Column(name: 'prj_genci_machines', type: 'string', length: 60, nullable: true)]
     private $prjGenciMachines = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_genci_centre", type="string", length=60, nullable=true)
      */
+    #[ORM\Column(name: 'prj_genci_centre', type: 'string', length: 60, nullable: true)]
     private $prjGenciCentre = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_genci_heures", type="string", length=30, nullable=true)
      */
+    #[ORM\Column(name: 'prj_genci_heures', type: 'string', length: 30, nullable: true)]
     private $prjGenciHeures = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_expose", type="text", nullable=true)
      */
+    #[ORM\Column(name: 'prj_expose', type: 'text', nullable: true)]
     private $prjExpose = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_justif_renouv", type="text", nullable=true)
      */
+    #[ORM\Column(name: 'prj_justif_renouv', type: 'text', nullable: true)]
     private $prjJustifRenouv;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="prj_fiche_val", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'prj_fiche_val', type: 'boolean', nullable: true)]
     private $prjFicheVal = false;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_genci_dari",  type="string", length=15, nullable=true)
      */
+    #[ORM\Column(name: 'prj_genci_dari', type: 'string', length: 15, nullable: true)]
     private $prjGenciDari = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_nom", type="string", length=150, nullable=true)
      */
+    #[ORM\Column(name: 'code_nom', type: 'string', length: 150, nullable: true)]
     private $codeNom = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_licence", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'code_licence', type: 'text', length: 65535, nullable: true)]
     private $codeLicence = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="libelle_thematique", type="string", length=200, nullable=true)
      */
+    #[ORM\Column(name: 'libelle_thematique', type: 'string', length: 200, nullable: true)]
     private $libelleThematique ='';
 
     /**
      * @var \App\Entity\Individu
      * A chaque fois que la version est modifiée la personne connectée est ici
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="maj_ind", referencedColumnName="id_individu",onDelete="SET NULL")
-     * })
      */
+    #[ORM\JoinColumn(name: 'maj_ind', referencedColumnName: 'id_individu', onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $majInd;
 
     /**
      * @var \DateTime
      * A chaque modification on met à jour cette date
-     *
-     * @ORM\Column(name="maj_stamp", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'maj_stamp', type: 'datetime', nullable: true)]
     private $majStamp;
 
     /**
      * @var \DateTime
      * Date de démarrage de la version (passage en état ACTIF)
-     *
-     * @ORM\Column(name="start_date", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'start_date', type: 'datetime', nullable: true)]
     private $startDate;
 
     /**
      * @var \DateTime
      * Date de fin de la version (passage en état TERMINE)
-     *
-     * @ORM\Column(name="end_date", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'end_date', type: 'datetime', nullable: true)]
     private $endDate;
 
     /**
      * @var \DateTime
      * Date limite, la version n'ira pas au-delà
-     *
-     * @ORM\Column(name="limit_date", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'limit_date', type: 'datetime', nullable: true)]
     private $limitDate;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="prj_fiche_len", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'prj_fiche_len', type: 'integer', nullable: true)]
     private $prjFicheLen = 0;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="cgu", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'cgu', type: 'boolean', nullable: true)]
     private $CGU = false;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="id_version", type="string", length=13)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'id_version', type: 'string', length: 13)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $idVersion;
 
     /**
      * @var \App\Entity\Thematique
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Thematique", inversedBy="version")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="prj_id_thematique", referencedColumnName="id_thematique")
-     * })
      */
+    #[ORM\JoinColumn(name: 'prj_id_thematique', referencedColumnName: 'id_thematique')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Thematique', inversedBy: 'version')]
     private $prjThematique;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nb_version", type="string", length=5, options={"comment":"Numéro de version (01,02,03,...)"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'nb_version', type: 'string', length: 5, options: ['comment' => 'Numéro de version (01,02,03,...)'])]
     private $nbVersion;
 
     /**
      * @var \App\Entity\Projet
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", cascade={"persist"},inversedBy="version")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet", nullable=true )
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', cascade: ['persist'], inversedBy: 'version')]
     private $projet;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="version", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'version', cascade: ['persist'])]
     private $collaborateurVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Rallonge", mappedBy="version", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Rallonge', mappedBy: 'version', cascade: ['persist'])]
     private $rallonge;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Dac", mappedBy="version", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'version', cascade: ['persist'])]
     private $dac;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="version", cascade={"persist"} )
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'version', cascade: ['persist'])]
     private $expertise;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\FormationVersion", mappedBy="version", cascade={"persist"} )
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\FormationVersion', mappedBy: 'version', cascade: ['persist'])]
     private $formationVersion;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionDerniere", cascade={"persist"} )
      */
+    #[ORM\OneToOne(targetEntity: '\App\Entity\Projet', mappedBy: 'versionDerniere', cascade: ['persist'])]
     private $versionDerniere;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\OneToOne(targetEntity="\App\Entity\Projet", mappedBy="versionActive", cascade={"persist"} )
      */
+    #[ORM\OneToOne(targetEntity: '\App\Entity\Projet', mappedBy: 'versionActive', cascade: ['persist'])]
     private $versionActive;
 
     ///////////////////////////////////////////////////////////

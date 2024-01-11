@@ -90,12 +90,10 @@ function cmpProj($a, $b)
 
 /**
  * Projet controller.
- *
- * @Route("projet")
  */
- // Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
- // et d'autres par DEMANDEUR
-
+// Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
+// et d'autres par DEMANDEUR
+#[Route(path: 'projet')]
 class ProjetController extends AbstractController
 {
     private $token = null;
@@ -124,9 +122,9 @@ class ProjetController extends AbstractController
     /**
      * Lists all projet entities.
      *
-     * @Route("/", name="projet_index", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/', name: 'projet_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -143,11 +141,11 @@ class ProjetController extends AbstractController
      *
      * Ne fait rien, affiche simplement la commande à exécuter
      *
-     * 
+     *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/rgpd", name="rgpd", methods={"GET"})
-     * 
+     *
      */
+    #[Route(path: '/rgpd', name: 'rgpd', methods: ['GET'])]
     public function rgpdAction(Request $request): Response
     {
         return $this->render('projet/rgpd.html.twig');
@@ -157,8 +155,8 @@ class ProjetController extends AbstractController
      * fermer un projet
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}/fermer", name="fermer_projet", methods={"GET","POST"})
      */
+    #[Route(path: '/{id}/fermer', name: 'fermer_projet', methods: ['GET', 'POST'])]
     public function fermerAction(Projet $projet, Request $request): Response
     {
         if ($request->isMethod('POST')) {
@@ -185,8 +183,8 @@ class ProjetController extends AbstractController
      * Retour en arrière: un projet en validation repasse en édition
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}/back", name="back_version", methods={"GET","POST"})
      */
+    #[Route(path: '/{id}/back', name: 'back_version', methods: ['GET', 'POST'])]
     public function backAction(Projet $projet, Request $request): Response
     {
         $se = $this->se;
@@ -247,8 +245,8 @@ class ProjetController extends AbstractController
      * à la place du responsable
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/{id}/fwd", name="fwd_version", methods={"GET","POST"})
      */
+    #[Route(path: '/{id}/fwd', name: 'fwd_version', methods: ['GET', 'POST'])]
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
         $se = $this->se;
@@ -306,9 +304,9 @@ class ProjetController extends AbstractController
      * Param : $annee
      *
      * @Security("is_granted('ROLE_OBS')")
-     * @Route("/{annee}/resumes", name="projet_resumes", methods={"GET","POST"})
      *
      */
+    #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
     public function resumesAction($annee): Response
     {
         $sp    = $this->sp;
@@ -360,8 +358,8 @@ class ProjetController extends AbstractController
     /**
      * Téléchargement du rapport d'activité
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
-     * @Route("/{id}/rapport/{annee}", defaults={"annee"=0}, name="rapport", methods={"GET"})
      */
+    #[Route(path: '/{id}/rapport/{annee}', defaults: ['annee' => 0], name: 'rapport', methods: ['GET'])]
     public function rapportAction(Version $version, Request $request, $annee): Response
     {
         $sp = $this->sp;
@@ -386,9 +384,9 @@ class ProjetController extends AbstractController
     /**
      * Téléchargement de la fiche projet qui doit être signée par la direction du laboratoire demandeur
      *
-     * @Route("/{id}/signature", name="signature", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/{id}/signature', name: 'signature', methods: ['GET'])]
     public function signatureAction(Version $version, Request $request): Response
     {
         $sv = $this->sv;
@@ -398,9 +396,9 @@ class ProjetController extends AbstractController
     /**
      * download doc attaché
      *
-     * @Route("/{id}/document", name="document", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/{id}/document', name: 'document', methods: ['GET'])]
     public function documentAction(Version $version, Request $request): Response
     {
         $sv = $this->sv;
@@ -410,9 +408,9 @@ class ProjetController extends AbstractController
     /**
      * Projets dynamiques
      *
-     * @Route("/dynamiques", name="projet_dynamique", methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/dynamiques', name: 'projet_dynamique', methods: ['GET', 'POST'])]
     public function projetsDynamiquesAction(Request $request): Response
     {
         $em = $this->em;
@@ -491,9 +489,8 @@ class ProjetController extends AbstractController
      * Pas utilisé...
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/gerer", name="gerer_projets", methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
     public function gererAction(): Response
     {
         $em = $this->em;
@@ -507,10 +504,10 @@ class ProjetController extends AbstractController
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé)
      *
-     * @Route("/avant_nouveau/{type}", name="avant_nouveau_projet", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
+    #[Route(path: '/avant_nouveau/{type}', name: 'avant_nouveau_projet', methods: ['GET', 'POST'])]
     public function avantNouveauAction(Request $request, int $type): Response
     {
         $sm = $this->sm;
@@ -542,10 +539,10 @@ class ProjetController extends AbstractController
     /**
      * Création d'un nouveau projet
      *
-     * @Route("/nouveau/{type}", name="nouveau_projet", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
+    #[Route(path: '/nouveau/{type}', name: 'nouveau_projet', methods: ['GET', 'POST'])]
     public function nouveauAction(Request $request, $type): Response
     {
         $grdt = $this->grdt;
@@ -580,10 +577,9 @@ class ProjetController extends AbstractController
         /**
      * Montre les projets d'un utilisateur
      *
-     * @Route("/accueil", name="projet_accueil",methods={"GET"})
-     * Method("GET")
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
     public function accueilAction()
     {
         $sm                  = $this->sm;
@@ -769,13 +765,10 @@ class ProjetController extends AbstractController
     /**
      * Affiche un projet avec un menu pour choisir la version
      *
-     * @Route("/{id}/consulter", name="consulter_projet",methods={"GET","POST"})
-     * @Route("/{id}/consulter/{version}", name="consulter_version",methods={"GET","POST"})
-     * 
-     * Method({"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
-
+    #[Route(path: '/{id}/consulter', name: 'consulter_projet', methods: ['GET', 'POST'])]
+    #[Route(path: '/{id}/consulter/{version}', name: 'consulter_version', methods: ['GET', 'POST'])]
     public function consulterAction(Request $request, Projet $projet, Version $version = null)
     {
         $em = $this->em;

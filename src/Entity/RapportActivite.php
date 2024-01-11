@@ -28,50 +28,44 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * RapportActivite
- *
- * @ORM\Table(name="rapportActivite", uniqueConstraints={@ORM\UniqueConstraint(name="id_projet_2", columns={"id_projet", "annee"})}, indexes={@ORM\Index(name="id_projet", columns={"id_projet"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'rapportActivite')]
+#[ORM\Index(name: 'id_projet', columns: ['id_projet'])]
+#[ORM\UniqueConstraint(name: 'id_projet_2', columns: ['id_projet', 'annee'])]
+#[ORM\Entity]
 class RapportActivite
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="annee", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'annee', type: 'integer', nullable: false)]
     private $annee;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom_fichier", type="string", length=100, nullable=true)
      */
+    #[ORM\Column(name: 'nom_fichier', type: 'string', length: 100, nullable: true)]
     private $nomFichier;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="taille", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'taille', type: 'integer', nullable: false)]
     private $taille;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var \App\Entity\Projet
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="rapportActivite")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'rapportActivite')]
     private $projet;
 
     ///////////////////////////////////////////////////////////////////////////////

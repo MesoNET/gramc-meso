@@ -40,11 +40,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Individu
  *
  * Le "compte gramc-meso"...
- *
- * @ORM\Table(name="individu", uniqueConstraints={@ORM\UniqueConstraint(name="mail", columns={"mail"})}, indexes={@ORM\Index(name="id_labo", columns={"id_labo"}), @ORM\Index(name="id_statut", columns={"id_statut"}), @ORM\Index(name="id_etab", columns={"id_etab"})})
- * @ORM\Entity(repositoryClass="App\Repository\IndividuRepository")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'individu')]
+#[ORM\Index(name: 'id_labo', columns: ['id_labo'])]
+#[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
+#[ORM\Index(name: 'id_etab', columns: ['id_etab'])]
+#[ORM\UniqueConstraint(name: 'mail', columns: ['mail'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\IndividuRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
     public const INCONNU       = 0;
@@ -83,179 +86,146 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="creation_stamp", type="datetime", nullable=false)
      */
+    #[ORM\Column(name: 'creation_stamp', type: 'datetime', nullable: false)]
     private $creationStamp;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=50, nullable=true)
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 50, nullable: true)]
     private $nom;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prenom", type="string", length=50, nullable=true)
      */
+    #[ORM\Column(name: 'prenom', type: 'string', length: 50, nullable: true)]
     private $prenom;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="mail", type="string", length=200, nullable=false)
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email."
-     * )
      */
+    #[ORM\Column(name: 'mail', type: 'string', length: 200, nullable: false)]
+    #[Assert\Email(message: "The email '{{ value }}' is not a valid email.")]
     private $mail;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="admin", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'admin', type: 'boolean', nullable: false)]
     private $admin = false;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="sysadmin", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'sysadmin', type: 'boolean', nullable: false)]
     private $sysadmin = false;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="obs", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'obs', type: 'boolean', nullable: false)]
     private $obs = false;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="expert", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'expert', type: 'boolean', nullable: false)]
     private $expert = false;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="valideur", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'valideur', type: 'boolean', nullable: false)]
     private $valideur = false;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="president", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'president', type: 'boolean', nullable: false)]
     private $president = false;
 
     /**
      * @var \App\Entity\Statut
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Statut",inversedBy="individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_statut", referencedColumnName="id_statut")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_statut', referencedColumnName: 'id_statut')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Statut', inversedBy: 'individu')]
     private $statut;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="desactive", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'desactive', type: 'boolean', nullable: false)]
     private $desactive = false;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_individu", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_individu', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idIndividu;
 
     /**
      * @var \App\Entity\Laboratoire
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",cascade={"persist"},inversedBy="individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_labo", referencedColumnName="id_labo")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_labo', referencedColumnName: 'id_labo')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', cascade: ['persist'], inversedBy: 'individu')]
     private $labo;
 
     /**
      * @var \App\Entity\Etablissement
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement", inversedBy="individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_etab", referencedColumnName="id_etab")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_etab', referencedColumnName: 'id_etab')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Etablissement', inversedBy: 'individu')]
     private $etab;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Thematique", mappedBy="expert")
      */
+    #[ORM\ManyToMany(targetEntity: 'App\Entity\Thematique', mappedBy: 'expert')]
     private $thematique;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Sso", mappedBy="individu")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Sso', mappedBy: 'individu')]
     private $sso;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Clessh", mappedBy="individu")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Clessh', mappedBy: 'individu')]
     private $clessh;
 
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="collaborateur")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'collaborateur')]
     private $collaborateurVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="individu", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
     private $user;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="expert")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'expert')]
     private $expertise;
 
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Journal", mappedBy="individu")
      */
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Journal', mappedBy: 'individu')]
     private $journal;
 
     ///////////////////////////////////////////
-
-    /**
-    * @ORM\PrePersist
-    */
+    #[ORM\PrePersist]
     public function setInitialMajStamp(): void
     {
         $this->creationStamp = new \DateTime();

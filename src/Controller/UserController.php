@@ -45,8 +45,8 @@ use Doctrine\ORM\EntityManagerInterface;
  * User controller.
  *
  * @Security("is_granted('ROLE_DEMANDEUR')")
- * @Route("user")
  */
+#[Route(path: 'user')]
 class UserController extends AbstractController
 {
 
@@ -60,9 +60,9 @@ class UserController extends AbstractController
      *
      * NOTE - Le demandeur ne peut PAS CHANGER AUTRE CHOSE
      *
-     * @Route("/{id}/modif", name="user_modif",methods={"GET","POST"})
-     * 
+     *
      */
+    #[Route(path: '/{id}/modif', name: 'user_modif', methods: ['GET', 'POST'])]
     public function modifAction(Request $request, User $user): Response
     {
         $em = $this->em;

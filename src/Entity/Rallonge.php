@@ -44,89 +44,76 @@ use Symfony\Component\Validator\Constraints as Assert;
  ************************************************************/
 /**
  * Rallonge
- *
- * @ORM\Table(name="rallonge", indexes={@ORM\Index(name="id_version", columns={"id_version"}), @ORM\Index(name="num_rallonge", columns={"id_rallonge"}), @ORM\Index(name="etat_rallonge", columns={"etat_rallonge"})})
- * @ORM\Entity(repositoryClass="App\Repository\RallongeRepository")
- * @Assert\Expression("this.getNbHeuresAtt() > 0  or  this.getValidation() != 1",
- *  message="Si vous ne voulez pas attribuer des heures pour cette demande, choisissez ""Refuser""",groups={"expertise"})
- * @Assert\Expression("this.getNbHeuresAtt() == 0  or  this.getValidation() !=  0",
- *  message="Si vous voulez attribuer des heures pour cette demande, choisissez ""Accepter""",groups={"expertise"})
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'rallonge')]
+#[ORM\Index(name: 'id_version', columns: ['id_version'])]
+#[ORM\Index(name: 'num_rallonge', columns: ['id_rallonge'])]
+#[ORM\Index(name: 'etat_rallonge', columns: ['etat_rallonge'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\RallongeRepository')]
+#[Assert\Expression('this.getNbHeuresAtt() > 0  or  this.getValidation() != 1', message: 'Si vous ne voulez pas attribuer des heures pour cette demande, choisissez ')]
+#[Assert\Expression('this.getNbHeuresAtt() == 0  or  this.getValidation() !=  0', message: 'Si vous voulez attribuer des heures pour cette demande, choisissez ')]
+#[ORM\HasLifecycleCallbacks]
 class Rallonge implements Demande
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="etat_rallonge", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'etat_rallonge', type: 'integer', nullable: false)]
     private $etatRallonge;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="prj_justif_rallonge", type="text", length=65535, nullable=true)
-     * @Assert\NotBlank(message="Vous n'avez pas rempli la justification scientifique")
      */
+    #[ORM\Column(name: 'prj_justif_rallonge', type: 'text', length: 65535, nullable: true)]
+    #[Assert\NotBlank(message: "Vous n'avez pas rempli la justification scientifique")]
     private $prjJustifRallonge;
 
-    /**
-     *
-     * @ORM\Column(name="id_rallonge", type="string", length=15)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
+    
+    #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $idRallonge;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="rallonge")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'rallonge')]
     private $version;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="commentaire_interne", type="text", length=65535, nullable=true)
-     * @Assert\NotBlank(message="Vous n'avez pas rempli le commentaire interne", groups={"expertise","president"})
      */
+    #[ORM\Column(name: 'commentaire_interne', type: 'text', length: 65535, nullable: true)]
+    #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire interne", groups: ['expertise', 'president'])]
     private $commentaireInterne;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="commentaire_externe", type="text", length=65535, nullable=true)
-     * @Assert\NotBlank(message="Vous n'avez pas rempli le commentaire pour le responsable", groups={"president"})
      */
+    #[ORM\Column(name: 'commentaire_externe', type: 'text', length: 65535, nullable: true)]
+    #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire pour le responsable", groups: ['president'])]
     private $commentaireExterne;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="validation", type="boolean", nullable=false)
      *
      */
+    #[ORM\Column(name: 'validation', type: 'boolean', nullable: false)]
     private $validation = true;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_expert", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_expert', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $expert;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Dar", mappedBy="rallonge", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Dar', mappedBy: 'rallonge', cascade: ['persist'])]
     private $dar;
 
     ////////////////////////////////////////////////////////
@@ -414,9 +401,8 @@ class Rallonge implements Demande
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Expertise", mappedBy="rallonge", cascade={"persist"} )
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'rallonge', cascade: ['persist'])]
     private $expertise;
 
     /**
@@ -443,18 +429,14 @@ class Rallonge implements Demande
         return $this->expert;
     }
 
-    /**
-     * @ORM\PrePersist()
-     */
     // cf. https://stackoverflow.com/questions/39272733/boolean-values-and-choice-symfony-type
+    #[ORM\PrePersist]
     public function prePersist(): void
     {
         $this->validation = (bool) $this->validation; //Force using boolean value of $this->active
     }
 
-    /**
-     * @ORM\PreUpdate()
-     */
+    #[ORM\PreUpdate]
     public function preUpdate(): void
     {
         $this->validation = (bool) $this->validation;

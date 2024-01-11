@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240110133731 extends AbstractMigration
+final class Version20240111153447 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20240110133731 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE adresseip (id INT AUTO_INCREMENT NOT NULL, id_labo INT DEFAULT NULL, adresse TINYTEXT NOT NULL, INDEX IDX_B7A04D9718475F5E (id_labo), UNIQUE INDEX adresseip (adresse, id_labo), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE adresseip (id INT AUTO_INCREMENT NOT NULL, id_labo INT DEFAULT NULL, adresse TINYTEXT NOT NULL, INDEX IDX_B7A04D9718475F5E (id_labo), UNIQUE INDEX adresseip (adresse(44), id_labo), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE clessh (id INT AUTO_INCREMENT NOT NULL, id_individu INT DEFAULT NULL, nom VARCHAR(20) NOT NULL, pub VARCHAR(5000) NOT NULL, emp VARCHAR(100) NOT NULL, rvk TINYINT(1) NOT NULL, INDEX IDX_7E54547CE3FC35B (id_individu), UNIQUE INDEX nom_individu (id_individu, nom), UNIQUE INDEX pubuniq (emp), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE collaborateurVersion (id INT AUTO_INCREMENT NOT NULL, id_coll_statut SMALLINT DEFAULT NULL, id_version VARCHAR(13) DEFAULT NULL, id_coll_labo INT DEFAULT NULL, id_coll_etab INT DEFAULT NULL, id_collaborateur INT DEFAULT NULL, responsable TINYINT(1) NOT NULL, deleted TINYINT(1) NOT NULL COMMENT \'supprimé prochainement\', INDEX id_coll_labo (id_coll_labo), INDEX id_coll_statut (id_coll_statut), INDEX id_coll_etab (id_coll_etab), INDEX collaborateur_collaborateurprojet_fk (id_collaborateur), INDEX id_version (id_version), UNIQUE INDEX id_version_2 (id_version, id_collaborateur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE dac (id_dac INT AUTO_INCREMENT NOT NULL, id_ressource INT DEFAULT NULL, id_version VARCHAR(13) NOT NULL, demande INT NOT NULL COMMENT \'demande, l\'\'unité est celle de la ressource associée\', attribution INT NOT NULL COMMENT \'attribution, l\'\'unité est celle de la ressource associée\', todof TINYINT(1) NOT NULL, consommation INT NOT NULL COMMENT \'consommation, l\'\'unité est celle de la ressource associée\', INDEX IDX_18C2D0EA13AAF963 (id_ressource), PRIMARY KEY(id_dac)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB');

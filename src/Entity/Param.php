@@ -29,33 +29,30 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Code
- *
- * @ORM\Table(name="param",uniqueConstraints={@ORM\UniqueConstraint(columns={"cle"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'param')]
+#[ORM\UniqueConstraint(columns: ['cle'])]
+#[ORM\Entity]
 class Param
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="cle", type="string", length=32, nullable=false)
      */
+    #[ORM\Column(name: 'cle', type: 'string', length: 32, nullable: false)]
     private $cle;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="val", type="string", length=128)
      */
+    #[ORM\Column(name: 'val', type: 'string', length: 128)]
     private $val;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="id_param", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_param', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     public function __toString()

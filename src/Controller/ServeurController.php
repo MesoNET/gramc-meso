@@ -42,9 +42,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Serveur controller.
- *
- * @Route("serveur")
  */
+#[Route(path: 'serveur')]
 class ServeurController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac,
@@ -53,9 +52,9 @@ class ServeurController extends AbstractController
                                 private EntityManagerInterface $em) {}
 
     /**
-     * @Route("/gerer",name="gerer_serveurs", methods={"GET"} )
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/gerer', name: 'gerer_serveurs', methods: ['GET'])]
     public function gererAction(): Response
     {
         $ac = $this->ac;
@@ -76,10 +75,10 @@ class ServeurController extends AbstractController
     /**
      * Nouveau serveur
      *
-     * @Route("/ajouter", name="ajouter_serveur", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/ajouter', name: 'ajouter_serveur', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $su = $this->su;
@@ -143,10 +142,10 @@ class ServeurController extends AbstractController
     /**
      * Modifier un serveur
      *
-     * @Route("/{id}/modifier", name="modifier_serveur", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/modifier', name: 'modifier_serveur', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Serveur $serveur): Response
     {
         $em = $this->em;
@@ -185,9 +184,9 @@ class ServeurController extends AbstractController
     /**
      * Supprimer un serveur
      *
-     * @Route("/{id}/supprimer", name="supprimer_serveur", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/supprimer', name: 'supprimer_serveur', methods: ['GET'])]
     public function supprimerAction(Request $request, Serveur $serveur): Response
     {
         $em = $this->em;

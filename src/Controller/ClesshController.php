@@ -38,9 +38,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Sso controller.
- *
- * @Route("clessh")
  */
+#[Route(path: 'clessh')]
 class ClesshController extends AbstractController
 {
     public function __construct(
@@ -50,10 +49,10 @@ class ClesshController extends AbstractController
 
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté
-     * 
-     * @Route("/gerer",name="gerer_clessh", methods={"GET"} )
+     *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/gerer', name: 'gerer_clessh', methods: ['GET'])]
     public function gererAction(): Response
     {
         $token = $this->tok->getToken();
@@ -84,10 +83,10 @@ class ClesshController extends AbstractController
 
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées
-     * 
-     * @Route("/gerer_all",name="gerer_clessh_all", methods={"GET"} )
+     *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/gerer_all', name: 'gerer_clessh_all', methods: ['GET'])]
     public function gererActionAll(): Response
     {
         $token = $this->tok->getToken();
@@ -113,10 +112,10 @@ class ClesshController extends AbstractController
     /**
      * Supprime une clé
      *
-     * @Route("/{id}/supprimer", name="supprimer_clessh", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("DELETE")
      */
+    #[Route(path: '/{id}/supprimer', name: 'supprimer_clessh', methods: ['GET'])]
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {
 
@@ -147,9 +146,9 @@ class ClesshController extends AbstractController
     /**
      * Ajoute une nouvelle cléssh
      *
-     * @Route("/ajouter", name="ajouter_clessh", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/ajouter', name: 'ajouter_clessh', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $em = $this->em;

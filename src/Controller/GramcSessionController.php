@@ -115,10 +115,9 @@ class GramcSessionController extends AbstractController
     ) {}
 
     /**
-     * @Route("/admin/accueil",name="admin_accueil", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
-    **/
-
+     **/
+    #[Route(path: '/admin/accueil', name: 'admin_accueil', methods: ['GET'])]
     public function adminAccueilAction(): Response
     {
         $sm = $this->sm;
@@ -165,18 +164,14 @@ class GramcSessionController extends AbstractController
                                                                 'menu6' => $menu6 ]);
     }
 
-    /**
-    * @Route("/aide", name="aide", methods={"GET"} )
-    */
+    #[Route(path: '/aide', name: 'aide', methods: ['GET'])]
     public function aideAction(): Response
     {
         return $this->render('default/aide.html.twig');
     }
 
-    /**
-    * @Route("/", name="accueil", methods={"GET"} )
-    *
-    */
+    
+    #[Route(path: '/', name: 'accueil', methods: ['GET'])]
     public function accueilAction(): Response
     {
         $sm = $this->sm;
@@ -205,10 +200,9 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-    * @Route("/profil",name="profil", methods={"GET","POST"})
-    * @Security("is_granted('ROLE_DEMANDEUR')")
-
-    **/
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+     **/
+    #[Route(path: '/profil', name: 'profil', methods: ['GET', 'POST'])]
     public function profilAction(Request $request): Response
     {
         $sj = $this->sj;
@@ -292,9 +286,7 @@ class GramcSessionController extends AbstractController
         }
     }
 
-    /**
-    * @Route("/nouveau_compte", name="nouveau_compte", methods={"GET","POST"})
-    */
+    #[Route(path: '/nouveau_compte', name: 'nouveau_compte', methods: ['GET', 'POST'])]
     public function nouveau_compteAction(Request $request, LoggerInterface $lg): Response
     {
         $sj = $this->sj;
@@ -359,10 +351,8 @@ class GramcSessionController extends AbstractController
         }
     }
     
-    /**
-     * @Route("/nouveau_profil",name="nouveau_profil", methods={"GET","POST"})
-     *
-     */
+    
+    #[Route(path: '/nouveau_profil', name: 'nouveau_profil', methods: ['GET', 'POST'])]
     public function nouveau_profilAction(Request $request, LoggerInterface $lg): Response
     {
         $sn = $this->sn;
@@ -480,9 +470,9 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/connexions", name="connexions", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/connexions', name: 'connexions', methods: ['GET'])]
     public function connexionsAction(Request $request): Response
     {
         $em = $this->em;
@@ -531,10 +521,9 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/phpinfo", name="phpinfo", methods={"GET"})
-     * Method({"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      *********************************************/
+    #[Route(path: '/phpinfo', name: 'phpinfo', methods: ['GET'])]
     public function infoAction(Request $request): Response
     {
         $sf_version = Kernel::VERSION;
@@ -545,12 +534,10 @@ class GramcSessionController extends AbstractController
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-
     /**
-     * @Route("/{clef}/repinvit", name="repinvit", methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-
      */
+    #[Route(path: '/{clef}/repinvit', name: 'repinvit', methods: ['GET', 'POST'])]
     public function repinvitAction(Request $request, Invitation $invitation=null): Response
     {
         $em = $this->em;
@@ -697,10 +684,9 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/md5", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      **/
-
+    #[Route(path: '/md5', methods: ['GET'])]
     public function md5Action(): Response
     {
         $salt = random_int(1, 10000000000) . microtime();
@@ -709,10 +695,9 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Route("/uri", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      **/
-
+    #[Route(path: '/uri', methods: ['GET'])]
     public function uri(Request $request): Response
     {
         $IDPprod    =   $this->getParameter('IDPprod');
@@ -723,9 +708,9 @@ class GramcSessionController extends AbstractController
     }
 
    /**
-    * @Route("/admin_red", name="admin_red", methods={"GET"})
-    * @Security("is_granted('ROLE_ADMIN')")
-    **/
+     * @Security("is_granted('ROLE_ADMIN')")
+     **/
+    #[Route(path: '/admin_red', name: 'admin_red', methods: ['GET'])]
     public function adminRedAction(Request $request): Response
     {
         $request->getSession()->set('admin_red',true);
@@ -733,9 +718,9 @@ class GramcSessionController extends AbstractController
     }
 
    /**
-    * @Route("/admin_exp", name="admin_exp", methods={"GET"})
-    * @Security("is_granted('ROLE_ADMIN')")
-    **/
+     * @Security("is_granted('ROLE_ADMIN')")
+     **/
+    #[Route(path: '/admin_exp', name: 'admin_exp', methods: ['GET'])]
     public function adminExpAction(Request $request): Response
     {
         $request->getSession()->set('admin_red',false);

@@ -38,17 +38,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Formation controller.
- *
- * @Route("formation")
  */
+#[Route(path: 'formation')]
 class FormationController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em) {}
 
     /**
-     * @Route("/gerer",name="gerer_formations", methods={"GET"} )
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/gerer', name: 'gerer_formations', methods: ['GET'])]
     public function gererAction(): Response
     {
         $ac = $this->ac;
@@ -69,10 +68,10 @@ class FormationController extends AbstractController
     /**
      * Nouvelle formation
      *
-     * @Route("/ajouter", name="ajouter_formation", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/ajouter', name: 'ajouter_formation', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $formation = new formation();
@@ -105,10 +104,10 @@ class FormationController extends AbstractController
     /**
      * Modifier une formation
      *
-     * @Route("/{id}/modifier", name="modifier_formation", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/modifier', name: 'modifier_formation', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Formation $formation): Response
     {
         $form = $this->createForm('App\Form\FormationType', $formation, ['modifier' => true ]);
@@ -138,10 +137,10 @@ class FormationController extends AbstractController
     /**
      * Supprime une formation
      *
-     * @Route("/{id}/supprimer", name="supprimer_formation", methods={"GET"})
-     * @Route("/{id}/supprimer", name="formation_delete", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/supprimer', name: 'supprimer_formation', methods: ['GET'])]
+    #[Route(path: '/{id}/supprimer', name: 'formation_delete', methods: ['GET'])]
     public function supprimerAction(Request $request, Formation $formation): Response
     {
         $em = $this->em;

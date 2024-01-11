@@ -92,3 +92,7 @@ selenium/selenium_env.bash
 /.idea/modules.xml
 /.idea/php.xml
 /.idea/vcs.xml
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

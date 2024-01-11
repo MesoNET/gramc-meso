@@ -37,10 +37,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *        Le champ $version ou $rallonge sera différent de null
  *        Le champ $expert renvoie sur le valideur (de class $individu, peut être nul si personne n'a encore modifié l'expertise)
  *
- * @ORM\Table(name="expertise", uniqueConstraints={@ORM\UniqueConstraint(name="id_version_2", columns={"id_version", "id_expert"})}, indexes={@ORM\Index(name="version_expertise_fk", columns={"id_version"}), @ORM\Index(name="expert_expertise_fk", columns={"id_expert"}), @ORM\Index(name="id_version", columns={"id_version"}), @ORM\Index(name="id_expert", columns={"id_expert"})})
- * @ORM\Entity(repositoryClass="App\Repository\ExpertiseRepository")
  *
  */
+#[ORM\Table(name: 'expertise')]
+#[ORM\Index(name: 'version_expertise_fk', columns: ['id_version'])]
+#[ORM\Index(name: 'expert_expertise_fk', columns: ['id_expert'])]
+#[ORM\Index(name: 'id_version', columns: ['id_version'])]
+#[ORM\Index(name: 'id_expert', columns: ['id_expert'])]
+#[ORM\UniqueConstraint(name: 'id_version_2', columns: ['id_version', 'id_expert'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\ExpertiseRepository')]
 class Expertise
 {
     /**
@@ -48,29 +53,26 @@ class Expertise
      *
      * true = L'expert a répondu positivement et a attribué des heures (éventuellement 0 heure si le projet est validé mais la machine surchargée)
      * false= L'expert a répondu négativement (et l'attribution est obligatoirement 0)
-     *
-     * @ORM\Column(name="validation", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'validation', type: 'integer', nullable: false)]
     private $validation=1;
 
     /**
      * @var string
      *
      * Expertise qui sera connue du comité d'attribution uniquement
-     *
-     * @ORM\Column(name="commentaire_interne", type="text", length=65535, nullable=true)
-     * @Assert\NotBlank(message="Vous n'avez pas rempli le commentaire pour le comité")
      */
+    #[ORM\Column(name: 'commentaire_interne', type: 'text', length: 65535, nullable: true)]
+    #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire pour le comité")]
     private $commentaireInterne = "";
 
     /**
      * @var string
      *
      * Expertise qui sera connue du porteur de projet
-     *
-     * @ORM\Column(name="commentaire_externe", type="text", length=65535, nullable=true)
-     * @Assert\NotBlank(message="Vous n'avez pas rempli le commentaire pour le responsable")
      */
+    #[ORM\Column(name: 'commentaire_externe', type: 'text', length: 65535, nullable: true)]
+    #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire pour le responsable")]
     private $commentaireExterne = "";
 
     /**
@@ -78,48 +80,37 @@ class Expertise
      *
      * false = Nous sommes en phase d'édition, l'expertise n'a pas encore été envoyée
      * true  = Expertise envoyée, pas de modification possible
-     *
-     * @ORM\Column(name="definitif", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'definitif', type: 'boolean', nullable: false)]
     private $definitif = false;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version", inversedBy="expertise")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'expertise')]
     private $version;
 
     /**
      * @var \App\Entity\Rallonge
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge", inversedBy="expertise")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'expertise')]
     private $rallonge;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="expertise")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_expert", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_expert', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'expertise')]
     private $expert;
 
     public function __toString()
