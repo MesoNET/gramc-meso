@@ -18,7 +18,6 @@ web/tmp/*
 *.lock
 /app/config/parameters.yml
 /app/config/parameters.*.yml
-parameters.yaml
 /mesocentres/**/colors.css
 templates.AJETER/
 templates/default/mentions.html.twig
@@ -40,13 +39,6 @@ mesocentres/
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
 /web/bundles/
-public/icones/banniere.png
-public/icones/favicon.ico
-public/icones/header.png
-public/index.php
-public/css/colors.css
-
-config/adresses.txt
 
 .env
 .env.local
