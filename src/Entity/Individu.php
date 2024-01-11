@@ -305,7 +305,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     // implementation UserInterface
-    public function getUserIdentifier(): ?string { return $this->getId();}
+    public function getUserIdentifier(): string { return $this->getId();}
     public function getUsername(): ?string { return $this->getMail();}
     public function getSalt(): ?string { return null;}
     public function getPassword(): ?string { return "";}

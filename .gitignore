@@ -42,6 +42,7 @@ mesocentres/
 
 .env
 .env.local
+.idea
 adminer\.php
 
 vendor/**
