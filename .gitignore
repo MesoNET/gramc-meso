@@ -36,6 +36,7 @@ web/tmp/*
 
 .env
 .env.local
+.idea
 adminer\.php
 
 vendor/**
