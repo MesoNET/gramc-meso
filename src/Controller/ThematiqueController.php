@@ -39,9 +39,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Thematique controller.
- *
- * @Route("thematique")
  */
+#[Route(path: 'thematique')]
 class ThematiqueController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em) {}
@@ -50,9 +49,8 @@ class ThematiqueController extends AbstractController
      * Lists all thematique entities.
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Route("/", name="thematique_index",methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/', name: 'thematique_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -64,10 +62,7 @@ class ThematiqueController extends AbstractController
         ));
     }
 
-    /**
-     * @Route("/gerer",name="gerer_thematiques",methods={"GET"} )
-     * Security("is_granted('ROLE_OBS')")
-     */
+    #[Route(path: '/gerer', name: 'gerer_thematiques', methods: ['GET'])]
     public function gererAction(): Response
     {
         $ac = $this->ac;
@@ -88,11 +83,11 @@ class ThematiqueController extends AbstractController
     /**
      * Creates a new thematique entity.
      *
-     * @Route("/new", name="thematique_new",methods={"GET","POST"})
-     * @Route("/ajouter", name="ajouter_thematique",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'thematique_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/ajouter', name: 'ajouter_thematique', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $em = $this->em;
@@ -133,10 +128,10 @@ class ThematiqueController extends AbstractController
     /**
      * Deletes a thematique entity.
      *
-     * @Route("/{id}/supprimer", name="supprimer_thematique",methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/supprimer', name: 'supprimer_thematique', methods: ['GET'])]
     public function supprimerAction(Request $request, Thematique $thematique): Response
     {
         $em = $this->em;
@@ -153,10 +148,10 @@ class ThematiqueController extends AbstractController
     /**
      * Displays a form to edit an existing laboratoire entity.
      *
-     * @Route("/{id}/modify", name="modifier_thematique",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/modify', name: 'modifier_thematique', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Thematique $thematique): Response
     {
         $em = $this->em;
@@ -193,10 +188,10 @@ class ThematiqueController extends AbstractController
     /**
      * Finds and displays a thematique entity.
      *
-     * @Route("/{id}", name="thematique_show",methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method("GET")
      */
+    #[Route(path: '/{id}', name: 'thematique_show', methods: ['GET'])]
     public function showAction(Thematique $thematique): Response
     {
         $deleteForm = $this->createDeleteForm($thematique);
@@ -210,10 +205,10 @@ class ThematiqueController extends AbstractController
     /**
      * Displays a form to edit an existing thematique entity.
      *
-     * @Route("/{id}/edit", name="thematique_edit",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'thematique_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Thematique $thematique): Response
     {
         $deleteForm = $this->createDeleteForm($thematique);
@@ -236,10 +231,10 @@ class ThematiqueController extends AbstractController
     /**
      * Deletes a thematique entity.
      *
-     * @Route("/{id}", name="thematique_delete",methods={"DELETE"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'thematique_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Thematique $thematique): Response
     {
         $form = $this->createDeleteForm($thematique);

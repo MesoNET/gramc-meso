@@ -32,11 +32,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Laboratoire
  *
- * @ORM\Table(name="laboratoire",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="acro", columns={"acro_labo"})})
- * @ORM\Entity(repositoryClass="App\Repository\LaboratoireRepository")
- * 
+ *
  */
+#[ORM\Table(name: 'laboratoire')]
+#[ORM\UniqueConstraint(name: 'acro', columns: ['acro_labo'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\LaboratoireRepository')]
 class Laboratoire
 {
     /**
@@ -51,57 +51,51 @@ class Laboratoire
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="numero_labo", type="integer", nullable=false)
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'numero_labo', type: 'integer', nullable: false)]
+    #[Assert\NotBlank]
     private $numeroLabo = '99999';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="acro_labo", type="string", length=100, nullable=false)
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'acro_labo', type: 'string', length: 100, nullable: false)]
+    #[Assert\NotBlank]
     private $acroLabo = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom_labo", type="string", length=100, nullable=false)
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'nom_labo', type: 'string', length: 100, nullable: false)]
+    #[Assert\NotBlank]
     private $nomLabo = '';
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_labo", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_labo', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idLabo;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="labo")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'labo')]
     private $collaborateurVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Individu", mappedBy="labo")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'labo')]
     private $individu;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Adresseip", mappedBy="labo", cascade={"remove"} )
-     * 
+     *
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
     private $adresseip;
 
     public function __toString(): string

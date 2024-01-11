@@ -54,13 +54,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 /////////////////////////////////////////////////////
-
 /**
  * Mail controller.
  *
- * @Route("mail")
  * @Security("is_granted('ROLE_ADMIN')")
  */
+#[Route(path: 'mail')]
 class MailController extends AbstractController
 {
     public function __construct(
@@ -74,10 +73,10 @@ class MailController extends AbstractController
     ) {}
 
     /**
-     * @Route("/{id}/mail_to_responsables_fiche",name="mail_to_responsables_fiche", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
-     * 
-    **/
+     *
+     **/
+    #[Route(path: '/{id}/mail_to_responsables_fiche', name: 'mail_to_responsables_fiche', methods: ['GET', 'POST'])]
     public function mailToResponsablesFicheAction(Request $request, Session $session): Response
     {
         $em = $this->em;
@@ -143,9 +142,9 @@ class MailController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/mail_to_responsables_rallonge",name="mail_to_responsables_rallonge", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
-    **/
+     **/
+    #[Route(path: '/{id}/mail_to_responsables_rallonge', name: 'mail_to_responsables_rallonge', methods: ['GET', 'POST'])]
     public function mailToResponsablesRallonge(Request $request, Session $session): Response
     {
         $sj = $this->sj;
@@ -170,9 +169,9 @@ class MailController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/mail_to_responsables",name="mail_to_responsables", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
-    **/
+     **/
+    #[Route(path: '/{id}/mail_to_responsables', name: 'mail_to_responsables', methods: ['GET', 'POST'])]
     public function mailToResponsablesAction(Request $request, Session $session): Response
     {
         $sj = $this->sj;
@@ -349,11 +348,8 @@ class MailController extends AbstractController
                                             ->getForm();
     }
 
-    /**
-     *
-     * @Route("/tester", name="mail_tester", methods={"GET","POST"})
-     * 
-     */
+    
+    #[Route(path: '/tester', name: 'mail_tester', methods: ['GET', 'POST'])]
     public function testerAction(Request $request): Response
     {
         $em = $this->em;

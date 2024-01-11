@@ -45,19 +45,18 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Laboratoire controller.
- *
- * @Route("laboratoire")
  */
+#[Route(path: 'laboratoire')]
 class LaboratoireController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em) {}
 
     /**
      * Liste tous les laboratoires
-     * 
-     * @Route("/gerer",name="gerer_laboratoires", methods={"GET"} )
+     *
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET'])]
     public function gererAction(): Response
     {
         $ac = $this->ac;
@@ -78,9 +77,9 @@ class LaboratoireController extends AbstractController
     /**
      * Ajoute un nouveau laboratoire
      *
-     * @Route("/ajouter", name="ajouter_laboratoire", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/ajouter', name: 'ajouter_laboratoire', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $laboratoire = new Laboratoire();
@@ -111,9 +110,9 @@ class LaboratoireController extends AbstractController
     /**
      * Modifie un laboratoire
      *
-     * @Route("/{id}/modifier", name="modifier_laboratoire", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/{id}/modifier', name: 'modifier_laboratoire', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
         $em = $this->em;
@@ -231,9 +230,9 @@ class LaboratoireController extends AbstractController
     /**
      * Supprime un laboratoire
      *
-     * @Route("/{id}/supprimer", name="supprimer_laboratoire", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/{id}/supprimer', name: 'supprimer_laboratoire', methods: ['GET'])]
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {
         $em = $this->em;

@@ -42,19 +42,17 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Journal controller.
  *
- * @Route("journal")
  * @Security("is_granted('ROLE_ADMIN')")
  */
+#[Route(path: 'journal')]
 class JournalController extends AbstractController
 {
     public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em) {}
 
     /**
      * Liste les entrées de journal (l'écran utilisé)
-     *
-     * @Route("/list", name="journal_list", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/list', name: 'journal_list', methods: ['GET', 'POST'])]
     public function listAction(Request $request): Response
     {
         $data = $this->index($request);
@@ -73,11 +71,8 @@ class JournalController extends AbstractController
     /**
      * Lists all Journal entities.
      * CRUD
-     *
-     * @Route("/", name="journal_index", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
-
+    #[Route(path: '/', name: 'journal_index', methods: ['GET', 'POST'])]
     public function indexAction(Request $request): Response
     {
         $data = $this->index($request);
@@ -94,10 +89,8 @@ class JournalController extends AbstractController
 
     /**
      * Creates a new journal entity. CRUD
-     *
-     * @Route("/new", name="journal_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'journal_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $journal = new Journal();
@@ -120,10 +113,8 @@ class JournalController extends AbstractController
 
     /**
      * Finds and displays a journal entity. CRUD
-     *
-     * @Route("/{id}", name="journal_show", methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/{id}', name: 'journal_show', methods: ['GET'])]
     public function showAction(Journal $journal): Response
     {
         $deleteForm = $this->createDeleteForm($journal);
@@ -136,10 +127,8 @@ class JournalController extends AbstractController
 
     /**
      * Displays a form to edit an existing journal entity. CRUD
-     *
-     * @Route("/{id}/edit", name="journal_edit", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'journal_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Journal $journal): Response
     {
         $deleteForm = $this->createDeleteForm($journal);
@@ -161,10 +150,8 @@ class JournalController extends AbstractController
 
     /**
      * Deletes a journal entity. CRUD
-     *
-     * @Route("/{id}", name="journal_delete", methods={"DELETE"})
-     * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'journal_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Journal $journal): Response
     {
         $form = $this->createDeleteForm($journal);

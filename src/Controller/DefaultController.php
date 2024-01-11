@@ -67,9 +67,9 @@ class DefaultController extends AbstractController
     ) {}
 
     /**
-      * @Route("/test", name="test")
-      * @Security("is_granted('ROLE_ADMIN')")
-      */
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    #[Route(path: '/test', name: 'test')]
     public function testAction(Request $request)
     {
         $em = $this->em;
@@ -93,9 +93,9 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/twig", name="twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/twig', name: 'twig')]
     public function twigAction(Request $request)
     {
         $sn = $this->sn;
@@ -115,18 +115,18 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/test_params/{id1}/{id2}", name="test_params")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/test_params/{id1}/{id2}', name: 'test_params')]
     public function test_paramsAction(Request $request)
     {
         return new Response('ok');
     }
 
     /**
-     * @Route("/test_session", name="test_session")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/test_session', name: 'test_session')]
     public function test_sessionAction(Request $request)
     {
         $ss = $this->ss;
@@ -135,9 +135,9 @@ class DefaultController extends AbstractController
     }
 
     /**
-      * @Route("/test_form", name="test_session")
-      * @Security("is_granted('ROLE_ADMIN')")
-      */
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    #[Route(path: '/test_form', name: 'test_session')]
     public function test_formAction(Request $request)
     {
         $form = $this->ff

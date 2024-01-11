@@ -31,10 +31,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Serveur
  *
- * @ORM\Table(name="serveur", options={"collation"="utf8mb4_general_ci"}, uniqueConstraints={@ORM\UniqueConstraint(name="admname", columns={"admname"})})
- * @ORM\Entity(repositoryClass="App\Repository\ServeurRepository")
-
  */
+#[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
 class Serveur
 {
     /**
@@ -48,50 +48,47 @@ class Serveur
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=20)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 20)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $nom;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Ressource", mappedBy="serveur", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Ressource', mappedBy: 'serveur', cascade: ['persist'])]
     private $ressource;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="serveur", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'serveur', cascade: ['persist'])]
     private $user;
 
     /**
      * @var desc
      *
      * Attention desc est un nom réservé !
-     * @ORM\Column(name="descr", type="string", length=200, nullable=true, options={"default":""})
-     * 
+     *
      */
+    #[ORM\Column(name: 'descr', type: 'string', length: 200, nullable: true, options: ['default' => ''])]
     private $desc;
 
     /**
      * @var cguUrl
      *
-     * @ORM\Column(name="cgu_url", type="string", nullable=true, length=200)
-     * 
+     *
      */
+    #[ORM\Column(name: 'cgu_url', type: 'string', nullable: true, length: 200)]
     private $cguUrl;
 
     /**
      * @var admname
      *
-     * @ORM\Column(name="admname", type="string", length=20, nullable=true, options={"comment":"username symfony pour l'api"}) )
-     * 
+     *
      */
+    #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
     private $admname;
 
     /**

@@ -67,8 +67,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Rallonge controller.
- * @Route("rallonge")
  */
+#[Route(path: 'rallonge')]
 class RallongeController extends AbstractController
 {
     public function __construct(
@@ -90,9 +90,9 @@ class RallongeController extends AbstractController
     /**
      * Affichage des rallonges dynamiques
      *
-     * @Route("/dynamiques", name="rallonge_dynamique", methods={"GET"})
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/dynamiques', name: 'rallonge_dynamique', methods: ['GET'])]
     public function rallongesDynamiquesAction(): Response
     {
         $em = $this->em;
@@ -146,10 +146,9 @@ class RallongeController extends AbstractController
     /**
      * Nouvelle rallonge
      *
-     * @Route("/{id}/creation", name="nouvelle_rallonge", methods={"GET"})
-     * @ Security("is_granted('ROLE_ADMIN')")
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/creation', name: 'nouvelle_rallonge', methods: ['GET'])]
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
         $sm = $this->sm;
@@ -176,10 +175,10 @@ class RallongeController extends AbstractController
     /**
      * Afficher une rallonge
      *
-     * @Route("/{id}/consulter", name="consulter_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/consulter', name: 'consulter_rallonge', methods: ['GET'])]
     public function consulterAction(Request $request, Rallonge $rallonge): Response
     {
         $sm = $this->sm;
@@ -208,12 +207,12 @@ class RallongeController extends AbstractController
     }
 
     /**
-    * Modifier une rallonge.
-    *
-    * @Route("/{id}/modifier", name="modifier_rallonge", methods={"GET","POST"})
-    * @Security("is_granted('ROLE_DEMANDEUR')")
-    * Method({"GET", "POST"})
-    */
+     * Modifier une rallonge.
+     *
+     * @Security("is_granted('ROLE_DEMANDEUR')")
+     * Method({"GET", "POST"})
+     */
+    #[Route(path: '/{id}/modifier', name: 'modifier_rallonge', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Rallonge $rallonge): Response
     {
         $sm = $this->sm;
@@ -283,10 +282,10 @@ class RallongeController extends AbstractController
      *
      * TODO - VIRER CETTE FONCTION
      *
-     * @Route("/{id}/avant_envoyer", name="avant_envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/avant_envoyer', name: 'avant_envoyer_rallonge', methods: ['GET'])]
     public function avantEnvoyerAction(Request $request, Rallonge $rallonge): Response
     {
         $sm = $this->sm;
@@ -315,10 +314,10 @@ class RallongeController extends AbstractController
     /**
      * Envoi d'une rallonge en expertise
      *
-     * @Route("/{id}/envoyer", name="envoyer_rallonge", methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/envoyer', name: 'envoyer_rallonge', methods: ['GET'])]
     public function envoyerAction(Request $request, Rallonge $rallonge): Response
     {
         $sm = $this->sm;

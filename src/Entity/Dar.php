@@ -30,66 +30,54 @@ use Doctrine\ORM\Mapping as ORM;
  * Dar
  *
  * Demande, Attribution pour Rallonges
- * 
- * @ORM\Table(name="dar", options={"collation"="utf8mb4_general_ci"})
-
- * @ORM\Entity
+ *
  */
+#[ORM\Table(name: 'dar', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\Entity]
 class Dar
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_dar", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_dar', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idDar;
 
-    /**
-     *
-     * @ORM\Column(name="id_rallonge", type="string", length=15)
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge",inversedBy="dar")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
-     *
-     * })
-     */
+    
+    #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
+    #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'dar')]
     private $rallonge;
 
     /**
      * @var Ressource
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dar")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Ressource', inversedBy: 'dar')]
     private $ressource;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="demande", type="integer", nullable=false, options={"comment":"demande, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
     private $demande = 0;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="attribution", type="integer", nullable=false, options={"comment":"attribution, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
     private $attribution = 0;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="todof", type="boolean")
      */
-     // Le "todo flag": si true, il y a un truc à faire sur la machine !
-
+    // Le "todo flag": si true, il y a un truc à faire sur la machine !
+    #[ORM\Column(name: 'todof', type: 'boolean')]
     private $todof = false;
 
     /**

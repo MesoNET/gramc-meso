@@ -44,17 +44,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Serveur controller.
- *
- * @Route("/ressource")
  */
+#[Route(path: '/ressource')]
 class RessourceController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac, private ServiceDacs $sd, private ServiceJournal $sj, private EntityManagerInterface $em) {}
 
     /**
-     * @Route("/gerer",name="gerer_ressources", methods={"GET"} )
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/gerer', name: 'gerer_ressources', methods: ['GET'])]
     public function gererAction(): Response
     {
         $ac = $this->ac;
@@ -75,10 +74,10 @@ class RessourceController extends AbstractController
     /**
      * Nouvelle ressource
      *
-     * @Route("/ajouter", name="ajouter_ressource", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/ajouter', name: 'ajouter_ressource', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $sd = $this->sd;
@@ -127,10 +126,10 @@ class RessourceController extends AbstractController
     /**
      * Modifier une ressource
      *
-     * @Route("/{id}/modifier_ressource", name="modifier_ressource", methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
-     * 
+     *
      */
+    #[Route(path: '/{id}/modifier_ressource', name: 'modifier_ressource', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Ressource $ressource): Response
     {
         $editForm = $this->createForm('App\Form\RessourceType', $ressource, ['modifier' => true ]);
@@ -160,9 +159,9 @@ class RessourceController extends AbstractController
     /**
      * Supprimer une ressource
      *
-     * @Route("/{id}/suppr", name="supprimer_ressource", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/suppr', name: 'supprimer_ressource', methods: ['GET'])]
     public function supprimerAction(Request $request, Ressource $ressource): Response
     {
         $em = $this->em;

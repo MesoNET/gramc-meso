@@ -31,40 +31,36 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Sso
- *
- * @ORM\Table(name="statut", indexes={@ORM\Index(name="id_statut", columns={"id_statut"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'statut')]
+#[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
+#[ORM\Entity]
 class Statut
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="id_statut", type="smallint")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'id_statut', type: 'smallint')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $idStatut;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="libelle_statut", type="string", length=50, nullable=false)
      */
+    #[ORM\Column(name: 'libelle_statut', type: 'string', length: 50, nullable: false)]
     private $libelleStatut;
 
     /**
-    * @var boolean
-    *
-    * @ORM\Column(name="permanent", type="boolean", nullable=false)
-    */
+     * @var boolean
+     */
+    #[ORM\Column(name: 'permanent', type: 'boolean', nullable: false)]
     private $permanent = false;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Individu", mappedBy="statut")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'statut')]
     private $individu;
 
     //////////////////////////////////////////////////////

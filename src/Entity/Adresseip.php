@@ -30,38 +30,32 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Publication
- *
- * @ORM\Table(name="adresseip",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="adresseip", columns={"adresse","id_labo"})})
- * @ORM\Entity(repositoryClass="App\Repository\AdresseipRepository")
  */
+#[ORM\Table(name: 'adresseip')]
+#[ORM\UniqueConstraint(name: 'adresseip', columns: ['adresse', 'id_labo'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\AdresseipRepository')]
 class Adresseip
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="adresse", type="text", length=45, nullable=false)
      */
+    #[ORM\Column(name: 'adresse', type: 'text', length: 45, nullable: false)]
     private $adresse;
 
     /**
      * @var \App\Entity\Laboratoire
      * ORM\Column(name="id_labo", type="integer", length=11, nullable=false)
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire", inversedBy="adresseip")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_labo", referencedColumnName="id_labo")
-     * })
      */
-
+    #[ORM\JoinColumn(name: 'id_labo', referencedColumnName: 'id_labo')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', inversedBy: 'adresseip')]
     private $labo;
 
 
@@ -100,12 +94,12 @@ class Adresseip
 
     /**
      * Get adresse
-     * 
+     *
      * @Assert\Cidr(message="Valeur non conforme - Essayer 1.2.3.4/32", version="4", netmaskMin=16, netmaskMax=32,netmaskRangeViolationMessage="Le masque doit être un entier compris entre {{ min }} et {{ max }}")
-     * @Assert\NotBlank(message="remerde")
-     * 
+     *
      * @return string
      */
+    #[Assert\NotBlank(message: 'remerde')]
     public function getAdresse(): ?string
     {
         return $this->adresse;

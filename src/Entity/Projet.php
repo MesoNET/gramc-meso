@@ -42,10 +42,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * Projet
- *
- * @ORM\Table(name="projet", indexes={@ORM\Index(name="etat_projet", columns={"etat_projet"})})
- * @ORM\Entity(repositoryClass="App\Repository\ProjetRepository")
  */
+#[ORM\Table(name: 'projet')]
+#[ORM\Index(name: 'etat_projet', columns: ['etat_projet'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
 class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
@@ -77,106 +77,80 @@ class Projet
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="etat_projet", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'etat_projet', type: 'integer', nullable: false)]
     private $etatProjet;
 
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="type_projet", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'type_projet', type: 'integer', nullable: false)]
     private $typeProjet;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="id_projet", type="string", length=10)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'id_projet', type: 'string', length: 10)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $idProjet;
 
     /**
      * @var \App\Entity\Version
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Version",inversedBy="versionActive")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_veract", referencedColumnName="id_version", onDelete="SET NULL", nullable=true)
-     * })
-     *
-     * la version active actuelle ou la dernière version active si aucune n'est active actuellement
      *
      */
+    #[ORM\JoinColumn(name: 'id_veract', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
+    #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionActive')]
     private $versionActive;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\Version", inversedBy="versionDerniere")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_verder", referencedColumnName="id_version", onDelete="SET NULL", nullable=true )
-     * })
-     *
-     *  la version qui correspond  à la dernière session
-     *  cette clé est fixée au moment de la création de la version
-     *  si la session d'une version change après sa création il faut le modifier manuellement
      */
+    #[ORM\JoinColumn(name: 'id_verder', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
+    #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionDerniere')]
     private $versionDerniere;
 
     /**
      * @var \DateTime
      * Date limite, la version n'ira pas au-delà
-     *
-     * @ORM\Column(name="limit_date", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'limit_date', type: 'datetime', nullable: true)]
     private $limitDate;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Publication", inversedBy="projet")
-     * @ORM\JoinTable(name="publicationProjet",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_publi", referencedColumnName="id_publi")
-     *   }
-     * )
      */
+    #[ORM\JoinTable(name: 'publicationProjet')]
+    #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
+    #[ORM\InverseJoinColumn(name: 'id_publi', referencedColumnName: 'id_publi')]
+    #[ORM\ManyToMany(targetEntity: 'App\Entity\Publication', inversedBy: 'projet')]
     private $publi;
 
     ////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="projet")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'projet')]
     private $version;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\User", mappedBy="projet", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'projet', cascade: ['persist'])]
     private $user;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\RapportActivite", mappedBy="projet")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\RapportActivite', mappedBy: 'projet')]
     private $rapportActivite;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="tetat_projet", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'tetat_projet', type: 'integer', nullable: true)]
     private $tetatProjet;
 
     public function getId(): ?string

@@ -28,49 +28,40 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * FormationVersion
- *
- * @ORM\Table(name="formationVersion",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="id_version2", columns={"id_version", "id_formation"})},
- *            indexes={@ORM\Index(name="id_formation", columns={"id_formation"}),
- *                     @ORM\Index(name="id_version", columns={"id_version"})})
- * @ORM\Entity(repositoryClass="App\Repository\FormationVersionRepository")
  */
+#[ORM\Table(name: 'formationVersion')]
+#[ORM\Index(name: 'id_formation', columns: ['id_formation'])]
+#[ORM\Index(name: 'id_version', columns: ['id_version'])]
+#[ORM\UniqueConstraint(name: 'id_version2', columns: ['id_version', 'id_formation'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\FormationVersionRepository')]
 class FormationVersion
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version", inversedBy="formationVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'formationVersion')]
     private $version;
 
     /**
      * @var \App\Entity\Formation
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Formation",inversedBy="formationVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_formation", referencedColumnName="id", onDelete="CASCADE")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_formation', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Formation', inversedBy: 'formationVersion')]
     private $formation;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="nombre", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'nombre', type: 'integer', nullable: false)]
     private $nombre = 0;
 
 

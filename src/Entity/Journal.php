@@ -29,10 +29,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Journal
- *
- * @ORM\Table(name="journal")
- * @ORM\Entity(repositoryClass="App\Repository\JournalRepository")
  */
+#[ORM\Table(name: 'journal')]
+#[ORM\Entity(repositoryClass: 'App\Repository\JournalRepository')]
 class Journal
 {
     /**
@@ -40,67 +39,56 @@ class Journal
      *
      * @    ORM\Column(name="id_individu", type="integer", nullable=true)
      */
-//    private $idIndividu;
-
+    //    private $idIndividu;
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="journal",cascade={"persist"})
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="individu", referencedColumnName="id_individu",onDelete="SET NULL")
-     * })
      */
+    #[ORM\JoinColumn(name: 'individu', referencedColumnName: 'id_individu', onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'journal', cascade: ['persist'])]
     private $individu;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="gramc_sess_id", type="string", length=40, nullable=true)
      */
+    #[ORM\Column(name: 'gramc_sess_id', type: 'string', length: 40, nullable: true)]
     private $gramcSessId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=15, nullable=false)
      */
+    #[ORM\Column(name: 'type', type: 'string', length: 15, nullable: false)]
     private $type = 'RIEN';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="message", type="string", length=300, nullable=false)
      */
+    #[ORM\Column(name: 'message', type: 'string', length: 300, nullable: false)]
     private $message = '';
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="stamp", type="datetime", nullable=false)
      */
+    #[ORM\Column(name: 'stamp', type: 'datetime', nullable: false)]
     private $stamp = 'CURRENT_TIMESTAMP';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="ip", type="string", length=40, nullable=false)
      */
+    #[ORM\Column(name: 'ip', type: 'string', length: 40, nullable: false)]
     private $ip;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="niveau", type="integer")
      */
+    #[ORM\Column(name: 'niveau', type: 'integer')]
     private $niveau;
 
     /////////////////////////////////////////////////////
