@@ -24,6 +24,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\GramcServices\Etat;
@@ -68,7 +71,6 @@ class Rallonge implements Demande
     private $prjJustifRallonge;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="id_rallonge", type="string", length=15)
      * @ORM\Id
@@ -547,5 +549,10 @@ class Rallonge implements Demande
         {
             return false;
         }
+    }
+
+    public function isValidation(): ?bool
+    {
+        return $this->validation;
     }
 }

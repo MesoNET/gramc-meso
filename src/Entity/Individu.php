@@ -24,6 +24,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
@@ -1075,5 +1078,35 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         {
             return false;
         }
+    }
+
+    public function isAdmin(): ?bool
+    {
+        return $this->admin;
+    }
+
+    public function isSysadmin(): ?bool
+    {
+        return $this->sysadmin;
+    }
+
+    public function isObs(): ?bool
+    {
+        return $this->obs;
+    }
+
+    public function isValideur(): ?bool
+    {
+        return $this->valideur;
+    }
+
+    public function isPresident(): ?bool
+    {
+        return $this->president;
+    }
+
+    public function isDesactive(): ?bool
+    {
+        return $this->desactive;
     }
 }

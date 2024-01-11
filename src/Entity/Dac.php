@@ -48,7 +48,7 @@ class Dac
 
     /**
      * @var \App\Entity\Version
-     *
+     * @ORM\Column(name="id_version", type="string", length=13)
      * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="dac")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
@@ -260,6 +260,11 @@ class Dac
      * @return boolean
      */
     public function getTodof(): bool
+    {
+        return $this->todof;
+    }
+
+    public function isTodof(): ?bool
     {
         return $this->todof;
     }

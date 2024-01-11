@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -302,5 +303,10 @@ class Expertise
     public function getExpert(): ?\App\Entity\Individu
     {
         return $this->expert;
+    }
+
+    public function isDefinitif(): ?bool
+    {
+        return $this->definitif;
     }
 }

@@ -26,7 +26,7 @@ sudo -u www-data composer update -n
 
 # Remet les permissions correctes dans le répertoire courant
 ( cd $DIR && chmod -R go-w $REP )
-chmod 400 .env.local
+sudo chmod 400 .env.local
 
 echo fini
 

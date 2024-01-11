@@ -24,6 +24,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\GramcServices\Etat;
 use App\Utils\Functions;
@@ -1628,5 +1631,59 @@ class Version implements Demande
     public function getId(): ?string
     {
         return $this->getIdVersion();
+    }
+
+    public function isPrjFicheVal(): ?bool
+    {
+        return $this->prjFicheVal;
+    }
+
+    public function isCGU(): ?bool
+    {
+        return $this->CGU;
+    }
+
+    public function getVersionDerniere(): ?Projet
+    {
+        return $this->versionDerniere;
+    }
+
+    public function setVersionDerniere(?Projet $versionDerniere): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($versionDerniere === null && $this->versionDerniere !== null) {
+            $this->versionDerniere->setVersionDerniere(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($versionDerniere !== null && $versionDerniere->getVersionDerniere() !== $this) {
+            $versionDerniere->setVersionDerniere($this);
+        }
+
+        $this->versionDerniere = $versionDerniere;
+
+        return $this;
+    }
+
+    public function getVersionActive(): ?Projet
+    {
+        return $this->versionActive;
+    }
+
+    public function setVersionActive(?Projet $versionActive): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($versionActive === null && $this->versionActive !== null) {
+            $this->versionActive->setVersionActive(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($versionActive !== null && $versionActive->getVersionActive() !== $this) {
+            $versionActive->setVersionActive($this);
+        }
+
+        $this->versionActive = $versionActive;
+
+        return $this;
     }
 }

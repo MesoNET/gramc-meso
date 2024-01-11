@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -54,7 +55,7 @@ class Adresseip
 
     /**
      * @var \App\Entity\Laboratoire
-     *
+     * ORM\Column(name="id_labo", type="integer", length=11, nullable=false)
      * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire", inversedBy="adresseip")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_labo", referencedColumnName="id_labo")
@@ -63,14 +64,14 @@ class Adresseip
 
     private $labo;
 
-    ////////////////////////////////////////////////////////////////////////
+
 
     public function __toString(): string
     {
         return $this->getAdresse();
     }
 
-    ////////////////////////////////////////////////////////////////////////
+
 
 
     /**

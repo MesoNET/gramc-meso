@@ -23,6 +23,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -447,6 +448,26 @@ class User
      * @return boolean
      */
     public function getDeply(): bool
+    {
+        return $this->deply;
+    }
+
+    public function isLogin(): ?bool
+    {
+        return $this->login;
+    }
+
+    public function isExpire(): ?bool
+    {
+        return $this->expire;
+    }
+
+    public function isCGU(): ?bool
+    {
+        return $this->CGU;
+    }
+
+    public function isDeply(): ?bool
     {
         return $this->deply;
     }
