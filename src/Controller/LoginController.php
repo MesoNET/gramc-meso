@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Login controller.
@@ -196,8 +197,8 @@ class LoginController extends AbstractController
     /**
      * Sudo (l'admin change d'identité).
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/sudo', name: 'sudo', methods: ['GET'])]
     public function sudoAction(Request $request, Individu $individu): Response
     {

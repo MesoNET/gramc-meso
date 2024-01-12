@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Serveur controller.
@@ -47,8 +48,8 @@ class RessourceController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_ressources', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -70,9 +71,8 @@ class RessourceController extends AbstractController
     /**
      * Nouvelle ressource.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/ajouter', name: 'ajouter_ressource', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -124,8 +124,8 @@ class RessourceController extends AbstractController
     /**
      * Modifier une ressource.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier_ressource', name: 'modifier_ressource', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Ressource $ressource): Response
     {
@@ -156,8 +156,8 @@ class RessourceController extends AbstractController
     /**
      * Supprimer une ressource.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/suppr', name: 'supprimer_ressource', methods: ['GET'])]
     public function supprimerAction(Request $request, Ressource $ressource): Response
     {

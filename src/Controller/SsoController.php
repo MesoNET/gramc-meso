@@ -28,15 +28,17 @@ use App\Entity\Sso;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Sso controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  */
+#[isGranted('ROLE_ADMIN')]
 #[Route(path: 'sso')]
 class SsoController extends AbstractController
 {
@@ -144,7 +146,7 @@ class SsoController extends AbstractController
      *
      * @param Sso $sso The sso entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Response The form
      */
     private function createDeleteForm(Sso $sso): Response
     {

@@ -28,11 +28,13 @@ use App\Entity\Formation;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Formation controller.
@@ -45,8 +47,8 @@ class FormationController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_formations', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -68,9 +70,8 @@ class FormationController extends AbstractController
     /**
      * Nouvelle formation.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_formation', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -104,9 +105,8 @@ class FormationController extends AbstractController
     /**
      * Modifier une formation.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier', name: 'modifier_formation', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Formation $formation): Response
     {
@@ -137,8 +137,8 @@ class FormationController extends AbstractController
     /**
      * Supprime une formation.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_formation', methods: ['GET'])]
     #[Route(path: '/{id}/supprimer', name: 'formation_delete', methods: ['GET'])]
     public function supprimerAction(Request $request, Formation $formation): Response
@@ -155,7 +155,7 @@ class FormationController extends AbstractController
      *
      * @param Formation $formation The formation entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Form The form
      */
     private function createDeleteForm(formation $formation): FormInterface
     {

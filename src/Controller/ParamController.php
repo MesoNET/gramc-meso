@@ -31,15 +31,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Param controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  */
+#[isGranted('ROLE_ADMIN')]
 #[Route(path: 'param')]
 class ParamController extends AbstractController
 {
@@ -197,9 +200,9 @@ class ParamController extends AbstractController
      *
      * @param Param $param The param entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
-    private function createDeleteForm(Param $param)
+    private function createDeleteForm(Param $param): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('param_delete', ['id' => $param->getId()]))

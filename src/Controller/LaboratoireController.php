@@ -38,6 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Laboratoire controller.
@@ -52,8 +53,8 @@ class LaboratoireController extends AbstractController
     /**
      * Liste tous les laboratoires.
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -75,8 +76,8 @@ class LaboratoireController extends AbstractController
     /**
      * Ajoute un nouveau laboratoire.
      *
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_laboratoire', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -110,8 +111,8 @@ class LaboratoireController extends AbstractController
     /**
      * Modifie un laboratoire.
      *
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
     #[Route(path: '/{id}/modifier', name: 'modifier_laboratoire', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
@@ -232,8 +233,8 @@ class LaboratoireController extends AbstractController
     /**
      * Supprime un laboratoire.
      *
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_laboratoire', methods: ['GET'])]
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {

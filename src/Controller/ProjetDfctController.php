@@ -40,14 +40,15 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * ProjetFctController rassemble les controleurs dédiés au bouton "Euro" (données de facturation).
  *
- * @Security("is_granted('ROLE_OBS')")
  */
 // Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
 // et d'autres par DEMANDEUR
+#[isGranted('ROLE_OBS')]
 #[Route(path: 'projet')]
 class ProjetDfctController extends AbstractController
 {

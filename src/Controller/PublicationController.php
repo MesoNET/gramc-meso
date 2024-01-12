@@ -36,12 +36,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Publication controller.
@@ -62,9 +64,8 @@ class PublicationController extends AbstractController
     /**
      * Autocomplete publication.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"POST","GET"})
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/autocomplete', name: 'publication_autocomplete', methods: ['GET', 'POST'])]
     public function autocompleteAction(Request $request): Response
     {
@@ -124,8 +125,8 @@ class PublicationController extends AbstractController
     /**
      * Lists all publication entities.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'publication_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -139,8 +140,8 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/gerer', name: 'gerer_publications', methods: ['GET', 'POST'])]
     public function gererAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -198,8 +199,8 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_publications', methods: ['GET'])]
     public function consulterAction(Projet $projet, Request $request): Response
     {
@@ -213,9 +214,8 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/annee', name: 'publication_annee', methods: ['GET', 'POST'])]
     public function AnneeAction(Request $request): Response
     {
@@ -236,9 +236,8 @@ class PublicationController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/{annee}/annee_csv', name: 'publication_annee_csv', methods: ['GET', 'POST'])]
     public function AnneeCsvAction($annee): Response
     {
@@ -271,8 +270,8 @@ class PublicationController extends AbstractController
     /**
      * Creates a new publication entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'publication_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
@@ -297,8 +296,8 @@ class PublicationController extends AbstractController
     /**
      * Finds and displays a publication entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/show', name: 'publication_show', methods: ['GET'])]
     public function showAction(Publication $publication): Response
     {
@@ -313,8 +312,8 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Publication $publication): Response
     {
@@ -338,9 +337,8 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/modify', name: 'modifier_publication', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
@@ -375,8 +373,8 @@ class PublicationController extends AbstractController
     /**
      * Deletes a publication entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}', name: 'publication_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Publication $publication): Response
     {
@@ -395,8 +393,8 @@ class PublicationController extends AbstractController
     /**
      * Deletes a publication entity.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/supprimer', name: 'supprimer_publication', methods: ['GET', 'DELETE'])]
     public function supprimerAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
@@ -429,10 +427,10 @@ class PublicationController extends AbstractController
      *
      * @param Publication $publication The publication entity
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Response The form
      */
+    #[isGranted('ROLE_ADMIN')]
     private function createDeleteForm(Publication $publication): Response
     {
         return $this->createFormBuilder()

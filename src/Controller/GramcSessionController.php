@@ -56,10 +56,10 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 
-// ///////////////////////////////////////////////////
 
 // Pour connexionsAction
 function c_cmp($a, $b): bool
@@ -90,8 +90,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      **/
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/admin/accueil', name: 'admin_accueil', methods: ['GET'])]
     public function adminAccueilAction(): Response
     {
@@ -171,8 +171,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      **/
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/profil', name: 'profil', methods: ['GET', 'POST'])]
     public function profilAction(Request $request): Response
     {
@@ -433,8 +433,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/connexions', name: 'connexions', methods: ['GET'])]
     public function connexionsAction(Request $request): Response
     {
@@ -478,8 +478,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
-     *********************************************/
+     **/
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/phpinfo', name: 'phpinfo', methods: ['GET'])]
     public function infoAction(Request $request): Response
     {
@@ -491,10 +491,10 @@ class GramcSessionController extends AbstractController
         return $this->render('default/phpinfo.html.twig', ['sfversion' => $sf_version, 'info' => $info]);
     }
 
-    // /////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{clef}/repinvit', name: 'repinvit', methods: ['GET', 'POST'])]
     public function repinvitAction(Request $request, Invitation $invitation = null): Response
     {
@@ -637,8 +637,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      **/
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/md5', methods: ['GET'])]
     public function md5Action(): Response
     {
@@ -649,8 +649,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      **/
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/uri', methods: ['GET'])]
     public function uri(Request $request): Response
     {
@@ -664,8 +664,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      **/
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/admin_red', name: 'admin_red', methods: ['GET'])]
     public function adminRedAction(Request $request): Response
     {
@@ -675,8 +675,8 @@ class GramcSessionController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      **/
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/admin_exp', name: 'admin_exp', methods: ['GET'])]
     public function adminExpAction(Request $request): Response
     {

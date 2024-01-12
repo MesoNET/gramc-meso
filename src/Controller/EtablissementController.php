@@ -28,15 +28,17 @@ use App\Entity\Etablissement;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Etablissement controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  */
+#[isGranted('ROLE_ADMIN')]
 #[Route(path: 'etablissement')]
 class EtablissementController extends AbstractController
 {
@@ -144,7 +146,7 @@ class EtablissementController extends AbstractController
      *
      * @param Etablissement $etablissement The etablissement entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Response The form
      */
     private function createDeleteForm(Etablissement $etablissement): Response
     {
