@@ -47,13 +47,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 // include_once(__DIR__.'/../../jpgraph/JpGraph.php');
 /**
  * Statistiques controller.
  *
- * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
  */
+#[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
 #[Route(path: 'statistiques')]
 class StatistiquesController extends AbstractController
 {
@@ -67,9 +68,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-     * Method({"GET","POST"})
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/symfony', name: 'homepage', methods: ['GET', 'POST'])]
     public function homepageAction(Request $request): Response
     {
@@ -82,8 +82,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/', name: 'statistiques', methods: ['GET', 'POST'])]
     public function indexAction(Request $request): Response
     {
@@ -139,8 +139,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/dyn', name: 'statistiques_dyn', methods: ['GET', 'POST'])]
     public function indexDynAction(Request $request): Response
     {
@@ -187,8 +187,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/formation', name: 'statistiques_formation', methods: ['GET'])]
     public function formationAction(Request $request): Response
     {
@@ -204,8 +204,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/repartition', name: 'statistiques_repartition', methods: ['GET'])]
     public function repartitionAction(Request $request): Response
     {
@@ -299,8 +299,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/collaborateur', name: 'statistiques_collaborateur', methods: ['GET'])]
     public function collaborateurAction(Request $request): Response
     {
@@ -588,8 +588,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/laboratoire', name: 'statistiques_laboratoire', methods: ['GET', 'POST'])]
     public function laboratoireAction(Request $request): Response
     {
@@ -597,8 +597,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/etablissement', name: 'statistiques_etablissement', methods: ['GET', 'POST'])]
     public function etablissementAction(Request $request): Response
     {
@@ -606,8 +606,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/thematique', name: 'statistiques_thematique', methods: ['GET', 'POST'])]
     public function thematiqueAction(Request $request): Response
     {
@@ -656,8 +656,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/{annee}/thematique_csv', name: 'statistiques_thématique_csv', methods: ['GET', 'POST'])]
     public function thematiqueCSVAction(Request $request, $annee): Response
     {
@@ -665,8 +665,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/{annee}/laboratoire_csv', name: 'statistiques_laboratoire_csv', methods: ['GET', 'POST'])]
     public function laboratoireCSVAction(Request $request, $annee): Response
     {
@@ -674,8 +674,8 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
     #[Route(path: '/{annee}/etablissement_csv', name: 'statistiques_établissement_csv', methods: ['GET', 'POST'])]
     public function etablissementCSVAction(Request $request, $annee): Response
     {
@@ -828,7 +828,7 @@ class StatistiquesController extends AbstractController
 
     // //////////////////////////////////////////////////////////////////////////////
 
-    private function histogram($titre, $donnees, $legende = 'abc'): string
+    private function histogram($titre, $donnees, $legende = 'abc'): ?string
     {
         // Initialisation du graphique
         \JpGraph\JpGraph::load();
