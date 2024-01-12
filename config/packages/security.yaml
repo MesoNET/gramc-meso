@@ -1,7 +1,8 @@
 security:
     # https://symfony.com/doc/current/security/experimental_authenticators.html
-    enable_authenticator_manager: true
-
+    password_hashers:
+      App\Entity\Individu: plaintext
+      Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:
     #
@@ -28,11 +29,9 @@ security:
                 property: idIndividu
     
     # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
-    # InMemoryUser: les mots de passe sont hashés - cf env.dist
+    # InMemoryUser: les mots de passe sont hashés - cf .env.dist
     # cf. https://symfony.com/doc/5.4/security.html
-    password_hashers:
-        App\Entity\Individu: plaintext
-        Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
+
     
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs

@@ -23,125 +23,107 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="loginname",columns={"id_serveur","loginname"}),
- *                                            @ORM\UniqueConstraint(name="i_p_s", columns={"id_individu", "id_projet", "id_serveur"})})
  *
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
+#[ORM\Table(name: 'user')]
+#[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
+#[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
 class User
 {
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="loginname", nullable=true, type="string",length=20 )
      */
+    #[ORM\Column(name: 'loginname', nullable: true, type: 'string', length: 20)]
     private $loginname;
 
     /**
      * @var \App\Entity\Serveur
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur", inversedBy="user" )
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_serveur", referencedColumnName="nom")
-     * })
      */
-    private $serveur;
+    #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'user')]
+    private Serveur $serveur;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="user")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
-     * })
      */
-    private $individu;
+    #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
+    private Individu $individu;
 
     /**
      * @var \App\Entity\Projet
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="user")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_projet", referencedColumnName="id_projet")
-     * })
      */
-    private $projet;
+    #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'user')]
+    private Projet $projet;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="login", type="boolean", nullable=false, options={"comment":"login sur le serveur lié"}))
      */
+    #[ORM\Column(name: 'login', type: 'boolean', nullable: false, options: ['comment' => 'login sur le serveur lié'])]
     private $login = false;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="password", type="string", nullable=true,length=200 )
      */
+    #[ORM\Column(name: 'password', type: 'string', nullable: true, length: 200)]
     private $password;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cpassword", type="string", nullable=true,length=200 )
      */
+    #[ORM\Column(name: 'cpassword', type: 'string', nullable: true, length: 200)]
     private $cpassword;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="expire", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'expire', type: 'boolean', nullable: true)]
     private $expire;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="pass_expiration", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'pass_expiration', type: 'datetime', nullable: true)]
     private $passexpir;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="cgu", type="boolean")
      */
+    #[ORM\Column(name: 'cgu', type: 'boolean')]
     private $CGU = false;
 
     /**
-     * 
+     *
      * @var \App\Entity\Clessh
      *
      * ORM\Column(name="id_clessh", type="integer", nullable=true)
-     * @ORM\ManyToOne(targetEntity="App\Entity\Clessh",inversedBy="user")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_clessh", referencedColumnName="id")
-     * })
-     * 
+     *
      */
+    #[ORM\JoinColumn(name: 'id_clessh', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Clessh', inversedBy: 'user')]
     private $clessh;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="deply", type="boolean")
      */
+    #[ORM\Column(name: 'deply', type: 'boolean')]
     private $deply = false;
 
     public function __toString(): string
@@ -447,6 +429,26 @@ class User
      * @return boolean
      */
     public function getDeply(): bool
+    {
+        return $this->deply;
+    }
+
+    public function isLogin(): ?bool
+    {
+        return $this->login;
+    }
+
+    public function isExpire(): ?bool
+    {
+        return $this->expire;
+    }
+
+    public function isCGU(): ?bool
+    {
+        return $this->CGU;
+    }
+
+    public function isDeply(): ?bool
     {
         return $this->deply;
     }

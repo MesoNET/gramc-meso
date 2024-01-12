@@ -24,52 +24,44 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Thematique
- *
- * @ORM\Table(name="thematique")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'thematique')]
+#[ORM\Entity]
 class Thematique
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="libelle_thematique", type="string", length=200, nullable=false)
      */
+    #[ORM\Column(name: 'libelle_thematique', type: 'string', length: 200, nullable: false)]
     private $libelleThematique;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_thematique", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_thematique', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idThematique;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Individu", inversedBy="thematique")
-     * @ORM\JoinTable(name="thematiqueExpert",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="id_thematique", referencedColumnName="id_thematique")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_expert", referencedColumnName="id_individu")
-     *   }
-     * )
      */
+    #[ORM\JoinTable(name: 'thematiqueExpert')]
+    #[ORM\JoinColumn(name: 'id_thematique', referencedColumnName: 'id_thematique')]
+    #[ORM\InverseJoinColumn(name: 'id_expert', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToMany(targetEntity: 'App\Entity\Individu', inversedBy: 'thematique')]
     private $expert;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Version", mappedBy="prjThematique")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'prjThematique')]
     private $version;
 
 

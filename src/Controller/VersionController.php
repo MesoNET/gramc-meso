@@ -97,12 +97,10 @@ use Doctrine\ORM\EntityManagerInterface;
  * (ce qui concerne la modification des versions)
  *
  **********************************************************************/
-
 /**
  * Version controller.
- *
- * @Route("version")
  */
+#[Route(path: 'version')]
 class VersionController extends AbstractController
 {
     public function __construct(
@@ -135,10 +133,10 @@ class VersionController extends AbstractController
 
     /**
      * Lists all version entities. CRUD
-     * 
-     * @Route("/", name="version_index",methods={"GET"})
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/', name: 'version_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -153,9 +151,9 @@ class VersionController extends AbstractController
     /**
      * Creates a new version entity. CRUD
      *
-     * @Route("/new", name="version_new",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $version = new Version();
@@ -179,13 +177,11 @@ class VersionController extends AbstractController
     /**
      * Affichage d'un écran de confirmation avant la suppression d'une version de projet
      *
-     * @Route("/{id}/avant_supprimer",
-     *        name="version_avant_supprimer",
-     *        methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      *
      */
+    #[Route(path: '/{id}/avant_supprimer', name: 'version_avant_supprimer', methods: ['GET'])]
     public function avantSupprimerAction(Version $version): Response
     {
         $sm = $this->sm;
@@ -208,10 +204,10 @@ class VersionController extends AbstractController
     /**
      * Supprimer version (en base de données et dans le répertoire data)
      *
-     * @Route("/{id}/supprimer", name="version_supprimer",methods={"GET"} )
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
+    #[Route(path: '/{id}/supprimer', name: 'version_supprimer', methods: ['GET'])]
     public function supprimerAction(Version $version): Response
     {
         $em = $this->em;
@@ -234,10 +230,10 @@ class VersionController extends AbstractController
     /**
      * Supprimer Fichier attaché à une version
      *
-     * @Route("/{id}/{filename}/supprimer_fichier", name="version_supprimer_fichier",methods={"GET"} )
      * @Security("is_granted('ROLE_DEMANDEUR')")
      *
      */
+    #[Route(path: '/{id}/{filename}/supprimer_fichier', name: 'version_supprimer_fichier', methods: ['GET'])]
     public function supprimerFichierAction(Version $version, string $filename): Response
     {
         $em = $this->em;
@@ -273,14 +269,13 @@ class VersionController extends AbstractController
     }
 
     //////////////////////////////////////////////////////////////////////////
-
     /**
      * Convertit et affiche la version au format pdf
      *
-     * @Route("/{id}/pdf", name="version_pdf",methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/pdf', name: 'version_pdf', methods: ['GET'])]
     public function pdfAction(Version $version, Request $request): Response
     {
         $sv = $this->sv;
@@ -331,10 +326,10 @@ class VersionController extends AbstractController
     /**
      * Téléchargement de la fiche Projet
      *
-     * @Route("/{id}/fiche_pdf", name="version_fiche_pdf",methods={"GET"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
      */
+    #[Route(path: '/{id}/fiche_pdf', name: 'version_fiche_pdf', methods: ['GET'])]
     public function fichePdfAction(Version $version, Request $request): Response
     {
         $sm   = $this->sm;
@@ -368,9 +363,9 @@ class VersionController extends AbstractController
     /**
      * Téléversement de la fiche projet
      *
-     * @Route("/{id}/televerser_fiche", name="version_televerser_fiche",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/televerser_fiche', name: 'version_televerser_fiche', methods: ['GET', 'POST'])]
     public function televerserFicheAction(Request $request, Version $version): Response
     {
         $em = $this->em;
@@ -420,9 +415,9 @@ class VersionController extends AbstractController
     /**
      * Téléversement de la fiche projet en tant qu'admin
      *
-     * @Route("/{id}/televerser_fiche_admin", name="version_televerser_fiche_admin",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/televerser_fiche_admin', name: 'version_televerser_fiche_admin', methods: ['GET', 'POST'])]
     public function televerserFicheAdminAction(Request $request, Version $version): Response
     {
         $em = $this->em;
@@ -476,9 +471,9 @@ class VersionController extends AbstractController
     /**
      * Changer le responsable d'une version.
      *
-     * @Route("/{id}/responsable", name="changer_responsable",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/responsable', name: 'changer_responsable', methods: ['GET', 'POST'])]
     public function changerResponsableAction(Version $version, Request $request): Response
     {
         $sm = $this->sm;
@@ -589,9 +584,9 @@ class VersionController extends AbstractController
     /**
      * Modifier les collaborateurs d'une version.
      *
-     * @Route("/{id}/collaborateurs", name="modifier_collaborateurs",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/collaborateurs', name: 'modifier_collaborateurs', methods: ['GET', 'POST'])]
     public function modifierCollaborateursAction(Version $version, Request $request): Response
     {
         $sm = $this->sm;
@@ -686,9 +681,9 @@ class VersionController extends AbstractController
     /**
      * envoyer à l'expert
      *
-     * @Route("/{id}/envoyer", name="envoyer_en_expertise",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/envoyer', name: 'envoyer_en_expertise', methods: ['GET', 'POST'])]
     public function envoyerAction(Version $version, Request $request, LoggerInterface $lg): Response
     {
         $sm = $this->sm;
@@ -780,10 +775,9 @@ class VersionController extends AbstractController
     /**
      * Téléversements génériques de rapport d'activité ou de fiche projet
      *
-     * @Route("/televersement", name="televersement_generique",methods={"GET","POST"})
-     * Method({"POST","GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/televersement', name: 'televersement_generique', methods: ['GET', 'POST'])]
     public function televersementGeneriqueAction(Request $request): Response
     {
         $em = $this->em;
@@ -877,9 +871,9 @@ class VersionController extends AbstractController
     /**
      * Changer l'attribution d'une version en mode admin
      *
-     * @Route("/{id}/attribution", name="version_attribution_admin",methods={"GET","POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/attribution', name: 'version_attribution_admin', methods: ['GET', 'POST'])]
     public function versionAttributionAction(Request $request, Version $version): Response
     {
         $sv = $this->sv;
@@ -934,16 +928,15 @@ class VersionController extends AbstractController
     }
  
     ///////////////////////////////////////////////////////////////
-
     /**
      * Téléverser un fichier lié à une version (images, document attaché, rapport d'activité)
      *
      * DOIT ETRE APPELE EN AJAX, Sinon ça NE VA PAS MARCHER !
      *      Renvoie normalement une réponse en json
      *
-     * @Route("/{id}/fichier/{filename}", name="televerser",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/fichier/{filename}', name: 'televerser', methods: ['GET', 'POST'])]
     public function televerserAction(Request $request, version $version, string $filename): Response
     {
         $sm = $this->sm;
@@ -1086,10 +1079,9 @@ class VersionController extends AbstractController
      * on envoie un écran pour la compléter. Sinon on passe à envoyer à l'expert
      * TODO - Un héritage ou un interface ici car tous les VersionSpecController ont le même code !
      *
-     * @Route("/{id}/avant_modifier", name="avant_modifier_version",methods={"GET","POST"})
-     * Method({"GET", "POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[Route(path: '/{id}/avant_modifier', name: 'avant_modifier_version', methods: ['GET', 'POST'])]
     public function avantModifierVersionAction(Request $request, Version $version): Response
     {
         $sm = $this->sm;
@@ -1122,10 +1114,10 @@ class VersionController extends AbstractController
      *      1/ D'abord une partie générique (images, collaborateurs)
      *      2/ Ensuite on appelle modifierTypeX, car le formulaire dépend du type de projet
      *
-     * @Route("/{id}/modifier", name="modifier_version",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     * 
+     *
      */
+    #[Route(path: '/{id}/modifier', name: 'modifier_version', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Version $version): Response
     {
         $sm = $this->sm;
@@ -1331,10 +1323,10 @@ class VersionController extends AbstractController
     /**
      * Renouvellement d'une version
      *
-     * @Route("/{id}/renouveler", name="renouveler_version",methods={"GET","POST"})
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/renouveler', name: 'renouveler_version', methods: ['GET', 'POST'])]
     public function renouvelerAction(Request $request, Version $version): Response
     {
         $type = $version->getProjet()->getTypeProjet();

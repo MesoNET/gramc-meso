@@ -39,8 +39,8 @@ use Doctrine\ORM\EntityManagerInterface;
  * Statut controller.
  *
  * @Security("is_granted('ROLE_ADMIN')")
- * @Route("statut")
  */
+#[Route(path: 'statut')]
 class StatutController extends AbstractController
 {
     public function __construct(
@@ -49,10 +49,8 @@ class StatutController extends AbstractController
 
     /**
      * Lists all statut entities.
-     *
-     * @Route("/", name="statut_index",methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/', name: 'statut_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -66,10 +64,8 @@ class StatutController extends AbstractController
 
     /**
      * Creates a new statut entity.
-     *
-     * @Route("/new", name="statut_new",methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'statut_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $statut = new Statut();
@@ -92,10 +88,8 @@ class StatutController extends AbstractController
 
     /**
      * Finds and displays a statut entity.
-     *
-     * @Route("/{id}", name="statut_show",methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/{id}', name: 'statut_show', methods: ['GET'])]
     public function showAction(Statut $statut): Response
     {
         $deleteForm = $this->createDeleteForm($statut);
@@ -108,10 +102,8 @@ class StatutController extends AbstractController
 
     /**
      * Displays a form to edit an existing statut entity.
-     *
-     * @Route("/{id}/edit", name="statut_edit",methods={"GET"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'statut_edit', methods: ['GET'])]
     public function editAction(Request $request, Statut $statut): Response
     {
         $deleteForm = $this->createDeleteForm($statut);
@@ -133,10 +125,8 @@ class StatutController extends AbstractController
 
     /**
      * Deletes a statut entity.
-     *
-     * @Route("/{id}", name="statut_delete",methods={"DELETE"})
-     * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'statut_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Statut $statut): Response
     {
         $form = $this->createDeleteForm($statut);

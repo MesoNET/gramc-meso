@@ -24,46 +24,42 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Etablissement
- *
- * @ORM\Table(name="etablissement")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'etablissement')]
+#[ORM\Entity]
 class Etablissement
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="libelle_etab", type="string", length=50, nullable=false)
      */
+    #[ORM\Column(name: 'libelle_etab', type: 'string', length: 50, nullable: false)]
     private $libelleEtab;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_etab", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id_etab', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $idEtab;
 
     ////////////////////////////////////////////////////////////
-
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\CollaborateurVersion", mappedBy="etab")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'etab')]
     private $collaborateurVersion;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Individu", mappedBy="etab")
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'etab')]
     private $individu;
 
     public function __toString()

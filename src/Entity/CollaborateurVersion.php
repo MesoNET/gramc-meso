@@ -28,90 +28,71 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * CollaborateurVersion
- *
- * @ORM\Table(name="collaborateurVersion",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="id_version_2", columns={"id_version", "id_collaborateur"})},
- *            indexes={@ORM\Index(name="id_coll_labo", columns={"id_coll_labo"}),
- *                     @ORM\Index(name="id_coll_statut", columns={"id_coll_statut"}),
- *                     @ORM\Index(name="id_coll_etab", columns={"id_coll_etab"}),
- *                     @ORM\Index(name="collaborateur_collaborateurprojet_fk", columns={"id_collaborateur"}),
- *                     @ORM\Index(name="id_version", columns={"id_version"})})
- * @ORM\Entity(repositoryClass="App\Repository\CollaborateurVersionRepository")
  */
+#[ORM\Table(name: 'collaborateurVersion')]
+#[ORM\Index(name: 'id_coll_labo', columns: ['id_coll_labo'])]
+#[ORM\Index(name: 'id_coll_statut', columns: ['id_coll_statut'])]
+#[ORM\Index(name: 'id_coll_etab', columns: ['id_coll_etab'])]
+#[ORM\Index(name: 'collaborateur_collaborateurprojet_fk', columns: ['id_collaborateur'])]
+#[ORM\Index(name: 'id_version', columns: ['id_version'])]
+#[ORM\UniqueConstraint(name: 'id_version_2', columns: ['id_version', 'id_collaborateur'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\CollaborateurVersionRepository')]
 class CollaborateurVersion
 {
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="responsable", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'responsable', type: 'boolean', nullable: false)]
     private $responsable;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"comment":"supprimé prochainement"})
      */
+    #[ORM\Column(name: 'deleted', type: 'boolean', nullable: false, options: ['comment' => 'supprimé prochainement'])]
     private $deleted = false;
 
     /**
      * @var \App\Entity\Statut
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Statut")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_coll_statut", referencedColumnName="id_statut")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_coll_statut', referencedColumnName: 'id_statut')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Statut')]
     private $statut;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="collaborateurVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version", onDelete="CASCADE")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version', onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'collaborateurVersion')]
     private $version;
 
     /**
      * @var \App\Entity\Laboratoire
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Laboratoire",inversedBy="collaborateurVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_coll_labo", referencedColumnName="id_labo")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_coll_labo', referencedColumnName: 'id_labo')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', inversedBy: 'collaborateurVersion')]
     private $labo;
 
     /**
      * @var \App\Entity\Etablissement
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Etablissement",inversedBy="collaborateurVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_coll_etab", referencedColumnName="id_etab")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_coll_etab', referencedColumnName: 'id_etab')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Etablissement', inversedBy: 'collaborateurVersion')]
     private $etab;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu",inversedBy="collaborateurVersion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_collaborateur", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_collaborateur', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'collaborateurVersion')]
     private $collaborateur;
 
     public function __toString()
@@ -334,5 +315,15 @@ class CollaborateurVersion
     public function getCollaborateur(): ?\App\Entity\Individu
     {
         return $this->collaborateur;
+    }
+
+    public function isResponsable(): ?bool
+    {
+        return $this->responsable;
+    }
+
+    public function isDeleted(): ?bool
+    {
+        return $this->deleted;
     }
 }

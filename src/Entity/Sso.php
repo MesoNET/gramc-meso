@@ -28,29 +28,25 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Sso
- *
- * @ORM\Table(name="sso", indexes={@ORM\Index(name="id_individu", columns={"id_individu"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'sso')]
+#[ORM\Index(name: 'id_individu', columns: ['id_individu'])]
+#[ORM\Entity]
 class Sso
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="eppn", type="string", length=200)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
+    #[ORM\Column(name: 'eppn', type: 'string', length: 200)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     private $eppn;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu", inversedBy="sso")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'sso')]
     private $individu;
 
     /**

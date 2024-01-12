@@ -23,61 +23,51 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Invitation
- *
- * @ORM\Table(name="invitation",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="clef", columns={"clef"}),
- *                               @ORM\UniqueConstraint(name="invit", columns={"id_inviting","id_invited"})
- *                              })
- * @ORM\Entity
  */
+#[ORM\Table(name: 'invitation')]
+#[ORM\UniqueConstraint(name: 'clef', columns: ['clef'])]
+#[ORM\UniqueConstraint(name: 'invit', columns: ['id_inviting', 'id_invited'])]
+#[ORM\Entity]
 class Invitation
 {
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_invitation", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_invitation', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idInvitation;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="clef", type="string", length=50, nullable=false)
      */
+    #[ORM\Column(name: 'clef', type: 'string', length: 50, nullable: false)]
     private $clef;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="creation_stamp", type="datetime", nullable=false)
      */
+    #[ORM\Column(name: 'creation_stamp', type: 'datetime', nullable: false)]
     private $creationStamp;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_inviting", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_inviting', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $inviting;
 
     /**
      * @var \App\Entity\Individu
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Individu")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_invited", referencedColumnName="id_individu")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_invited', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $invited;
 
     /**

@@ -81,9 +81,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Expertise controller.
- *
- * @Route("expertise")
  */
+#[Route(path: 'expertise')]
 class ExpertiseController extends AbstractController
 {
     private $token = null;
@@ -122,9 +121,9 @@ class ExpertiseController extends AbstractController
     /**
      * Afficher une expertise
      *
-     * @Route("/consulter/{id}", name="consulter_expertise", methods={"GET"})
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/consulter/{id}', name: 'consulter_expertise', methods: ['GET'])]
     public function consulterAction(Request $request, Expertise $expertise): Response
     {
         $token = $this->token;
@@ -161,9 +160,9 @@ class ExpertiseController extends AbstractController
     /**
      * Liste les projets dynamiques non encore validés
      *
-     * @Route("/listedyn", name="expertise_liste_dyn", methods={"GET"})
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/listedyn', name: 'expertise_liste_dyn', methods: ['GET'])]
     public function listeDynAction(): Response
     {
         $grdt = $this->grdt;
@@ -256,9 +255,9 @@ class ExpertiseController extends AbstractController
      *
      * ATTENTION - La même fonction permet de valider PROJETS ET RALLONGES
      *
-     * @Route("/{id}/modifier", name="expertise_modifier", methods={"GET","POST"})
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/{id}/modifier', name: 'expertise_modifier', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
         $ss = $this->ss;
@@ -446,9 +445,9 @@ class ExpertiseController extends AbstractController
      * L'expert vient de cliquer sur le bouton "Envoyer expertise"
      * On lui envoie un écran de confirmation
      *
-     * @Route("/{id}/valider", name="expertise_validation", methods={"GET","POST"})
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[Route(path: '/{id}/valider', name: 'expertise_validation', methods: ['GET', 'POST'])]
     public function validationAction(Request $request, Expertise $expertise): Response
     {
         $dyn_duree = $this->dyn_duree;

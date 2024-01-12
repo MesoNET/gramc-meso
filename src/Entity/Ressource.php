@@ -24,14 +24,16 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Ressource
- *
- * @ORM\Table(name="ressource", indexes={@ORM\Index(name="nom", columns={"nom"})}, options={"collation"="utf8mb4_general_ci"})
- * @ORM\Entity(repositoryClass="App\Repository\RessourceRepository")
  */
+#[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\Index(name: 'nom', columns: ['nom'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
 class Ressource
 {
     /**
@@ -45,83 +47,77 @@ class Ressource
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_ressource", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_ressource', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idRessource;
 
     /**
      * @var \App\Entity\Serveur
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Serveur",inversedBy="ressource")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_serveur", referencedColumnName="nom")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'ressource')]
     private $serveur;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Dac", mappedBy="ressource", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'ressource', cascade: ['persist'])]
     private $dac;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\Dar", mappedBy="ressource", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\Dar', mappedBy: 'ressource', cascade: ['persist'])]
     private $dar;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=8, nullable=true, options={"comment":"optionnel, voir la fonction ServiceRessources::getNomComplet"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 8, nullable: true, options: ['comment' => 'optionnel, voir la fonction ServiceRessources::getNomComplet'])]
     private $nom;
 
     /**
      * @var desc
      *
-     * @ORM\Column(name="descr", type="string", length=2000, nullable=true)
-     * 
+     *
      */
+    #[ORM\Column(name: 'descr', type: 'string', length: 2000, nullable: true)]
     private $desc;
 
     /**
      * @var docUrl
      *
-     * @ORM\Column(name="doc_url", type="string", nullable=true, length=200)
-     * 
+     *
      */
+    #[ORM\Column(name: 'doc_url', type: 'string', nullable: true, length: 200)]
     private $docUrl;
 
     /**
      * @var unite
-     * 
-     * @ORM\Column(name="unite", type="string", length=20, nullable=true, options={"comment":"unité utilisée pour les allocations"}) )
+     *
      *
      ****/
+    #[ORM\Column(name: 'unite', type: 'string', length: 20, nullable: true, options: ['comment' => 'unité utilisée pour les allocations'])]
     private $unite;
     
     /**
      * @var maxDem
-     * 
-     * @ORM\Column(name="max_dem", type="integer", nullable=true, options={"comment":"Valeur max qu'on a le droit de demander"}) )
+     *
      *
      ****/
+    #[ORM\Column(name: 'max_dem', type: 'integer', nullable: true, options: ['comment' => "Valeur max qu'on a le droit de demander"])]
     private $maxDem;
     
     /**
      * @var co2
-     * 
-     * @ORM\Column(name="co2", type="integer", nullable=true, options={"comment":"gramme de co2 émis par unite et par heure"}) )
+     *
      *
      ****/
+    #[ORM\Column(name: 'co2', type: 'integer', nullable: true, options: ['comment' => 'gramme de co2 émis par unite et par heure'])]
     private $co2;
     
 

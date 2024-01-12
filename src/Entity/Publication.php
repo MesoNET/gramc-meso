@@ -24,59 +24,56 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Publication
- *
- * @ORM\Table(name="publication")
- * @ORM\Entity(repositoryClass="App\Repository\PublicationRepository")
  */
+#[ORM\Table(name: 'publication')]
+#[ORM\Entity(repositoryClass: 'App\Repository\PublicationRepository')]
 class Publication
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="refbib", type="text", length=65535, nullable=false)
      */
+    #[ORM\Column(name: 'refbib', type: 'text', length: 65535, nullable: false)]
     private $refbib;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="doi", type="string", length=100, nullable=true)
      */
+    #[ORM\Column(name: 'doi', type: 'string', length: 100, nullable: true)]
     private $doi;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="open_url", type="string", length=300, nullable=true)
      */
+    #[ORM\Column(name: 'open_url', type: 'string', length: 300, nullable: true)]
     private $openUrl;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="annee", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'annee', type: 'integer', nullable: false)]
     private $annee;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_publi", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_publi', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idPubli;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Projet", mappedBy="publi")
      *
      */
+    #[ORM\ManyToMany(targetEntity: 'App\Entity\Projet', mappedBy: 'publi')]
     private $projet;
 
     ////////////////////////////////////////////////////////////////////////

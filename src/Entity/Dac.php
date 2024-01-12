@@ -30,73 +30,64 @@ use Doctrine\ORM\Mapping as ORM;
  * Dac
  *
  * Demande, Attribution, consommation
- * 
- * @ORM\Table(name="dac", options={"collation"="utf8mb4_general_ci"})
-
- * @ORM\Entity
+ *
  */
+#[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\Entity]
 class Dac
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_dac", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_dac', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idDac;
 
     /**
      * @var \App\Entity\Version
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Version",inversedBy="dac")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_version", referencedColumnName="id_version")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
+    #[ORM\Column(name: 'id_version', type: 'string', length: 13)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'dac')]
     private $version;
 
     /**
      * @var \App\Entity\Ressource
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dac")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
-     * })
      */
+    #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Ressource', inversedBy: 'dac')]
     private $ressource;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="demande", type="integer", nullable=false, options={"comment":"demande, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
     private $demande = 0;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="attribution", type="integer", nullable=false, options={"comment":"attribution, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
     private $attribution = 0;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="todof", type="boolean")
      */
-     // Le "todo flag": si true, il y a un truc à faire sur la machine !
-
+    // Le "todo flag": si true, il y a un truc à faire sur la machine !
+    #[ORM\Column(name: 'todof', type: 'boolean')]
     private $todof = false;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="consommation", type="integer", nullable=false, options={"comment":"consommation, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'consommation', type: 'integer', nullable: false, options: ['comment' => "consommation, l'unité est celle de la ressource associée"])]
     private $consommation = 0;
 
     /**
@@ -260,6 +251,11 @@ class Dac
      * @return boolean
      */
     public function getTodof(): bool
+    {
+        return $this->todof;
+    }
+
+    public function isTodof(): ?bool
     {
         return $this->todof;
     }

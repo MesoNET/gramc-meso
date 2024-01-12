@@ -54,11 +54,10 @@ use Knp\Snappy\Pdf;
  * ProjetFctController rassemble les controleurs dédiés au bouton "Euro" (données de facturation)
  *
  * @Security("is_granted('ROLE_OBS')")
- * @Route("projet")
  */
- // Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
- // et d'autres par DEMANDEUR
-
+// Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
+// et d'autres par DEMANDEUR
+#[Route(path: 'projet')]
 class ProjetDfctController extends AbstractController
 {
     public function __construct(
@@ -74,11 +73,8 @@ class ProjetDfctController extends AbstractController
     /**
      * Appelé quand on clique sur le bouton € dans la page projets par année
      * Affiche les données de facturation actuelles
-     *
-     * @Route("/{id}/dfctliste/{annee}", name="dfct_liste", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
-
+    #[Route(path: '/{id}/dfctliste/{annee}', name: 'dfct_liste', methods: ['GET', 'POST'])]
     public function dfctlisteAction(Projet $projet, $annee, Request $request): Response
     {
         $dessin_heures = $this -> gcl;
@@ -168,11 +164,8 @@ class ProjetDfctController extends AbstractController
 
     /**
      * Téléchargement d'un pdf avec les données de facturation déjà émises
-     *
-     * @Route("/{id}/dfctdl/{annee}/{nb}", name="dfct_dl_projet", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
-
+    #[Route(path: '/{id}/dfctdl/{annee}/{nb}', name: 'dfct_dl_projet', methods: ['GET', 'POST'])]
     public function downloaddfctAction(Projet $projet, $annee, $nb, Request $request): Response
     {
         $dfct= $this->dfct;
@@ -190,10 +183,8 @@ class ProjetDfctController extends AbstractController
 
     /**
      * Génération du pdf contenant les données de facturation
-     *
-     * @Route("/{id}/dfctgen/{fin_periode}", name="dfct_gen", methods={"GET","POST"})
-     * Method({"GET","POST"})
      */
+    #[Route(path: '/{id}/dfctgen/{fin_periode}', name: 'dfct_gen', methods: ['GET', 'POST'])]
     public function dfct_genAction(Projet $projet, \DateTime $fin_periode, Request $request): Response
     {
         $em     = $this->em;

@@ -37,8 +37,8 @@ use Doctrine\ORM\EntityManagerInterface;
  * Etablissement controller.
  *
  * @Security("is_granted('ROLE_ADMIN')")
- * @Route("etablissement")
  */
+#[Route(path: 'etablissement')]
 class EtablissementController extends AbstractController
 {
 
@@ -48,10 +48,8 @@ class EtablissementController extends AbstractController
 
     /**
      * Lists all etablissement entities.
-     *
-     * @Route("/", name="etablissement_index", methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/', name: 'etablissement_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -65,10 +63,8 @@ class EtablissementController extends AbstractController
 
     /**
      * Creates a new etablissement entity.
-     *
-     * @Route("/new", name="etablissement_new", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'etablissement_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $etablissement = new Etablissement();
@@ -91,10 +87,8 @@ class EtablissementController extends AbstractController
 
     /**
      * Finds and displays a etablissement entity.
-     *
-     * @Route("/{id}", name="etablissement_show", methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/{id}', name: 'etablissement_show', methods: ['GET'])]
     public function showAction(Etablissement $etablissement): Response
     {
         $deleteForm = $this->createDeleteForm($etablissement);
@@ -107,10 +101,8 @@ class EtablissementController extends AbstractController
 
     /**
      * Displays a form to edit an existing etablissement entity.
-     *
-     * @Route("/{id}/edit", name="etablissement_edit", methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'etablissement_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Etablissement $etablissement): Response
     {
         $deleteForm = $this->createDeleteForm($etablissement);
@@ -132,10 +124,8 @@ class EtablissementController extends AbstractController
 
     /**
      * Deletes a etablissement entity.
-     *
-     * @Route("/{id}", name="etablissement_delete", methods={"DELETE"})
-     * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'etablissement_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Etablissement $etablissement): Response
     {
         $form = $this->createDeleteForm($etablissement);

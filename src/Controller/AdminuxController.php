@@ -69,9 +69,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * AdminUx controller: Commandes curl envoyées par l'administrateur unix
- *
- * @Route("/adminux")
  */
+#[Route(path: '/adminux')]
 class AdminuxController extends AbstractController
 {
     public function __construct(
@@ -92,12 +91,11 @@ class AdminuxController extends AbstractController
     /**
      * Met à jour la consommation pour un projet donné
      *
-     * @Route("/projet/setconso", name="set_conso", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      */
-
     // exemple: curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN", "conso": "10345" }'https://.../adminux/projet/setconso
+    #[Route(path: '/projet/setconso', name: 'set_conso', methods: ['POST'])]
     public function setconsoAction(Request $request): Response
     {
         $em = $this->em;
@@ -214,18 +212,16 @@ class AdminuxController extends AbstractController
     }   
 
     ///////////////////////////////////////////////////////////////////////////////
-
     /**
      * set loginname
      *
-     * @Route("/utilisateurs/setloginname", name="set_loginname", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Positionne le loginname du user demandé dans la version active ou EN_ATTENTE du projet demandé
      *
      */
-
     // exemple: curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
+    #[Route(path: '/utilisateurs/setloginname', name: 'set_loginname', methods: ['POST'])]
     public function setloginnameAction(Request $request): Response
     {
         $em = $this->em;
@@ -319,16 +315,13 @@ class AdminuxController extends AbstractController
     }
 
     /**
-      * set password
-      *
-      * @Route("/utilisateurs/setpassword", name="set_password", methods={"POST"})
-      * @Security("is_granted('ROLE_ADMIN')")
-
-      * Positionne le mot de passe du user demandé, à condition que ce user existe dans la table user
-      */
-
+     * set password
+     *
+     * @Security("is_granted('ROLE_ADMIN')")
+     * Positionne le mot de passe du user demandé, à condition que ce user existe dans la table user
+     */
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "bob@serveur", "password": "azerty", "cpassword": "qwerty" }' https://.../adminux/utilisateurs/setpassword
-
+    #[Route(path: '/utilisateurs/setpassword', name: 'set_password', methods: ['POST'])]
     public function setpasswordAction(Request $request): Response
     {
         $em = $this->em;
@@ -418,19 +411,17 @@ class AdminuxController extends AbstractController
     }
 
     /**
-      * clear password
-      *
-      * Efface le mot de passe temporaire pour le user passé en paramètres
-      *
-      * @Route("/users/clearpassword", name="clear_password", methods={"POST"})
-      * @Route("/utilisateurs/clearpassword", name="clear_password", methods={"POST"})
-      * @Security("is_granted('ROLE_ADMIN')")
-      *
-      * Efface le mot de passe du user demandé
-      */
-
+     * clear password
+     *
+     * Efface le mot de passe temporaire pour le user passé en paramètres
+     *
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Efface le mot de passe du user demandé
+     */
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto" }' https://.../adminux/users/clearpassword
-
+    #[Route(path: '/users/clearpassword', name: 'clear_password', methods: ['POST'])]
+    #[Route(path: '/utilisateurs/clearpassword', name: 'clear_password', methods: ['POST'])]
     public function clearpasswordAction(Request $request): Response
     {
         $em = $this->em;
@@ -491,20 +482,18 @@ class AdminuxController extends AbstractController
     }
 
     /**
-      * clear loginname
-      *
-      * Efface le login name (en cas de fermeture d'un compte) pour le user passé en paramètres
-      * Efface aussi le mot de passe s'il y en a un
-      *
-      * @Route("/users/clearloginname", name="clear_loginname", methods={"POST"})
-      * @Route("/utilisateurs/clearloginname", name="clear_loginname", methods={"POST"})
-      * @Security("is_granted('ROLE_ADMIN')")
-      *
-      * Efface le loginname s'il existe, ne fait rien sinon
-      */
-
+     * clear loginname
+     *
+     * Efface le login name (en cas de fermeture d'un compte) pour le user passé en paramètres
+     * Efface aussi le mot de passe s'il y en a un
+     *
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * Efface le loginname s'il existe, ne fait rien sinon
+     */
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "loginname": "toto@SERVEUR", "projet":"P1234" }' https://.../adminux/utilisateurs/clearloginname
-
+    #[Route(path: '/users/clearloginname', name: 'clear_loginname', methods: ['POST'])]
+    #[Route(path: '/utilisateurs/clearloginname', name: 'clear_loginname', methods: ['POST'])]
     public function clearloginnameAction(Request $request): Response
     {
         $em = $this->em;
@@ -633,7 +622,6 @@ class AdminuxController extends AbstractController
     /**
      * get projets non terminés
      *
-     * @Route("/projets/get", name="get_projets", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Exemples de données POST (fmt json):
      *             ''
@@ -664,7 +652,7 @@ class AdminuxController extends AbstractController
      *
      */
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "projet": "P1234" }' https://.../adminux/projets/get
-
+    #[Route(path: '/projets/get', name: 'get_projets', methods: ['POST'])]
     public function projetsGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -720,57 +708,57 @@ class AdminuxController extends AbstractController
     }
 
     /**
-     * get versions non terminées
-     *
-     * @Route("/version/get", name="get_version", methods={"POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
-     *
-     * Exemples de données POST (fmt json):
-     *             ''
-     *             ou
-     *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES
-     *
-     *             '{ "projet" : "P01234" }'
-     *             ou
-     *             '{ "projet" : "P01234", "session" : null }' -> LA VERSION ACTIVE du projet P01234
-     *
-     *             '{ "session" : "20A"}
-     *             ou
-     *             '{ "projet" : null,     "session" : "20A"}' -> Toutes les versions de la session 20A
-     *
-     *             '{ "projet" : "P01234", "session" : "20A"}' -> La version 20AP01234
-     *             ou
-     *             '{ "version" : "01M22022" }' -> La version 01M22022
-     * 
-     * Version "longue" - Le paramètre "long" provoque l'envoi de données supplémentaires concernant la ou les versions:
-     * -----------------------------------------------------------------------------------------------------------------
-     * 
-     *             '{ "projet" : "P01234", "session" : null, "long: true" }' -> LA VERSION ACTIVE du projet P01234
-     * 
-     * Donc on renvoie une ou plusieurs versions appartenant à différentes sessions, mais une ou zéro versions par projet
-     * Les versions renvoyées peuvent être en état: ACTIF, EN_ATTENTE, NOUVELLE_VERSION_DEMANDEE si "session" vaut null
-     * Les versions renvoyées peuvent être dans n'importe quel état (sauf ANNULE) si "session" est spécifiée
-     *
-     * Données renvoyées (fmt json):
-     *                 idProjet    P01234
-     *                 idSession   20A
-     *                 idVersion   20AP01234
-     *                 mail        mail du responsable de la version
-     *                 attrHeures  Heures cpu attribuées (NON UTLISE)
-     *                 attrHeuresUft Heures cpu attribuées à Uft
-     *                 attrHeuresCriann Heures cpu attribuées à Criann
-     *                 quota       Quota sur la machine
-     *                 gpfs        sondVolDonnPerm stockage permanent demandé (pas d'attribution pour le stockage)
-     *
-     * Si "long" est spécifié on renvoie aussi:
-     *                 titre       prjTitre
-     *                 resume      prjResume
-     *                 labo        prjLLabo
-     *                 metadonnees dataMetaDataFormat
-     *
-     * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234" }' https://.../adminux/version/get
-     *
-     */
+      * get versions non terminées
+      *
+      * @Security("is_granted('ROLE_ADMIN')")
+      *
+      * Exemples de données POST (fmt json):
+      *             ''
+      *             ou
+      *             '{ "projet" : null,     "session" : null }' -> Toutes les VERSIONS ACTIVES
+      *
+      *             '{ "projet" : "P01234" }'
+      *             ou
+      *             '{ "projet" : "P01234", "session" : null }' -> LA VERSION ACTIVE du projet P01234
+      *
+      *             '{ "session" : "20A"}
+      *             ou
+      *             '{ "projet" : null,     "session" : "20A"}' -> Toutes les versions de la session 20A
+      *
+      *             '{ "projet" : "P01234", "session" : "20A"}' -> La version 20AP01234
+      *             ou
+      *             '{ "version" : "01M22022" }' -> La version 01M22022
+      * 
+      * Version "longue" - Le paramètre "long" provoque l'envoi de données supplémentaires concernant la ou les versions:
+      * -----------------------------------------------------------------------------------------------------------------
+      * 
+      *             '{ "projet" : "P01234", "session" : null, "long: true" }' -> LA VERSION ACTIVE du projet P01234
+      * 
+      * Donc on renvoie une ou plusieurs versions appartenant à différentes sessions, mais une ou zéro versions par projet
+      * Les versions renvoyées peuvent être en état: ACTIF, EN_ATTENTE, NOUVELLE_VERSION_DEMANDEE si "session" vaut null
+      * Les versions renvoyées peuvent être dans n'importe quel état (sauf ANNULE) si "session" est spécifiée
+      *
+      * Données renvoyées (fmt json):
+      *                 idProjet    P01234
+      *                 idSession   20A
+      *                 idVersion   20AP01234
+      *                 mail        mail du responsable de la version
+      *                 attrHeures  Heures cpu attribuées (NON UTLISE)
+      *                 attrHeuresUft Heures cpu attribuées à Uft
+      *                 attrHeuresCriann Heures cpu attribuées à Criann
+      *                 quota       Quota sur la machine
+      *                 gpfs        sondVolDonnPerm stockage permanent demandé (pas d'attribution pour le stockage)
+      *
+      * Si "long" est spécifié on renvoie aussi:
+      *                 titre       prjTitre
+      *                 resume      prjResume
+      *                 labo        prjLLabo
+      *                 metadonnees dataMetaDataFormat
+      *
+      * curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234" }' https://.../adminux/version/get
+      *
+      */
+     #[Route(path: '/version/get', name: 'get_version', methods: ['POST'])]
      public function versionGetAction(Request $request): Response
      {
         $em = $this->em;
@@ -852,7 +840,6 @@ class AdminuxController extends AbstractController
     /**
      * get utilisateurs
      *
-     * @Route("/utilisateurs/get", name="get_utilisateurs", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Exemples de données POST (fmt json):
@@ -889,10 +876,9 @@ class AdminuxController extends AbstractController
      *              },
      *             "titi@exemple.fr": ...
      *
-     *
      */
-
     // curl --netrc -H "Content-Type: application/json" -X POST  -d '{ "projet" : "P1234", "mail" : null }' https://.../adminux/utilisateurs/get
+    #[Route(path: '/utilisateurs/get', name: 'get_utilisateurs', methods: ['POST'])]
     public function utilisateursGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1042,10 +1028,10 @@ class AdminuxController extends AbstractController
     /**
      * get loginnames
      *
-     * @Route("/getloginnames/{idProjet}/projet", name="get_loginnames", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
     // curl --netrc -H "Content-Type: application/json" -X GET https://.../adminux/getloginnames/P1234/projet
+    #[Route(path: '/getloginnames/{idProjet}/projet', name: 'get_loginnames', methods: ['GET'])]
     public function getloginnamesAction($idProjet): Response
     {
         $em = $this->em;
@@ -1096,9 +1082,9 @@ class AdminuxController extends AbstractController
     /**
      * Vérifie la base de données, et envoie un mail si l'attribution d'un projet est différente du quota
      *
-     * @Route("/quota_check", name="quota_check", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/quota_check', name: 'quota_check', methods: ['GET'])]
     public function quotaCheckAction(Request $request): Response
     {
         $grdt = $this->grdt;
@@ -1147,12 +1133,10 @@ class AdminuxController extends AbstractController
      * On pourra vérifier avec le mot de passe du supercalculateur et savoir s'il a été changé
      * Si le mot de passe est expiré, renvoie null
      *
-     * @Route("/users/checkpassword", name="check_password", methods={"GET"})
-     * @Route("/utilisateurs/checkpassword", name="check_password", methods={"GET"})
-     *
-     * curl --netrc -H "Content-Type: application/json" https://.../adminux/utilisateurs/checkpassword
      *
      */
+    #[Route(path: '/users/checkpassword', name: 'check_password', methods: ['GET'])]
+    #[Route(path: '/utilisateurs/checkpassword', name: 'check_password', methods: ['GET'])]
     public function checkPasswordAction(Request $request): Response
     {
         $em = $this->em;
@@ -1243,7 +1227,6 @@ class AdminuxController extends AbstractController
     /**
      * get clessh
      *
-     * @Route("/clessh/get", name="get_cles", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Exemples de données POST (fmt json):
@@ -1255,7 +1238,7 @@ class AdminuxController extends AbstractController
      *
      */
     // curl -s --netrc -H "Content-Type: application/json" -X POST -d '{}' https://.../adminux/clessh/get
-
+    #[Route(path: '/clessh/get', name: 'get_cles', methods: ['POST'])]
     public function clesshGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1337,14 +1320,13 @@ class AdminuxController extends AbstractController
     /**
      * Déploie une clé ssh pour un utilisateur
      *
-     * @Route("/clessh/deployer", name="deployer", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Positionne à true le flag deploy du user, ce qui signifie que la clé ssh associée est déployée
      *
      */
-
     // curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }' https://.../adminux/clessh/deployer
+    #[Route(path: '/clessh/deployer', name: 'deployer', methods: ['POST'])]
     public function setdeplyAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
@@ -1455,14 +1437,13 @@ class AdminuxController extends AbstractController
     /**
      * Révoque une clé ssh 
      *
-     * @Route("/clessh/revoquer", name="revoquer", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Positionne à true le flag rvk de la clé, ce qui signifie que la clé ssh est révoquée
      *
      */
-
     // curl --netrc -X POST -d '{ "idIndividu": "6543", "idCle": "55" }' https://.../adminux/clessh/revoquer
+    #[Route(path: '/clessh/revoquer', name: 'revoquer', methods: ['POST'])]
     public function setrvkAction(Request $request, LoggerInterface $lg): Response
     {
         $em = $this->em;
@@ -1519,12 +1500,11 @@ class AdminuxController extends AbstractController
     /**
      * Exécution des tâches cron
      *
-     * @Route("/cron/execute", name="cron_execute", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      */
-
     // curl --netrc -X GET https://.../adminux/cron/execute
+    #[Route(path: '/cron/execute', name: 'cron_execute', methods: ['GET'])]
     public function cronAction(Request $request): Response
     {
         $cr = $this->cr;
@@ -1535,12 +1515,12 @@ class AdminuxController extends AbstractController
     /**
      *
      * Envoie la liste des choses à faire, en fonciotn de la valeur des flags 'todof'
-     * 
-     * @Route("/todo/get", name="todo_get", methods={"GET"})
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      *
      */
     // curl --netrc -X GET https://.../adminux/todo/get
+    #[Route(path: '/todo/get', name: 'todo_get', methods: ['GET'])]
     public function todoAction(Request $request): response
     {
         $em = $this->em;
@@ -1625,13 +1605,13 @@ class AdminuxController extends AbstractController
     /**
      * Signale qu'une action a été réalisée
      *
-     * @Route("/todo/done", name="todo_done", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Positionne à false le flag todof du projet, ou des dar ou des dac
      *
      */
     // curl --netrc -X POST -d '{ "projet": "M12345", "ressource": "TURPAN" }' https://.../adminux/todo/done
+    #[Route(path: '/todo/done', name: 'todo_done', methods: ['POST'])]
     public function setdoneAction(Request $request): Response
     {
         $em = $this->em;
@@ -1758,14 +1738,13 @@ class AdminuxController extends AbstractController
     /**
      * SEULEMENT EN DEBUG: renvoie la date
      *
-     * @Route("/gramcdate/get", name="grdt_get", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * Renvoie la date d'après gramc
      *
      */
-
     // curl --netrc -X GET https://.../adminux/gramcdate/get
+    #[Route(path: '/gramcdate/get', name: 'grdt_get', methods: ['GET'])]
     public function getDateAction(Request $request): Response
     {
         if ($this->getParameter('kernel.debug') === false)
@@ -1781,7 +1760,6 @@ class AdminuxController extends AbstractController
     /**
      * get adresses IP
      *
-     * @Route("/adresseip/get", name="get_adresseip", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * Exemples de données POST (fmt json):
      *             ''
@@ -1792,7 +1770,7 @@ class AdminuxController extends AbstractController
      *
      */
     // curl --netrc -H "Content-Type: application/json" -X POST -d '{ "labo": true }' https://.../adminux/adresseip/get
-
+    #[Route(path: '/adresseip/get', name: 'get_adresseip', methods: ['POST'])]
     public function adresseipGetAction(Request $request): Response
     {
         $em = $this->em;
@@ -1865,7 +1843,6 @@ class AdminuxController extends AbstractController
     /**
      * SEULEMENT EN DEBUG: modifie la date
      *
-     * @Route("/gramcdate/set", name="grdt_set", methods={"POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      *
      * shift: Modifie la gramcdate en ajoutant d jours à la date d'aujourd'hui
@@ -1876,12 +1853,11 @@ class AdminuxController extends AbstractController
      * (attention on ne peut pas appeler "cron" avec "shift" : "today")
      *
      */
-
     // curl --netrc -X POST -d '{ "shift": "2" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "rel" : true, shift": "2" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "today" }' https://.../adminux/gramcdate/set
     // curl --netrc -X POST -d '{ "shift": "2", "cron":"1" }' https://.../adminux/gramcdate/set
-
+    #[Route(path: '/gramcdate/set', name: 'grdt_set', methods: ['POST'])]
     public function setDateAction(Request $request): Response
     {
         $grdt = $this->grdt;

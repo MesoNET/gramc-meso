@@ -30,65 +30,54 @@ use Doctrine\ORM\Mapping as ORM;
  * Dar
  *
  * Demande, Attribution pour Rallonges
- * 
- * @ORM\Table(name="dar", options={"collation"="utf8mb4_general_ci"})
-
- * @ORM\Entity
+ *
  */
+#[ORM\Table(name: 'dar', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\Entity]
 class Dar
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id_dar", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_dar', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idDar;
 
-    /**
-     * @var \App\Entity\Rallonge
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Rallonge",inversedBy="dar")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_rallonge", referencedColumnName="id_rallonge")
-     * })
-     */
+    
+    #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
+    #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'dar')]
     private $rallonge;
 
     /**
-     * @var \App\Entity\Ressource
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ressource", inversedBy="dar")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_ressource", referencedColumnName="id_ressource")
-     * })
+     * @var Ressource
      */
+    #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Ressource', inversedBy: 'dar')]
     private $ressource;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="demande", type="integer", nullable=false, options={"comment":"demande, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
     private $demande = 0;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="attribution", type="integer", nullable=false, options={"comment":"attribution, l'unité est celle de la ressource associée"})
-     * 
+     *
      */
+    #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
     private $attribution = 0;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="todof", type="boolean")
      */
-     // Le "todo flag": si true, il y a un truc à faire sur la machine !
-
+    // Le "todo flag": si true, il y a un truc à faire sur la machine !
+    #[ORM\Column(name: 'todof', type: 'boolean')]
     private $todof = false;
 
     /**
@@ -121,11 +110,11 @@ class Dar
     /**
      * Set rallonge
      *
-     * @param \App\Entity\Rallonge $rallonge
+     * @param Rallonge $rallonge
      *
      * @return Dar
      */
-    public function setRallonge(?\App\Entity\Rallonge $rallonge): self
+    public function setRallonge(?Rallonge $rallonge): self
     {
         $this->rallonge = $rallonge;
 
@@ -135,9 +124,9 @@ class Dar
     /**
      * Get rallonge
      *
-     * @return \App\Entity\Rallonge
+     * @return Rallonge
      */
-    public function getRallonge(): ?\App\Entity\Rallonge
+    public function getRallonge(): ?Rallonge
     {
         return $this->rallonge;
     }
@@ -145,11 +134,11 @@ class Dar
     /**
      * Set ressource
      *
-     * @param \App\Entity\Ressource $ressource
+     * @param Ressource $ressource
      *
      * @return Dar
      */
-    public function setRessource(?\App\Entity\Ressource $ressource): self
+    public function setRessource(?Ressource $ressource): self
     {
         $this->ressource = $ressource;
 
@@ -159,9 +148,9 @@ class Dar
     /**
      * Get ressource
      *
-     * @return \App\Entity\Ressource
+     * @return Ressource
      */
-    public function getRessource(): ?\App\Entity\Ressource
+    public function getRessource(): ?Ressource
     {
         return $this->ressource;
     }
@@ -230,6 +219,11 @@ class Dar
      * @return boolean
      */
     public function getTodof(): bool
+    {
+        return $this->todof;
+    }
+
+    public function isTodof(): ?bool
     {
         return $this->todof;
     }

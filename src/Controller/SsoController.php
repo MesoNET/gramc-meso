@@ -38,8 +38,8 @@ use Doctrine\ORM\EntityManagerInterface;
  * Sso controller.
  *
  * @Security("is_granted('ROLE_ADMIN')")
- * @Route("sso")
  */
+#[Route(path: 'sso')]
 class SsoController extends AbstractController
 {
 
@@ -49,10 +49,8 @@ class SsoController extends AbstractController
 
     /**
      * Lists all sso entities.
-     *
-     * @Route("/", name="sso_index",methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/', name: 'sso_index', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
@@ -66,10 +64,8 @@ class SsoController extends AbstractController
 
     /**
      * Creates a new sso entity.
-     *
-     * @Route("/new", name="sso_new",methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'sso_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
         $sso = new Sso();
@@ -92,10 +88,8 @@ class SsoController extends AbstractController
 
     /**
      * Finds and displays a sso entity.
-     *
-     * @Route("/{id}", name="sso_show",methods={"GET"})
-     * Method("GET")
      */
+    #[Route(path: '/{id}', name: 'sso_show', methods: ['GET'])]
     public function showAction(Sso $sso): Response
     {
         $deleteForm = $this->createDeleteForm($sso);
@@ -108,10 +102,8 @@ class SsoController extends AbstractController
 
     /**
      * Displays a form to edit an existing sso entity.
-     *
-     * @Route("/{id}/edit", name="sso_edit",methods={"GET","POST"})
-     * Method({"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'sso_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Sso $sso): Response
     {
         $deleteForm = $this->createDeleteForm($sso);
@@ -133,10 +125,8 @@ class SsoController extends AbstractController
 
     /**
      * Deletes a sso entity.
-     *
-     * @Route("/{id}", name="sso_delete",methods={"DELETE"})
-     * Method("DELETE")
      */
+    #[Route(path: '/{id}', name: 'sso_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Sso $sso): Response
     {
         $form = $this->createDeleteForm($sso);

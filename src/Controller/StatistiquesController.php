@@ -65,13 +65,12 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Doctrine\ORM\EntityManagerInterface;
 
 //include_once(__DIR__.'/../../jpgraph/JpGraph.php');
-
 /**
  * Statistiques controller.
  *
- * @Route("statistiques")
  * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
  */
+#[Route(path: 'statistiques')]
 class StatistiquesController extends AbstractController
 {
     public function __construct(
@@ -83,10 +82,10 @@ class StatistiquesController extends AbstractController
     ) {}
 
     /**
-     * @Route("/symfony", name="homepage",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      * Method({"GET","POST"})
      */
+    #[Route(path: '/symfony', name: 'homepage', methods: ['GET', 'POST'])]
     public function homepageAction(Request $request): Response
     {
         return $this->render('default/base_test.html.twig');
@@ -98,9 +97,9 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-      * @Route("/", name="statistiques",methods={"GET","POST"})
-      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-      */
+     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
+     */
+    #[Route(path: '/', name: 'statistiques', methods: ['GET', 'POST'])]
     public function indexAction(Request $request): Response
     {
         $sm      = $this->sm;
@@ -162,9 +161,9 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-      * @Route("/dyn", name="statistiques_dyn",methods={"GET","POST"})
-      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
-      */
+     * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
+     */
+    #[Route(path: '/dyn', name: 'statistiques_dyn', methods: ['GET', 'POST'])]
     public function indexDynAction(Request $request): Response
     {
         $sm      = $this->sm;
@@ -213,9 +212,9 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-      * @Route("/formation", name="statistiques_formation",methods={"GET"})
-      * @Security("is_granted('ROLE_OBS')")
-      */
+     * @Security("is_granted('ROLE_OBS')")
+     */
+    #[Route(path: '/formation', name: 'statistiques_formation', methods: ['GET'])]
     public function formationAction(Request $request): Response
     {
         $sm      = $this->sm;
@@ -230,9 +229,9 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Route("/repartition", name="statistiques_repartition",methods={"GET"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/repartition', name: 'statistiques_repartition', methods: ['GET'])]
     public function repartitionAction(Request $request): Response
     {
         $sm = $this->sm;
@@ -332,9 +331,9 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Route("/collaborateur", name="statistiques_collaborateur",methods={"GET"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/collaborateur', name: 'statistiques_collaborateur', methods: ['GET'])]
     public function collaborateurAction(Request $request): Response
     {
         $sm = $this->sm;
@@ -633,27 +632,27 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Route("/laboratoire", name="statistiques_laboratoire",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/laboratoire', name: 'statistiques_laboratoire', methods: ['GET', 'POST'])]
     public function laboratoireAction(Request $request): Response
     {
         return $this->parCritere($request, "getAcroLaboratoire", "laboratoire");
     }
 
     /**
-     * @Route("/etablissement", name="statistiques_etablissement",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[Route(path: '/etablissement', name: 'statistiques_etablissement', methods: ['GET', 'POST'])]
     public function etablissementAction(Request $request): Response
     {
         return $this->parCritere($request, "getAcroEtablissement", "établissement");
     }
 
     /**
-     * @Route("/thematique", name="statistiques_thematique",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/thematique', name: 'statistiques_thematique', methods: ['GET', 'POST'])]
     public function thematiqueAction(Request $request): Response
     {
         return $this->parCritere($request, "getAcroThematique", "thématique");
@@ -712,27 +711,27 @@ class StatistiquesController extends AbstractController
     }
 
     /**
-     * @Route("/{annee}/thematique_csv", name="statistiques_thématique_csv",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/{annee}/thematique_csv', name: 'statistiques_thématique_csv', methods: ['GET', 'POST'])]
     public function thematiqueCSVAction(Request $request, $annee): Response
     {
         return $this->parCritereCSV($request, $annee, "getAcroThematique", "thématique");
     }
 
     /**
-     * @Route("/{annee}/laboratoire_csv", name="statistiques_laboratoire_csv",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/{annee}/laboratoire_csv', name: 'statistiques_laboratoire_csv', methods: ['GET', 'POST'])]
     public function laboratoireCSVAction(Request $request, $annee): Response
     {
         return $this->parCritereCSV($request, $annee, "getAcroLaboratoire", "laboratoire");
     }
 
     /**
-     * @Route("/{annee}/etablissement_csv", name="statistiques_établissement_csv",methods={"GET","POST"})
      * @Security("is_granted('ROLE_OBS') or is_granted('ROLE_PRESIDENT')")
      */
+    #[Route(path: '/{annee}/etablissement_csv', name: 'statistiques_établissement_csv', methods: ['GET', 'POST'])]
     public function etablissementCSVAction(Request $request, $annee): Response
     {
         return $this->parCritereCSV($request, $annee, "getAcroEtablissement", "établissement");

@@ -45,9 +45,8 @@ class LoginController extends AbstractController
 
     /**
      * Login "remote" - saml2 (shibboleth) ou openid (iam)
-     * 
-     * @Route("/login", name="remlogin",methods={"GET"})
      */
+    #[Route(path: '/login', name: 'remlogin', methods: ['GET'])]
     public function remLoginAction(Request $request): Response
     {
         $this->sj->InfoMessage("remote login d'un utilisateur");
@@ -57,13 +56,8 @@ class LoginController extends AbstractController
             return $this->redirectToRoute('accueil');
     }
 
-    /**
-     * @Route("/deconnexion",name="deconnexion", methods={"GET"})
-     *
-     * Si on est en sudo, revient en normal, sinon invalide la session
-     * NOTE - NE PAS renseigner logout: dans security.yaml !
-     * 
-     **/
+    
+    #[Route(path: '/deconnexion', name: 'deconnexion', methods: ['GET'])]
     public function deconnexionAction(Request $request): Response
     {
         $sj = $this->sj;
@@ -95,18 +89,14 @@ class LoginController extends AbstractController
         }
     }
 
-    /** 
-     * @Route("/erreur_login", name="erreur_login",methods={"GET"})
-     */
+    #[Route(path: '/erreur_login', name: 'erreur_login', methods: ['GET'])]
     public function erreur_loginAction(Request $request): Response
     {
         return $this->render('login/erreur_login.html.twig');
     }
 
-    /**
-     * @Route("/login_choice", name="connexion", methods={"GET","POST"})
-     *
-     */
+    
+    #[Route(path: '/login_choice', name: 'connexion', methods: ['GET', 'POST'])]
     public function loginChoiceAction(Request $request): Response
     {
         $sj = $this->sj;
@@ -152,9 +142,7 @@ class LoginController extends AbstractController
         }
     }
 
-    /**
-    * @Route("/connexion_dbg",name="connexion_dbg", methods={"GET","POST"})
-    **/
+    #[Route(path: '/connexion_dbg', name: 'connexion_dbg', methods: ['GET', 'POST'])]
     public function connexion_dbgAction(Request $request): Response
     {
         $em = $this->em;
@@ -225,9 +213,9 @@ class LoginController extends AbstractController
     /**
      * Sudo (l'admin change d'identité)
      *
-     * @Route("/{id}/sudo", name="sudo", methods={"GET"})
      * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[Route(path: '/{id}/sudo', name: 'sudo', methods: ['GET'])]
     public function sudoAction(Request $request, Individu $individu): Response
     {
         $sj = $this->sj;

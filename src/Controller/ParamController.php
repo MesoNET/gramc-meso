@@ -44,17 +44,16 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Param controller.
  * @Security("is_granted('ROLE_ADMIN')")
- * @Route("param")
  */
+#[Route(path: 'param')]
 class ParamController extends AbstractController
 {
     public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em) {}
 
     /**
      * Lists all param entities.
-     *
-     * @Route("/", name="param_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'param_index', methods: ['GET'])]
     public function indexAction()
     {
         $em = $this->em;
@@ -68,9 +67,8 @@ class ParamController extends AbstractController
 
     /**
      * Creates a new param entity.
-     *
-     * @Route("/new", name="param_new", methods={"GET","POST"})
      */
+    #[Route(path: '/new', name: 'param_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request)
     {
         $param = new Param();
@@ -93,9 +91,8 @@ class ParamController extends AbstractController
 
     /**
      * Finds and displays a param entity.
-     *
-     * @Route("/{id}/show", name="param_show", methods={"GET"})
      */
+    #[Route(path: '/{id}/show', name: 'param_show', methods: ['GET'])]
     public function showAction(Param $param)
     {
         $deleteForm = $this->createDeleteForm($param);
@@ -108,9 +105,8 @@ class ParamController extends AbstractController
 
     /**
      * Displays a form to edit an existing param entity.
-     *
-     * @Route("/{id}/edit", name="param_edit", methods={"GET","POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'param_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Param $param)
     {
         $deleteForm = $this->createDeleteForm($param);
@@ -130,10 +126,8 @@ class ParamController extends AbstractController
         ));
     }
 
-    /**
-     *
-     * @Route("/avancer", name="param_avancer", methods={"GET","POST"})
-     */
+    
+    #[Route(path: '/avancer', name: 'param_avancer', methods: ['GET', 'POST'])]
     public function avancerAction(Request $request)
     {
         $em = $this->em;
@@ -185,9 +179,8 @@ class ParamController extends AbstractController
 
     /**
      * Deletes a param entity.
-     *
-     * @Route("/{id}", name="param_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'param_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Param $param)
     {
         $form = $this->createDeleteForm($param);

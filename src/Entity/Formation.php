@@ -4,15 +4,17 @@ namespace App\Entity;
 
 use App\GramcServices\GramcDate;
 use App\Repository\FormationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Formation
  *
  * Ecrans Formation, permet de déclarer le nombre de personnes intéressées par les formations à venir
- * 
- * @ORM\Entity(repositoryClass=FormationRepository::class)
  */
+#[ORM\Entity(repositoryClass: FormationRepository::class)]
 class Formation
 {
     public function __construct()
@@ -22,49 +24,38 @@ class Formation
         $this->formationVersion = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="\App\Entity\FormationVersion", mappedBy="formation", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: '\App\Entity\FormationVersion', mappedBy: 'formation', cascade: ['persist'])]
     private $formationVersion;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $numeroForm;
 
-    /**
-     * @ORM\Column(type="string", length=15, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $acroForm;
 
-    /**
-     * @ORM\Column(type="string", length=100, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private $nomForm;
 
     /**
      * @var \DateTime
      * Date à partir de laquelle on propose la formation
-     *
-     * @ORM\Column(name="start_date", type="datetime", nullable=false)
      */
+    #[ORM\Column(name: 'start_date', type: 'datetime', nullable: false)]
     private $startDate;
 
     /**
      * @var \DateTime
      * Date à partir de laquelle on ne propose PLUS la formation
-     *
-     * @ORM\Column(name="end_date", type="datetime", nullable=false)
      */
+    #[ORM\Column(name: 'end_date', type: 'datetime', nullable: false)]
     private $endDate;
 
     public function getId(): ?int

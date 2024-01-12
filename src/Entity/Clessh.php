@@ -24,18 +24,19 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Individu;
 use App\Entity\User;
 
 /**
  * Sso
- *
- * @ORM\Table(name="clessh",
- *            uniqueConstraints={@ORM\UniqueConstraint(name="nom_individu", columns={"id_individu", "nom"}),
- *                               @ORM\UniqueConstraint(name="pubuniq", columns={"emp"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: 'clessh')]
+#[ORM\UniqueConstraint(name: 'nom_individu', columns: ['id_individu', 'nom'])]
+#[ORM\UniqueConstraint(name: 'pubuniq', columns: ['emp'])]
+#[ORM\Entity]
 class Clessh
 {
     public function __construct()
@@ -50,66 +51,59 @@ class Clessh
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
-     * 
+     *
      * @var \App\Entity\Individu
      *
      * ORM\Column(name="id_individu", type="integer")
-     * @ORM\ManyToOne(targetEntity="Individu",inversedBy="clessh")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_individu", referencedColumnName="id_individu")
-     * })
-     * 
+     *
      */
+    #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
+    #[ORM\ManyToOne(targetEntity: 'Individu', inversedBy: 'clessh')]
     private $individu;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\OneToMany(targetEntity="User", mappedBy="clessh")
      */
+    #[ORM\OneToMany(targetEntity: 'User', mappedBy: 'clessh')]
     private $user;
 
     /**
      *
-     * @ORM\Column(name="nom", type="string", length=20)
      * @var string
      *
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 20)]
     private $nom;
     
     /**
-     * 
+     *
      * @var string
      *
-     * @ORM\Column(name="pub", type="string", length=5000)
      *
      */
+    #[ORM\Column(name: 'pub', type: 'string', length: 5000)]
     private $pub;
     
     /**
-     * 
+     *
      * @var string
      *
-     * @ORM\Column(name="emp", type="string", length=100, nullable=false)
      *
-     * L'empreinte de cette clé ssh
-     * 
      */
+    #[ORM\Column(name: 'emp', type: 'string', length: 100, nullable: false)]
     private $emp;
     
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="rvk", type="boolean")
      */
+    #[ORM\Column(name: 'rvk', type: 'boolean')]
     private $rvk = false;
 
     /**
@@ -274,6 +268,11 @@ class Clessh
      * @return boolean
      */
     public function getRvk():bool 
+    {
+        return $this->rvk;
+    }
+
+    public function isRvk(): ?bool
     {
         return $this->rvk;
     }
