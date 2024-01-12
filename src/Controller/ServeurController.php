@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Serveur controller.
@@ -50,8 +51,8 @@ class ServeurController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_serveurs', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -73,9 +74,8 @@ class ServeurController extends AbstractController
     /**
      * Nouveau serveur.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/ajouter', name: 'ajouter_serveur', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -138,9 +138,8 @@ class ServeurController extends AbstractController
     /**
      * Modifier un serveur.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier', name: 'modifier_serveur', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Serveur $serveur): Response
     {
@@ -176,8 +175,8 @@ class ServeurController extends AbstractController
     /**
      * Supprimer un serveur.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_serveur', methods: ['GET'])]
     public function supprimerAction(Request $request, Serveur $serveur): Response
     {
