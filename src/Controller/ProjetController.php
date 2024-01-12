@@ -370,7 +370,6 @@ class ProjetController extends AbstractController
     /**
      * Projets dynamiques.
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/dynamiques', name: 'projet_dynamique', methods: ['GET', 'POST'])]
@@ -464,7 +463,6 @@ class ProjetController extends AbstractController
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/avant_nouveau/{type}', name: 'avant_nouveau_projet', methods: ['GET', 'POST'])]
@@ -499,7 +497,6 @@ class ProjetController extends AbstractController
     /**
      * Création d'un nouveau projet.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/nouveau/{type}', name: 'nouveau_projet', methods: ['GET', 'POST'])]
@@ -538,7 +535,6 @@ class ProjetController extends AbstractController
     /**
      * Montre les projets d'un utilisateur.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
