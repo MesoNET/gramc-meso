@@ -33,7 +33,6 @@ use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -41,6 +40,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DefaultController extends AbstractController
 {
@@ -56,8 +56,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/test', name: 'test')]
     public function testAction(Request $request)
     {
@@ -85,8 +85,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/twig', name: 'twig')]
     public function twigAction(Request $request)
     {
@@ -109,8 +109,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/test_params/{id1}/{id2}', name: 'test_params')]
     public function test_paramsAction(Request $request)
     {
@@ -118,8 +118,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/test_session', name: 'test_session')]
     public function test_sessionAction(Request $request)
     {
@@ -130,8 +130,8 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/test_form', name: 'test_session')]
     public function test_formAction(Request $request)
     {
