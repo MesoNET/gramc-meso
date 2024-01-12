@@ -387,6 +387,13 @@ Editer dans:
   php composer.phar require --working-dir=tools/php-cs-fixer friendsofphp/php-cs-fixer
   tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
   ~~~~
+OU
+```
+composer test:cs
+``` lance la commande de vérification du code par PHP CS Fixer 
+```
+composer fix:cs
+``` lance la commande de correction du code par PHP CS Fixer 
 
 ### Comment modifier le formulaire principal ?
 
