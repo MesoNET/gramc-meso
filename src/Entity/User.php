@@ -57,21 +57,21 @@ class User
      */
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'user')]
-    private $serveur;
+    private Serveur $serveur;
 
     /**
      * @var \App\Entity\Individu
      */
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
-    private $individu;
+    private Individu $individu;
 
     /**
      * @var \App\Entity\Projet
      */
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'user')]
-    private $projet;
+    private Projet $projet;
 
     /**
      * @var boolean

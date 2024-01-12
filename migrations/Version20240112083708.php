@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240111153447 extends AbstractMigration
+final class Version20240112083708 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20240111153447 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE adresseip (id INT AUTO_INCREMENT NOT NULL, id_labo INT DEFAULT NULL, adresse TINYTEXT NOT NULL, INDEX IDX_B7A04D9718475F5E (id_labo), UNIQUE INDEX adresseip (adresse(44), id_labo), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE adresseip (id INT AUTO_INCREMENT NOT NULL, id_labo INT DEFAULT NULL, adresse TINYTEXT NOT NULL, INDEX IDX_B7A04D9718475F5E (id_labo), UNIQUE INDEX adresseip (adresse, id_labo), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE clessh (id INT AUTO_INCREMENT NOT NULL, id_individu INT DEFAULT NULL, nom VARCHAR(20) NOT NULL, pub VARCHAR(5000) NOT NULL, emp VARCHAR(100) NOT NULL, rvk TINYINT(1) NOT NULL, INDEX IDX_7E54547CE3FC35B (id_individu), UNIQUE INDEX nom_individu (id_individu, nom), UNIQUE INDEX pubuniq (emp), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE collaborateurVersion (id INT AUTO_INCREMENT NOT NULL, id_coll_statut SMALLINT DEFAULT NULL, id_version VARCHAR(13) DEFAULT NULL, id_coll_labo INT DEFAULT NULL, id_coll_etab INT DEFAULT NULL, id_collaborateur INT DEFAULT NULL, responsable TINYINT(1) NOT NULL, deleted TINYINT(1) NOT NULL COMMENT \'supprimé prochainement\', INDEX id_coll_labo (id_coll_labo), INDEX id_coll_statut (id_coll_statut), INDEX id_coll_etab (id_coll_etab), INDEX collaborateur_collaborateurprojet_fk (id_collaborateur), INDEX id_version (id_version), UNIQUE INDEX id_version_2 (id_version, id_collaborateur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE dac (id_dac INT AUTO_INCREMENT NOT NULL, id_ressource INT DEFAULT NULL, id_version VARCHAR(13) NOT NULL, demande INT NOT NULL COMMENT \'demande, l\'\'unité est celle de la ressource associée\', attribution INT NOT NULL COMMENT \'attribution, l\'\'unité est celle de la ressource associée\', todof TINYINT(1) NOT NULL, consommation INT NOT NULL COMMENT \'consommation, l\'\'unité est celle de la ressource associée\', INDEX IDX_18C2D0EA13AAF963 (id_ressource), PRIMARY KEY(id_dac)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB');
@@ -45,7 +45,7 @@ final class Version20240111153447 extends AbstractMigration
         $this->addSql('CREATE TABLE statut (id_statut SMALLINT NOT NULL, libelle_statut VARCHAR(50) NOT NULL, permanent TINYINT(1) NOT NULL, INDEX id_statut (id_statut), PRIMARY KEY(id_statut)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE thematique (id_thematique INT AUTO_INCREMENT NOT NULL, libelle_thematique VARCHAR(200) NOT NULL, PRIMARY KEY(id_thematique)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE thematiqueExpert (id_thematique INT NOT NULL, id_expert INT NOT NULL, INDEX IDX_D89754909F04557F (id_thematique), INDEX IDX_D8975490692C26AF (id_expert), PRIMARY KEY(id_thematique, id_expert)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, id_serveur VARCHAR(20) DEFAULT NULL, id_individu INT DEFAULT NULL, id_projet VARCHAR(10) DEFAULT NULL, id_clessh INT DEFAULT NULL, loginname VARCHAR(20) DEFAULT NULL, login TINYINT(1) NOT NULL COMMENT \'login sur le serveur lié\', password VARCHAR(200) DEFAULT NULL, cpassword VARCHAR(200) DEFAULT NULL, expire TINYINT(1) DEFAULT NULL, pass_expiration DATETIME DEFAULT NULL, cgu TINYINT(1) NOT NULL, deply TINYINT(1) NOT NULL, INDEX IDX_8D93D649A951FAD6 (id_serveur), INDEX IDX_8D93D649E3FC35B (id_individu), INDEX IDX_8D93D64976222944 (id_projet), INDEX IDX_8D93D6495863E191 (id_clessh), UNIQUE INDEX loginname (id_serveur, loginname), UNIQUE INDEX i_p_s (id_individu, id_projet, id_serveur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, id_individu INT DEFAULT NULL, id_projet VARCHAR(10) DEFAULT NULL, id_clessh INT DEFAULT NULL, id_serveur VARCHAR(20) DEFAULT NULL, loginname VARCHAR(20) DEFAULT NULL, login TINYINT(1) NOT NULL COMMENT \'login sur le serveur lié\', password VARCHAR(200) DEFAULT NULL, cpassword VARCHAR(200) DEFAULT NULL, expire TINYINT(1) DEFAULT NULL, pass_expiration DATETIME DEFAULT NULL, cgu TINYINT(1) NOT NULL, deply TINYINT(1) NOT NULL, INDEX IDX_8D93D649E3FC35B (id_individu), INDEX IDX_8D93D64976222944 (id_projet), INDEX IDX_8D93D6495863E191 (id_clessh), INDEX IDX_8D93D649A951FAD6 (id_serveur), UNIQUE INDEX loginname (id_serveur, loginname), UNIQUE INDEX i_p_s (id_individu, id_projet, id_serveur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE version (id_version VARCHAR(13) NOT NULL, maj_ind INT DEFAULT NULL, prj_id_thematique INT DEFAULT NULL, id_projet VARCHAR(10) DEFAULT NULL, etat_version INT DEFAULT NULL, type_version INT DEFAULT NULL COMMENT \'type du projet associé (le type du projet peut changer)\', prj_l_labo VARCHAR(300) DEFAULT NULL, prj_titre VARCHAR(500) DEFAULT NULL, prj_financement VARCHAR(100) DEFAULT NULL, prj_genci_machines VARCHAR(60) DEFAULT NULL, prj_genci_centre VARCHAR(60) DEFAULT NULL, prj_genci_heures VARCHAR(30) DEFAULT NULL, prj_expose LONGTEXT DEFAULT NULL, prj_justif_renouv LONGTEXT DEFAULT NULL, prj_fiche_val TINYINT(1) DEFAULT NULL, prj_genci_dari VARCHAR(15) DEFAULT NULL, code_nom VARCHAR(150) DEFAULT NULL, code_licence TEXT DEFAULT NULL, libelle_thematique VARCHAR(200) DEFAULT NULL, maj_stamp DATETIME DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, limit_date DATETIME DEFAULT NULL, prj_fiche_len INT DEFAULT NULL, cgu TINYINT(1) DEFAULT NULL, nb_version VARCHAR(5) NOT NULL COMMENT \'Numéro de version (01,02,03,...)\', INDEX IDX_BF1CD3C32EE4D7B (maj_ind), INDEX etat_version (etat_version), INDEX id_projet (id_projet), INDEX prj_id_thematique (prj_id_thematique), PRIMARY KEY(id_version)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE adresseip ADD CONSTRAINT FK_B7A04D9718475F5E FOREIGN KEY (id_labo) REFERENCES laboratoire (id_labo)');
         $this->addSql('ALTER TABLE clessh ADD CONSTRAINT FK_7E54547CE3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu)');
@@ -78,10 +78,10 @@ final class Version20240111153447 extends AbstractMigration
         $this->addSql('ALTER TABLE sso ADD CONSTRAINT FK_70E959E7E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu)');
         $this->addSql('ALTER TABLE thematiqueExpert ADD CONSTRAINT FK_D89754909F04557F FOREIGN KEY (id_thematique) REFERENCES thematique (id_thematique)');
         $this->addSql('ALTER TABLE thematiqueExpert ADD CONSTRAINT FK_D8975490692C26AF FOREIGN KEY (id_expert) REFERENCES individu (id_individu)');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649A951FAD6 FOREIGN KEY (id_serveur) REFERENCES serveur (nom)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D64976222944 FOREIGN KEY (id_projet) REFERENCES projet (id_projet)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D6495863E191 FOREIGN KEY (id_clessh) REFERENCES clessh (id)');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649A951FAD6 FOREIGN KEY (id_serveur) REFERENCES serveur (nom)');
         $this->addSql('ALTER TABLE version ADD CONSTRAINT FK_BF1CD3C32EE4D7B FOREIGN KEY (maj_ind) REFERENCES individu (id_individu) ON DELETE SET NULL');
         $this->addSql('ALTER TABLE version ADD CONSTRAINT FK_BF1CD3C33143FDD7 FOREIGN KEY (prj_id_thematique) REFERENCES thematique (id_thematique)');
         $this->addSql('ALTER TABLE version ADD CONSTRAINT FK_BF1CD3C376222944 FOREIGN KEY (id_projet) REFERENCES projet (id_projet)');
@@ -121,10 +121,10 @@ final class Version20240111153447 extends AbstractMigration
         $this->addSql('ALTER TABLE sso DROP FOREIGN KEY FK_70E959E7E3FC35B');
         $this->addSql('ALTER TABLE thematiqueExpert DROP FOREIGN KEY FK_D89754909F04557F');
         $this->addSql('ALTER TABLE thematiqueExpert DROP FOREIGN KEY FK_D8975490692C26AF');
-        $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649A951FAD6');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649E3FC35B');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D64976222944');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D6495863E191');
+        $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649A951FAD6');
         $this->addSql('ALTER TABLE version DROP FOREIGN KEY FK_BF1CD3C32EE4D7B');
         $this->addSql('ALTER TABLE version DROP FOREIGN KEY FK_BF1CD3C33143FDD7');
         $this->addSql('ALTER TABLE version DROP FOREIGN KEY FK_BF1CD3C376222944');

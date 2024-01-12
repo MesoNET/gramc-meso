@@ -49,11 +49,6 @@ vendor/**
 tools/phpstan/**
 tools/php-cs-fixer/**
 
-doc/documentation-dev.odt
-doc/uml/gramc-meso0.uml
-doc/uml/gramc3-notes.md
-doc/uml/sequence_nouv_collab.uml
-
 doc/**/*.png
 
 ### jpgraph
