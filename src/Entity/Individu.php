@@ -42,7 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Le "compte gramc-meso"...
  */
 #[ORM\Table(name: 'individu')]
-#[ORM\Index(name: 'id_labo', columns: ['id_labo'])]
+#[ORM\Index(columns: ['id_labo'], name: 'id_labo')]
 #[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
 #[ORM\Index(name: 'id_etab', columns: ['id_etab'])]
 #[ORM\UniqueConstraint(name: 'mail', columns: ['mail'])]
@@ -189,7 +189,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\Sso', mappedBy: 'individu')]
+    #[ORM\OneToMany(mappedBy: 'individu', targetEntity: '\App\Entity\Sso')]
     private $sso;
 
     /**
@@ -279,7 +279,8 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function getUsername(): ?string { return $this->getMail();}
     public function getSalt(): ?string { return null;}
     public function getPassword(): ?string { return "";}
-    public function eraseCredentials() {}
+    public function eraseCredentials(): void
+    {}
 
 
     ////////////////////////////////////////////////////////////////////////////

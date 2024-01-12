@@ -38,17 +38,14 @@ namespace App\Command;
 
 use App\GramcServices\Cron\Cron;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Doctrine\ORM\EntityManagerInterface;
 
+#[AsCommand(name: 'app:cron')]
 class CronCmd extends Command
 {
-    // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'app:cron';
-
     public function __construct(private Cron $sc)
     {
         // best practices recommend to call the parent constructor first and
