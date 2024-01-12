@@ -56,6 +56,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -99,8 +100,8 @@ class ExpertiseController extends AbstractController
     /**
      * Afficher une expertise.
      *
-     * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/consulter/{id}', name: 'consulter_expertise', methods: ['GET'])]
     public function consulterAction(Request $request, Expertise $expertise): Response
     {
@@ -134,8 +135,8 @@ class ExpertiseController extends AbstractController
     /**
      * Liste les projets dynamiques non encore validés.
      *
-     * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/listedyn', name: 'expertise_liste_dyn', methods: ['GET'])]
     public function listeDynAction(): Response
     {
@@ -218,8 +219,8 @@ class ExpertiseController extends AbstractController
      *
      * ATTENTION - La même fonction permet de valider PROJETS ET RALLONGES
      *
-     * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/modifier', name: 'expertise_modifier', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
@@ -396,8 +397,8 @@ class ExpertiseController extends AbstractController
      * L'expert vient de cliquer sur le bouton "Envoyer expertise"
      * On lui envoie un écran de confirmation.
      *
-     * @Security("is_granted('ROLE_VALIDEUR')")
      */
+    #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/valider', name: 'expertise_validation', methods: ['GET', 'POST'])]
     public function validationAction(Request $request, Expertise $expertise): Response
     {
