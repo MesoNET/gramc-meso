@@ -4,5 +4,5 @@
 [ -r ../.env.local ] && source ../.env.local
 export DATABASE_URL
 
-php reload-db.php $*
+php reprise/reload-db.php $*
 

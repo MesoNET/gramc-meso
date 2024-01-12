@@ -59,7 +59,7 @@ echo "That's REALLY all Folks\n";
 /*************************************************************
  * Initialise certaines constantes a partir de parameters.yml
  *************************************************************/
-function init()
+function init(): void
 {
     $db_url = parse_url(getenv('DATABASE_URL'));
 
@@ -73,6 +73,7 @@ function init()
     define('DATABASE_USER', $db_url['user']);
     define('DATABASE_PASSWORD', $db_url['pass']);
     define('DATABASE_NAME', explode('/', $db_url['path'])[1]);
+    define('DATABASE_PORT', $db_url['port']);
     // define('MAIL_DEVT', "devt1@exemple.com");
 
     // echo DATABASE_HOST." ".DATABASE_USER." ".DATABASE_PASSWORD." ".DATABASE_NAME."\n";
@@ -82,7 +83,7 @@ function init()
 /**********
  * Appelle bin/console pour recréer le schéma de B.D. avec Symfony *
  **************/
-function console()
+function console(): void
 {
     $cmd = 'cd ..; bin/console doctrine:schema:create';
     passthru($cmd);
@@ -103,7 +104,7 @@ function console_update()
  * Appeller bin/console fixtures avec Symfony
  *
  **************/
-function fixtures()
+function fixtures(): void
 {
     $cmd = 'cd ..;bin/console doctrine:fixtures:load  --append';
     passthru($cmd);
@@ -123,7 +124,7 @@ function envoie_mail_de_controle()
  * @brief Remplir la BD à partir du fichier créé précédemment par mysqldump
  *        On commence par désactiver les FOREIGN KEY sinon ça ne marche pas
  *
- * @param $file Le fichier (temporaire) créé par mysldump
+ * @param string $file Le fichier (temporaire) créé par mysldump
  *
  **************/
 function remplit_bd($file)
@@ -132,14 +133,14 @@ function remplit_bd($file)
     $data .= file_get_contents($file);
     $data .= "\nSET FOREIGN_KEY_CHECKS=1;\n";
     file_put_contents($file, $data);
-    $cmd = 'mysql --user '.DATABASE_USER.' --password='.DATABASE_PASSWORD.' '.DATABASE_NAME.' < '.$file;
+    $cmd = 'mysql --user '.DATABASE_USER.' --password='.DATABASE_PASSWORD.' --host '.DATABASE_HOST.' --port '.DATABASE_PORT.' '.DATABASE_NAME.' < '.$file;
     passthru($cmd);
 }
 
 /*****
  * @brief Sauver seulement les data dans un fichier temporaire
  *
- * @return Le nom du fichier temporaire
+ * @return string Le  nom du fichier temporaire
  *
  *****************/
 function mysqlDump()
@@ -167,7 +168,7 @@ function majbd()
  ****/
 function requete_mysql_1($sql)
 {
-    $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+    $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, DATABASE_PORT);
 
     /* check connection */
     if ($mysqli->connect_errno) {
@@ -324,6 +325,12 @@ function appelle_mysql($sql = '')
     $cmd .= ' --password=';
     $cmd .= '"'.DATABASE_PASSWORD.'"';
     $cmd .= ' ';
+    $cmd .= ' --host=';
+    $cmd .= '"'.DATABASE_HOST.'"';
+    $cmd .= ' ';
+    $cmd .= ' --port=';
+    $cmd .= '"'.DATABASE_PORT.'"';
+    $cmd .= ' ';
     $cmd .= DATABASE_NAME;
 
     return $cmd;
@@ -334,6 +341,9 @@ function appelle_mysql($sql = '')
  */
 function efface_bd()
 {
+    $cmd = 'cd ..; bin/console doctrine:schema:drop --force';
+    passthru($cmd);
+    /*
     $cmd = "echo 'SHOW TABLES;' | ";
     $cmd .= appelle_mysql();
     $a_tables = explode("\n", shell_exec($cmd));
@@ -345,4 +355,5 @@ function efface_bd()
         $cmd = "echo 'SET FOREIGN_KEY_CHECKS = 0; DROP TABLE $tables; SET FOREIGN_KEY_CHECKS = 1' | ".appelle_mysql();
         system($cmd);
     }
+    */
 }
