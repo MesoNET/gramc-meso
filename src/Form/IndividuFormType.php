@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,67 +24,56 @@
 
 namespace App\Form;
 
-use App\Entity\Statut;
-use App\Entity\Laboratoire;
 use App\Entity\Etablissement;
+use App\Entity\Laboratoire;
+use App\Entity\Statut;
 use App\Form\IndividuForm\IndividuForm;
-
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
-
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-//use Symfony\Component\Form\FormInterface;
+// use Symfony\Component\Form\FormInterface;
 
-
-//use Symfony\Component\Form\FormEvent;
-//use Symfony\Component\Form\FormEvents;
+// use Symfony\Component\Form\FormEvent;
+// use Symfony\Component\Form\FormEvents;
 
 class IndividuFormType extends AbstractType implements DataMapperInterface
 {
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        //dd($options);
+        // dd($options);
         $noms = $options['srv_noms'];
-        if (count($noms) > 0)
-        {
-            foreach ($noms as $n)
-            {
+        if (count($noms) > 0) {
+            foreach ($noms as $n) {
                 $builder->add(
                     'login_'.$n,
                     CheckboxType::class,
                     [
-                        'label'     => $n,
-                        //'mapped' => true,
-                        'required'  => false,
-                        'attr' => [ 'title' => 'Demander l\'ouverture d\'un compte sur '.$n ]
+                        'label' => $n,
+                        // 'mapped' => true,
+                        'required' => false,
+                        'attr' => ['title' => 'Demander l\'ouverture d\'un compte sur '.$n],
                     ]
                 );
             }
-        };
+        }
         $builder->setDataMapper($this);
         $builder->add(
             'mail',
             TextType::class,
             [
-                'label'     => 'email',
-                'attr'      => [ 'size' => '50' ],
-                'required'  => false,
+                'label' => 'email',
+                'attr' => ['size' => '50'],
+                'required' => false,
             ]
         );
-        
+
         // NOTE - si text_fields vaut true, cela veut dire que les champs
         //        statut, laboratoire, etablissement sont disabled
         //        (cf. le paramètre resp_peut_modif_collabs)
@@ -93,32 +82,31 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
             'prenom',
             TextType::class,
             [
-                'label'     => 'prénom',
-                'attr'      => [ 'size' => '50' ],
-                'required'  => false,
-                'disabled'  => false,
+                'label' => 'prénom',
+                'attr' => ['size' => '50'],
+                'required' => false,
+                'disabled' => false,
             ]
         )
         ->add(
             'nom',
             TextType::class,
             [
-                'label'     => 'nom',
-                'attr'      => [ 'size' => '50' ],
-                'required'  => false,
-                'disabled'  => false,
+                'label' => 'nom',
+                'attr' => ['size' => '50'],
+                'required' => false,
+                'disabled' => false,
             ]
         );
-        
-        if ($options['text_fields']==true)
-        {
+
+        if (true == $options['text_fields']) {
             $builder->add(
                 'statut',
                 TextType::class,
                 [
-                    'label'      => 'statut',
-                    'disabled'   => true,
-                    'required' => false
+                    'label' => 'statut',
+                    'disabled' => true,
+                    'required' => false,
                 ]
             )
             ->add(
@@ -134,90 +122,81 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
                 'etablissement',
                 TextType::class,
                 [
-                    'label'     => 'établissement',
+                    'label' => 'établissement',
                     'disabled' => true,
-                    'required'   => false,
+                    'required' => false,
                 ]
             )
             ;
-        }
-        else
-        {
+        } else {
             $builder->add(
                 'statut',
-                EntityType ::class,
+                EntityType::class,
                 [
-                    'label'      => 'statut',
-                    'multiple'   => false,
-                    'expanded'   => false,
-                    'required'   => false,
-                    'class'      => Statut::class,
+                    'label' => 'statut',
+                    'multiple' => false,
+                    'expanded' => false,
+                    'required' => false,
+                    'class' => Statut::class,
                     'placeholder' => '-- Indiquez le statut',
                 ]
             )
             ->add(
                 'laboratoire',
-                EntityType ::class,
+                EntityType::class,
                 [
-                    'label'     => 'laboratoire',
-                    'multiple'  => false,
-                    'expanded'  => false,
-                    'required'   => false,
-                    'class'     => Laboratoire::class,
+                    'label' => 'laboratoire',
+                    'multiple' => false,
+                    'expanded' => false,
+                    'required' => false,
+                    'class' => Laboratoire::class,
                     'placeholder' => '-- Indiquez le laboratoire',
                 ]
             )
             ->add(
                 'etablissement',
-                EntityType ::class,
+                EntityType::class,
                 [
-                    'label'     => 'établissement',
-                    'multiple'  => false,
-                    'expanded'  => false,
-                    'required'   => false,
-                    'class'     => Etablissement::class,
+                    'label' => 'établissement',
+                    'multiple' => false,
+                    'expanded' => false,
+                    'required' => false,
+                    'class' => Etablissement::class,
                     'placeholder' => "-- Indiquez l'établissement",
                 ]
             );
-        };
+        }
         $builder->add(
             'deleted',
             CheckboxType::class,
             [
-                'label'     =>  'supprimer',
-                'required'  =>  false,
+                'label' => 'supprimer',
+                'required' => false,
             ]
         );
         $builder->add(
             'id',
             HiddenType::class,
             [
-
             ]
         );
 
-//        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
-//            dd($event, $event->getForm(), $event->getForm()->children);
-//        });
+        //        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+        //            dd($event, $event->getForm(), $event->getForm()->children);
+        //        });
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
             'data_class' => IndividuForm::class,
             'text_fields' => false,
-            'srv_noms'  => []
+            'srv_noms' => [],
             ]
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'Individu';
@@ -244,12 +223,10 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
 
         // On initialise les champs login_XXX à partir du tableau logins de l'IndividuForm
         $vd_logins = $viewData->getLogins();
-        foreach ($vd_logins as $srv => $login)
-        {
-            $field = 'login_' . $srv;
+        foreach ($vd_logins as $srv => $login) {
+            $field = 'login_'.$srv;
             // Sinon on ignore (ne devrait pas arriver !))
-            if (isset($forms[$field]))
-            {
+            if (isset($forms[$field])) {
                 $forms[$field]->setData($login);
             }
         }
@@ -274,20 +251,18 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
         // the form object as well
         // beware of type inconsistency, see caution below
         $vd_logins = [];
-        foreach ($forms as $f => $field)
-        {
-            if (str_starts_with($f, 'login_'))
-            {
-                $k = str_replace('login_','',$f);
+        foreach ($forms as $f => $field) {
+            if (str_starts_with($f, 'login_')) {
+                $k = str_replace('login_', '', $f);
                 $vd_logins[$k] = empty($forms[$f]->getData()) ? false : true;
             }
         }
         $viewData->setLogins($vd_logins);
 
         // On initialise les autres champs comme avec le mapper par défaut
-        
+
         $viewData->setMail($forms['mail']->getData());
-        
+
         $viewData->setPrenom($forms['prenom']->getData());
         $viewData->setNom($forms['nom']->getData());
         $viewData->setStatut($forms['statut']->getData());
@@ -295,7 +270,6 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
         $viewData->setEtablissement($forms['etablissement']->getData());
         $viewData->setId($forms['id']->getData());
 
-        
-        //dd($forms['mail']->getData(),$forms, $viewData, $vd_logins_src, $vd_logins_dst);
+        // dd($forms['mail']->getData(),$forms, $viewData, $vd_logins_src, $vd_logins_dst);
     }
 }

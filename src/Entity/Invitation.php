@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,10 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Invitation
+ * Invitation.
  */
 #[ORM\Table(name: 'invitation')]
 #[ORM\UniqueConstraint(name: 'clef', columns: ['clef'])]
@@ -35,9 +34,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Invitation
 {
-
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_invitation', type: 'integer')]
     #[ORM\Id]
@@ -57,23 +55,21 @@ class Invitation
     private $creationStamp;
 
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'id_inviting', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $inviting;
 
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'id_invited', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $invited;
 
     /**
-     * Get idInvitation
-     *
-     * @return integer
+     * Get idInvitation.
      */
     public function getIdInvitation(): ?int
     {
@@ -81,13 +77,9 @@ class Invitation
     }
 
     /**
-     * Set inviting
-     *
-     * @param \App\Entity\Individu $inviting
-     *
-     * @return Invitation
+     * Set inviting.
      */
-    public function setInviting(?\App\Entity\Individu $inviting): self
+    public function setInviting(?Individu $inviting): self
     {
         $this->inviting = $inviting;
 
@@ -95,23 +87,17 @@ class Invitation
     }
 
     /**
-     * Get inviting
-     *
-     * @return \App\Entity\Individu
+     * Get inviting.
      */
-    public function getInviting(): ?\App\Entity\Individu
+    public function getInviting(): ?Individu
     {
         return $this->inviting;
     }
 
-   /**
-     * Set invited
-     *
-     * @param \App\Entity\Individu $invited
-     *
-     * @return Invitation
+    /**
+     * Set invited.
      */
-    public function setInvited(?\App\Entity\Individu $invited): self
+    public function setInvited(?Individu $invited): self
     {
         $this->invited = $invited;
 
@@ -119,21 +105,15 @@ class Invitation
     }
 
     /**
-     * Get invited
-     *
-     * @return \App\Entity\Individu
+     * Get invited.
      */
-    public function getInvited(): ?\App\Entity\Individu
+    public function getInvited(): ?Individu
     {
         return $this->invited;
     }
 
     /**
-     * Set clef
-     *
-     * @param string $clef
-     *
-     * @return Invitation
+     * Set clef.
      */
     public function setClef(string $clef): self
     {
@@ -143,9 +123,7 @@ class Invitation
     }
 
     /**
-     * Get clef
-     *
-     * @return string
+     * Get clef.
      */
     public function getClef(): ?string
     {
@@ -153,13 +131,9 @@ class Invitation
     }
 
     /**
-     * Set creationStamp
-     *
-     * @param \DateTime $creationStamp
-     *
-     * @return Invitation
+     * Set creationStamp.
      */
-    public function setCreationStamp( \Datetime $creationStamp): self
+    public function setCreationStamp(\DateTime $creationStamp): self
     {
         $this->creationStamp = $creationStamp;
 
@@ -167,9 +141,7 @@ class Invitation
     }
 
     /**
-     * Get creationStamp
-     *
-     * @return \DateTime
+     * Get creationStamp.
      */
     public function getCreationStamp(): \DateTime
     {

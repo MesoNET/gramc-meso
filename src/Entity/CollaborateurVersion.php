@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * CollaborateurVersion
+ * CollaborateurVersion.
  */
 #[ORM\Table(name: 'collaborateurVersion')]
 #[ORM\Index(name: 'id_coll_labo', columns: ['id_coll_labo'])]
@@ -39,28 +39,27 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: 'App\Repository\CollaborateurVersionRepository')]
 class CollaborateurVersion
 {
-
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'responsable', type: 'boolean', nullable: false)]
     private $responsable;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'deleted', type: 'boolean', nullable: false, options: ['comment' => 'supprimé prochainement'])]
     private $deleted = false;
 
     /**
-     * @var \App\Entity\Statut
+     * @var Statut
      */
     #[ORM\JoinColumn(name: 'id_coll_statut', referencedColumnName: 'id_statut')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Statut')]
     private $statut;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -68,28 +67,28 @@ class CollaborateurVersion
     private $id;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version', onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'collaborateurVersion')]
     private $version;
 
     /**
-     * @var \App\Entity\Laboratoire
+     * @var Laboratoire
      */
     #[ORM\JoinColumn(name: 'id_coll_labo', referencedColumnName: 'id_labo')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', inversedBy: 'collaborateurVersion')]
     private $labo;
 
     /**
-     * @var \App\Entity\Etablissement
+     * @var Etablissement
      */
     #[ORM\JoinColumn(name: 'id_coll_etab', referencedColumnName: 'id_etab')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Etablissement', inversedBy: 'collaborateurVersion')]
     private $etab;
 
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'id_collaborateur', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'collaborateurVersion')]
@@ -98,15 +97,16 @@ class CollaborateurVersion
     public function __toString()
     {
         $output = '{';
-        if ($this->getResponsable() === true) {
+        if (true === $this->getResponsable()) {
             $output .= 'responsable:';
         }
-        $output .= 'version=' . $this->getVersion() .':';
-        $output .= 'id=' . $this->getId() . ':';
-        $output .= 'statut=' .$this->getStatut() .':';
-        $output .= 'labo=' . $this->getLabo() .':';
-        $output .= 'etab=' .$this->getEtab() .':';
-        $output .= 'collab=' .$this->getCollaborateur() .'}';
+        $output .= 'version='.$this->getVersion().':';
+        $output .= 'id='.$this->getId().':';
+        $output .= 'statut='.$this->getStatut().':';
+        $output .= 'labo='.$this->getLabo().':';
+        $output .= 'etab='.$this->getEtab().':';
+        $output .= 'collab='.$this->getCollaborateur().'}';
+
         return $output;
     }
 
@@ -114,15 +114,15 @@ class CollaborateurVersion
     {
         $this->responsable = false;
 
-        if ($individu != null) {
+        if (null != $individu) {
             $this->statut = $individu->getStatut();
             $this->labo = $individu->getLabo();
             $this->etab = $individu->getEtab();
             $this->collaborateur = $individu;
         }
 
-        if ($version != null) {
-            $this->version  =   $version;
+        if (null != $version) {
+            $this->version = $version;
         }
     }
 
@@ -138,13 +138,9 @@ class CollaborateurVersion
         $this->labo = $individu->getLabo();
         $this->etab = $individu->getEtab();
     }
-        
+
     /**
-     * Set responsable
-     *
-     * @param boolean $responsable
-     *
-     * @return CollaborateurVersion
+     * Set responsable.
      */
     public function setResponsable(bool $responsable): self
     {
@@ -154,9 +150,7 @@ class CollaborateurVersion
     }
 
     /**
-     * Get responsable
-     *
-     * @return boolean
+     * Get responsable.
      */
     public function getResponsable(): bool
     {
@@ -164,11 +158,7 @@ class CollaborateurVersion
     }
 
     /**
-     * Set deleted
-     *
-     * @param boolean $deleted
-     *
-     * @return CollaborateurVersion
+     * Set deleted.
      */
     public function setDeleted(bool $deleted): self
     {
@@ -178,9 +168,7 @@ class CollaborateurVersion
     }
 
     /**
-     * Get deleted
-     *
-     * @return boolean
+     * Get deleted.
      */
     public function getDeleted(): bool
     {
@@ -188,9 +176,7 @@ class CollaborateurVersion
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -198,13 +184,9 @@ class CollaborateurVersion
     }
 
     /**
-     * Set statut
-     *
-     * @param \App\Entity\Statut $statut
-     *
-     * @return CollaborateurVersion
+     * Set statut.
      */
-    public function setStatut(?\App\Entity\Statut $statut = null): self
+    public function setStatut(Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -212,23 +194,17 @@ class CollaborateurVersion
     }
 
     /**
-     * Get statut
-     *
-     * @return \App\Entity\Statut
+     * Get statut.
      */
-    public function getStatut(): ?\App\Entity\Statut
+    public function getStatut(): ?Statut
     {
         return $this->statut;
     }
 
     /**
-     * Set version
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return CollaborateurVersion
+     * Set version.
      */
-    public function setVersion(?\App\Entity\Version $version = null): self
+    public function setVersion(Version $version = null): self
     {
         $this->version = $version;
 
@@ -236,23 +212,17 @@ class CollaborateurVersion
     }
 
     /**
-     * Get version
-     *
-     * @return \App\Entity\Version
+     * Get version.
      */
-    public function getVersion(): ?\App\Entity\Version
+    public function getVersion(): ?Version
     {
         return $this->version;
     }
 
     /**
-     * Set labo
-     *
-     * @param \App\Entity\Laboratoire $labo
-     *
-     * @return CollaborateurVersion
+     * Set labo.
      */
-    public function setLabo(?\App\Entity\Laboratoire $labo = null): self
+    public function setLabo(Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -260,23 +230,17 @@ class CollaborateurVersion
     }
 
     /**
-     * Get labo
-     *
-     * @return \App\Entity\Laboratoire
+     * Get labo.
      */
-    public function getLabo(): ?\App\Entity\Laboratoire
+    public function getLabo(): ?Laboratoire
     {
         return $this->labo;
     }
 
     /**
-     * Set etab
-     *
-     * @param \App\Entity\Etablissement $etab
-     *
-     * @return CollaborateurVersion
+     * Set etab.
      */
-    public function setEtab(?\App\Entity\Etablissement $etab = null): self
+    public function setEtab(Etablissement $etab = null): self
     {
         $this->etab = $etab;
 
@@ -284,23 +248,17 @@ class CollaborateurVersion
     }
 
     /**
-     * Get etab
-     *
-     * @return \App\Entity\Etablissement
+     * Get etab.
      */
-    public function getEtab(): ?\App\Entity\Etablissement
+    public function getEtab(): ?Etablissement
     {
         return $this->etab;
     }
 
     /**
-     * Set collaborateur
-     *
-     * @param \App\Entity\Individu $collaborateur
-     *
-     * @return CollaborateurVersion
+     * Set collaborateur.
      */
-    public function setCollaborateur(?\App\Entity\Individu $collaborateur = null): self
+    public function setCollaborateur(Individu $collaborateur = null): self
     {
         $this->collaborateur = $collaborateur;
 
@@ -308,11 +266,9 @@ class CollaborateurVersion
     }
 
     /**
-     * Get collaborateur
-     *
-     * @return \App\Entity\Individu
+     * Get collaborateur.
      */
-    public function getCollaborateur(): ?\App\Entity\Individu
+    public function getCollaborateur(): ?Individu
     {
         return $this->collaborateur;
     }

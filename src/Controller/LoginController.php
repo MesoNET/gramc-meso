@@ -2,61 +2,50 @@
 
 namespace App\Controller;
 
-use App\Utils\Functions;
-use App\Entity\Scalar;
 use App\Entity\Individu;
-use App\Entity\Journal;
-
 use App\GramcServices\ServiceJournal;
-
-
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Utils\Functions;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Login controller.
- * 
  */
- 
-class LoginController extends AbstractController 
+class LoginController extends AbstractController
 {
     public function __construct(private ServiceJournal $sj,
-                                private FormFactoryInterface $ff,
-                                private AuthorizationCheckerInterface $ac,
-                                private TokenStorageInterface $ts,
-                                private EntityManagerInterface $em)
-    {}
+        private FormFactoryInterface $ff,
+        private AuthorizationCheckerInterface $ac,
+        private TokenStorageInterface $ts,
+        private EntityManagerInterface $em)
+    {
+    }
 
     /**
-     * Login "remote" - saml2 (shibboleth) ou openid (iam)
+     * Login "remote" - saml2 (shibboleth) ou openid (iam).
      */
     #[Route(path: '/login', name: 'remlogin', methods: ['GET'])]
     public function remLoginAction(Request $request): Response
     {
         $this->sj->InfoMessage("remote login d'un utilisateur");
-        if( $request->getSession()->has('url') )
-            return $this->redirect( $request->getSession()->get('url') );
-        else
+        if ($request->getSession()->has('url')) {
+            return $this->redirect($request->getSession()->get('url'));
+        } else {
             return $this->redirectToRoute('accueil');
+        }
     }
 
-    
     #[Route(path: '/deconnexion', name: 'deconnexion', methods: ['GET'])]
     public function deconnexionAction(Request $request): Response
     {
@@ -66,20 +55,20 @@ class LoginController extends AbstractController
         $session = $request->getSession();
 
         // En sudo: on revient à l'utilisateur précédent
-        if ($ac->isGranted('IS_IMPERSONATOR'))
-        {
+        if ($ac->isGranted('IS_IMPERSONATOR')) {
             $sudo_url = $session->get('sudo_url');
             $real_user = $ts->getToken()->getOriginalToken()->getUser();
-            $sj->infoMessage(__METHOD__ . ":" . __LINE__ . " déconnexion d'un utilisateur en SUDO vers " . $real_user);
-            return new RedirectResponse($sudo_url . '?_switch_user=_exit');
-            
+            $sj->infoMessage(__METHOD__.':'.__LINE__." déconnexion d'un utilisateur en SUDO vers ".$real_user);
+
+            return new RedirectResponse($sudo_url.'?_switch_user=_exit');
         }
 
         // Pas sudo: on remet token et session à zéro
         elseif ($ac->isGranted('IS_AUTHENTICATED_FULLY')) {
-            $sj->infoMessage(__METHOD__ . ":" . __LINE__ .  " déconnexion de l'utilisateur " . $ts->getToken()->getUser());
+            $sj->infoMessage(__METHOD__.':'.__LINE__." déconnexion de l'utilisateur ".$ts->getToken()->getUser());
             $ts->setToken(null);
             $session->invalidate();
+
             return $this->render('default/deconnexion.html.twig');
         }
 
@@ -95,7 +84,6 @@ class LoginController extends AbstractController
         return $this->render('login/erreur_login.html.twig');
     }
 
-    
     #[Route(path: '/login_choice', name: 'connexion', methods: ['GET', 'POST'])]
     public function loginChoiceAction(Request $request): Response
     {
@@ -103,41 +91,39 @@ class LoginController extends AbstractController
         $ff = $this->ff;
 
         $mode_auth = $this->getParameter('mode_auth');
-        if ($mode_auth != 'saml2')
-        {
+        if ('saml2' != $mode_auth) {
             return $this->redirectToRoute('remlogin');
-        }
-        else
-        {
+        } else {
             $form = Functions::createFormBuilder($ff)
                     ->add(
                         'data',
                         ChoiceType::class,
                         [
-                     'choices' => $this->getParameter('IDPprod')
+                     'choices' => $this->getParameter('IDPprod'),
                      ]
                     )
                 ->add('connect', SubmitType::class, ['label' => 'Connexion *'])
                 ->getForm();
-    
+
             $form->handleRequest($request);
-    
+
             if ($form->isSubmitted() && $form->isValid()) {
-                $url    =   $request->getSchemeAndHttpHost();
-                $url    .= '/Shibboleth.sso/Login?target=';
-                $url    .= $this->generateUrl('remlogin');
-    
-                if ($form->getData()['data'] != 'WAYF') {
-                    $url = $url . '&providerId=' . $form->getData()['data'];
+                $url = $request->getSchemeAndHttpHost();
+                $url .= '/Shibboleth.sso/Login?target=';
+                $url .= $this->generateUrl('remlogin');
+
+                if ('WAYF' != $form->getData()['data']) {
+                    $url = $url.'&providerId='.$form->getData()['data'];
                 }
-    
-                $sj->debugMessage(__FILE__. ":" . __LINE__ . " URL remlogin = " . $url);
-    
+
+                $sj->debugMessage(__FILE__.':'.__LINE__.' URL remlogin = '.$url);
+
                 return $this->redirect($url);
             }
+
             return $this->render(
                 'default/login.html.twig',
-                [ 'form' => $form->createView(), ]
+                ['form' => $form->createView()]
             );
         }
     }
@@ -147,9 +133,10 @@ class LoginController extends AbstractController
     {
         $em = $this->em;
         $ff = $this->ff;
-        
-        if ($this->getParameter('kernel.debug') === false) {
-            $sj->errorMessage(__METHOD__ . ':' . __LINE__ .' tentative de se connecter connection_debug - Mode DEBUG FALSE');
+
+        if (false === $this->getParameter('kernel.debug')) {
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' tentative de se connecter connection_debug - Mode DEBUG FALSE');
+
             return $this->redirectToRoute('accueil');
         }
 
@@ -161,27 +148,26 @@ class LoginController extends AbstractController
         $valideurs  = $repository->findBy(['valideur' => true ]);
         $admins     = $repository->findBy(['admin'    => true ]);
         $obs        = $repository->findby(['obs'      => true ]);
-        $sysadmins  = $repository->findby(['sysadmin' => true ]); 
+        $sysadmins  = $repository->findby(['sysadmin' => true ]);
         $users      = array_unique(array_merge($admins, $experts, $valideurs, $obs, $sysadmins));
         */
 
         // Pour le moment - Tous les utilisateurs
         $users = $repository->findAll();
 
-
         // TODO - Il doit y avoir plus élégant
         $choices = [];
         foreach ($users as $u) {
-            $choices[$u->getPrenom() . ' ' . $u->getnom()] = $u->getIdIndividu();
+            $choices[$u->getPrenom().' '.$u->getnom()] = $u->getIdIndividu();
         }
         ksort($choices);
-    
+
         $form = $ff->createBuilder(FormType::class, null)
             ->add(
                 'data',
                 ChoiceType::class,
                 [
-             'choices' => $choices
+             'choices' => $choices,
              ]
             )
             ->add('connect', SubmitType::class, ['label' => 'Connexion'])
@@ -190,28 +176,25 @@ class LoginController extends AbstractController
         $form->handleRequest($request);
         // NOTE - Pas de validation du CSRF, ce sera fait par GramcAuthenticator
         //        Donc pas de isValid())
-        if ($form->isSubmitted() /*&& $form->isValid()*/)
-        {
+        if ($form->isSubmitted() /* && $form->isValid() */) {
             // Rediriger là où on veut aller
-            if( $request->getSession()->has('url') )
-            {
-                //dd($request->getSession()->get('url'));
-                return $this->redirect( $request->getSession()->get('url') );
+            if ($request->getSession()->has('url')) {
+                // dd($request->getSession()->get('url'));
+                return $this->redirect($request->getSession()->get('url'));
             }
 
             // Ou vers l'accueil
-            else
-            {
-                //dd('accueil');
+            else {
+                // dd('accueil');
                 return $this->redirectToRoute('accueil');
             }
         }
-                         
-        return $this->render('login/connexion_dbg.html.twig', array( 'form' => $form->createView())  );
+
+        return $this->render('login/connexion_dbg.html.twig', ['form' => $form->createView()]);
     }
 
     /**
-     * Sudo (l'admin change d'identité)
+     * Sudo (l'admin change d'identité).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -220,14 +203,16 @@ class LoginController extends AbstractController
     {
         $sj = $this->sj;
         $ac = $this->ac;
-        if (! $ac->isGranted('IS_IMPERSONATOR')) {
+        if (!$ac->isGranted('IS_IMPERSONATOR')) {
             $session = $request->getSession();
             $sudo_url = $request->headers->get('referer');
-            $session->set('sudo_url',$sudo_url);
-            $sj->infoMessage("Controller : connexion de l'utilisateur " . $individu . ' en SUDO ');
-            return new RedirectResponse($this->generateUrl('accueil', [ '_switch_user' => $individu->getId() ]));
+            $session->set('sudo_url', $sudo_url);
+            $sj->infoMessage("Controller : connexion de l'utilisateur ".$individu.' en SUDO ');
+
+            return new RedirectResponse($this->generateUrl('accueil', ['_switch_user' => $individu->getId()]));
         } else {
-            $sj->warningMessage("Controller : connexion de l'utilisateur " . $individu . ' déjà en SUDO !');
+            $sj->warningMessage("Controller : connexion de l'utilisateur ".$individu.' déjà en SUDO !');
+
             return $this->redirectToRoute('individu_gerer');
         }
     }

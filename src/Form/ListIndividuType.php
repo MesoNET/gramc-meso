@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,28 +24,22 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-//use App\Utils\IndividuForm;
 use App\Form\IndividuForm\IndividuForm;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\FormBuilderInterface;
+// use App\Utils\IndividuForm;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ListIndividuType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('tags', CollectionType::class, array(
-            'entry_type' => IndividuForm::class
-        ));
+        $builder->add('tags', CollectionType::class, [
+            'entry_type' => IndividuForm::class,
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(

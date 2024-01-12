@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  **/
 
 /***********************************************************************
- * 
+ *
  * Projet44Workflow   = L'implémentation du workflow des projets
  * Projet44Transition   pour des projets / versions de type 4 (projets dynamiques)
  *
@@ -31,19 +31,17 @@
 
 namespace App\GramcServices\Workflow\Projet4;
 
-use App\GramcServices\Workflow\Workflow;
-use App\GramcServices\ServiceJournal;
-use App\GramcServices\ServiceSessions;
-
 use App\GramcServices\Etat;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceNotifications;
+use App\GramcServices\ServiceSessions;
 use App\GramcServices\Signal;
 use App\GramcServices\Workflow\NoTransition;
-
-use App\GramcServices\ServiceNotifications;
+use App\GramcServices\Workflow\Workflow;
 use Doctrine\ORM\EntityManagerInterface;
 
 /***********************************************************************
- * 
+ *
  * Version4Workflow   = L'implémentation du workflow des versions
  * Version4Transition   pour des projets / versions de type 4 (projets dynamiques)
  *
@@ -52,11 +50,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class Projet4Workflow extends Workflow
 {
     public function __construct(ServiceNotifications $sn,
-                                ServiceJournal $sj,
-                                ServiceSessions $ss,
-                                EntityManagerInterface $em)
+        ServiceJournal $sj,
+        ServiceSessions $ss,
+        EntityManagerInterface $em)
     {
-        $this->workflowIdentifier   = get_class($this);
+        $this->workflowIdentifier = get_class($this);
         parent::__construct($sn, $sj, $ss, $em);
 
         $this
@@ -64,20 +62,20 @@ class Projet4Workflow extends Workflow
                 Etat::RENOUVELABLE,
                 [
                 // Utile seulement pour propagation aux versions
-                Signal::CLK_VAL_DEM    => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_DEM, [], true),
-                Signal::CLK_ARR        => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_ARR, [], true),
+                Signal::CLK_VAL_DEM => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_DEM, [], true),
+                Signal::CLK_ARR => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_ARR, [], true),
                 Signal::CLK_VAL_EXP_OK => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_EXP_OK, [], true),
 
-                Signal::DAT_ACTR       => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_ACTR, [], true),
+                Signal::DAT_ACTR => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_ACTR, [], true),
 
                 Signal::CLK_VAL_EXP_KO => new Projet4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO, [], true),
-                Signal::CLK_FERM       => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM, [ 'R' => 'projet_ferme' ]),
+                Signal::CLK_FERM => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM, ['R' => 'projet_ferme']),
                 ]
             )
             ->addState(
                 Etat::TERMINE,
                 [
-                Signal::CLK_FERM       => new NoTransition(0, 0),
+                Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             );
     }

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,24 +27,22 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Dar
+ * Dar.
  *
  * Demande, Attribution pour Rallonges
- *
  */
 #[ORM\Table(name: 'dar', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
 class Dar
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_dar', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $idDar;
 
-    
     #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
     #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'dar')]
@@ -58,32 +56,26 @@ class Dar
     private $ressource;
 
     /**
-     * @var integer
-     *
-     *
+     * @var int
      */
     #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
     private $demande = 0;
 
     /**
-     * @var integer
-     *
-     *
+     * @var int
      */
     #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
     private $attribution = 0;
 
     /**
-     * @var boolean
+     * @var bool
      */
     // Le "todo flag": si true, il y a un truc à faire sur la machine !
     #[ORM\Column(name: 'todof', type: 'boolean')]
     private $todof = false;
 
     /**
-     * Get idDar
-     *
-     * @return integer
+     * Get idDar.
      */
     public function getIdDar(): ?int
     {
@@ -97,22 +89,16 @@ class Dar
 
     public function __construct(Ressource $ressource = null, Rallonge $rallonge = null)
     {
-        if ($ressource != null)
-        {
+        if (null != $ressource) {
             $this->ressource = $ressource;
         }
-        if ($rallonge != null)
-        {
+        if (null != $rallonge) {
             $this->rallonge = $rallonge;
         }
     }
 
     /**
-     * Set rallonge
-     *
-     * @param Rallonge $rallonge
-     *
-     * @return Dar
+     * Set rallonge.
      */
     public function setRallonge(?Rallonge $rallonge): self
     {
@@ -122,9 +108,7 @@ class Dar
     }
 
     /**
-     * Get rallonge
-     *
-     * @return Rallonge
+     * Get rallonge.
      */
     public function getRallonge(): ?Rallonge
     {
@@ -132,11 +116,7 @@ class Dar
     }
 
     /**
-     * Set ressource
-     *
-     * @param Ressource $ressource
-     *
-     * @return Dar
+     * Set ressource.
      */
     public function setRessource(?Ressource $ressource): self
     {
@@ -146,9 +126,7 @@ class Dar
     }
 
     /**
-     * Get ressource
-     *
-     * @return Ressource
+     * Get ressource.
      */
     public function getRessource(): ?Ressource
     {
@@ -156,9 +134,7 @@ class Dar
     }
 
     /**
-     * Get demande
-     *
-     * @return integer
+     * Get demande.
      */
     public function getDemande(): ?int
     {
@@ -166,21 +142,19 @@ class Dar
     }
 
     /**
-     * Set demande
+     * Set demande.
      *
      * @param int
-     * @return Dar
      */
     public function setDemande(int $demande): self
     {
         $this->demande = $demande;
+
         return $this;
     }
 
     /**
-     * Get attribution
-     *
-     * @return integer
+     * Get attribution.
      */
     public function getAttribution(): ?int
     {
@@ -188,21 +162,19 @@ class Dar
     }
 
     /**
-     * Set attribution
+     * Set attribution.
      *
-     * @param integer
-     * @return Dar
+     * @param int
      */
     public function setAttribution(int $attribution): self
     {
         $this->attribution = $attribution;
+
         return $this;
     }
-    
+
     /**
-     * Set todof
-     *
-     * @param boolean $todof
+     * Set todof.
      *
      * @return Version
      */
@@ -214,9 +186,7 @@ class Dar
     }
 
     /**
-     * Get todof
-     *
-     * @return boolean
+     * Get todof.
      */
     public function getTodof(): bool
     {

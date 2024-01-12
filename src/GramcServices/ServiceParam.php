@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,18 +33,17 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class ServiceParam
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     /* Renvoie la valeur du paramètre s'il existe, null sinon */
     public function getParameter($parameter): ?string
     {
-        $param = $this->em->getRepository(Param::class)->findOneBy([ 'cle' => $parameter ]);
-        if ($param == null)
-        {
+        $param = $this->em->getRepository(Param::class)->findOneBy(['cle' => $parameter]);
+        if (null == $param) {
             return null;
-        }
-        else
-        {
+        } else {
             return $param->getVal();
         }
     }
@@ -53,12 +52,9 @@ class ServiceParam
     public function hasParameter($parameter): bool
     {
         $param = $this->getParameter($parameter);
-        if ($param==null)
-        {
+        if (null == $param) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }

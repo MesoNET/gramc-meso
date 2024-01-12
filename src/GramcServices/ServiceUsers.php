@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,10 @@
 namespace App\GramcServices;
 
 use App\Entity\CollaborateurVersion;
-use App\Entity\User;
-use App\Entity\Serveur;
-use App\Entity\Projet;
 use App\Entity\Individu;
-
-use App\GramcServices\ServiceServeurs;
-
-use App\Utils\Functions;
-
+use App\Entity\Projet;
+use App\Entity\Serveur;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 /*************************************************************
@@ -42,7 +37,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class ServiceUsers
 {
     public function __construct(private ServiceServeurs $sr, private EntityManagerInterface $em)
-    {}
+    {
+    }
 
     /******************************************
      * Renvoie la liste des loginnames pour un CollaborateurVersion donné
@@ -53,30 +49,27 @@ class ServiceUsers
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deploy'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv=null, bool $long = false): array
+    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv = null, bool $long = false): array
     {
         $em = $this->em;
         $sr = $this->sr;
-        
+
         $serveurs = $sr->getServeurs();
         $loginnames3 = [];
-        if ($cv != null)
-        {
-            foreach ( $serveurs as $s)
-            {
+        if (null != $cv) {
+            foreach ($serveurs as $s) {
                 $u = $this->getUser($cv->getCollaborateur(), $cv->getVersion()->getProjet(), $s);
                 $sn = $s->getNom();
-                
+
                 $loginnames3[$sn]['nom'] = $u->getLoginname() ? $u->getLoginname() : 'nologin';
                 $loginnames3[$sn]['login'] = $u->getLogin();
-                if ($long && $loginnames3[$sn]['nom']!='nologin') $loginnames3[$sn]['nom'] .= '@'.$sn;
-                $clessh = $u->getClessh();
-                if ($clessh === null)
-                {
-                    $loginnames3[$sn]['clessh'] = null;
+                if ($long && 'nologin' != $loginnames3[$sn]['nom']) {
+                    $loginnames3[$sn]['nom'] .= '@'.$sn;
                 }
-                else
-                {
+                $clessh = $u->getClessh();
+                if (null === $clessh) {
+                    $loginnames3[$sn]['clessh'] = null;
+                } else {
                     $loginnames3[$sn]['clessh']['idCle'] = $u->getClessh()->getId();
                     $loginnames3[$sn]['clessh']['nom'] = $u->getClessh()->getNom();
                     $loginnames3[$sn]['clessh']['pub'] = $u->getClessh()->getPub();
@@ -85,11 +78,8 @@ class ServiceUsers
                 }
                 $loginnames3[$sn]['userid'] = $u->getId();
             }
-        }
-        else
-        {
-            foreach ($serveurs as $s)
-            {
+        } else {
+            foreach ($serveurs as $s) {
                 $sn = $s->getNom();
                 $loginnames3[$sn]['nom'] = 'nologin';
                 $loginnames3[$sn]['login'] = false;
@@ -97,7 +87,7 @@ class ServiceUsers
             }
         }
 
-        //dd($loginnames3);
+        // dd($loginnames3);
         return $loginnames3;
     }
 
@@ -106,7 +96,7 @@ class ServiceUsers
      ******************************************************/
     public function getLoginname(User $u): string
     {
-        return $u->getLoginname() . '@' . $u->getServeur();
+        return $u->getLoginname().'@'.$u->getServeur();
     }
 
     /************************************************
@@ -114,12 +104,12 @@ class ServiceUsers
      *********************************************************************/
     public function parseLoginname(string $u): array
     {
-        $rvl = explode('@', $u,2);
-        if (count($rvl) != 2)
-        {
-            throw new \Exception (__METHOD__ . ":" . __LINE__ . " $u n'est pas de la forme alice@serveur");
+        $rvl = explode('@', $u, 2);
+        if (2 != count($rvl)) {
+            throw new \Exception(__METHOD__.':'.__LINE__." $u n'est pas de la forme alice@serveur");
         }
-        return [ 'loginname' => $rvl[0], 'serveur' => $rvl[1]];
+
+        return ['loginname' => $rvl[0], 'serveur' => $rvl[1]];
     }
 
     /*********************************************************
@@ -129,8 +119,7 @@ class ServiceUsers
     {
         $em = $this->em;
         $users = $em->getRepository(User::class)->findBy(['individu' => $i, 'projet' => $p, 'serveur' => $s]);
-        if (count($users) == 0)
-        {
+        if (0 == count($users)) {
             $u = new User();
             $u->setIndividu($i);
             $u->setProjet($p);
@@ -138,16 +127,12 @@ class ServiceUsers
             $p->addUser($u);
             $em->persist($u);
             $em->flush($u);
-        }
-        elseif (count($users) == 1)
-        {
+        } elseif (1 == count($users)) {
             $u = $users[0];
+        } else {
+            throw $this->sj->throwException('ServiceUsers:getUser findBy renvoie '.count($users).' objets '."$i - $p - $s");
         }
-        else
-        {
-            throw $this->sj->throwException("ServiceUsers:getUser findBy renvoie " . count($users) . " objets " . "$i - $p - $s");
-        }
+
         return $u;
     }
-    
 } // class

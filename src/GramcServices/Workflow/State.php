@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
 
 namespace App\GramcServices\Workflow;
 
-use App\GramcServices\Signal;
 use App\GramcServices\Etat;
+use App\GramcServices\Signal;
 
 /*****************
  * State - Une classe pour décrire l'ensemble des transitions possibles
@@ -37,8 +37,8 @@ use App\GramcServices\Etat;
  *****************/
 class State
 {
-    private $transitions      = [];
-    private $stateIdentifier  = null;
+    private $transitions = [];
+    private $stateIdentifier;
 
     /***********
      * Le constructeur
@@ -55,11 +55,12 @@ class State
 
     public function __toString(): string
     {
-        $output = " STATE{".Etat::getLibelle($this->stateIdentifier).' : ';
+        $output = ' STATE{'.Etat::getLibelle($this->stateIdentifier).' : ';
         foreach ($this->transitions as $key => $value) {
-            $output .= ' ' . Signal::getLibelle($key) . ' => ('.$value.')';
+            $output .= ' '.Signal::getLibelle($key).' => ('.$value.')';
         }
-        return $output . '}' ;
+
+        return $output.'}';
     }
 
     /******************
@@ -85,12 +86,12 @@ class State
      *      $object = Un objet
      *
      ********************************/
-    public function canExecute(int $signal, object $object) : bool
+    public function canExecute(int $signal, object $object): bool
     {
         if ($this->hasTransition($signal)) {
             return $this->transitions[$signal]->canExecute($object);
         } else {
-            //echo ' State['.$this->stateIdentifier .'] signal ' . $signal . ' on ' . get_class ( $object ) . " n'existe pas ";
+            // echo ' State['.$this->stateIdentifier .'] signal ' . $signal . ' on ' . get_class ( $object ) . " n'existe pas ";
             return false;
         }
     }
@@ -110,12 +111,12 @@ class State
     public function execute(int $signal, object $object): bool
     {
         if ($this->hasTransition($signal)) {
-            //echo ' State['.$this->stateIdentifier .'] signal ' . $name . ' on ' . get_class ( $object ) . ' exécuté ';
-            //$msg = $this->transitions[$name] . ' -- on -- ' . $object;
-            //App::getLogger()->info($msg);
+            // echo ' State['.$this->stateIdentifier .'] signal ' . $name . ' on ' . get_class ( $object ) . ' exécuté ';
+            // $msg = $this->transitions[$name] . ' -- on -- ' . $object;
+            // App::getLogger()->info($msg);
             return $this->transitions[$signal]->execute($object);
         } else {
-            //echo ' State['.$this->stateIdentifier .'] signal ' . $name . ' on ' . get_class ( $object ) . ' ne peux pas être exécuté !!!!!!!!!!!! ';
+            // echo ' State['.$this->stateIdentifier .'] signal ' . $name . ' on ' . get_class ( $object ) . ' ne peux pas être exécuté !!!!!!!!!!!! ';
             return false;
         }
     }

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,15 +25,13 @@
 namespace App\Controller;
 
 use App\Entity\Statut;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormInterface;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Statut controller.
@@ -45,7 +43,8 @@ class StatutController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * Lists all statut entities.
@@ -57,9 +56,9 @@ class StatutController extends AbstractController
 
         $statuts = $em->getRepository(Statut::class)->findAll();
 
-        return $this->render('statut/index.html.twig', array(
+        return $this->render('statut/index.html.twig', [
             'statuts' => $statuts,
-        ));
+        ]);
     }
 
     /**
@@ -77,13 +76,13 @@ class StatutController extends AbstractController
             $em->persist($statut);
             $em->flush($statut);
 
-            return $this->redirectToRoute('statut_show', array('id' => $statut->getId()));
+            return $this->redirectToRoute('statut_show', ['id' => $statut->getId()]);
         }
 
-        return $this->render('statut/new.html.twig', array(
+        return $this->render('statut/new.html.twig', [
             'statut' => $statut,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -94,10 +93,10 @@ class StatutController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($statut);
 
-        return $this->render('statut/show.html.twig', array(
+        return $this->render('statut/show.html.twig', [
             'statut' => $statut,
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -113,14 +112,14 @@ class StatutController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->em->flush();
 
-            return $this->redirectToRoute('statut_edit', array('id' => $statut->getId()));
+            return $this->redirectToRoute('statut_edit', ['id' => $statut->getId()]);
         }
 
-        return $this->render('statut/edit.html.twig', array(
+        return $this->render('statut/edit.html.twig', [
             'statut' => $statut,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -151,7 +150,7 @@ class StatutController extends AbstractController
     private function createDeleteForm(Statut $statut): FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('statut_delete', array('id' => $statut->getId())))
+            ->setAction($this->generateUrl('statut_delete', ['id' => $statut->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;

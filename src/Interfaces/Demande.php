@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,15 @@ namespace App\Interfaces;
 //
 interface Demande
 {
-//    public function getAttrHeures();
-//    public function getDemHeures();
+    //    public function getAttrHeures();
+    //    public function getDemHeures();
     public function getId();
-    public function getEtat();
-//    public function getMetaEtat();
-//    public function getExperts();
 
-//    public function setAttrHeures($attrHeures);
-//    public function setDemHeures($demHeures);
+    public function getEtat();
+    //    public function getMetaEtat();
+    //    public function getExperts();
+
+    //    public function setAttrHeures($attrHeures);
+    //    public function setDemHeures($demHeures);
     public function setEtat(int $etat): self;
 }

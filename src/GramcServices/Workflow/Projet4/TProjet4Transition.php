@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,32 +24,29 @@
 
 namespace App\GramcServices\Workflow\Projet4;
 
+use App\Entity\Projet;
 use App\GramcServices\Workflow\Transition;
 use App\Utils\Functions;
 
-use App\GramcServices\Etat;
-use App\GramcServices\Signal;
-
-use App\Entity\Projet;
-use App\Entity\Version;
-use App\GramcServices\Workflow\Version4\Version4Workflow;
-
 /***********************************************************************
- * 
+ *
  * TProjet4Transition
  *
  ***********************************************************************/
 
 class TProjet4Transition extends Transition
 {
-    public function canExecute(object $projet): bool { return true; }
+    public function canExecute(object $projet): bool
+    {
+        return true;
+    }
 
     public function execute(object $projet): bool
     {
-        $projet->getTypeProjet() == 4  || throw new \InvalidArgumentException();
+        4 == $projet->getTypeProjet() || throw new \InvalidArgumentException();
 
         if (Transition::DEBUG) {
-            $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " $this $projet");
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__." $this $projet");
         }
 
         // Change l'état du projet
@@ -68,15 +65,12 @@ class TProjet4Transition extends Transition
      **************************************************************************************/
     private function __changeTetat(Projet $projet): void
     {
-        if (Transition::DEBUG)
-        {
+        if (Transition::DEBUG) {
             $old_etat = $projet->getTetatProjet();
             $projet->setTetatProjet($this->getEtat());
             Functions::sauvegarder($projet, $this->em);
-            $this->sj->debugMessage('>>> ' . __FILE__ . ":" . __LINE__ . " projet " . $projet . " est passé de l'état " . $old_etat . " à " . $projet->getTetatProjet() . " suite au signal " . $this->getSignal());
-        }
-        else
-        {
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__.' projet '.$projet." est passé de l'état ".$old_etat.' à '.$projet->getTetatProjet().' suite au signal '.$this->getSignal());
+        } else {
             $projet->setTetatProjet($this->getEtat());
             Functions::sauvegarder($projet, $this->em);
         }

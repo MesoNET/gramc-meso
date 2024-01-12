@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,22 +24,20 @@
 
 namespace App\GramcServices\Workflow;
 
-use App\GramcServices\Workflow\Transition;
-
 class NoTransition extends Transition
 {
     public function __toString(): string
     {
-        return "NoTransition";
+        return 'NoTransition';
     }
 
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
     public function canExecute(object $object): bool
     {
         return true;
     }
 
-    ///////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////
     public function execute(object $object): bool
     {
         return true;

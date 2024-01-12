@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,66 +23,36 @@
 
 namespace App\GramcServices;
 
-use App\Entity\Projet;
-use App\Entity\Version;
-use App\Entity\Rallonge;
-use App\Entity\Session;
-use App\Entity\Individu;
-use App\Entity\Formation;
-use App\Entity\FormationVersion;
-use App\Entity\Ressource;
 use App\Entity\Dar;
-use App\Entity\Serveur;
-
-use App\Entity\User;
-use App\Entity\CollaborateurVersion;
-
-use App\GramcServices\Etat;
-use App\GramcServices\ServiceForms;
-use App\GramcServices\ServiceInvitations;
-use App\GramcServices\GramcDate;
-
-use App\Form\IndividuFormType;
-use App\Form\IndividuForm\IndividuForm;
-use App\Form\FormationVersionType;
+use App\Entity\Rallonge;
+use App\Entity\Ressource;
+use App\Entity\Version;
 use App\Form\DarType;
-
-
-use App\Utils\Functions;
-
-use App\Validator\Constraints\PagesNumber;
-
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ServiceRallonges
 {
     public function __construct(
-                                private ServiceJournal $sj,
-                                private ServiceServeurs $sr,
-                                private ServiceRessources $sroc,
-                                private ServiceUsers $su,
-                                private ServiceInvitations $sid,
-                                private ValidatorInterface $vl,
-                                private ServiceForms $sf,
-                                private FormFactoryInterface $ff,
-                                private TokenStorageInterface $tok,
-                                private GramcDate $grdt,
-                                private EntityManagerInterface $em
-                                )
-    {}
+        private ServiceJournal $sj,
+        private ServiceServeurs $sr,
+        private ServiceRessources $sroc,
+        private ServiceUsers $su,
+        private ServiceInvitations $sid,
+        private ValidatorInterface $vl,
+        private ServiceForms $sf,
+        private FormFactoryInterface $ff,
+        private TokenStorageInterface $tok,
+        private GramcDate $grdt,
+        private EntityManagerInterface $em
+    ) {
+    }
 
     /****************
      * Création d'une nouvelle rallonge liée à une version existante, c'est-à-dire:
@@ -90,9 +60,9 @@ class ServiceRallonges
      *    - Création des Dars associés
      *
      * Params: $version la version associée
-     *    
+     *
      * Retourne: La nouvelle rallonge
-     * 
+     *
      ************************************************/
 
     public function creerRallonge(Version $version): Rallonge
@@ -106,8 +76,8 @@ class ServiceRallonges
         $rallonge = new Rallonge();
         $rallonge->setEtatRallonge(Etat::EDITION_DEMANDE);
         $rallonge->setVersion($version);
-        $count   = count($version->getRallonge()) + 1;
-        $rallonge->setIdRallonge($version->getIdVersion() . 'R' . $count);
+        $count = count($version->getRallonge()) + 1;
+        $rallonge->setIdRallonge($version->getIdVersion().'R'.$count);
 
         // Ecriture de la rallonge dans la BD
         $em->persist($rallonge);
@@ -115,8 +85,7 @@ class ServiceRallonges
 
         // Création de nouveaux Dar (1 Dar par ressource)
         $ressources = $sroc->getRessources();
-        foreach ($ressources as $r)
-        {
+        foreach ($ressources as $r) {
             $dar = new Dar();
             $dar->setRallonge($rallonge);
             $dar->setRessource($r);
@@ -128,39 +97,25 @@ class ServiceRallonges
         return $rallonge;
     }
 
-
     /*******************
      * Renvoie le méta état (pour affichage) d'une ressource
      **********************************************************/
     public function getMetaEtat(Rallonge $r): string
     {
         $etat = $r->getEtatRallonge();
-        if ($etat === Etat::EDITION_DEMANDE)
-        {
+        if (Etat::EDITION_DEMANDE === $etat) {
             return 'EDITION';
-        }
-        elseif ($etat === Etat::EDITION_EXPERTISE)
-        {
-            return  'EXPERTISE';
-        }
-        elseif ($etat === Etat::ACTIF)
-        {
-            return  'ACCEPTE';
-        }
-        elseif ($etat === Etat::EN_ATTENTE)
-        {
-            return  'ATTENTE';
-        }
-        elseif ($etat === Etat::REFUSE)
-        {
-            return  'REFUSE';
-        }
-        elseif ($etat === Etat::ANNULE )
-        {
+        } elseif (Etat::EDITION_EXPERTISE === $etat) {
+            return 'EXPERTISE';
+        } elseif (Etat::ACTIF === $etat) {
+            return 'ACCEPTE';
+        } elseif (Etat::EN_ATTENTE === $etat) {
+            return 'ATTENTE';
+        } elseif (Etat::REFUSE === $etat) {
+            return 'REFUSE';
+        } elseif (Etat::ANNULE === $etat) {
             return 'TERMINE';
-        }
-        else
-        {
+        } else {
             return '';
         }
     }
@@ -168,11 +123,11 @@ class ServiceRallonges
     /*********************************************
      *
      * LES DEMANDES DE RESSOURCES
-     * 
+     *
      ********************************************/
 
-     // TODO - Copié-presque-collé depuis DEMANDES DE RESSOURCES de ServiceVersions
-     //        Il faudrait rendre tout ça générique !
+    // TODO - Copié-presque-collé depuis DEMANDES DE RESSOURCES de ServiceVersions
+    //        Il faudrait rendre tout ça générique !
 
     /**************************
      * préparation de la liste des ressources disponibles
@@ -186,12 +141,12 @@ class ServiceRallonges
      *
      *****************************************************************************/
 
-    public function prepareRessources(Rallonge $rallonge) : array
+    public function prepareRessources(Rallonge $rallonge): array
     {
         $em = $this->em;
         $sj = $this->sj;
-        
-        if ($rallonge == null) {
+
+        if (null == $rallonge) {
             $sj->throwException('ServiceRallonges:prepareRessources : rallonge null');
         }
 
@@ -199,25 +154,21 @@ class ServiceRallonges
 
         // Un array indexé par l'identifiant de ressource
         $dars = [];
-        foreach ( $rallonge->getDar() as $dar)
-        {
+        foreach ($rallonge->getDar() as $dar) {
             $k = $dar->getRessource()->getId();
             $dars[$k] = $dar;
         }
 
         $data = [];
-        foreach ($ressources as $r)
-        {
-            if (array_key_exists($r->getId(), $dars))
-            {
+        foreach ($ressources as $r) {
+            if (array_key_exists($r->getId(), $dars)) {
                 $dar = $dars[$r->getId()];
-            }
-            else
-            {
+            } else {
                 $dar = new Dar($r, $version);
             }
             $data[] = $dar;
         }
+
         return $data;
     }
 
@@ -228,35 +179,35 @@ class ServiceRallonges
     {
         $sj = $this->sj;
         $em = $this->em;
-        $sval= $this->vl;
+        $sval = $this->vl;
 
         $form = $this->ff
-                   ->createNamedBuilder('form_ressource', FormType::class, [ 'ressource' => $this->prepareRessources($rallonge) ])
+                   ->createNamedBuilder('form_ressource', FormType::class, ['ressource' => $this->prepareRessources($rallonge)])
                    ->add('ressource', CollectionType::class, [
-                       'entry_type' =>  DarType::class,
-                       'label' =>  true,
+                       'entry_type' => DarType::class,
+                       'label' => true,
                    ])
                    ->getForm();
+
         return $form;
     }
 
     /*********************************
-     * 
+     *
      * Validation du formulaire des ressources - Retourne true car toujours valide !
      *
      * params = Tableau de formulaires
      ***********************************************************************/
-    public function validateRessourceForms(array &$ressource_forms) : bool
+    public function validateRessourceForms(array &$ressource_forms): bool
     {
         $val = true;
-        foreach ( $ressource_forms as &$dar)
-        {
-            if ($dar->getDemande() < 0)
-            {
+        foreach ($ressource_forms as &$dar) {
+            if ($dar->getDemande() < 0) {
                 $val = false;
                 $dar->setdemande(0);
             }
         }
+
         return $val;
     }
 }

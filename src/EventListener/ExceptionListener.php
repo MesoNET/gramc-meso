@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,52 +29,40 @@
  *
  *
  **********************/
- 
+
 // src/EventListener/ExceptionListener.php
+
 namespace App\EventListener;
 
-use App\Entity\Individu;
-use App\Utils\Functions;
 use App\GramcServices\ServiceJournal;
+// use App\Exception\UserException;
 
-//use App\Exception\UserException;
-
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-
-use Symfony\Component\HttpKernel\Exception\HttpException; 
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\RouterInterface;
-use Doctrine\ORM\ORMException;
 use Doctrine\DBAL\DBALException;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
-use Psr\Log\LoggerInterface;
-
-use Doctrine\ORM\EntityManagerInterface;
-
-class ExceptionListener 
+class ExceptionListener
 {
     private $router;
     private $logger;
 
-    public function __construct($kernel_debug,RouterInterface $router,LoggerInterface $logger, ServiceJournal $sj, EntityManagerInterface $em)
-    { 
+    public function __construct($kernel_debug, RouterInterface $router, LoggerInterface $logger, ServiceJournal $sj, EntityManagerInterface $em)
+    {
         $this->kernel_debug = $kernel_debug;
         $this->router = $router;
         $this->logger = $logger;
-        $this->sj     = $sj;
-        $this->em     = $em;
+        $this->sj = $sj;
+        $this->em = $em;
     }
 
     public function onKernelException(ExceptionEvent $event)
@@ -82,88 +70,85 @@ class ExceptionListener
         $server = $event->getRequest()->server;
 
         $exception = $event->getThrowable();
-        //dd($exception);
+        // dd($exception);
 
         // En mode debug, on affiche l'exception
         // Commenter cette ligne pour récupérer le comportement de la prod !
-         if( $this->kernel_debug == true ) return;
- 
-        // nous captons des erreurs de la page d'accueil
-        if( $event->getRequest()->getPathInfo() == '/' )
-        {
-            // ne pas écrire dans le journal quand il y a une exception de Doctrine
-            if( ! $exception instanceof ORMException && ! $exception instanceof \InvalidArgumentException && ! $exception instanceof DBALException )
-                $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . " erreur dans la page / depuis " . $event->getRequest()->headers->get('referer'));
-            else
-                $this->logger->error(__METHOD__ . ":" . __LINE__ . "erreur dans la page / depuis " . $event->getRequest()->headers->get('referer'));
-            $response =  new Response
-                ("<h1>Bienvenue sur gramc</h1> Erreur dans la page d'accueil");
-            $event->setResponse($response);
+        if (true == $this->kernel_debug) {
             return;
         }
-        
-        // on ne fait rien quand il y a une exception de Doctrine
-        if( $exception instanceof ORMException || $exception instanceof \InvalidArgumentException || $exception instanceof DBALException)
-        {
-            if( method_exists( $this->em, 'isOpen' ) && $this->em->isOpen() )
-                $this->logger->error(__METHOD__ . ":" . __LINE__ .  " Exception " . get_class($exception) . ' : ' .  $exception->getMessage() . "  À partir de URL : " .  $event->getRequest()->getPathInfo());
-            else
-                $this->logger->error(__METHOD__ . ":" . __LINE__ .  " Exception " . get_class($exception) . ' : ' .  $exception->getMessage() .                                                "  À partir de URL : " .  $event->getRequest()->getPathInfo() . ' Entity manager closed');
 
-        }   
+        // nous captons des erreurs de la page d'accueil
+        if ('/' == $event->getRequest()->getPathInfo()) {
+            // ne pas écrire dans le journal quand il y a une exception de Doctrine
+            if (!$exception instanceof ORMException && !$exception instanceof \InvalidArgumentException && !$exception instanceof DBALException) {
+                $this->sj->errorMessage(__METHOD__.':'.__LINE__.' erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
+            } else {
+                $this->logger->error(__METHOD__.':'.__LINE__.'erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
+            }
+            $response = new Response("<h1>Bienvenue sur gramc</h1> Erreur dans la page d'accueil");
+            $event->setResponse($response);
+
+            return;
+        }
+
+        // on ne fait rien quand il y a une exception de Doctrine
+        if ($exception instanceof ORMException || $exception instanceof \InvalidArgumentException || $exception instanceof DBALException) {
+            if (method_exists($this->em, 'isOpen') && $this->em->isOpen()) {
+                $this->logger->error(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().'  À partir de URL : '.$event->getRequest()->getPathInfo());
+            } else {
+                $this->logger->error(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().'  À partir de URL : '.$event->getRequest()->getPathInfo().' Entity manager closed');
+            }
+        }
 
         // On essaie d'aller voir une url sans être authentifié
-        elseif ( $exception instanceof HttpException && $exception->getPrevious() instanceof InsufficientAuthenticationException)
-        {
-
+        elseif ($exception instanceof HttpException && $exception->getPrevious() instanceof InsufficientAuthenticationException) {
             // On garde l'url de destination dans la session
-            $event->getRequest()->getSession()->set('url', $event->getRequest()->getUri() );
+            $event->getRequest()->getSession()->set('url', $event->getRequest()->getUri());
 
             // Pas la peine d'encombrer les logs
-            //$this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." accès anonyme à la page " . $event->getRequest()->getPathInfo());
+            // $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." accès anonyme à la page " . $event->getRequest()->getPathInfo());
 
             // On renvoie sur l'écran de login'
-            if( $this->kernel_debug == true )
-                $response =  new RedirectResponse( $this->router->generate('connexion_dbg') );
-            else
-                $response =  new RedirectResponse( $this->router->generate('connexion') );
-            
+            if (true == $this->kernel_debug) {
+                $response = new RedirectResponse($this->router->generate('connexion_dbg'));
+            } else {
+                $response = new RedirectResponse($this->router->generate('connexion'));
+            }
+
             $event->setResponse($response);
         }
 
         //   AccessDeniedHttpException
         //   problème avec access_control dans security.yml (IP par exemple) ou un mauvais rôle
-        elseif( $exception instanceof AccessDeniedHttpException /*or $exception instanceof AccessDeniedException*/)
-        {
-            //dd($exception);
-            $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." accès à la page " . $event->getRequest()->getPathInfo() . " non autorisé");
-            $response = new RedirectResponse($this->router->generate('accueil') );
+        elseif ($exception instanceof AccessDeniedHttpException /* or $exception instanceof AccessDeniedException */) {
+            // dd($exception);
+            $this->sj->warningMessage(__METHOD__.':'.__LINE__.' accès à la page '.$event->getRequest()->getPathInfo().' non autorisé');
+            $response = new RedirectResponse($this->router->generate('accueil'));
             $event->setResponse($response);
         }
 
         // Erreur 404
-        elseif( $exception instanceof NotFoundHttpException )
-        {
+        elseif ($exception instanceof NotFoundHttpException) {
             // Nous redirigeons vers la page 'accueil' - pas de log
-            $response =  new RedirectResponse($this->router->generate('accueil') );
-            $event->setResponse($response); 
+            $response = new RedirectResponse($this->router->generate('accueil'));
+            $event->setResponse($response);
         }
 
         // comportement général
-        else
-        {
-            $this->logger->warning("Error to " .  $event->getRequest()->getRequestUri(),
-                    [
-                    'exception' => $exception,
-                    'request' => $event->getRequest()
-                    ] );
+        else {
+            $this->logger->warning('Error to '.$event->getRequest()->getRequestUri(),
+                [
+                'exception' => $exception,
+                'request' => $event->getRequest(),
+                ]);
 
-            $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." Exception " . get_class($exception) . ' : ' . $exception->getMessage() .
-                                      "  À partir de URL : " .  $event->getRequest()->getPathInfo() );
+            $this->sj->warningMessage(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().
+                                      '  À partir de URL : '.$event->getRequest()->getPathInfo());
 
             // Nous redirigeons vers la page d'accueil
-            $response =  new RedirectResponse($this->router->generate('accueil') );
-            $event->setResponse($response); 
+            $response = new RedirectResponse($this->router->generate('accueil'));
+            $event->setResponse($response);
         }
     }
 }

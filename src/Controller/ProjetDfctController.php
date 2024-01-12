@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +23,26 @@
 
 namespace App\Controller;
 
-use App\Entity\Projet;
 use App\Entity\Compta;
-use App\Utils\Functions;
-
-use App\GramcServices\ServiceMenus;
-use App\GramcServices\ServiceJournal;
-use App\GramcServices\ServiceVersions;
-use App\GramcServices\GramcDate;
+use App\Entity\Projet;
 use App\GramcServices\DonneesFacturation;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use App\GramcServices\GramcDate;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceVersions;
+use App\Utils\Functions;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Snappy\Pdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-
-use Doctrine\ORM\EntityManagerInterface;
-
-
-use Knp\Snappy\Pdf;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * ProjetFctController rassemble les controleurs dédiés au bouton "Euro" (données de facturation)
+ * ProjetFctController rassemble les controleurs dédiés au bouton "Euro" (données de facturation).
  *
  * @Security("is_granted('ROLE_OBS')")
  */
@@ -68,45 +59,46 @@ class ProjetDfctController extends AbstractController
         private DonneesFacturation $dfct,
         private Pdf $pdf,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * Appelé quand on clique sur le bouton € dans la page projets par année
-     * Affiche les données de facturation actuelles
+     * Affiche les données de facturation actuelles.
      */
     #[Route(path: '/{id}/dfctliste/{annee}', name: 'dfct_liste', methods: ['GET', 'POST'])]
     public function dfctlisteAction(Projet $projet, $annee, Request $request): Response
     {
-        $dessin_heures = $this -> gcl;
-        $sm     = $this->sm;
-        $sd     = $this->sd;
-        $em     = $this->em;
-        $dfct   = $this->dfct;
+        $dessin_heures = $this->gcl;
+        $sm = $this->sm;
+        $sd = $this->sd;
+        $em = $this->em;
+        $dfct = $this->dfct;
         $emises = $dfct->getNbEmises($projet, $annee);
-        $version= $dfct->getVersion($projet, $annee);
-        $menu   = [];
+        $version = $dfct->getVersion($projet, $annee);
+        $menu = [];
         $menu[] = $sm->projetsAnnee();
 
         $jourdelan = new \DateTime($annee.'-01-01');
-        $ssylvestre= new \DateTime($annee.'-12-31');
+        $ssylvestre = new \DateTime($annee.'-12-31');
 
-        $debut_periode = $version -> getFctStamp();
-        if ($debut_periode==null) {
-            $d = $annee . '-01-01';
+        $debut_periode = $version->getFctStamp();
+        if (null == $debut_periode) {
+            $d = $annee.'-01-01';
             $debut_periode = new \DateTime($d);
         }
 
         $fin_periode = $sd;
         $fin_periode->sub(new \DateInterval('P1D'));
 
-        $form   = $this->createFormBuilder()
+        $form = $this->createFormBuilder()
             ->add(
                 'fctstamp',
                 DateType::class,
                 [
-                    'data'   => $fin_periode,
-                    'label'  => 'Fin de pếriode:',
-                    'widget' => 'single_text'
+                    'data' => $fin_periode,
+                    'label' => 'Fin de pếriode:',
+                    'widget' => 'single_text',
                     ]
             )
             ->add('submit', SubmitType::class, ['label' => 'OK'])
@@ -118,86 +110,88 @@ class ProjetDfctController extends AbstractController
         }
 
         $conso_periode = $dfct->getConsoPeriode($projet, $debut_periode, $fin_periode);
-        //if ($conso_periode == -1) $conso_periode = 'N/A';
+        // if ($conso_periode == -1) $conso_periode = 'N/A';
 
-        $id_projet     = $projet->getIdProjet();
-        $compta_repo   = $em -> getRepository(Compta::class);
-        $db_conso      = $compta_repo->conso($id_projet, $annee);
+        $id_projet = $projet->getIdProjet();
+        $compta_repo = $em->getRepository(Compta::class);
+        $db_conso = $compta_repo->conso($id_projet, $annee);
 
         // conso  sur la période
         $image_conso_p = null;
-        
-        //$struct_data   = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
-        //if (count($struct_data) > 10) {
-            //$dessin_heures->resetConso($struct_data);
-            //$image_conso_p = $dessin_heures->createImage($struct_data)[0];
-        //} else {
-            //$image_conso_p = null;
-        //}
+
+        // $struct_data   = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
+        // if (count($struct_data) > 10) {
+        // $dessin_heures->resetConso($struct_data);
+        // $image_conso_p = $dessin_heures->createImage($struct_data)[0];
+        // } else {
+        // $image_conso_p = null;
+        // }
 
         // conso sur toute l'année
         $image_conso_a = null;
-        //$struct_data   = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
-        //if (count($struct_data) > 10) {
-            //$dessin_heures->resetConso($struct_data);
-            //$image_conso_a = $dessin_heures->createImage($struct_data)[0];
-        //} else {
-            //$image_conso_a = null;
-        //}
+        // $struct_data   = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
+        // if (count($struct_data) > 10) {
+        // $dessin_heures->resetConso($struct_data);
+        // $image_conso_a = $dessin_heures->createImage($struct_data)[0];
+        // } else {
+        // $image_conso_a = null;
+        // }
 
         return $this->render(
             'projetfct/dfctliste.html.twig',
-            ['projet'  => $projet,
+            ['projet' => $projet,
                              'version' => $version,
-                             'annee'   => $annee,
-                             'emises'  => $emises,
-                             'form'    => $form->createView(),
-                             'debut'   => $debut_periode,
-                             'fin'     => $fin_periode,
-                             'conso'   => $conso_periode,
+                             'annee' => $annee,
+                             'emises' => $emises,
+                             'form' => $form->createView(),
+                             'debut' => $debut_periode,
+                             'fin' => $fin_periode,
+                             'conso' => $conso_periode,
                              'dessin_periode' => $image_conso_p,
-                             'dessin_annee'   => $image_conso_a,
-                             'menu'    => $menu
+                             'dessin_annee' => $image_conso_a,
+                             'menu' => $menu,
                              ]
         );
     }
 
     /**
-     * Téléchargement d'un pdf avec les données de facturation déjà émises
+     * Téléchargement d'un pdf avec les données de facturation déjà émises.
      */
     #[Route(path: '/{id}/dfctdl/{annee}/{nb}', name: 'dfct_dl_projet', methods: ['GET', 'POST'])]
     public function downloaddfctAction(Projet $projet, $annee, $nb, Request $request): Response
     {
-        $dfct= $this->dfct;
-        $sj  = $this->sj;
+        $dfct = $this->dfct;
+        $sj = $this->sj;
 
         $filename = $dfct->getPath($projet, $annee, $nb);
-        if ($filename == '') {
-            $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " fichier de données de facturation $nb, projet $projet, année $annee n'existe pas");
+        if ('' == $filename) {
+            $sj->errorMessage(__METHOD__.':'.__LINE__." fichier de données de facturation $nb, projet $projet, année $annee n'existe pas");
+
             return Functions::pdf(null);
         } else {
-            $dwnfn = "Données_de_facturation_".$projet."_".$annee."_".$nb.".pdf";
+            $dwnfn = 'Données_de_facturation_'.$projet.'_'.$annee.'_'.$nb.'.pdf';
+
             return Functions::pdf($filename, $dwnfn);
         }
     }
 
     /**
-     * Génération du pdf contenant les données de facturation
+     * Génération du pdf contenant les données de facturation.
      */
     #[Route(path: '/{id}/dfctgen/{fin_periode}', name: 'dfct_gen', methods: ['GET', 'POST'])]
     public function dfct_genAction(Projet $projet, \DateTime $fin_periode, Request $request): Response
     {
-        $em     = $this->em;
-        $annee  = $fin_periode->format('Y');
-        $dfct   = $this->dfct;
+        $em = $this->em;
+        $annee = $fin_periode->format('Y');
+        $dfct = $this->dfct;
         $emises = $dfct->getNbEmises($projet, $annee);
         $numero = count($emises) + 1;
-        $version= $dfct->getVersion($projet, $annee);
+        $version = $dfct->getVersion($projet, $annee);
 
         $jourdelan = new \DateTime($annee.'-01-01');
-        $ssylvestre= new \DateTime($annee.'-12-31');
-        $debut_periode = $version -> GetFctStamp();
-        if ($debut_periode==null) {
+        $ssylvestre = new \DateTime($annee.'-12-31');
+        $debut_periode = $version->GetFctStamp();
+        if (null == $debut_periode) {
             $debut_periode = $jourdelan;
         } else {
             // Dans version on stocke la fin de la période précédente
@@ -206,58 +200,58 @@ class ProjetDfctController extends AbstractController
         }
 
         if ($fin_periode <= $debut_periode) {
-            return $this->redirectToRoute('dfct_liste', array('id' => $projet->getId(), 'annee' => $annee));
+            return $this->redirectToRoute('dfct_liste', ['id' => $projet->getId(), 'annee' => $annee]);
         }
 
-        $conso    = $dfct->getConsoPeriode($projet, $debut_periode, $fin_periode);
+        $conso = $dfct->getConsoPeriode($projet, $debut_periode, $fin_periode);
 
-        $id_projet     = $projet->getIdProjet();
-        $compta_repo   = $em -> getRepository(Compta::class);
-        $db_conso      = $compta_repo->conso($id_projet, $annee);
-        $dessin_heures = $this -> gcl;
+        $id_projet = $projet->getIdProjet();
+        $compta_repo = $em->getRepository(Compta::class);
+        $db_conso = $compta_repo->conso($id_projet, $annee);
+        $dessin_heures = $this->gcl;
 
         // conso  sur la période
-        $struct_data   = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
-        if (count($struct_data)>10) {
+        $struct_data = $dessin_heures->createStructuredData($debut_periode, $fin_periode, $db_conso);
+        if (count($struct_data) > 10) {
             $dessin_heures->resetConso($struct_data);
             $image_conso_p = $dessin_heures->createImage($struct_data)[0];
-        //$image_conso_p = null;
+        // $image_conso_p = null;
         } else {
             $image_conso_p = null;
         }
 
         // conso sur toute l'année
-        $struct_data   = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
-        if (count($struct_data)>10) {
+        $struct_data = $dessin_heures->createStructuredData($jourdelan, $ssylvestre, $db_conso);
+        if (count($struct_data) > 10) {
             $dessin_heures->resetConso($struct_data);
             $image_conso_a = $dessin_heures->createImage($struct_data)[0];
-        //$image_conso_a = null;
+        // $image_conso_a = null;
         } else {
             $image_conso_a = null;
         }
 
-        $html4pdf =  $this->render(
+        $html4pdf = $this->render(
             'projetfct/dfctpdf.html.twig',
             [
             'projet' => $projet,
-            'annee'  => $annee,
+            'annee' => $annee,
             'numero' => $numero,
             'debut_periode' => $debut_periode,
-            'fin_periode'   => $fin_periode,
-            'conso'  => $conso,
+            'fin_periode' => $fin_periode,
+            'conso' => $conso,
             'dessin_periode' => $image_conso_p,
-            'dessin_annee'   => $image_conso_a
+            'dessin_annee' => $image_conso_a,
             ]
         );
 
-        //return $html4pdf;
+        // return $html4pdf;
         $pdf = $this->pdf->getOutputFromHtml($html4pdf->getContent());
 
         // On stoque la date de fin de la période + 1j
         $stamp = clone $fin_periode;
         $stamp->add(new \DateInterval('P1D'));
 
-        $version -> setFctStamp($stamp);
+        $version->setFctStamp($stamp);
         $em->persist($version);
         $em->flush();
 

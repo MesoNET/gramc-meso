@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,10 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * User
- *
- *
+ * User.
  */
 #[ORM\Table(name: 'user')]
 #[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
@@ -37,9 +34,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
 class User
 {
-
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -52,29 +48,20 @@ class User
     #[ORM\Column(name: 'loginname', nullable: true, type: 'string', length: 20)]
     private $loginname;
 
-    /**
-     * @var \App\Entity\Serveur
-     */
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'user')]
     private Serveur $serveur;
 
-    /**
-     * @var \App\Entity\Individu
-     */
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
     private Individu $individu;
 
-    /**
-     * @var \App\Entity\Projet
-     */
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'user')]
     private Projet $projet;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'login', type: 'boolean', nullable: false, options: ['comment' => 'login sur le serveur lié'])]
     private $login = false;
@@ -92,7 +79,7 @@ class User
     private $cpassword;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'expire', type: 'boolean', nullable: true)]
     private $expire;
@@ -104,24 +91,22 @@ class User
     private $passexpir;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'cgu', type: 'boolean')]
     private $CGU = false;
 
     /**
-     *
-     * @var \App\Entity\Clessh
+     * @var Clessh
      *
      * ORM\Column(name="id_clessh", type="integer", nullable=true)
-     *
      */
     #[ORM\JoinColumn(name: 'id_clessh', referencedColumnName: 'id')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Clessh', inversedBy: 'user')]
     private $clessh;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'deply', type: 'boolean')]
     private $deply = false;
@@ -129,20 +114,19 @@ class User
     public function __toString(): string
     {
         $output = '{';
-        $output .= 'loginname=' . $this->getLoginname() .'}';
+        $output .= 'loginname='.$this->getLoginname().'}';
+
         return $output;
     }
 
     public function __construct()
     {
-        $this->password  = null;
+        $this->password = null;
         $this->passexpir = null;
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -150,11 +134,7 @@ class User
     }
 
     /**
-     * Set loginname
-     *
-     * @param string $loginname
-     *
-     * @return User
+     * Set loginname.
      */
     public function setLoginname(?string $loginname): self
     {
@@ -164,9 +144,7 @@ class User
     }
 
     /**
-     * Get loginname
-     *
-     * @return string
+     * Get loginname.
      */
     public function getLoginname(): ?string
     {
@@ -174,13 +152,9 @@ class User
     }
 
     /**
-     * Set serveur
-     *
-     * @param \App\Entity\Serveur $serveur
-     *
-     * @return User
+     * Set serveur.
      */
-    public function setServeur(\App\Entity\Serveur $serveur): User
+    public function setServeur(Serveur $serveur): User
     {
         $this->serveur = $serveur;
 
@@ -188,23 +162,17 @@ class User
     }
 
     /**
-     * Get serveur
-     *
-     * @return \App\Entity\Serveur
+     * Get serveur.
      */
-    public function getServeur(): \App\Entity\Serveur
+    public function getServeur(): Serveur
     {
         return $this->serveur;
     }
 
     /**
-     * Set individu
-     *
-     * @param \App\Entity\Individu $individu
-     *
-     * @return User
+     * Set individu.
      */
-    public function setIndividu(?\App\Entity\Individu $individu): self
+    public function setIndividu(?Individu $individu): self
     {
         $this->individu = $individu;
 
@@ -212,23 +180,17 @@ class User
     }
 
     /**
-     * Get individu
-     *
-     * @return \App\Entity\Individu
+     * Get individu.
      */
-    public function getIndividu(): ?\App\Entity\Individu
+    public function getIndividu(): ?Individu
     {
         return $this->individu;
     }
 
     /**
-     * Set projet
-     *
-     * @param \App\Entity\Projet $projet
-     *
-     * @return User
+     * Set projet.
      */
-    public function setProjet(?\App\Entity\Projet $projet): self
+    public function setProjet(?Projet $projet): self
     {
         $this->projet = $projet;
 
@@ -236,21 +198,15 @@ class User
     }
 
     /**
-     * Get projet
-     *
-     * @return \App\Entity\Projet
+     * Get projet.
      */
-    public function getProjet(): ?\App\Entity\Projet
+    public function getProjet(): ?Projet
     {
         return $this->projet;
     }
 
     /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
+     * Set password.
      */
     public function setPassword(?string $password): self
     {
@@ -260,9 +216,7 @@ class User
     }
 
     /**
-     * Get password
-     *
-     * @return string
+     * Get password.
      */
     public function getPassword(): ?string
     {
@@ -270,11 +224,7 @@ class User
     }
 
     /**
-     * Set cpassword
-     *
-     * @param string $cpassword
-     *
-     * @return User
+     * Set cpassword.
      */
     public function setCpassword(?string $cpassword): self
     {
@@ -284,9 +234,7 @@ class User
     }
 
     /**
-     * Get cpassword
-     *
-     * @return string
+     * Get cpassword.
      */
     public function getCpassword(): ?string
     {
@@ -294,13 +242,9 @@ class User
     }
 
     /**
-     * Set passexpir
-     *
-     * @param \DateTime $passexpir
-     *
-     * @return User
+     * Set passexpir.
      */
-    public function setPassexpir(?\Datetime $passexpir): self
+    public function setPassexpir(?\DateTime $passexpir): self
     {
         $this->passexpir = $passexpir;
 
@@ -308,19 +252,15 @@ class User
     }
 
     /**
-     * Get passexpir
-     *
-     * @return \DateTime
+     * Get passexpir.
      */
-    public function getPassexpir(): ?\Datetime
+    public function getPassexpir(): ?\DateTime
     {
         return $this->passexpir;
     }
 
     /**
-     * Set expire
-     *
-     * @param boolean $expire
+     * Set expire.
      *
      * @return CollaborateurVersion
      */
@@ -332,43 +272,35 @@ class User
     }
 
     /**
-     * Get expire
-     *
-     * @return boolean
+     * Get expire.
      */
     public function getExpire(): ?bool
     {
         return $this->expire;
     }
+
     /**
-     * Set Clessh
+     * Set Clessh.
      *
      * @param string \App\Entity\Clessh $clessh
-     *
-     * @return User
      */
-    public function setClessh(?\App\Entity\Clessh $clessh): self
+    public function setClessh(?Clessh $clessh): self
     {
         $this->clessh = $clessh;
+
         return $this;
     }
 
     /**
-     * Get clessh
-     *
-     * @return \App\Entity\Clessh
+     * Get clessh.
      */
-    public function getClessh(): ?\App\Entity\Clessh
+    public function getClessh(): ?Clessh
     {
         return $this->clessh;
     }
 
     /**
-     * Set login
-     *
-     * @param boolean $login
-     *
-     * @return User
+     * Set login.
      */
     public function setLogin(bool $login): self
     {
@@ -378,9 +310,7 @@ class User
     }
 
     /**
-     * Get login
-     *
-     * @return boolean
+     * Get login.
      */
     public function getLogin(): bool
     {
@@ -388,22 +318,17 @@ class User
     }
 
     /**
-     * Set CGU
-     *
-     * @param boolean $CGU
-     *
-     * @return User
+     * Set CGU.
      */
     public function setCGU(bool $CGU): self
     {
         $this->CGU = $CGU;
+
         return $this;
     }
 
     /**
-     * Get CGU
-     *
-     * @return boolean
+     * Get CGU.
      */
     public function getCGU(): bool
     {
@@ -411,22 +336,17 @@ class User
     }
 
     /**
-     * Set deply
-     *
-     * @param boolean $deply
-     *
-     * @return User
+     * Set deply.
      */
     public function setDeply(bool $deply): self
     {
         $this->deply = $deply;
+
         return $this;
     }
 
     /**
-     * Get deply
-     *
-     * @return boolean
+     * Get deply.
      */
     public function getDeply(): bool
     {

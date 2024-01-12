@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,14 @@
 namespace App\Controller;
 
 use App\Entity\Formation;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormInterface;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Formation controller.
@@ -42,7 +40,9 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: 'formation')]
 class FormationController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em) {}
+    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em)
+    {
+    }
 
     /**
      * @Security("is_granted('ROLE_OBS')")
@@ -54,19 +54,19 @@ class FormationController extends AbstractController
         $em = $this->em;
 
         // Si on n'est pas admin on n'a pas accès au menu
-        $menu = $ac->isGranted('ROLE_ADMIN') ? [ ['ok' => true,'name' => 'ajouter_formation' ,'lien' => 'Ajouter une formation','commentaire'=> 'Ajouter une formation'] ] : [];
+        $menu = $ac->isGranted('ROLE_ADMIN') ? [['ok' => true, 'name' => 'ajouter_formation', 'lien' => 'Ajouter une formation', 'commentaire' => 'Ajouter une formation']] : [];
 
         return $this->render(
             'formation/liste.html.twig',
             [
             'menu' => $menu,
-            'formations' => $em->getRepository(Formation::class)->findBy([], ['numeroForm' => 'ASC'])
+            'formations' => $em->getRepository(Formation::class)->findBy([], ['numeroForm' => 'ASC']),
             ]
         );
     }
 
     /**
-     * Nouvelle formation
+     * Nouvelle formation.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
@@ -75,7 +75,7 @@ class FormationController extends AbstractController
     public function ajouterAction(Request $request): Response
     {
         $formation = new formation();
-        $form = $this->createForm('App\Form\FormationType', $formation, ['ajouter' => true ]);
+        $form = $this->createForm('App\Form\FormationType', $formation, ['ajouter' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,12 +89,12 @@ class FormationController extends AbstractController
         return $this->render(
             'formation/modif.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_formations',
                         'lien' => 'Retour vers la liste des formations',
-                        'commentaire'=> 'Retour vers la liste des formations'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des formations',
+                        ]],
             'formation' => $formation,
             'form' => $form->createView(),
             ]
@@ -102,7 +102,7 @@ class FormationController extends AbstractController
     }
 
     /**
-     * Modifier une formation
+     * Modifier une formation.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
@@ -110,7 +110,7 @@ class FormationController extends AbstractController
     #[Route(path: '/{id}/modifier', name: 'modifier_formation', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Formation $formation): Response
     {
-        $form = $this->createForm('App\Form\FormationType', $formation, ['modifier' => true ]);
+        $form = $this->createForm('App\Form\FormationType', $formation, ['modifier' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -122,12 +122,12 @@ class FormationController extends AbstractController
         return $this->render(
             'formation/modif.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_formations',
                         'lien' => 'Retour vers la liste des formations',
-                        'commentaire'=> 'Retour vers la liste des formations'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des formations',
+                        ]],
             'formation' => $formation,
             'form' => $form->createView(),
             ]
@@ -135,7 +135,7 @@ class FormationController extends AbstractController
     }
 
     /**
-     * Supprime une formation
+     * Supprime une formation.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -146,23 +146,23 @@ class FormationController extends AbstractController
         $em = $this->em;
         $em->remove($formation);
         $em->flush($formation);
+
         return $this->redirectToRoute('gerer_formations');
     }
 
     /**
-      * Creates a form to delete a formation entity.
-      *
-      * @param Formation $formation The formation entity
-      *
-      * @return \Symfony\Component\Form\Form The form
-      */
+     * Creates a form to delete a formation entity.
+     *
+     * @param Formation $formation The formation entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
     private function createDeleteForm(formation $formation): FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('formation_delete', array('id' => $formation->getId())))
+            ->setAction($this->generateUrl('formation_delete', ['id' => $formation->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;
     }
 }
-

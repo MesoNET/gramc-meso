@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 
 namespace App\GramcServices;
 
-use App\Entity\Param;
-use App\GramcServices\ServiceJournal;
 use Doctrine\ORM\EntityManagerInterface;
 
 /*
@@ -32,7 +30,9 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class ServicePhpSessions
 {
-    public function __construct(private EntityManagerInterface $em, private ServiceJournal $sj) {}
+    public function __construct(private EntityManagerInterface $em, private ServiceJournal $sj)
+    {
+    }
 
     /*******
      *
@@ -45,101 +45,89 @@ class ServicePhpSessions
      *        pas accès au service ServicePhpSessions.
      *
      *****************************************/
-    static public function clearPhpSessions(): bool
+    public static function clearPhpSessions(): bool
     {
         $dir = session_save_path();
         $scan = scandir($dir);
         $result = true;
-        foreach ($scan as $filename)
-        {
-            if ($filename != '.' && $filename != '..')
-            {
-                $path = $dir . '/' . $filename;
-                if (@unlink($path) === false)
-                {
-                    Functions::errorMessage(__METHOD__ . ':' . __LINE__ . " Le fichier $path n'a pas pu être supprimé !");
+        foreach ($scan as $filename) {
+            if ('.' != $filename && '..' != $filename) {
+                $path = $dir.'/'.$filename;
+                if (false === @unlink($path)) {
+                    Functions::errorMessage(__METHOD__.':'.__LINE__." Le fichier $path n'a pas pu être supprimé !");
                     $result = false;
                 }
             }
         }
+
         return $result;
     }
 
     /*******************************
-     * 
+     *
      * Renvoie un tableau avec la liste des connexions actives
      *
      * TODO - On fait du bas niveau ici peut-être y a-t-il
      *        des moyens plus symfoniques de faire la même chose !
-     * 
+     *
      **********************************************************/
     public function getConnexions(): array
     {
         $em = $this->em;
         $sj = $this->sj;
-        
+
         $connexions = [];
         $dir = session_save_path();
-        $sj->debugMessage(__METHOD__ . ':' . __LINE__ . "session directory = " . $dir);
+        $sj->debugMessage(__METHOD__.':'.__LINE__.'session directory = '.$dir);
 
         $scan = scandir($dir);
 
         $save = $_SESSION;
 
         $time = time();
-        foreach ($scan as $filename)
-        {
-            if ($filename != '.' && $filename != '..')
-            {
-                $atime = fileatime($dir . '/' . $filename);
-                $mtime = filemtime($dir . '/' . $filename);
-                $ctime = filectime($dir . '/' . $filename);
+        foreach ($scan as $filename) {
+            if ('.' != $filename && '..' != $filename) {
+                $atime = fileatime($dir.'/'.$filename);
+                $mtime = filemtime($dir.'/'.$filename);
+                $ctime = filectime($dir.'/'.$filename);
 
-                $diff  = intval(($time - $mtime) / 60);
-                $min   = $diff % 60;
-                $heures= intVal($diff/60);
-                $contents = file_get_contents($dir . '/' . $filename);
+                $diff = intval(($time - $mtime) / 60);
+                $min = $diff % 60;
+                $heures = intval($diff / 60);
+                $contents = file_get_contents($dir.'/'.$filename);
                 session_decode($contents);
-                if (! array_key_exists('_sf2_attributes', $_SESSION))
-                {
-                    $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Une session autre que gramc3 !");
-                }
-                else
-                {
+                if (!array_key_exists('_sf2_attributes', $_SESSION)) {
+                    $sj->errorMessage(__METHOD__.':'.__LINE__.' Une session autre que gramc3 !');
+                } else {
                     // Utilisateur du gui
-                    if (array_key_exists('_security_global_security_context', $_SESSION['_sf2_attributes']))
-                    {
+                    if (array_key_exists('_security_global_security_context', $_SESSION['_sf2_attributes'])) {
                         $secu_data = unserialize($_SESSION['_sf2_attributes']['_security_global_security_context']);
                         $individu = $secu_data->getUser();
                         $rest_individu = null;
                     }
 
                     // Api REST - firewall calc - cf. security.yaml
-                    elseif (array_key_exists('_security_calc', $_SESSION['_sf2_attributes']))
-                    {
+                    elseif (array_key_exists('_security_calc', $_SESSION['_sf2_attributes'])) {
                         $secu_data = unserialize($_SESSION['_sf2_attributes']['_security_calc']);
-                        //dd($secu_data);
+                        // dd($secu_data);
                         $individu = null;
                         $rest_individu = $secu_data->getUser();
-                        //dd($rest_individu);
-                    }
-                    else
-                    {
+                    // dd($rest_individu);
+                    } else {
                         $individu = null;
-                        $rest_individu = null;                        
+                        $rest_individu = null;
                     }
-                    if ($individu === null && $rest_individu === null) {
-                        $sj->errorMessage(__METHOD__ . ':' . __LINE__ . " Problème d'individu ");
-                    //dd($secu_data);
-                    }
-                    else
-                    {
-                        $connexions[] = [ 'user' => $individu, 'rest_user' => $rest_individu, 'minutes' => $min, 'heures' => $heures ];
+                    if (null === $individu && null === $rest_individu) {
+                        $sj->errorMessage(__METHOD__.':'.__LINE__." Problème d'individu ");
+                    // dd($secu_data);
+                    } else {
+                        $connexions[] = ['user' => $individu, 'rest_user' => $rest_individu, 'minutes' => $min, 'heures' => $heures];
                     }
                 }
             }
         }
         $_SESSION = $save;
+
         return $connexions;
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,13 @@
 namespace App\Controller;
 
 use App\Entity\Clessh;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Sso controller.
@@ -45,10 +42,11 @@ class ClesshController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private TokenStorageInterface $tok
-    ) {}
+    ) {
+    }
 
     /**
-     * Liste toutes les clés ssh associées à l'utilisateur connecté
+     * Liste toutes les clés ssh associées à l'utilisateur connecté.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -60,15 +58,16 @@ class ClesshController extends AbstractController
 
         $moi = $token->getUser();
         $menu = [];
-        $menu[] = ['ok' => true,'name' => 'gerer_clessh_all' ,'lien' => 'Montrer tout','commentaire'=> 'Montrer aussi les clés révoquées'];
-        $menu[] = ['ok' => true,'name' => 'ajouter_clessh' ,'lien' => 'Ajouter une clé','commentaire'=> 'Ajouter une clé'];
+        $menu[] = ['ok' => true, 'name' => 'gerer_clessh_all', 'lien' => 'Montrer tout', 'commentaire' => 'Montrer aussi les clés révoquées'];
+        $menu[] = ['ok' => true, 'name' => 'ajouter_clessh', 'lien' => 'Ajouter une clé', 'commentaire' => 'Ajouter une clé'];
 
         // On filtre en ne présentant pas les clés révoquées !
         $clessh_all = $moi->getClessh();
         $clessh = [];
-        foreach ($clessh_all as $c)
-        {
-            if ($c->getRvk()) continue;
+        foreach ($clessh_all as $c) {
+            if ($c->getRvk()) {
+                continue;
+            }
             $clessh[] = $c;
         }
 
@@ -76,13 +75,13 @@ class ClesshController extends AbstractController
             'clessh/liste.html.twig',
             [
             'menu' => $menu,
-            'clessh' => $clessh
+            'clessh' => $clessh,
             ]
         );
     }
 
     /**
-     * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées
+     * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -94,8 +93,8 @@ class ClesshController extends AbstractController
 
         $moi = $token->getUser();
         $menu = [];
-        $menu[] = ['ok' => true,'name' => 'gerer_clessh' ,'lien' => 'Masquer','commentaire'=> 'Masquer les clés révoquées'];
-        $menu[] = ['ok' => true,'name' => 'ajouter_clessh' ,'lien' => 'Ajouter une clé','commentaire'=> 'Ajouter une clé'];
+        $menu[] = ['ok' => true, 'name' => 'gerer_clessh', 'lien' => 'Masquer', 'commentaire' => 'Masquer les clés révoquées'];
+        $menu[] = ['ok' => true, 'name' => 'ajouter_clessh', 'lien' => 'Ajouter une clé', 'commentaire' => 'Ajouter une clé'];
 
         // On filtre en ne présentant pas les clés révoquées !
         $clessh_all = $moi->getClessh();
@@ -104,13 +103,13 @@ class ClesshController extends AbstractController
             'clessh/liste.html.twig',
             [
             'menu' => $menu,
-            'clessh' => $clessh_all
+            'clessh' => $clessh_all,
             ]
         );
     }
 
     /**
-     * Supprime une clé
+     * Supprime une clé.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("DELETE")
@@ -118,33 +117,27 @@ class ClesshController extends AbstractController
     #[Route(path: '/{id}/supprimer', name: 'supprimer_clessh', methods: ['GET'])]
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {
-
         // On n'a pas le droit de supprimer une clé ssh révoquée !
-        if ($clessh->getRvk())
-        {
+        if ($clessh->getRvk()) {
             $msg = "Cette clé est révoquée, vous ne pouvez ni la supprimer, ni l'utiliser";
-            $request->getSession()->getFlashbag()->add("flash erreur",$msg);
-        }
-        else
-        {
+            $request->getSession()->getFlashbag()->add('flash erreur', $msg);
+        } else {
             $em = $this->em;
             $em->remove($clessh);
-    
+
             try {
                 $em->flush();
-            }
-            catch ( \Exception $e)
-            {
-                $msg = "Votre clé est utilisée dans un de vos projets, on ne peut pas la supprimer";
-                $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+            } catch (\Exception $e) {
+                $msg = 'Votre clé est utilisée dans un de vos projets, on ne peut pas la supprimer';
+                $request->getSession()->getFlashbag()->add('flash erreur', $msg);
             }
         }
-        
+
         return $this->redirectToRoute('gerer_clessh');
     }
 
     /**
-     * Ajoute une nouvelle cléssh
+     * Ajoute une nouvelle cléssh.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -162,10 +155,8 @@ class ClesshController extends AbstractController
         $form = $this->createForm('App\Form\ClesshType', $clessh);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted())
-        {
-            if ($form->isValid())
-            {
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
                 // On garde l'empreinte de la clé ssh dans la base de données pour être sûr de l'unicité de chaque clé ssh
 
                 // TODO ssh-keygen est appelé ici pour la SECONDE FOIS car il a déjà été appelé
@@ -176,28 +167,25 @@ class ClesshController extends AbstractController
 
                 $o = [];
                 $pub = $clessh->getPub();
-                exec("/bin/bash -c 'ssh-keygen -l -f <(echo $pub)'",$o,$c);
-                $empreinte = explode(' ',$o[0]);
+                exec("/bin/bash -c 'ssh-keygen -l -f <(echo $pub)'", $o, $c);
+                $empreinte = explode(' ', $o[0]);
                 $clessh->setEmp($empreinte[1]);
 
                 $em = $this->em;
                 $em->persist($clessh);
-                try
-                {
+                try {
                     $em->flush();
-                }
-                catch ( \Exception $e)
-                {
+                } catch (\Exception $e) {
                     $msg = "La clé n'a pas été ajoutée: Vous ne pouvez pas avoir deux fois la même clé, ou le même nom de clé.
                     Ou pire, quelqu'un a la même clé que vous";
-                    $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+                    $request->getSession()->getFlashbag()->add('flash erreur', $msg);
                 }
+
                 return $this->redirectToRoute('gerer_clessh');
-            }
-            else
-            {
+            } else {
                 $msg = "La clé n'a pas été ajoutée: elle n'est pas valide. Seuls certains types de clé sont autorisés";
-                $request->getSession()->getFlashbag()->add("flash erreur",$msg);
+                $request->getSession()->getFlashbag()->add('flash erreur', $msg);
+
                 return $this->redirectToRoute('gerer_clessh');
             }
         }
@@ -205,12 +193,12 @@ class ClesshController extends AbstractController
         return $this->render(
             'clessh/ajouter.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_clessh',
                         'lien' => 'Clés ssh',
-                        'commentaire'=> 'Retour vers la liste des clé ssh'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des clé ssh',
+                        ]],
             'laboratoire' => $clessh,
             'form' => $form->createView(),
             ]

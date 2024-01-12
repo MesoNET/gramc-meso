@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,16 +24,10 @@
 
 namespace App\Form\IndividuForm;
 
-use     App\Entity\Statut;
-use     App\Entity\Etablissement;
-use     App\Entity\Laboratoire;
-use     App\Entity\Individu;
-use     App\Utils\Functions;
-
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use App\Entity\Individu;
 use App\GramcServices\ServiceJournal;
-use Doctrine\ORM\EntityManager;
+use App\Utils\Functions;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**************************************************************************
  * Cette classe (qui ne dérive PAS de form !) est utilisée par l'écran des collaborateurs
@@ -58,34 +52,34 @@ class IndividuForm
 
     public function __construct(private array $srv_noms = [], Individu $individu = null)
     {
-        foreach ($srv_noms as $n)
-        {
+        foreach ($srv_noms as $n) {
             $this->logins[$n] = false;
         }
         $this->deleted = false;
         $this->responsable = false;
-        if ($individu != null) {
-            $this->mail          = $individu->getMail();
-            $this->prenom        = $individu->getPrenom();
-            $this->nom           = $individu->getNom();
-            $this->statut        = $individu->getStatut();
-            $this->laboratoire   = $individu->getLabo();
+        if (null != $individu) {
+            $this->mail = $individu->getMail();
+            $this->prenom = $individu->getPrenom();
+            $this->nom = $individu->getNom();
+            $this->statut = $individu->getStatut();
+            $this->laboratoire = $individu->getLabo();
             $this->etablissement = $individu->getEtab();
-            $this->id            = $individu->getId();
+            $this->id = $individu->getId();
         }
     }
 
     public function __toString()
     {
         $output = '';
-        if ($this->getDeleted() == true) {
+        if (true == $this->getDeleted()) {
             $output .= 'SUPPRIMER COLLABORATEUR ';
         }
-        if ($this->getResponsable() == true) {
+        if (true == $this->getResponsable()) {
             $output .= 'RESPONSABLE:';
         }
-        $output .= $this->getMail() . ':' .  $this->getPrenom() . ':' . $this->getNom() . ':'. $this->getStatut() .':';
-        $output .= $this->getLaboratoire() . ':' . $this->getEtablissement() . ':' . $this->getId();
+        $output .= $this->getMail().':'.$this->getPrenom().':'.$this->getNom().':'.$this->getStatut().':';
+        $output .= $this->getLaboratoire().':'.$this->getEtablissement().':'.$this->getId();
+
         return $output;
     }
 
@@ -93,23 +87,26 @@ class IndividuForm
     {
         return $this->logins;
     }
+
     public function setLogins(array $logins): self
     {
         $this->logins = [];
-        foreach ($logins as $k => $l)
-        {
+        foreach ($logins as $k => $l) {
             $this->logins[$k] = empty($l) ? false : true;
         }
+
         return $this;
     }
-    
+
     public function getResponsable()
     {
         return $this->responsable;
     }
+
     public function setResponsable($responsable)
     {
         $this->responsable = $responsable;
+
         return $this;
     }
 
@@ -117,9 +114,11 @@ class IndividuForm
     {
         return $this->deleted;
     }
+
     public function setDeleted($deleted)
     {
         $this->deleted = $deleted;
+
         return $this;
     }
 
@@ -127,9 +126,11 @@ class IndividuForm
     {
         return $this->mail;
     }
+
     public function setMail($mail)
     {
         $this->mail = $mail;
+
         return $this;
     }
 
@@ -137,9 +138,11 @@ class IndividuForm
     {
         return $this->id;
     }
+
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -147,9 +150,11 @@ class IndividuForm
     {
         return $this->prenom;
     }
+
     public function setPrenom($prenom)
     {
         $this->prenom = $prenom;
+
         return $this;
     }
 
@@ -157,9 +162,11 @@ class IndividuForm
     {
         return $this->nom;
     }
+
     public function setNom($nom)
     {
         $this->nom = $nom;
+
         return $this;
     }
 
@@ -167,9 +174,11 @@ class IndividuForm
     {
         return $this->statut;
     }
+
     public function setStatut($statut)
     {
         $this->statut = $statut;
+
         return $this;
     }
 
@@ -177,9 +186,11 @@ class IndividuForm
     {
         return $this->laboratoire;
     }
+
     public function setLaboratoire($laboratoire)
     {
         $this->laboratoire = $laboratoire;
+
         return $this;
     }
 
@@ -187,13 +198,15 @@ class IndividuForm
     {
         return $this->etablissement;
     }
+
     public function setEtablissement($etablissement)
     {
         $this->etablissement = $etablissement;
+
         return $this;
     }
 
-    //////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////
 
     /************************************************************
      * Crée un nouvel individu à partir des informations du formulaire
@@ -214,58 +227,57 @@ class IndividuForm
         // Validation
         $erreurs = Functions::dataError($sval, $individu);
         if (count($erreurs) > 0) {
-            ////$this->sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' ERREURS = '. print_r($erreurs,true));
+            // //$this->sj->debugMessage(__METHOD__ . ':' . __LINE__ . ' ERREURS = '. print_r($erreurs,true));
             return null;
         }
+
         return $individu;
     }
 
     /*****
-     * 
+     *
      * Synchronise l'entité $individu à partir du formulaire
      * (à l'exception du mail qui sert à identifier l'individu)
      *
      * $onlyNom = Si true, la modif ne concerne QUE nom et prénom
-     * 
+     *
      *****/
     public function modifyIndividu(Individu $individu, ServiceJournal $sj, bool $onlyNom)
     {
-        if ($individu != null)
-        {
+        if (null != $individu) {
             if (!empty($this->getNom()) && $individu->getNom() != $this->getNom()) {
-                $sj->warningMessage("Le nom de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
-                                    $individu->getNom() . " vers " . $this->getNom());
+                $sj->warningMessage("Le nom de l'individu ".$individu.' id('.$individu->getIdIndividu().') a été modifié de '.
+                                    $individu->getNom().' vers '.$this->getNom());
                 $individu->setNom($this->getNom());
             }
 
             if (!empty($this->getPrenom()) && $individu->getPrenom() != $this->getPrenom()) {
-                $sj->warningMessage("Le prénom de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
-                                    $individu->getPrenom() . " vers " . $this->getPrenom());
+                $sj->warningMessage("Le prénom de l'individu ".$individu.' id('.$individu->getIdIndividu().') a été modifié de '.
+                                    $individu->getPrenom().' vers '.$this->getPrenom());
                 $individu->setPrenom($this->getPrenom());
             }
 
-            if (!$onlyNom)
-            {
-
+            if (!$onlyNom) {
                 if ($individu->getLabo() != $this->getLaboratoire()) {
-                    $sj->warningMessage("Le laboratoire de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
-                                        $individu->getLabo() . " vers " . $this->getLaboratoire());
+                    $sj->warningMessage("Le laboratoire de l'individu ".$individu.' id('.$individu->getIdIndividu().') a été modifié de '.
+                                        $individu->getLabo().' vers '.$this->getLaboratoire());
                     $individu->setLabo($this->getLaboratoire());
                 }
-    
+
                 if ($individu->getEtab() != $this->getEtablissement()) {
-                    $sj->warningMessage("L'établissement de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
-                                        $individu->getEtab() . " vers " . $this->getEtablissement());
+                    $sj->warningMessage("L'établissement de l'individu ".$individu.' id('.$individu->getIdIndividu().') a été modifié de '.
+                                        $individu->getEtab().' vers '.$this->getEtablissement());
                     $individu->setEtab($this->getEtablissement());
                 }
-    
+
                 if ($individu->getStatut() != $this->getStatut()) {
-                    $sj->warningMessage("Le statut de l'individu " .$individu . " id(" . $individu->getIdIndividu() . ") a été modifié de " .
-                                        $individu->getStatut() . " vers " . $this->getStatut());
+                    $sj->warningMessage("Le statut de l'individu ".$individu.' id('.$individu->getIdIndividu().') a été modifié de '.
+                                        $individu->getStatut().' vers '.$this->getStatut());
                     $individu->setStatut($this->getStatut());
                 }
             }
         }
+
         return $individu;
     }
 }

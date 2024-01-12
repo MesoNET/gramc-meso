@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,10 @@
 
 namespace App\GramcServices\Workflow;
 
-use App\Utils\Functions;
 use App\GramcServices\Etat;
-use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceSessions;
-
 use Doctrine\ORM\EntityManagerInterface;
 
 /***********************************************************************************************
@@ -41,17 +39,17 @@ use Doctrine\ORM\EntityManagerInterface;
  **********************************************************************/
 abstract class Workflow
 {
-    protected $states             = [];	// Contient les objets State encapsulés par ce workflow
-    protected $workflowIdentifier = null;
+    protected $states = [];	// Contient les objets State encapsulés par ce workflow
+    protected $workflowIdentifier;
 
     /*************************
      * Le constructeur = Sera surchargé par les classes dérivées afin
      * de mettre les transitions possibles
      ******************************************/
     public function __construct(protected ServiceNotifications $sn,
-                                protected ServiceJournal $sj,
-                                protected ServiceSessions $ss,
-                                protected EntityManagerInterface $em)
+        protected ServiceJournal $sj,
+        protected ServiceSessions $ss,
+        protected EntityManagerInterface $em)
     {
         $this->workflowIdentifier = get_class($this);
     }
@@ -64,6 +62,7 @@ abstract class Workflow
     public function getWorkflowIdentifier()
     {
         $reflect = new \ReflectionClass($this);
+
         return $reflect->getShortName();
     }
 
@@ -72,18 +71,15 @@ abstract class Workflow
      ************************************************************************/
     protected function getObjectState(object $object): int
     {
-        if ($object == null)
-        {
-            $this->sj->errorMessage(__METHOD__  . ":" . __LINE__ . " getObjectState on object null");
+        if (null == $object) {
+            $this->sj->errorMessage(__METHOD__.':'.__LINE__.' getObjectState on object null');
+
             return Etat::INVALIDE;
-        }
-        elseif (method_exists($object, 'getObjectState'))
-        {
+        } elseif (method_exists($object, 'getObjectState')) {
             return $object->getObjectState($this->workflowIdentifier);
-        }
-        else
-        {
-            $this->sj->errorMessage(__METHOD__ . ":" . __LINE__ . " getObjectState n'existe pas pour la class ". get_class($object));
+        } else {
+            $this->sj->errorMessage(__METHOD__.':'.__LINE__." getObjectState n'existe pas pour la class ".get_class($object));
+
             return Etat::INVALIDE;
         }
     }
@@ -104,6 +100,7 @@ abstract class Workflow
         foreach ($transition_array as $t) {
             $t->setServices($this->sn, $this->sj, $this->ss, $this->em);
         }
+
         return $this;
     }
 
@@ -130,12 +127,9 @@ abstract class Workflow
      *************************************************/
     public function getState(int $stateConstant): State|null
     {
-        if (isset($this->states[$stateConstant]))
-        {
+        if (isset($this->states[$stateConstant])) {
             return $this->states[$stateConstant];
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
@@ -151,21 +145,21 @@ abstract class Workflow
      **************************************************************/
     public function execute(int $signal, object $object): bool
     {
-        if ($object == null) {
-            $this->sj->warningMessage(__METHOD__ ." on a null object dans " . $this->workflowIdentifier);
-            return  false;
+        if (null == $object) {
+            $this->sj->warningMessage(__METHOD__.' on a null object dans '.$this->workflowIdentifier);
+
+            return false;
         }
 
         $state = $this->getObjectState($object);
         if ($this->hasState($state)) {
             return $this->getState($state)->execute($signal, $object);
-        }
+        } else {
+            echo __METHOD__.':'.__LINE__.' état '.Etat::getLibelle($state)
+                    .'('.$state.") n'existe pas dans ".$this->getWorkflowIdentifier()."\n";
+            $this->sj->warningMessage(__METHOD__.':'.__LINE__.' état '.Etat::getLibelle($state)
+                    .'('.$state.") n'existe pas dans ".$this->getWorkflowIdentifier());
 
-        else {
-            echo __METHOD__ .  ":" . __LINE__ . " état " . Etat::getLibelle($state)
-                    . "(" . $state . ") n'existe pas dans " . $this->getWorkflowIdentifier()."\n";
-            $this->sj->warningMessage(__METHOD__ .  ":" . __LINE__ . " état " . Etat::getLibelle($state)
-                    . "(" . $state . ") n'existe pas dans " . $this->getWorkflowIdentifier());
             return false;
         }
     }
@@ -184,7 +178,6 @@ abstract class Workflow
         $state = $this->getObjectState($object);
         if ($this->hasState($state)) {
             return $this->states[$state]->canExecute($transition_code, $object);
-            
         } else {
             return false;
         }
@@ -197,10 +190,11 @@ abstract class Workflow
 
     public function __toString(): string
     {
-        $output = "workflow(" . $this->getWorkflowIdentifier() . ":";
+        $output = 'workflow('.$this->getWorkflowIdentifier().':';
         foreach ($this->states as $state) {
             $output .= $state->__toString().',';
         }
-        return $output . ")";
+
+        return $output.')';
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,12 @@
 namespace App\Controller;
 
 use App\Entity\Sso;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Sso controller.
@@ -42,10 +40,10 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: 'sso')]
 class SsoController extends AbstractController
 {
-
     public function __construct(
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * Lists all sso entities.
@@ -57,9 +55,9 @@ class SsoController extends AbstractController
 
         $ssos = $em->getRepository(Sso::class)->findAll();
 
-        return $this->render('sso/index.html.twig', array(
+        return $this->render('sso/index.html.twig', [
             'ssos' => $ssos,
-        ));
+        ]);
     }
 
     /**
@@ -77,13 +75,13 @@ class SsoController extends AbstractController
             $em->persist($sso);
             $em->flush($sso);
 
-            return $this->redirectToRoute('sso_show', array('id' => $sso->getId()));
+            return $this->redirectToRoute('sso_show', ['id' => $sso->getId()]);
         }
 
-        return $this->render('sso/new.html.twig', array(
+        return $this->render('sso/new.html.twig', [
             'sso' => $sso,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -94,10 +92,10 @@ class SsoController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($sso);
 
-        return $this->render('sso/show.html.twig', array(
+        return $this->render('sso/show.html.twig', [
             'sso' => $sso,
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -113,14 +111,14 @@ class SsoController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->em->flush();
 
-            return $this->redirectToRoute('sso_edit', array('id' => $sso->getId()));
+            return $this->redirectToRoute('sso_edit', ['id' => $sso->getId()]);
         }
 
-        return $this->render('sso/edit.html.twig', array(
+        return $this->render('sso/edit.html.twig', [
             'sso' => $sso,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -151,7 +149,7 @@ class SsoController extends AbstractController
     private function createDeleteForm(Sso $sso): Response
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('sso_delete', array('id' => $sso->getId())))
+            ->setAction($this->generateUrl('sso_delete', ['id' => $sso->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;

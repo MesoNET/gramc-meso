@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,24 +24,22 @@
 
 namespace App\GramcServices\Workflow\Rallonge4;
 
-use App\GramcServices\Workflow\Transition;
-
-use App\Utils\Functions;
-use App\GramcServices\Etat;
-use App\GramcServices\Signal;
 use App\Entity\Rallonge;
-use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
+use App\GramcServices\Etat;
+use App\GramcServices\Workflow\Transition;
 
 class Rallonge4Transition extends Transition
 {
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
 
-    public function canExecute(object $rallonge): bool {
+    public function canExecute(object $rallonge): bool
+    {
         $rallonge instanceof Rallonge || throw new \InvalidArgumentException();
+
         return true;
     }
 
-    ///////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////
 
     public function execute(object $rallonge): bool
     {
@@ -49,14 +47,14 @@ class Rallonge4Transition extends Transition
 
         // Si on passe en état ACTIF, on signale aux hébergeurs qu'ils ont des choses à faire
         // Pas besoin de sauvegarder ce sera fait par changeEtat
-        if ($this->getetat() === Etat::ACTIF)
-        {
-            foreach ($rallonge->getDar() as $d)
-            {
-                if ($d->getAttribution() > 0) $d->setTodof(true);
+        if (Etat::ACTIF === $this->getetat()) {
+            foreach ($rallonge->getDar() as $d) {
+                if ($d->getAttribution() > 0) {
+                    $d->setTodof(true);
+                }
             }
         }
-        
+
         // Change l'état de la rallonge
         $this->changeEtat($rallonge);
 

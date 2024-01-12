@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,18 @@
 
 namespace App\Entity;
 
+use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\EquatableInterface;
-
-use App\Utils\Functions;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Individu
+ * Individu.
  *
  * Le "compte gramc-meso"...
  */
@@ -50,38 +48,38 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
-    public const INCONNU       = 0;
-    public const POSTDOC       = 1;
-    public const ATER          = 2;
-    public const DOCTORANT     = 3;
-    public const ENSEIGNANT    = 11;
-    public const CHERCHEUR     = 12;
-    public const INGENIEUR     = 14;
+    public const INCONNU = 0;
+    public const POSTDOC = 1;
+    public const ATER = 2;
+    public const DOCTORANT = 3;
+    public const ENSEIGNANT = 11;
+    public const CHERCHEUR = 12;
+    public const INGENIEUR = 14;
 
     /* LIBELLE DES STATUTS */
     public const LIBELLE_STATUT =
         [
-        self::INCONNU     => 'INCONNU',
-        self::POSTDOC     => 'Post-doctorant',
-        self::ATER        => 'ATER',
-        self::DOCTORANT   => 'Doctorant',
-        self::ENSEIGNANT  => 'Enseignant',
-        self::CHERCHEUR   => 'Chercheur',
-        self::INGENIEUR   => 'Ingénieur'
+        self::INCONNU => 'INCONNU',
+        self::POSTDOC => 'Post-doctorant',
+        self::ATER => 'ATER',
+        self::DOCTORANT => 'Doctorant',
+        self::ENSEIGNANT => 'Enseignant',
+        self::CHERCHEUR => 'Chercheur',
+        self::INGENIEUR => 'Ingénieur',
         ];
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->thematique = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->journal = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sso = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->clessh = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->thematique = new ArrayCollection();
+        $this->expertise = new ArrayCollection();
+        $this->journal = new ArrayCollection();
+        $this->sso = new ArrayCollection();
+        $this->collaborateurVersion = new ArrayCollection();
+        $this->clessh = new ArrayCollection();
+        $this->user = new ArrayCollection();
     }
 
     /**
@@ -110,56 +108,56 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     private $mail;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'admin', type: 'boolean', nullable: false)]
     private $admin = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'sysadmin', type: 'boolean', nullable: false)]
     private $sysadmin = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'obs', type: 'boolean', nullable: false)]
     private $obs = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'expert', type: 'boolean', nullable: false)]
     private $expert = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'valideur', type: 'boolean', nullable: false)]
     private $valideur = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'president', type: 'boolean', nullable: false)]
     private $president = false;
 
     /**
-     * @var \App\Entity\Statut
+     * @var Statut
      */
     #[ORM\JoinColumn(name: 'id_statut', referencedColumnName: 'id_statut')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Statut', inversedBy: 'individu')]
     private $statut;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'desactive', type: 'boolean', nullable: false)]
     private $desactive = false;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_individu', type: 'integer')]
     #[ORM\Id]
@@ -167,104 +165,93 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     private $idIndividu;
 
     /**
-     * @var \App\Entity\Laboratoire
+     * @var Laboratoire
      */
     #[ORM\JoinColumn(name: 'id_labo', referencedColumnName: 'id_labo')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', cascade: ['persist'], inversedBy: 'individu')]
     private $labo;
 
     /**
-     * @var \App\Entity\Etablissement
+     * @var Etablissement
      */
     #[ORM\JoinColumn(name: 'id_etab', referencedColumnName: 'id_etab')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Etablissement', inversedBy: 'individu')]
     private $etab;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Thematique', mappedBy: 'expert')]
     private $thematique;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(mappedBy: 'individu', targetEntity: '\App\Entity\Sso')]
     private $sso;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Clessh', mappedBy: 'individu')]
     private $clessh;
 
-
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'collaborateur')]
     private $collaborateurVersion;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
     private $user;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'expert')]
     private $expertise;
 
-
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: 'App\Entity\Journal', mappedBy: 'individu')]
     private $journal;
 
-    ///////////////////////////////////////////
+    // /////////////////////////////////////////
     #[ORM\PrePersist]
     public function setInitialMajStamp(): void
     {
         $this->creationStamp = new \DateTime();
     }
 
-    //////////////////////////////////////////
+    // ////////////////////////////////////////
 
     public function __toString()
     {
-        if ($this->getPrenom() !== null ||  $this->getNom() != null)
-        {
-            return $this->getPrenom() . ' ' . $this->getNom();
-        }
-        elseif ($this->getMail() !== null)
-        {
+        if (null !== $this->getPrenom() || null != $this->getNom()) {
+            return $this->getPrenom().' '.$this->getNom();
+        } elseif (null !== $this->getMail()) {
             return $this->getMail();
-        }
-        else
-        {
+        } else {
             return 'sans prénom, nom et mail';
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     /* Pour verifier que deux objets sont égaux, utiliser cet interface et pas == ! */
-    public function isEqualTo(UserInterface $user) : bool
+    public function isEqualTo(UserInterface $user): bool
     {
-        if ($user === null || !$user instanceof Individu)
-        {
+        if (null === $user || !$user instanceof Individu) {
             return false;
         }
 
-        if ($this->idIndividu !== $user->getId())
-        {
+        if ($this->idIndividu !== $user->getId()) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
@@ -275,15 +262,31 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     // implementation UserInterface
-    public function getUserIdentifier(): string { return $this->getId();}
-    public function getUsername(): ?string { return $this->getMail();}
-    public function getSalt(): ?string { return null;}
-    public function getPassword(): ?string { return "";}
+    public function getUserIdentifier(): string
+    {
+        return $this->getId();
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->getMail();
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function getPassword(): ?string
+    {
+        return '';
+    }
+
     public function eraseCredentials(): void
-    {}
+    {
+    }
 
-
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     /* LES ROLES DEFINIS DANS L'APPLICATION
      *     - ROLE_DEMANDEUR = Peut demander des ressoureces - Le minimum
@@ -299,37 +302,29 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     {
         $roles[] = 'ROLE_DEMANDEUR';
 
-        if ($this->getAdmin() === true)
-        {
+        if (true === $this->getAdmin()) {
             $roles[] = 'ROLE_ADMIN';
             $roles[] = 'ROLE_OBS';
             $roles[] = 'ROLE_ALLOWED_TO_SWITCH';
         }
 
-        if ($this->getPresident() === true)
-        {
+        if (true === $this->getPresident()) {
             $roles[] = 'ROLE_PRESIDENT';
             $roles[] = 'ROLE_EXPERT';
-        }
-
-        elseif ($this->getExpert() === true)
-        {
+        } elseif (true === $this->getExpert()) {
             $roles[] = 'ROLE_EXPERT';
         }
 
-        if ($this->getValideur() === true)
-        {
+        if (true === $this->getValideur()) {
             $roles[] = 'ROLE_VALIDEUR';
             $roles[] = 'ROLE_OBS';
         }
 
-        if ($this->getObs() === true)
-        {
+        if (true === $this->getObs()) {
             $roles[] = 'ROLE_OBS';
         }
 
-        if ($this->getSysadmin() === true)
-        {
+        if (true === $this->getSysadmin()) {
             $roles[] = 'ROLE_SYSADMIN';
             $roles[] = 'ROLE_OBS';
         }
@@ -337,16 +332,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         return $roles;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Set creationStamp
-     *
-     * @param \DateTime $creationStamp
-     *
-     * @return Individu
+     * Set creationStamp.
      */
-    public function setCreationStamp(\Datetime $creationStamp): self
+    public function setCreationStamp(\DateTime $creationStamp): self
     {
         $this->creationStamp = $creationStamp;
 
@@ -354,21 +345,15 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get creationStamp
-     *
-     * @return \DateTime
+     * Get creationStamp.
      */
-    public function getCreationStamp(): \Datetime
+    public function getCreationStamp(): \DateTime
     {
         return $this->creationStamp;
     }
 
     /**
-     * Set nom
-     *
-     * @param string $nom
-     *
-     * @return Individu
+     * Set nom.
      */
     public function setNom(?string $nom): self
     {
@@ -378,9 +363,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get nom
-     *
-     * @return string
+     * Get nom.
      */
     public function getNom(): ?string
     {
@@ -388,11 +371,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set prenom
-     *
-     * @param string $prenom
-     *
-     * @return Individu
+     * Set prenom.
      */
     public function setPrenom(?string $prenom): self
     {
@@ -402,9 +381,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get prenom
-     *
-     * @return string
+     * Get prenom.
      */
     public function getPrenom(): ?string
     {
@@ -412,27 +389,22 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set mail
-     *
-     * @param string $mail
-     *
-     * @return Individu
+     * Set mail.
      */
     public function setMail(string $mail): self
     {
         // Suppression des accents et autres ç
         // voir https://stackoverflow.com/questions/1284535/php-transliteration
-        //$mail_ascii = transliterator_transliterate('Any-Latin;Latin-ASCII;', $mail);
-        //$this->mail = $mail_ascii;
+        // $mail_ascii = transliterator_transliterate('Any-Latin;Latin-ASCII;', $mail);
+        // $this->mail = $mail_ascii;
         // Ne fonctionne pas ! plantage dans connection_dbg (???)
         $this->mail = $mail;
+
         return $this;
     }
 
     /**
-     * Get mail
-     *
-     * @return string
+     * Get mail.
      */
     public function getMail(): ?string
     {
@@ -440,11 +412,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set admin
-     *
-     * @param boolean $admin
-     *
-     * @return Individu
+     * Set admin.
      */
     public function setAdmin(bool $admin): self
     {
@@ -454,9 +422,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get admin
-     *
-     * @return boolean
+     * Get admin.
      */
     public function getAdmin(): bool
     {
@@ -464,11 +430,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set sysadmin
-     *
-     * @param boolean $sysadmin
-     *
-     * @return Individu
+     * Set sysadmin.
      */
     public function setSysadmin(bool $sysadmin): self
     {
@@ -478,9 +440,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get sysadmin
-     *
-     * @return boolean
+     * Get sysadmin.
      */
     public function getSysadmin(): bool
     {
@@ -488,11 +448,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set obs
-     *
-     * @param boolean $obs
-     *
-     * @return Individu
+     * Set obs.
      */
     public function setObs(bool $obs): self
     {
@@ -502,9 +458,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get obs
-     *
-     * @return boolean
+     * Get obs.
      */
     public function getObs(): bool
     {
@@ -512,11 +466,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set expert
-     *
-     * @param boolean $expert
-     *
-     * @return Individu
+     * Set expert.
      */
     public function setExpert(bool $expert): self
     {
@@ -526,9 +476,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get expert
-     *
-     * @return boolean
+     * Get expert.
      */
     public function getExpert(): bool
     {
@@ -536,11 +484,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set valideur
-     *
-     * @param boolean $valideur
-     *
-     * @return Individu
+     * Set valideur.
      */
     public function setValideur(bool $valideur): self
     {
@@ -550,9 +494,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get valideur
-     *
-     * @return boolean
+     * Get valideur.
      */
     public function getValideur(): bool
     {
@@ -560,22 +502,17 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set president
-     *
-     * @param boolean $president
-     *
-     * @return Individu
+     * Set president.
      */
     public function setPresident(bool $president): self
     {
         $this->president = $president;
+
         return $this;
     }
 
     /**
-     * Get president
-     *
-     * @return boolean
+     * Get president.
      */
     public function getPresident(): bool
     {
@@ -583,11 +520,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set desactive
-     *
-     * @param boolean $desactive
-     *
-     * @return Individu
+     * Set desactive.
      */
     public function setDesactive(bool $desactive): self
     {
@@ -597,9 +530,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get desactive
-     *
-     * @return boolean
+     * Get desactive.
      */
     public function getDesactive(): bool
     {
@@ -607,9 +538,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get idIndividu
-     *
-     * @return integer
+     * Get idIndividu.
      */
     public function getIdIndividu(): ?int
     {
@@ -617,13 +546,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Set statut
-     *
-     * @param \App\Entity\Statut $statut
-     *
-     * @return Individu
+     * Set statut.
      */
-    public function setStatut(?\App\Entity\Statut $statut = null): self
+    public function setStatut(Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -631,23 +556,17 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get statut
-     *
-     * @return \App\Entity\Statut
+     * Get statut.
      */
-    public function getStatut(): ?\App\Entity\Statut
+    public function getStatut(): ?Statut
     {
         return $this->statut;
     }
 
     /**
-     * Set labo
-     *
-     * @param \App\Entity\Laboratoire $labo
-     *
-     * @return Individu
+     * Set labo.
      */
-    public function setLabo(?\App\Entity\Laboratoire $labo = null): self
+    public function setLabo(Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -655,23 +574,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get labo
-     *
-     * @return \App\Entity\Laboratoire
+     * Get labo.
      */
-    public function getLabo(): ?\App\Entity\Laboratoire
+    public function getLabo(): ?Laboratoire
     {
         return $this->labo;
     }
 
     /**
-     * Set etab
-     *
-     * @param \App\Entity\Etablissement $etab
+     * Set etab.
      *
      * @return Individu
      */
-    public function setEtab(?\App\Entity\Etablissement $etab = null)
+    public function setEtab(Etablissement $etab = null)
     {
         $this->etab = $etab;
 
@@ -679,26 +594,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Get etab
-     *
-     * @return \App\Entity\Etablissement
+     * Get etab.
      */
-    public function getEtab(): ?\App\Entity\Etablissement
+    public function getEtab(): ?Etablissement
     {
         return $this->etab;
     }
 
     /**
-     * Add thematique
-     *
-     * @param \App\Entity\Thematique $thematique
-     *
-     * @return Individu
+     * Add thematique.
      */
-    public function addThematique(\App\Entity\Thematique $thematique): self
+    public function addThematique(Thematique $thematique): self
     {
-        if (! $this->thematique->contains($thematique))
-        {
+        if (!$this->thematique->contains($thematique)) {
             $this->thematique[] = $thematique;
         }
 
@@ -706,20 +614,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Remove thematique
-     *
-     * @param \App\Entity\Thematique $thematique
+     * Remove thematique.
      */
-    public function removeThematique(\App\Entity\Thematique $thematique): self
+    public function removeThematique(Thematique $thematique): self
     {
         $this->thematique->removeElement($thematique);
+
         return $this;
     }
 
     /**
-     * Get thematique
+     * Get thematique.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getThematique()
     {
@@ -727,16 +634,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add sso
-     *
-     * @param \App\Entity\Sso $sso
-     *
-     * @return Individu
+     * Add sso.
      */
-    public function addSso(\App\Entity\Sso $sso): self
+    public function addSso(Sso $sso): self
     {
-        if (! $this->sso->contains($sso))
-        {
+        if (!$this->sso->contains($sso)) {
             $this->sso[] = $sso;
         }
 
@@ -744,20 +646,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Remove sso
-     *
-     * @param \App\Entity\Sso $sso
+     * Remove sso.
      */
-    public function removeSso(\App\Entity\Sso $sso): self
+    public function removeSso(Sso $sso): self
     {
         $this->sso->removeElement($sso);
+
         return $this;
     }
 
     /**
-     * Get sso
+     * Get sso.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getSso()
     {
@@ -765,38 +666,31 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add clessh
-     *
-     * @param \App\Entity\Clessh $clessh
-     *
-     * @return Individu
+     * Add clessh.
      */
-    public function addClessh(\App\Entity\Clessh $clessh): self
+    public function addClessh(Clessh $clessh): self
     {
-        if (! $this->clessh->contains($clessh))
-        {
+        if (!$this->clessh->contains($clessh)) {
             $this->clessh[] = $clessh;
         }
+
         return $this;
     }
 
     /**
-     * Remove clessh
-     *
-     * @param \App\Entity\Clessh $clessh
-     *
-     * @return Individu
+     * Remove clessh.
      */
-    public function removeClessh(\App\Entity\Clessh $clessh): self
+    public function removeClessh(Clessh $clessh): self
     {
         $this->clessh->removeElement($clessh);
+
         return $this;
     }
 
     /**
-     * Get clessh
+     * Get clessh.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getClessh()
     {
@@ -804,16 +698,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
-     *
-     * @return Individu
+     * Add collaborateurVersion.
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function addCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
-        if (! $this->collaborateurVersion->contains($collaborateurVersion))
-        {
+        if (!$this->collaborateurVersion->contains($collaborateurVersion)) {
             $this->collaborateurVersion[] = $collaborateurVersion;
         }
 
@@ -821,20 +710,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Remove collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
+     * Remove collaborateurVersion.
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function removeCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+
         return $this;
     }
 
     /**
-     * Get collaborateurVersion
+     * Get collaborateurVersion.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCollaborateurVersion()
     {
@@ -842,38 +730,31 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return Individu
+     * Add user.
      */
-    public function addUser(\App\Entity\User $user): self
+    public function addUser(User $user): self
     {
-        if (! $this->user->contains($user))
-        {
+        if (!$this->user->contains($user)) {
             $this->user[] = $user;
         }
+
         return $this;
     }
 
     /**
-     * Remove user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return Individu
+     * Remove user.
      */
-    public function removeUser(\App\Entity\User $user): self
+    public function removeUser(User $user): self
     {
         $this->user->removeElement($user);
+
         return $this;
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getUser()
     {
@@ -881,16 +762,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add expertise
-     *
-     * @param \App\Entity\Expertise $expertise
-     *
-     * @return Individu
+     * Add expertise.
      */
-    public function addExpertise(\App\Entity\Expertise $expertise): self
+    public function addExpertise(Expertise $expertise): self
     {
-        if (! $this->expertise->contains($expertise))
-        {
+        if (!$this->expertise->contains($expertise)) {
             $this->expertise[] = $expertise;
         }
 
@@ -898,20 +774,19 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Remove expertise
-     *
-     * @param \App\Entity\Expertise $expertise
+     * Remove expertise.
      */
-    public function removeExpertise(\App\Entity\Expertise $expertise): self
+    public function removeExpertise(Expertise $expertise): self
     {
         $this->expertise->removeElement($expertise);
+
         return $this;
     }
 
     /**
-     * Get expertise
+     * Get expertise.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getExpertise()
     {
@@ -919,12 +794,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Add journal
-     *
-     * @param \App\Entity\Journal $journal
-     * @return Individu
+     * Add journal.
      */
-    public function addJournal(\App\Entity\Journal $journal): self
+    public function addJournal(Journal $journal): self
     {
         if (!$this->journal->contains($journal)) {
             $this->journal[] = $journal;
@@ -934,27 +806,26 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     }
 
     /**
-     * Remove journal
-     *
-     * @param \App\Entity\Journal $journal
+     * Remove journal.
      */
-    public function removeJournal(\App\Entity\Journal $journal): self
+    public function removeJournal(Journal $journal): self
     {
         $this->journal->removeElement($journal);
+
         return $this;
     }
 
     /**
-      * Get journal
-      *
-      * @return \Doctrine\Common\Collections\Collection
-      */
+     * Get journal.
+     *
+     * @return Collection
+     */
     public function getJournal()
     {
         return $this->journal;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
 
     public function getIDP()
     {
@@ -964,49 +835,46 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     // TODO - Revoir cette fonction !!!!
     //        Suppression de Functions::warningMessage pas cool
     // NE SERT A RIEN - VIREE !
-/*
-    public function getEtablissement()
-    {
-        $server =  Request::createFromGlobals()->server;
-        if ($server->has('REMOTE_USER') || $server->has('REDIRECT_REMOTE_USER'))
+    /*
+        public function getEtablissement()
         {
-            $eppn = '';
-            if ($server->has('REMOTE_USER'))
+            $server =  Request::createFromGlobals()->server;
+            if ($server->has('REMOTE_USER') || $server->has('REDIRECT_REMOTE_USER'))
             {
-                $eppn =  $server->get('REMOTE_USER');
+                $eppn = '';
+                if ($server->has('REMOTE_USER'))
+                {
+                    $eppn =  $server->get('REMOTE_USER');
+                }
+                if ($server->has('REDIRECT_REMOTE_USER'))
+                {
+                    $eppn =  $server->get('REDIRECT_REMOTE_USER');
+                }
+                preg_match('/^.+@(.+)$/', $$eppn, $matches);
+                if ($matches[0] != null)
+                {
+                    return $matches[0];
+                }
+                //else
+                //    Functions::warningMessage('Individu::getEtablissements user '. $this .' a un EPPN bizarre');
             }
-            if ($server->has('REDIRECT_REMOTE_USER'))
-            {
-                $eppn =  $server->get('REDIRECT_REMOTE_USER');
-            }
-            preg_match('/^.+@(.+)$/', $$eppn, $matches);
-            if ($matches[0] != null)
-            {
-                return $matches[0];
-            }
-            //else
-            //    Functions::warningMessage('Individu::getEtablissements user '. $this .' a un EPPN bizarre');
+            return 'aucun établissement connu';
         }
-        return 'aucun établissement connu';
-    }
-*/
+    */
 
     public function isExpert(): bool
     {
         return $this->expert;
     }
 
-    ////
+    // //
 
     public function isPermanent(): bool
     {
         $statut = $this->getStatut();
-        if ($statut != null && $statut->isPermanent())
-        {
+        if (null != $statut && $statut->isPermanent()) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -1014,39 +882,33 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function isFromLaboRegional(): bool
     {
         $labo = $this->getLabo();
-        if ($labo != null && $labo->isLaboRegional())
-        {
+        if (null != $labo && $labo->isLaboRegional()) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    ///
+    // /
 
     public function getEppn()
     {
         $ssos = $this->getSso();
         $eppn = [];
-        foreach ($ssos as $sso)
-        {
+        foreach ($ssos as $sso) {
             $eppn[] = $sso->getEppn();
         }
+
         return $eppn;
     }
 
-    ///
+    // /
 
     public function peutCreerProjets()
     {
-        if ($this->isPermanent() && $this->isFromLaboRegional())
-        {
+        if ($this->isPermanent() && $this->isFromLaboRegional()) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
