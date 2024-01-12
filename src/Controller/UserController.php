@@ -38,8 +38,8 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * User controller.
  *
- * @Security("is_granted('ROLE_DEMANDEUR')")
  */
+#[isGranted('ROLE_DEMANDEUR')]
 #[Route(path: 'user')]
 class UserController extends AbstractController
 {
