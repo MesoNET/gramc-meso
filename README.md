@@ -388,12 +388,14 @@ Editer dans:
   tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src
   ~~~~
 OU
-```
+~~~~
 composer test:cs
-``` lance la commande de vérification du code par PHP CS Fixer 
-```
+~~~~
+lance la commande de vérification du code par PHP CS Fixer 
+~~~~
 composer fix:cs
-``` lance la commande de correction du code par PHP CS Fixer 
+~~~~
+lance la commande de correction du code par PHP CS Fixer 
 
 ### Comment modifier le formulaire principal ?
 
