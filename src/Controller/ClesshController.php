@@ -26,12 +26,12 @@ namespace App\Controller;
 
 use App\Entity\Clessh;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Sso controller.
@@ -48,8 +48,8 @@ class ClesshController extends AbstractController
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/gerer', name: 'gerer_clessh', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -83,8 +83,8 @@ class ClesshController extends AbstractController
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/gerer_all', name: 'gerer_clessh_all', methods: ['GET'])]
     public function gererActionAll(): Response
     {
@@ -111,9 +111,9 @@ class ClesshController extends AbstractController
     /**
      * Supprime une clé.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("DELETE")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_clessh', methods: ['GET'])]
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {
@@ -139,8 +139,8 @@ class ClesshController extends AbstractController
     /**
      * Ajoute une nouvelle cléssh.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_clessh', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
