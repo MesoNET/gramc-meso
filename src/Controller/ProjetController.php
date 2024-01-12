@@ -56,6 +56,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Twig\Environment;
 
 // Pour le tri numérique sur les années, en commençant par la plus grande - cf. resumesAction
@@ -99,8 +100,8 @@ class ProjetController extends AbstractController
     /**
      * Lists all projet entities.
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/', name: 'projet_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -118,8 +119,8 @@ class ProjetController extends AbstractController
      *
      * Ne fait rien, affiche simplement la commande à exécuter
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/rgpd', name: 'rgpd', methods: ['GET'])]
     public function rgpdAction(Request $request): Response
     {
@@ -129,8 +130,8 @@ class ProjetController extends AbstractController
     /**
      * fermer un projet.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fermer', name: 'fermer_projet', methods: ['GET', 'POST'])]
     public function fermerAction(Projet $projet, Request $request): Response
     {
@@ -158,8 +159,8 @@ class ProjetController extends AbstractController
     /**
      * Retour en arrière: un projet en validation repasse en édition.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/back', name: 'back_version', methods: ['GET', 'POST'])]
     public function backAction(Projet $projet, Request $request): Response
     {
@@ -211,8 +212,8 @@ class ProjetController extends AbstractController
      * L'admin a cliqué sur le bouton Forward pour envoyer une version à l'expert
      * à la place du responsable.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fwd', name: 'fwd_version', methods: ['GET', 'POST'])]
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -261,8 +262,8 @@ class ProjetController extends AbstractController
      *
      * Param : $annee
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
     public function resumesAction($annee): Response
     {
@@ -315,9 +316,9 @@ class ProjetController extends AbstractController
     /**
      * Téléchargement du rapport d'activité.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
      */
-    #[Route(path: '/{id}/rapport/{annee}', defaults: ['annee' => 0], name: 'rapport', methods: ['GET'])]
+    #[isGranted('ROLE_OBS'||'ROLE_DEMANDEUR')]
+    #[Route(path: '/{id}/rapport/{annee}', name: 'rapport', defaults: ['annee' => 0], methods: ['GET'])]
     public function rapportAction(Version $version, Request $request, $annee): Response
     {
         $sp = $this->sp;
@@ -343,8 +344,8 @@ class ProjetController extends AbstractController
     /**
      * Téléchargement de la fiche projet qui doit être signée par la direction du laboratoire demandeur.
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/{id}/signature', name: 'signature', methods: ['GET'])]
     public function signatureAction(Version $version, Request $request): Response
     {
@@ -356,8 +357,8 @@ class ProjetController extends AbstractController
     /**
      * download doc attaché.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR') or is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS'||'ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/document', name: 'document', methods: ['GET'])]
     public function documentAction(Version $version, Request $request): Response
     {
@@ -371,6 +372,7 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/dynamiques', name: 'projet_dynamique', methods: ['GET', 'POST'])]
     public function projetsDynamiquesAction(Request $request): Response
     {
@@ -446,8 +448,8 @@ class ProjetController extends AbstractController
     /**
      * Pas utilisé...
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -464,6 +466,7 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/avant_nouveau/{type}', name: 'avant_nouveau_projet', methods: ['GET', 'POST'])]
     public function avantNouveauAction(Request $request, int $type): Response
     {
@@ -498,6 +501,7 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/nouveau/{type}', name: 'nouveau_projet', methods: ['GET', 'POST'])]
     public function nouveauAction(Request $request, $type): Response
     {
@@ -536,6 +540,7 @@ class ProjetController extends AbstractController
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
     public function accueilAction()
     {
@@ -709,8 +714,8 @@ class ProjetController extends AbstractController
     /**
      * Affiche un projet avec un menu pour choisir la version.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_projet', methods: ['GET', 'POST'])]
     #[Route(path: '/{id}/consulter/{version}', name: 'consulter_version', methods: ['GET', 'POST'])]
     public function consulterAction(Request $request, Projet $projet, Version $version = null)
