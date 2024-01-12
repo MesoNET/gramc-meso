@@ -36,4 +36,3 @@ class Kernel extends BaseKernel
         }
     }
 }
-

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,24 +24,13 @@
 
 namespace App\Entity;
 
+use App\GramcServices\Etat;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-use App\GramcServices\Etat;
-use App\Utils\Functions;
-use App\Entity\Version;
-use App\Entity\Expertise;
-use App\Entity\CollaborateurVersion;
-use App\Utils\GramcDate;
-
-use App\Form\ChoiceList\ExpertChoiceLoader;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
 /**
- * Projet
+ * Projet.
  */
 #[ORM\Table(name: 'projet')]
 #[ORM\Index(name: 'etat_projet', columns: ['etat_projet'])]
@@ -50,40 +39,39 @@ class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
     public const PROJET_TEST = 2;   // Projet test, créé au fil de l'eau, non renouvelable
-    public const PROJET_FIL  = 3;   // Projet créé au fil de l'eau, renouvelable lors des sessions
-    public const PROJET_DYN  = 4;   // Projet dynamique (au sens du Dari), créé au fil de l'eau,
-                                    // il dure 1 an et est indépendant des sessions    
+    public const PROJET_FIL = 3;   // Projet créé au fil de l'eau, renouvelable lors des sessions
+    public const PROJET_DYN = 4;   // Projet dynamique (au sens du Dari), créé au fil de l'eau,
+    // il dure 1 an et est indépendant des sessions
 
-    public const LIBELLE_TYPE=
+    public const LIBELLE_TYPE =
     [
         self::PROJET_SESS => 'S',
-        self::PROJET_TEST =>  'T',
-        self::PROJET_FIL =>  'F',
-        self::PROJET_DYN =>  'D',
+        self::PROJET_TEST => 'T',
+        self::PROJET_FIL => 'F',
+        self::PROJET_DYN => 'D',
     ];
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct($type)
     {
-        $this->publi = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->version = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rapportActivite = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->publi = new ArrayCollection();
+        $this->version = new ArrayCollection();
+        $this->rapportActivite = new ArrayCollection();
+        $this->user = new ArrayCollection();
         $this->etatProjet = Etat::EDITION_DEMANDE;
         $this->typeProjet = $type;
     }
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'etat_projet', type: 'integer', nullable: false)]
     private $etatProjet;
 
-
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'type_projet', type: 'integer', nullable: false)]
     private $typeProjet;
@@ -97,16 +85,14 @@ class Projet
     private $idProjet;
 
     /**
-     * @var \App\Entity\Version
-     *
-     *
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_veract', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
     #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionActive')]
     private $versionActive;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_verder', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
     #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionDerniere')]
@@ -114,13 +100,13 @@ class Projet
 
     /**
      * @var \DateTime
-     * Date limite, la version n'ira pas au-delà
+     *                Date limite, la version n'ira pas au-delà
      */
     #[ORM\Column(name: 'limit_date', type: 'datetime', nullable: true)]
     private $limitDate;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\JoinTable(name: 'publicationProjet')]
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
@@ -128,27 +114,27 @@ class Projet
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Publication', inversedBy: 'projet')]
     private $publi;
 
-    ////////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////////
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'projet')]
     private $version;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'projet', cascade: ['persist'])]
     private $user;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\RapportActivite', mappedBy: 'projet')]
     private $rapportActivite;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'tetat_projet', type: 'integer', nullable: true)]
     private $tetatProjet;
@@ -157,17 +143,14 @@ class Projet
     {
         return $this->getIdProjet();
     }
+
     public function __toString(): string
     {
         return $this->getIdProjet();
     }
 
     /**
-     * Set etatProjet
-     *
-     * @param integer $etatProjet
-     *
-     * @return Projet
+     * Set etatProjet.
      */
     public function setEtatProjet(int $etatProjet): self
     {
@@ -177,9 +160,7 @@ class Projet
     }
 
     /**
-     * Get etatProjet
-     *
-     * @return integer
+     * Get etatProjet.
      */
     public function getEtatProjet(): ?int
     {
@@ -187,11 +168,7 @@ class Projet
     }
 
     /**
-     * Set typeProjet
-     *
-     * @param integer $typeProjet
-     *
-     * @return Projet
+     * Set typeProjet.
      */
     public function setTypeProjet(int $typeProjet): self
     {
@@ -201,9 +178,7 @@ class Projet
     }
 
     /**
-     * Get typeProjet
-     *
-     * @return integer
+     * Get typeProjet.
      */
     public function getTypeProjet(): ?int
     {
@@ -211,11 +186,7 @@ class Projet
     }
 
     /**
-     * Set idProjet
-     *
-     * @param string $idProjet
-     *
-     * @return Projet
+     * Set idProjet.
      */
     public function setIdProjet(string $idProjet): self
     {
@@ -225,9 +196,7 @@ class Projet
     }
 
     /**
-     * Get idProjet
-     *
-     * @return string
+     * Get idProjet.
      */
     public function getIdProjet(): ?string
     {
@@ -235,13 +204,9 @@ class Projet
     }
 
     /**
-     * Set versionActive
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Projet
+     * Set versionActive.
      */
-    public function setVersionActive(?\App\Entity\Version $version = null): self
+    public function setVersionActive(Version $version = null): self
     {
         $this->versionActive = $version;
 
@@ -249,23 +214,17 @@ class Projet
     }
 
     /**
-     * Get versionActive
-     *
-     * @return \App\Entity\Version
+     * Get versionActive.
      */
-    public function getVersionActive(): ?\App\Entity\Version
+    public function getVersionActive(): ?Version
     {
         return $this->versionActive;
     }
 
     /**
-     * Set versionDerniere
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Projet
+     * Set versionDerniere.
      */
-    public function setVersionDerniere(?\App\Entity\Version $version = null): self
+    public function setVersionDerniere(Version $version = null): self
     {
         $this->versionDerniere = $version;
 
@@ -273,19 +232,15 @@ class Projet
     }
 
     /**
-     * Get versionDerniere
-     *
-     * @return \App\Entity\Version
+     * Get versionDerniere.
      */
-    public function getVersionDerniere(): ?\App\Entity\Version
+    public function getVersionDerniere(): ?Version
     {
         return $this->versionDerniere;
     }
 
     /**
-     * Set limitDate
-     *
-     * @param \DateTime $limitDate
+     * Set limitDate.
      *
      * @return Version
      */
@@ -297,9 +252,7 @@ class Projet
     }
 
     /**
-     * Get limitDate
-     *
-     * @return \DateTime
+     * Get limitDate.
      */
     public function getLimitDate(): ?\DateTime
     {
@@ -307,11 +260,7 @@ class Projet
     }
 
     /**
-     * Set tetatProjet
-     *
-     * @param integer $tetatProjet
-     *
-     * @return Projet
+     * Set tetatProjet.
      */
     public function setTetatProjet(int $tetatProjet): self
     {
@@ -321,9 +270,7 @@ class Projet
     }
 
     /**
-     * Get tetatProjet
-     *
-     * @return integer
+     * Get tetatProjet.
      */
     public function getTetatProjet(): ?int
     {
@@ -331,15 +278,11 @@ class Projet
     }
 
     /**
-     * Add publi
-     *
-     * @param \App\Entity\Publication $publi
-     *
-     * @return Projet
+     * Add publi.
      */
-    public function addPubli(\App\Entity\Publication $publi): self
+    public function addPubli(Publication $publi): self
     {
-        if (! $this->publi->contains($publi)) {
+        if (!$this->publi->contains($publi)) {
             $this->publi[] = $publi;
         }
 
@@ -347,20 +290,19 @@ class Projet
     }
 
     /**
-     * Remove publi
-     *
-     * @param \App\Entity\Publication $publi
+     * Remove publi.
      */
-    public function removePubli(\App\Entity\Publication $publi): self
+    public function removePubli(Publication $publi): self
     {
         $this->publi->removeElement($publi);
+
         return $this;
     }
 
     /**
-     * Get publi
+     * Get publi.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getPubli()
     {
@@ -368,16 +310,11 @@ class Projet
     }
 
     /**
-     * Add version
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Projet
+     * Add version.
      */
-    public function addVersion(\App\Entity\Version $version): self
+    public function addVersion(Version $version): self
     {
-        if (! $this->version->contains($version))
-        {
+        if (!$this->version->contains($version)) {
             $this->version[] = $version;
         }
 
@@ -385,20 +322,19 @@ class Projet
     }
 
     /**
-     * Remove version
-     *
-     * @param \App\Entity\Version $version
+     * Remove version.
      */
-    public function removeVersion(\App\Entity\Version $version): self
+    public function removeVersion(Version $version): self
     {
         $this->version->removeElement($version);
+
         return $this;
     }
 
     /**
-     * Get version
+     * Get version.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getVersion()
     {
@@ -406,38 +342,31 @@ class Projet
     }
 
     /**
-     * Add user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return Projet
+     * Add user.
      */
-    public function addUser(\App\Entity\User $user): self
+    public function addUser(User $user): self
     {
-        if (! $this->user->contains($user))
-        {
+        if (!$this->user->contains($user)) {
             $this->user[] = $user;
         }
+
         return $this;
     }
 
     /**
-     * Remove user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return Projet
+     * Remove user.
      */
-    public function removeUser(\App\Entity\User $user): self
+    public function removeUser(User $user): self
     {
         $this->user->removeElement($user);
+
         return $this;
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getUser()
     {
@@ -445,16 +374,11 @@ class Projet
     }
 
     /**
-     * Add rapportActivite
-     *
-     * @param \App\Entity\RapportActivite $rapportActivite
-     *
-     * @return Projet
+     * Add rapportActivite.
      */
-    public function addRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
+    public function addRapportActivite(RapportActivite $rapportActivite): self
     {
-        if (! $this->rapportActivite->contains($rapportActivite))
-        {
+        if (!$this->rapportActivite->contains($rapportActivite)) {
             $this->rapportActivite[] = $rapportActivite;
         }
 
@@ -462,20 +386,19 @@ class Projet
     }
 
     /**
-     * Remove rapportActivite
-     *
-     * @param \App\Entity\RapportActivite $rapportActivite
+     * Remove rapportActivite.
      */
-    public function removeRapportActivite(\App\Entity\RapportActivite $rapportActivite): self
+    public function removeRapportActivite(RapportActivite $rapportActivite): self
     {
         $this->rapportActivite->removeElement($rapportActivite);
+
         return $this;
     }
 
     /**
-     * Get rapportActivite
+     * Get rapportActivite.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getRapportActivite()
     {
@@ -490,12 +413,13 @@ class Projet
     {
         return $this->getEtatProjet();
     }
+
     public function setObjectState(int $state): self
     {
         return $this->setEtatProjet($state);
     }
 
-    ////////////////////////////////////////
+    // //////////////////////////////////////
 
     // pour twig - TODO - A METTRE DANS ServiceProjets !
 
@@ -506,7 +430,7 @@ class Projet
 
     public function getTitre()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getPrjTitre();
         } else {
             return null;
@@ -515,7 +439,7 @@ class Projet
 
     public function getThematique()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getPrjThematique();
         } else {
             return null;
@@ -524,7 +448,7 @@ class Projet
 
     public function getLaboratoire()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getPrjLLabo();
         } else {
             return null;
@@ -533,7 +457,7 @@ class Projet
 
     public function derniereSession()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getSession();
         } else {
             return null;
@@ -542,7 +466,7 @@ class Projet
 
     public function getResponsable()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getResponsable();
         } else {
             return null;
@@ -552,7 +476,7 @@ class Projet
     // hum hum pas fameux
     public function getResponsables()
     {
-        if ($this->derniereVersion() != null) {
+        if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getResponsables();
         } else {
             return null;
@@ -566,7 +490,7 @@ class Projet
     public function isProjetTest()
     {
         $type = $this->getTypeProjet();
-        if ($this->getTypeProjet() === Projet::PROJET_TEST) {
+        if (Projet::PROJET_TEST === $this->getTypeProjet()) {
             return true;
         } else {
             return false;
@@ -574,11 +498,11 @@ class Projet
     }
 
     /**
-    * derniereVersion - Alias de getVersionDerniere()
-    *                   TODO - A supprimer !
-    *
-    * @return \App\Entity\Version
-    */
+     * derniereVersion - Alias de getVersionDerniere()
+     *                   TODO - A supprimer !
+     *
+     * @return Version
+     */
     public function derniereVersion()
     {
         return $this->getVersionDerniere();
@@ -590,14 +514,15 @@ class Projet
     public function isCollaborateur(Individu $individu)
     {
         foreach ($this->getVersion() as $version) {
-            if ($version->isCollaborateur($individu) === true) {
+            if (true === $version->isCollaborateur($individu)) {
                 return true;
             }
         }
+
         return false;
     }
 
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
 
     /* Supprimé car non utilisé
         //public function getCollaborateurs( $versions = [] )
@@ -612,21 +537,20 @@ class Projet
             //return $collaborateurs;
         //}
     */
-    /////////////////////////////////////////////////////
-
+    // ///////////////////////////////////////////////////
 
     public function getEtat(): ?int
     {
         return $this->getEtatProjet();
     }
 
-    //public function getLibelleType()
-    //{
-        //$type = $this->getTypeProjet();
-        //if ($type <=3 and $type > 0) {
-            //return Projet::LIBELLE_TYPE[$this->getTypeProjet()];
-        //} else {
-            //return '?';
-        //}
-    //}
+    // public function getLibelleType()
+    // {
+    // $type = $this->getTypeProjet();
+    // if ($type <=3 and $type > 0) {
+    // return Projet::LIBELLE_TYPE[$this->getTypeProjet()];
+    // } else {
+    // return '?';
+    // }
+    // }
 }

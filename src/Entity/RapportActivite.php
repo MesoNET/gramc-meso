@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * RapportActivite
+ * RapportActivite.
  */
 #[ORM\Table(name: 'rapportActivite')]
 #[ORM\Index(name: 'id_projet', columns: ['id_projet'])]
@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 class RapportActivite
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'annee', type: 'integer', nullable: false)]
     private $annee;
@@ -48,13 +48,13 @@ class RapportActivite
     private $nomFichier;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'taille', type: 'integer', nullable: false)]
     private $taille;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -62,13 +62,13 @@ class RapportActivite
     private $id;
 
     /**
-     * @var \App\Entity\Projet
+     * @var Projet
      */
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'rapportActivite')]
     private $projet;
 
-    ///////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////
 
     public function __construct($projet, $annee)
     {
@@ -77,9 +77,9 @@ class RapportActivite
     }
 
     /**
-     * Set annee
+     * Set annee.
      *
-     * @param integer $annee
+     * @param int $annee
      *
      * @return RapportActivite
      */
@@ -91,9 +91,9 @@ class RapportActivite
     }
 
     /**
-     * Get annee
+     * Get annee.
      *
-     * @return integer
+     * @return int
      */
     public function getAnnee()
     {
@@ -101,7 +101,7 @@ class RapportActivite
     }
 
     /**
-     * Set nomFichier
+     * Set nomFichier.
      *
      * @param string $nomFichier
      *
@@ -115,7 +115,7 @@ class RapportActivite
     }
 
     /**
-     * Get nomFichier
+     * Get nomFichier.
      *
      * @return string
      */
@@ -125,9 +125,9 @@ class RapportActivite
     }
 
     /**
-     * Set taille
+     * Set taille.
      *
-     * @param integer $taille
+     * @param int $taille
      *
      * @return RapportActivite
      */
@@ -139,9 +139,9 @@ class RapportActivite
     }
 
     /**
-     * Get taille
+     * Get taille.
      *
-     * @return integer
+     * @return int
      */
     public function getTaille()
     {
@@ -149,9 +149,9 @@ class RapportActivite
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -159,13 +159,11 @@ class RapportActivite
     }
 
     /**
-     * Set projet
-     *
-     * @param \App\Entity\Projet $projet
+     * Set projet.
      *
      * @return RapportActivite
      */
-    public function setProjet(\App\Entity\Projet $projet = null)
+    public function setProjet(Projet $projet = null)
     {
         $this->projet = $projet;
 
@@ -173,9 +171,9 @@ class RapportActivite
     }
 
     /**
-     * Get projet
+     * Get projet.
      *
-     * @return \App\Entity\Projet
+     * @return Projet
      */
     public function getProjet()
     {

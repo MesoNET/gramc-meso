@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,29 +24,26 @@
 
 namespace App\GramcServices\Workflow\Rallonge4;
 
-use App\GramcServices\Workflow\Workflow;
-use App\GramcServices\Workflow\Transition;
-use App\GramcServices\ServiceJournal;
-use App\GramcServices\ServiceSessions;
-
 use App\GramcServices\Etat;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceNotifications;
+use App\GramcServices\ServiceSessions;
 use App\GramcServices\Signal;
 use App\GramcServices\Workflow\NoTransition;
-
-use App\GramcServices\ServiceNotifications;
+use App\GramcServices\Workflow\Workflow;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Rallonge4Workflow extends Workflow
 {
-    protected $states             = [];
-    protected $workflowIdentifier = null;
+    protected $states = [];
+    protected $workflowIdentifier;
 
     public function __construct(ServiceNotifications $sn,
-                                ServiceJournal $sj,
-                                ServiceSessions $ss,
-                                EntityManagerInterface $em)
+        ServiceJournal $sj,
+        ServiceSessions $ss,
+        EntityManagerInterface $em)
     {
-        if ($this->workflowIdentifier != null) {
+        if (null != $this->workflowIdentifier) {
             return;
         }
         parent::__construct($sn, $sj, $ss, $em);
@@ -55,57 +52,57 @@ class Rallonge4Workflow extends Workflow
             ->addState(
                 Etat::EDITION_DEMANDE,
                 [
-                Signal::CLK_VAL_DEM      => new Rallonge4Transition(
+                Signal::CLK_VAL_DEM => new Rallonge4Transition(
                     Etat::EDITION_EXPERTISE,
                     Signal::CLK_VAL_DEM,
-                    [ 'R' => 'depot_rallonge_pour_demandeur',
-                      'A' => 'depot_rallonge_pour_admin' ]
+                    ['R' => 'depot_rallonge_pour_demandeur',
+                      'A' => 'depot_rallonge_pour_admin']
                 ),
-                Signal::CLK_FERM         => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
+                Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::EDITION_EXPERTISE,
                 [
-                Signal::CLK_VAL_EXP_OK  =>  new Rallonge4Transition(
+                Signal::CLK_VAL_EXP_OK => new Rallonge4Transition(
                     Etat::ACTIF,
                     Signal::CLK_VAL_EXP_OK,
-                    [ 'R' => 'rallonge_validation4',
+                    ['R' => 'rallonge_validation4',
                       'V' => 'rallonge_validation_pour_valideur',
-                      'A' => 'rallonge_validation_pour_admin' ]
+                      'A' => 'rallonge_validation_pour_admin']
                 ),
-                Signal::CLK_VAL_EXP_KO  =>  new Rallonge4Transition(
+                Signal::CLK_VAL_EXP_KO => new Rallonge4Transition(
                     Etat::REFUSE,
                     Signal::CLK_VAL_EXP_KO,
-                    [ 'V' => 'rallonge_validation_refusee',
-                      'A' => 'rallonge_validation_pour_admin' ]
+                    ['V' => 'rallonge_validation_refusee',
+                      'A' => 'rallonge_validation_pour_admin']
                 ),
-                Signal::CLK_FERM         => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
+                Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::ACTIF,
                 [
-                Signal::CLK_FERM         => new Rallonge4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                Signal::CLK_FERM => new Rallonge4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::TERMINE,
                 [
-                Signal::CLK_FERM         => new NoTransition(0, 0),
+                Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             )
             ->addState(
                 Etat::ANNULE,
                 [
-                Signal::CLK_FERM         => new NoTransition(0,0)
+                Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
-                )
+            )
             ->addState(
                 Etat::REFUSE,
                 [
-                Signal::CLK_FERM         => new NoTransition(0,0)
+                Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
-                );
+            );
     }
 }

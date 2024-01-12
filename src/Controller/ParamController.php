@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,30 +25,27 @@
 namespace App\Controller;
 
 use App\Entity\Param;
-use App\Utils\Functions;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
-
-use Symfony\Component\Form\Forms;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormFactoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Param controller.
+ *
  * @Security("is_granted('ROLE_ADMIN')")
  */
 #[Route(path: 'param')]
 class ParamController extends AbstractController
 {
-    public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em) {}
+    public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em)
+    {
+    }
 
     /**
      * Lists all param entities.
@@ -60,9 +57,9 @@ class ParamController extends AbstractController
 
         $params = $em->getRepository(Param::class)->findAll();
 
-        return $this->render('param/index.html.twig', array(
+        return $this->render('param/index.html.twig', [
             'params' => $params,
-        ));
+        ]);
     }
 
     /**
@@ -80,13 +77,13 @@ class ParamController extends AbstractController
             $em->persist($param);
             $em->flush($param);
 
-            return $this->redirectToRoute('param_show', array('id' => $param->getId()));
+            return $this->redirectToRoute('param_show', ['id' => $param->getId()]);
         }
 
-        return $this->render('param/new.html.twig', array(
+        return $this->render('param/new.html.twig', [
             'param' => $param,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -97,10 +94,10 @@ class ParamController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($param);
 
-        return $this->render('param/show.html.twig', array(
+        return $this->render('param/show.html.twig', [
             'param' => $param,
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -116,17 +113,16 @@ class ParamController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->em->flush();
 
-            return $this->redirectToRoute('param_edit', array('id' => $param->getId()));
+            return $this->redirectToRoute('param_edit', ['id' => $param->getId()]);
         }
 
-        return $this->render('param/edit.html.twig', array(
+        return $this->render('param/edit.html.twig', [
             'param' => $param,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
-    
     #[Route(path: '/avancer', name: 'param_avancer', methods: ['GET', 'POST'])]
     public function avancerAction(Request $request)
     {
@@ -134,24 +130,24 @@ class ParamController extends AbstractController
         $ff = $this->ff;
 
         $now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
-        if ($now == null) {
+        if (null == $now) {
             $now = new Param();
             $now->setCle('now');
-            //$em->persist( $now );
+            // $em->persist( $now );
         }
 
-        if ($now->getVal() == null) {
+        if (null == $now->getVal()) {
             $date = new \DateTime();
         } else {
             $date = new \DateTime($now->getVal());
         }
 
         //		$defaults = [ 'date' => new \DateTime() ];
-        $defaults = [ 'date' => $date ];
+        $defaults = ['date' => $date];
         $editForm = $ff->createBuilder(FormType::class, $defaults)
-                        ->add('date', DateType::class, [ 'label' => " " ])
+                        ->add('date', DateType::class, ['label' => ' '])
                         ->add('submit', SubmitType::class, ['label' => 'Fixer la date'])
-                        ->add('supprimer', SubmitType::class, ['label' => "Fin de la modification de la date"])
+                        ->add('supprimer', SubmitType::class, ['label' => 'Fin de la modification de la date'])
                         ->getForm();
 
         $editForm->handleRequest($request);
@@ -160,12 +156,13 @@ class ParamController extends AbstractController
             $date = $editForm->getData()['date'];
 
             $now->setCle('now');
-            $now->setVal($date->format("Y-m-d"));
+            $now->setVal($date->format('Y-m-d'));
             $em->persist($now);
             if ($editForm->get('supprimer')->isClicked()) {
                 $em->remove($now);
             }
             $em->flush();
+
             return $this->redirectToRoute('admin_accueil');
         } else {
             return $this->render(
@@ -205,7 +202,7 @@ class ParamController extends AbstractController
     private function createDeleteForm(Param $param)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('param_delete', array('id' => $param->getId())))
+            ->setAction($this->generateUrl('param_delete', ['id' => $param->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;

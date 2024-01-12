@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,76 +24,67 @@
 
 namespace App\Form;
 
+use App\Entity\Journal;
+use App\Utils\Functions;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
-use App\Utils\Functions;
-use App\Entity\Journal;
-
 class SelectJournalType extends AbstractType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
             'dateDebut',
             DateTimeType::class,
             [
-                    'data'          => $options['from'], // valeur par défaut
-                    'label'         => 'Heure de début d\'affichage',
-                    'with_seconds'  => true,
-                    'years'         => Functions::years($options['from'], new \DateTime()),
+                    'data' => $options['from'], // valeur par défaut
+                    'label' => 'Heure de début d\'affichage',
+                    'with_seconds' => true,
+                    'years' => Functions::years($options['from'], new \DateTime()),
                     ]
         )
                 ->add(
                     'dateFin',
                     DateTimeType::class,
                     [
-                    'data'          => $options['untill'],
-                    'label'         => 'Heure de fin d\'affichage',
-                    'with_seconds'  => true,
-                    'years'         => Functions::years($options['untill'], new \DateTime()),
+                    'data' => $options['untill'],
+                    'label' => 'Heure de fin d\'affichage',
+                    'with_seconds' => true,
+                    'years' => Functions::years($options['untill'], new \DateTime()),
                     ]
                 )
                 ->add(
                     'niveau',
                     ChoiceType::class,
                     [
-                        'choices'           =>  array_flip(Journal::LIBELLE),
-                        'data'              =>  Journal::INFO , // valeur par défaut
-                        'label'             => 'Niveau de log',
+                        'choices' => array_flip(Journal::LIBELLE),
+                        'data' => Journal::INFO, // valeur par défaut
+                        'label' => 'Niveau de log',
                     ]
                 )
                 ->add(
                     'submit',
                     SubmitType::class,
                     [
-                        'label'         => 'chercher',
+                        'label' => 'chercher',
                     ]
                 );
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $from = new \DateTime();
         $from->setTime(0, 0, 0);
 
-        $until= new \DateTime();
+        $until = new \DateTime();
         $until->add(\DateInterval::createFromDateString('1 day'));
         $resolver->setDefaults([
-            'from'    => $from,
-            'untill'  => $until
+            'from' => $from,
+            'untill' => $until,
             ]);
     }
 }

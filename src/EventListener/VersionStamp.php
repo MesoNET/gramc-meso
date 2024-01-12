@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,8 @@
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
-
 /**
- * Voir https://symfony.com/index.php/doc/4.4/doctrine/events.html#doctrine-entity-listeners
+ * Voir https://symfony.com/index.php/doc/4.4/doctrine/events.html#doctrine-entity-listeners.
  *
  * Le stamp de modification est inséré dans Version lors d'une MISE A JOUR uniquement
  * Rien ne se passe à la CREATION de la version (il faudrait écrire un événement prePersist)
@@ -38,9 +37,8 @@
 namespace App\EventListener;
 
 use App\Entity\Version;
-
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class VersionStamp
 {
@@ -55,20 +53,17 @@ class VersionStamp
     // the entity instance and the lifecycle event
     public function preUpdate(Version $version, LifecycleEventArgs $event): void
     {
-        if ($this->token == null) {
+        if (null == $this->token) {
             return;
         }
         $user = $this->token->getUser();
 
         // $user peut provenir de l'API, dans ce cas c'est un InMemoryUser !
-        if ($user Instanceof Individu)
-        {
+        if ($user instanceof Individu) {
             if ($version->isCollaborateur($user)) {
                 $version->setMajInd($user);
                 $version->setMajStamp(new \DateTime());
-            }
-            else
-            {
+            } else {
                 $version->setMajInd(null);
             }
         }

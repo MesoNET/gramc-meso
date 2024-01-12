@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,22 +24,16 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
 use App\Entity\Individu;
-//use App\App;
-use App\Utils\Functions;
-
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+// use App\App;
+
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ThematiqueType extends AbstractType
 {
@@ -47,12 +41,9 @@ class ThematiqueType extends AbstractType
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this -> em = $em;
+        $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -64,39 +55,33 @@ class ThematiqueType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'class' => Individu::class,
-                'choices' =>  $options['experts'],
+                'choices' => $options['experts'],
                 ]
             );
 
-        if ($options['modifier'] == true) {
+        if (true == $options['modifier']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        } elseif ($options['ajouter'] == true) {
+                ->add('submit', SubmitType::class, ['label' => 'modifier'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
+        } elseif (true == $options['ajouter']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
+                ->add('submit', SubmitType::class, ['label' => 'ajouter'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
             'data_class' => 'App\Entity\Thematique',
             'modifier' => false,
-            'ajouter'  => false,
-            'experts'  => $this->em->getRepository(Individu::class)->findAll(),
+            'ajouter' => false,
+            'experts' => $this->em->getRepository(Individu::class)->findAll(),
             ]
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'appbundle_thematique';

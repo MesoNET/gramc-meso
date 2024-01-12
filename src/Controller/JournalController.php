@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-use App\Utils\Functions;
 use App\Entity\Journal;
 use App\Form\SelectJournalType;
-use Symfony\Component\Form\FormInterface;
+use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Journal controller.
@@ -47,10 +44,12 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: 'journal')]
 class JournalController extends AbstractController
 {
-    public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em) {}
+    public function __construct(private FormFactoryInterface $ff, private EntityManagerInterface $em)
+    {
+    }
 
     /**
-     * Liste les entrées de journal (l'écran utilisé)
+     * Liste les entrées de journal (l'écran utilisé).
      */
     #[Route(path: '/list', name: 'journal_list', methods: ['GET', 'POST'])]
     public function listAction(Request $request): Response
@@ -62,33 +61,32 @@ class JournalController extends AbstractController
         return $this->render(
             'journal/list.html.twig',
             [
-            'journals'  => $data['journals'],
-            'form'      => $data['form']->createView(),
+            'journals' => $data['journals'],
+            'form' => $data['form']->createView(),
         ]
         );
     }
 
     /**
      * Lists all Journal entities.
-     * CRUD
+     * CRUD.
      */
     #[Route(path: '/', name: 'journal_index', methods: ['GET', 'POST'])]
     public function indexAction(Request $request): Response
     {
         $data = $this->index($request);
 
-
         return self::render(
             'journal/index.html.twig',
             [
-            'journals'  => $data['journals'],
-            'form'      => $data['form']->createView(),
+            'journals' => $data['journals'],
+            'form' => $data['form']->createView(),
         ]
         );
     }
 
     /**
-     * Creates a new journal entity. CRUD
+     * Creates a new journal entity. CRUD.
      */
     #[Route(path: '/new', name: 'journal_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
@@ -102,31 +100,31 @@ class JournalController extends AbstractController
             $em->persist($journal);
             $em->flush($journal);
 
-            return $this->redirectToRoute('journal_show', array('id' => $journal->getId()));
+            return $this->redirectToRoute('journal_show', ['id' => $journal->getId()]);
         }
 
-        return $this->render('journal/new.html.twig', array(
+        return $this->render('journal/new.html.twig', [
             'journal' => $journal,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Finds and displays a journal entity. CRUD
+     * Finds and displays a journal entity. CRUD.
      */
     #[Route(path: '/{id}', name: 'journal_show', methods: ['GET'])]
     public function showAction(Journal $journal): Response
     {
         $deleteForm = $this->createDeleteForm($journal);
 
-        return $this->render('journal/show.html.twig', array(
+        return $this->render('journal/show.html.twig', [
             'journal' => $journal,
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Displays a form to edit an existing journal entity. CRUD
+     * Displays a form to edit an existing journal entity. CRUD.
      */
     #[Route(path: '/{id}/edit', name: 'journal_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Journal $journal): Response
@@ -138,18 +136,18 @@ class JournalController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->em->flush();
 
-            return $this->redirectToRoute('journal_edit', array('id' => $journal->getId()));
+            return $this->redirectToRoute('journal_edit', ['id' => $journal->getId()]);
         }
 
-        return $this->render('journal/edit.html.twig', array(
+        return $this->render('journal/edit.html.twig', [
             'journal' => $journal,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Deletes a journal entity. CRUD
+     * Deletes a journal entity. CRUD.
      */
     #[Route(path: '/{id}', name: 'journal_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Journal $journal): Response
@@ -167,7 +165,7 @@ class JournalController extends AbstractController
     }
 
     /**
-     * Creates a form to delete a journal entity. CRUD
+     * Creates a form to delete a journal entity. CRUD.
      *
      * @param Journal $journal The journal entity
      *
@@ -176,7 +174,7 @@ class JournalController extends AbstractController
     private function createDeleteForm(Journal $journal): FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('journal_delete', array('id' => $journal->getId())))
+            ->setAction($this->generateUrl('journal_delete', ['id' => $journal->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;
@@ -188,8 +186,8 @@ class JournalController extends AbstractController
         $em = $this->em;
 
         // quand on n'a pas de class on doit définir un nom du formulaire pour HTML
-        //$form = Functions::getFormBuilder($ff, 'jnl_requetes', SelectJournalType::class, [] )->getForm();
-        $form = $ff->createNamedBuilder('jnl_requetes', SelectJournalType::class, null, []) -> getForm();
+        // $form = Functions::getFormBuilder($ff, 'jnl_requetes', SelectJournalType::class, [] )->getForm();
+        $form = $ff->createNamedBuilder('jnl_requetes', SelectJournalType::class, null, [])->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -197,13 +195,14 @@ class JournalController extends AbstractController
             $data = $form->getData();
         } else {
             // des valeurs par défaut
-            $data['dateDebut']  = new \DateTime();  // attention, cette valeur remplacée par la valeur dans Form/SelectJournalType
+            $data['dateDebut'] = new \DateTime();  // attention, cette valeur remplacée par la valeur dans Form/SelectJournalType
             $data['dateFin'] = new \DateTime();
             $data['dateFin']->add(\DateInterval::createFromDateString('1 day')); // attention, cette valeur remplacée par la valeur dans Form/SelectJournalType
             $data['niveau'] = Journal::INFO; // attention, cette valeur remplacée par la valeur dans Form/SelectJournalType
         }
 
-        $journals =  $em->getRepository(Journal::class)->findData($data['dateDebut'], $data['dateFin'], $data['niveau']);
-        return [ 'journals' => $journals, 'form' => $form ];
+        $journals = $em->getRepository(Journal::class)->findData($data['dateDebut'], $data['dateFin'], $data['niveau']);
+
+        return ['journals' => $journals, 'form' => $form];
     }
 }

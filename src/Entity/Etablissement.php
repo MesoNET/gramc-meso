@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Etablissement
+ * Etablissement.
  */
 #[ORM\Table(name: 'etablissement')]
 #[ORM\Entity]
@@ -42,22 +42,22 @@ class Etablissement
     private $libelleEtab;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_etab', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $idEtab;
 
-    ////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'etab')]
     private $collaborateurVersion;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'etab')]
     private $individu;
@@ -66,28 +66,25 @@ class Etablissement
     {
         return $this->getLibelleEtab();
     }
+
     public function getId()
     {
         return $this->getIdEtab();
     }
 
-    ///////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->collaborateurVersion = new ArrayCollection();
+        $this->individu = new ArrayCollection();
     }
 
     /**
-     * Set libelleEtab
-     *
-     * @param string $libelleEtab
-     *
-     * @return Etablissement
+     * Set libelleEtab.
      */
     public function setLibelleEtab(string $libelleEtab): self
     {
@@ -97,9 +94,7 @@ class Etablissement
     }
 
     /**
-     * Get libelleEtab
-     *
-     * @return string
+     * Get libelleEtab.
      */
     public function getLibelleEtab(): ?string
     {
@@ -107,9 +102,7 @@ class Etablissement
     }
 
     /**
-     * Get idEtab
-     *
-     * @return integer
+     * Get idEtab.
      */
     public function getIdEtab(): ?int
     {
@@ -117,16 +110,11 @@ class Etablissement
     }
 
     /**
-     * Add collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
-     *
-     * @return Etablissement
+     * Add collaborateurVersion.
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function addCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
-        if ( ! $this->collaborateurVersion->contains($collaborateurVersion))
-        {
+        if (!$this->collaborateurVersion->contains($collaborateurVersion)) {
             $this->collaborateurVersion[] = $collaborateurVersion;
         }
 
@@ -134,20 +122,19 @@ class Etablissement
     }
 
     /**
-     * Remove collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
+     * Remove collaborateurVersion.
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function removeCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+
         return $this;
     }
 
     /**
-     * Get collaborateurVersion
+     * Get collaborateurVersion.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCollaborateurVersion()
     {
@@ -155,16 +142,11 @@ class Etablissement
     }
 
     /**
-     * Add individu
-     *
-     * @param \App\Entity\Individu $individu
-     *
-     * @return Etablissement
+     * Add individu.
      */
-    public function addIndividu(\App\Entity\Individu $individu): self
+    public function addIndividu(Individu $individu): self
     {
-        if ( ! $this->individu->contains($individu))
-        {
+        if (!$this->individu->contains($individu)) {
             $this->individu[] = $individu;
         }
 
@@ -172,20 +154,19 @@ class Etablissement
     }
 
     /**
-     * Remove individu
-     *
-     * @param \App\Entity\Individu $individu
+     * Remove individu.
      */
-    public function removeIndividu(\App\Entity\Individu $individu): self
+    public function removeIndividu(Individu $individu): self
     {
         $this->individu->removeElement($individu);
+
         return $this;
     }
 
     /**
-     * Get individu
+     * Get individu.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getIndividu()
     {

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,24 +24,23 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Journal
+ * Journal.
  */
 #[ORM\Table(name: 'journal')]
 #[ORM\Entity(repositoryClass: 'App\Repository\JournalRepository')]
 class Journal
 {
     /**
-     * @var integer
+     * @var int
      *
      * @    ORM\Column(name="id_individu", type="integer", nullable=true)
      */
     //    private $idIndividu;
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'individu', referencedColumnName: 'id_individu', onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'journal', cascade: ['persist'])]
@@ -78,7 +77,7 @@ class Journal
     private $ip;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -86,43 +85,35 @@ class Journal
     private $id;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'niveau', type: 'integer')]
     private $niveau;
 
-    /////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////
 
     /**
-     * Set idIndividu
-     *
-     * @param integer $idIndividu
-     *
-     * @return Journal
+     * Set idIndividu.
      */
-    //public function setIdIndividu(?int $idIndividu): self
-    //{
-        //$this->idIndividu = $idIndividu;
+    // public function setIdIndividu(?int $idIndividu): self
+    // {
+    // $this->idIndividu = $idIndividu;
 
-        //return $this;
-    //}
+    // return $this;
+    // }
 
     /**
-     * Get idIndividu
+     * Get idIndividu.
      *
-     * @return integer
+     * @return int
      */
-/*    public function getIdIndividu(): ?int
-    {
-        return $this->idIndividu;
-    }*/
+    /*    public function getIdIndividu(): ?int
+        {
+            return $this->idIndividu;
+        }*/
 
     /**
-     * Set gramcSessId
-     *
-     * @param string $gramcSessId
-     *
-     * @return Journal
+     * Set gramcSessId.
      */
     public function setGramcSessId(?string $gramcSessId): self
     {
@@ -132,9 +123,7 @@ class Journal
     }
 
     /**
-     * Get gramcSessId
-     *
-     * @return string
+     * Get gramcSessId.
      */
     public function getGramcSessId(): ?string
     {
@@ -142,11 +131,7 @@ class Journal
     }
 
     /**
-     * Set type
-     *
-     * @param string $type
-     *
-     * @return Journal
+     * Set type.
      */
     public function setType(string $type): self
     {
@@ -156,9 +141,7 @@ class Journal
     }
 
     /**
-     * Get type
-     *
-     * @return string
+     * Get type.
      */
     public function getType(): ?string
     {
@@ -166,11 +149,7 @@ class Journal
     }
 
     /**
-     * Set message
-     *
-     * @param string $message
-     *
-     * @return Journal
+     * Set message.
      */
     public function setMessage(string $message): self
     {
@@ -180,9 +159,7 @@ class Journal
     }
 
     /**
-     * Get message
-     *
-     * @return string
+     * Get message.
      */
     public function getMessage(): ?string
     {
@@ -190,13 +167,9 @@ class Journal
     }
 
     /**
-     * Set stamp
-     *
-     * @param \DateTime $stamp
-     *
-     * @return Journal
+     * Set stamp.
      */
-    public function setStamp(\Datetime $stamp): self
+    public function setStamp(\DateTime $stamp): self
     {
         $this->stamp = $stamp;
 
@@ -204,21 +177,15 @@ class Journal
     }
 
     /**
-     * Get stamp
-     *
-     * @return \DateTime
+     * Get stamp.
      */
-    public function getStamp(): \Datetime
+    public function getStamp(): \DateTime
     {
         return $this->stamp;
     }
 
     /**
-     * Set ip
-     *
-     * @param string $ip
-     *
-     * @return Journal
+     * Set ip.
      */
     public function setIp(string $ip): self
     {
@@ -228,9 +195,7 @@ class Journal
     }
 
     /**
-     * Get ip
-     *
-     * @return string
+     * Get ip.
      */
     public function getIp(): ?string
     {
@@ -238,9 +203,7 @@ class Journal
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -248,12 +211,9 @@ class Journal
     }
 
     /**
-     * Set individu
-     *
-     * @param \App\Entity\Individu $individu
-     * @return Journal
+     * Set individu.
      */
-    public function setIndividu(?\App\Entity\Individu $individu = null): self
+    public function setIndividu(Individu $individu = null): self
     {
         $this->individu = $individu;
 
@@ -261,20 +221,15 @@ class Journal
     }
 
     /**
-     * Get individu
-     *
-     * @return \App\Entity\Individu
+     * Get individu.
      */
-    public function getIndividu(): ?\App\Entity\Individu
+    public function getIndividu(): ?Individu
     {
         return $this->individu;
     }
 
     /**
-     * Set niveau
-     *
-     * @param integer $niveau
-     * @return Journal
+     * Set niveau.
      */
     public function setNiveau(int $niveau): self
     {
@@ -284,35 +239,33 @@ class Journal
     }
 
     /**
-     * Get niveau
-     *
-     * @return integer
+     * Get niveau.
      */
     public function getNiveau(): ?int
     {
         return $this->niveau;
     }
 
-    /////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////
 
-    public const   EMERGENCY               = 10;
-    public const   ALERT                   = 20;
-    public const   CRITICAL                = 30;
-    public const   ERROR                   = 40;
-    public const   WARNING                 = 50;
-    public const   NOTICE                  = 60;
-    public const   INFO                    = 70;
-    public const   DEBUG                   = 80;
+    public const EMERGENCY = 10;
+    public const ALERT = 20;
+    public const CRITICAL = 30;
+    public const ERROR = 40;
+    public const WARNING = 50;
+    public const NOTICE = 60;
+    public const INFO = 70;
+    public const DEBUG = 80;
 
-    public const   LIBELLE                 =
+    public const   LIBELLE =
             [
-                self::EMERGENCY             =>  'EMERGENCY',
-                self::ALERT                 =>  'ALERT',
-                self::CRITICAL              =>  'CRITICAL',
-                self::ERROR                 =>  'ERROR',
-                self::WARNING               =>  'WARNING',
-                self::NOTICE                =>  'NOTICE',
-                self::INFO                  =>  'INFO',
-                self::DEBUG                 =>  'DEBUG',
+                self::EMERGENCY => 'EMERGENCY',
+                self::ALERT => 'ALERT',
+                self::CRITICAL => 'CRITICAL',
+                self::ERROR => 'ERROR',
+                self::WARNING => 'WARNING',
+                self::NOTICE => 'NOTICE',
+                self::INFO => 'INFO',
+                self::DEBUG => 'DEBUG',
             ];
 }

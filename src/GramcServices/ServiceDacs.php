@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,13 @@ namespace App\GramcServices;
 use App\Entity\Dac;
 use App\Entity\Ressource;
 use App\Entity\Version;
-
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ServiceDacs
 {
-    public function __construct(private ServiceRessources $sr, private EntityManagerInterface $em){}
+    public function __construct(private ServiceRessources $sr, private EntityManagerInterface $em)
+    {
+    }
 
     /*********************************************************
      * Renvoie UN dac et UN SEUL. Si le dac n'existe pas on le crée
@@ -53,25 +41,22 @@ class ServiceDacs
     {
         $em = $this->em;
         $dacs = $em->getRepository(Dac::class)->findBy(['version' => $v, 'ressource' => $r]);
-        if (count($dacs) === 0)
-        {
+        if (0 === count($dacs)) {
             $d = new Dac();
             $d->setRessource($r);
             $d->setVersion($v);
             $v->addDac($d);
             $em->persist($d);
             $em->flush($d);
-        }
-        elseif (count($dacs) === 1)
-        {
+        } elseif (1 === count($dacs)) {
             $d = $dacs[0];
+        } else {
+            throw $this->sj->throwException('ServiceDacs:getDac findBy renvoie '.count($dacs).' objets '."$v - $r");
         }
-        else
-        {
-            throw $this->sj->throwException("ServiceDacs:getDac findBy renvoie " . count($dacs) . " objets " . "$v - $r");
-        }
+
         return $d;
     }
+
     /***********************************************
      * Renvoie les dacs correspondant à la version, dans un hash indexé par
      * le nom complet de la ressource associée
@@ -79,15 +64,15 @@ class ServiceDacs
     public function getDacsByNr(Version $v): array
     {
         $sr = $this->sr;
-        
-        $dacs=[];
+
+        $dacs = [];
         $vdacs = $v->getDac();
-        foreach ($vdacs as $dac)
-        {
-            $k = $sr->getNomComplet($dac->getRessource(),'_');
+        foreach ($vdacs as $dac) {
+            $k = $sr->getNomComplet($dac->getRessource(), '_');
             $dacs[$k] = $dac;
         }
         ksort($dacs);
+
         return $dacs;
     }
 
@@ -101,19 +86,16 @@ class ServiceDacs
         $attribution = $dac->getAttribution();
         $ressource = $dac->getRessource();
         $version = $dac->getVersion();
-        foreach ($version->getRallonge() as $rallonge)
-        {
-            if ($rallonge->getEtatRallonge() === Etat::ACTIF || $rallonge->getEtatRallonge() === Etat::TERMINE)
-            {
-                foreach ($rallonge->getDar() as $dar)
-                {
-                    if ($dar->getRessource() === $ressource)
-                    {
+        foreach ($version->getRallonge() as $rallonge) {
+            if (Etat::ACTIF === $rallonge->getEtatRallonge() || Etat::TERMINE === $rallonge->getEtatRallonge()) {
+                foreach ($rallonge->getDar() as $dar) {
+                    if ($dar->getRessource() === $ressource) {
                         $attribution += $dar->getAttribution();
                     }
                 }
             }
         }
+
         return $attribution;
     }
 
@@ -121,19 +103,22 @@ class ServiceDacs
      * Renvoie true si la version ou une de ses rallonges n'est pas acquittée (todof vaut true)
      * Renvoie false si acquitté
      *******************************************************/
-    public function getTodofConsolide(Dac $dac):bool
+    public function getTodofConsolide(Dac $dac): bool
     {
-        if ($dac->getTodof()) return true;
+        if ($dac->getTodof()) {
+            return true;
+        }
 
         $ressource = $dac->getRessource();
         $version = $dac->getVersion();
-        foreach ($version->getRallonge() as $rallonge)
-        {
-            foreach ($rallonge->getDar() as $dar)
-            {
-                if ($dar->getRessource() === $ressource && $dar->getTodof()) return true;
+        foreach ($version->getRallonge() as $rallonge) {
+            foreach ($rallonge->getDar() as $dar) {
+                if ($dar->getRessource() === $ressource && $dar->getTodof()) {
+                    return true;
+                }
             }
         }
+
         return false;
     }
 
@@ -147,20 +132,16 @@ class ServiceDacs
         $demande = $dac->getDemande();
         $ressource = $dac->getRessource();
         $version = $dac->getVersion();
-        foreach ($version->getRallonge() as $rallonge)
-        {
-            if ($rallonge->getEtatRallonge() === Etat::ACTIF || $rallonge->getEtatRallonge() === Etat::TERMINE)
-            {
-                foreach ($rallonge->getDar() as $dar)
-                {
-                    if ($dar->getRessource() === $ressource)
-                    {
+        foreach ($version->getRallonge() as $rallonge) {
+            if (Etat::ACTIF === $rallonge->getEtatRallonge() || Etat::TERMINE === $rallonge->getEtatRallonge()) {
+                foreach ($rallonge->getDar() as $dar) {
+                    if ($dar->getRessource() === $ressource) {
                         $demande += $dar->getDemande();
                     }
                 }
             }
         }
+
         return $demande;
     }
-
 }

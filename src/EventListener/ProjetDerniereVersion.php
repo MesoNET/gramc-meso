@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
-
 /************
  * Voir https://symfony.com/index.php/doc/4.4/doctrine/events.html#doctrine-entity-listeners
  *
@@ -38,9 +37,8 @@ namespace App\EventListener;
 
 use App\Entity\Version;
 use App\GramcServices\ServiceProjets;
-
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class ProjetDerniereVersion
 {
@@ -57,21 +55,23 @@ class ProjetDerniereVersion
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
-        //dd($projet,$version,$projet->getVersionDerniere());
+        // dd($projet,$version,$projet->getVersionDerniere());
     }
+
     public function postRemove(Version $version, LifecycleEventArgs $event): void
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
-        //$this->em->persist($projet);
-        //$this->em->flush();		// ne marche pas si on ne met pas flush ici
+        // $this->em->persist($projet);
+        // $this->em->flush();		// ne marche pas si on ne met pas flush ici
     }
+
     // Pas très utile a priori... ceinture et bretelles ?
     public function postUpdate(Version $version, LifecycleEventArgs $event): void
     {
         $projet = $version->getProjet();
         $this->sp->calculVersionDerniere($projet);
-        //$this->em->persist($projet);
-        //$this->em->flush();
+        // $this->em->persist($projet);
+        // $this->em->flush();
     }
 }

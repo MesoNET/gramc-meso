@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,21 +25,14 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-
 class GererUtilisateurType extends AbstractType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -47,24 +40,24 @@ class GererUtilisateurType extends AbstractType
                     'all',
                     CheckboxType::class,
                     [
-                        'label'     =>  'Filtrer sur tous les utilisateurs:',
-                        'required'  =>  false,
+                        'label' => 'Filtrer sur tous les utilisateurs:',
+                        'required' => false,
                     ]
                 )
                 ->add(
                     'filtre',
                     TextType::class,
                     [
-                        'label'     =>  'Filtre:',
-                        'attr'      =>  [ 'size' => '50' ],
-                        'required'  =>  false,
+                        'label' => 'Filtre:',
+                        'attr' => ['size' => '50'],
+                        'required' => false,
                     ]
                 )
                  ->add(
                      'filtrer',
                      SubmitType::class,
                      [
-                        'label'         => 'Filtrer',
+                        'label' => 'Filtrer',
                     ]
                  )
                 /*
@@ -80,12 +73,9 @@ class GererUtilisateurType extends AbstractType
                     [
                         'label'         => 'Admins',
                     ])*/
-                    ;
+        ;
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);

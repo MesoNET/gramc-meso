@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,18 +24,14 @@
 
 namespace App\Form;
 
+use App\GramcServices\GramcDate;
+use App\Utils\Functions;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-
-use App\Utils\Functions;
-use App\GramcServices\GramcDate;
 
 class PublicationType extends AbstractType
 {
@@ -43,48 +39,39 @@ class PublicationType extends AbstractType
 
     public function __construct(GramcDate $grdt)
     {
-        $this -> grdt = $grdt;
+        $this->grdt = $grdt;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('refbib', TextType::class, ['required'  =>  true, ])
-            ->add('doi', TextType::class, ['required'  =>  false, ])
-            ->add('openUrl', TextType::class, ['required'  =>  false, ])
-            ->add('idPubli', IntegerType::class, ['required'  =>  false, ])
+            ->add('refbib', TextType::class, ['required' => true])
+            ->add('doi', TextType::class, ['required' => false])
+            ->add('openUrl', TextType::class, ['required' => false])
+            ->add('idPubli', IntegerType::class, ['required' => false])
             ->add(
                 'annee',
                 ChoiceType::class,
                 [
-                'choices'         => Functions::choicesYear(new \DateTime('2000-01-01'), $this->grdt, 0),
+                'choices' => Functions::choicesYear(new \DateTime('2000-01-01'), $this->grdt, 0),
                 ]
             );
 
-        if ($options['projet']  == true) {
+        if (true == $options['projet']) {
             $builder->add('projet');
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
-            'data_class'    => 'App\Entity\Publication',
-            'projet'        => false,
+            'data_class' => 'App\Entity\Publication',
+            'projet' => false,
             ]
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'appbundle_publication';

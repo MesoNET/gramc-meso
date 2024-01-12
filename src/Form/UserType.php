@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,14 @@
 namespace App\Form;
 
 use App\Entity\Clessh;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Doctrine\ORM\EntityManagerInterface;
 
 class UserType extends AbstractType
 {
@@ -45,49 +43,40 @@ class UserType extends AbstractType
         $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
-                    'clessh',
-                    EntityType::class,
-                    [
-                        'label' => 'Choisissez une clé ssh: ',
-                        'required' => true,
-                        'multiple' => false,
-                        'expanded' => true,
-                        'class' => clessh::class,
-                        'choices' =>  $options['clessh']
-                    ]
-                )
+            'clessh',
+            EntityType::class,
+            [
+                'label' => 'Choisissez une clé ssh: ',
+                'required' => true,
+                'multiple' => false,
+                'expanded' => true,
+                'class' => clessh::class,
+                'choices' => $options['clessh'],
+            ]
+        )
                 ->add(
                     'cgu',
                     CheckBoxType::class,
                     [
-                        'required'  =>  false,
-                        'label'     => '',
+                        'required' => false,
+                        'label' => '',
                     ]
                 )
-                ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
+                ->add('submit', SubmitType::class, ['label' => 'modifier'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'App\Entity\User',
-            'clessh' => []
-        ));
+            'clessh' => [],
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'user';

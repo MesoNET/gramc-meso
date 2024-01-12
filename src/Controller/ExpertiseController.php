@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,59 +25,38 @@
 namespace App\Controller;
 
 use App\Entity\Expertise;
-use App\Entity\Individu;
-use App\Entity\Thematique;
 use App\Entity\Projet;
-use App\Entity\Version;
 use App\Entity\Rallonge;
-use App\Entity\Session;
-use App\Entity\CollaborateurVersion;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
-use App\Utils\Functions;
-use App\Utils\Menu;
+use App\Entity\Version;
 use App\GramcServices\Etat;
-use App\GramcServices\Signal;
-use App\AffectationExperts\AffectationExperts;
-
-use App\GramcServices\Workflow\Projet4\Projet4Workflow;
-use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
-
+use App\GramcServices\GramcDate;
+use App\GramcServices\ServiceExpertises;
+use App\GramcServices\ServiceExperts\ServiceExperts;
+use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
-use App\GramcServices\ServiceExpertises;
-use App\GramcServices\ServiceMenus;
-use App\GramcServices\ServiceIndividus;
-use App\GramcServices\ServiceExperts\ServiceExperts;
-use App\GramcServices\GramcDate;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\GramcServices\Signal;
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
+use App\Utils\Functions;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
-use App\Form\ChoiceList\ExpertChoiceLoader;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Expertise controller.
@@ -85,8 +64,8 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: 'expertise')]
 class ExpertiseController extends AbstractController
 {
-    private $token = null;
-    
+    private $token;
+
     public function __construct(
         private $dyn_duree,
         private ServiceNotifications $sn,
@@ -110,16 +89,15 @@ class ExpertiseController extends AbstractController
         $this->token = $tok->getToken();
     }
 
-    ///////////////////////
-
+    // /////////////////////
 
     private static function cmpVersionsByEtat(Version $a, Version $b): int
     {
-        return (Etat::cmpEtatExpertise($a->getEtatVersion(),$b->getEtatVersion()));
+        return Etat::cmpEtatExpertise($a->getEtatVersion(), $b->getEtatVersion());
     }
-    
+
     /**
-     * Afficher une expertise
+     * Afficher une expertise.
      *
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
@@ -129,16 +107,13 @@ class ExpertiseController extends AbstractController
         $token = $this->token;
         $sm = $this->sm;
 
-        $menu[] = $sm -> expert();
-        
+        $menu[] = $sm->expert();
+
         $moi = $token->getUser();
         $version = $expertise->getVersion();
-        if ($version !== null && $version->isExpertDe($moi))
-        {
-            return $this->render('expertise/consulter.html.twig', [ 'expertise' => $expertise, 'menu' => $menu ]);
-        }
-        else
-        {
+        if (null !== $version && $version->isExpertDe($moi)) {
+            return $this->render('expertise/consulter.html.twig', ['expertise' => $expertise, 'menu' => $menu]);
+        } else {
             return new RedirectResponse($this->generateUrl('accueil'));
         }
     }
@@ -146,19 +121,18 @@ class ExpertiseController extends AbstractController
     // Helper function used by listeAction
     private static function exptruefirst($a, $b): int
     {
-        if ($a['expert'] === true  && $b['expert'] === false)
-        {
+        if (true === $a['expert'] && false === $b['expert']) {
             return -1;
         }
-        if ($a['projetId'] < $b['projetId'])
-        {
+        if ($a['projetId'] < $b['projetId']) {
             return -1;
         }
+
         return 1;
     }
 
     /**
-     * Liste les projets dynamiques non encore validés
+     * Liste les projets dynamiques non encore validés.
      *
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
@@ -167,27 +141,25 @@ class ExpertiseController extends AbstractController
     {
         $grdt = $this->grdt;
         $sid = $this->sid;
-        $ss  = $this->ss;
-        $sp  = $this->sp;
-        $sj  = $this->sj;
+        $ss = $this->ss;
+        $sp = $this->sp;
+        $sj = $this->sj;
         $token = $this->token;
-        $em  = $this->em;
+        $em = $this->em;
 
         $moi = $token->getUser();
         if (is_string($moi)) {
             $sj->throwException();
         }
 
-        if ($token !== null)
-        {
+        if (null !== $token) {
             $individu = $token->getUser();
-            if (! $sid->validerProfil($individu))
-            {
+            if (!$sid->validerProfil($individu)) {
                 return $this->redirectToRoute('profil');
-            };
+            }
         }
 
-        $mes_thematiques     = $moi->getThematique();
+        $mes_thematiques = $moi->getThematique();
         $expertiseRepository = $em->getRepository(Expertise::class);
 
         // Les expertises affectées à cet expert
@@ -195,63 +167,54 @@ class ExpertiseController extends AbstractController
         // mais seulement les expertises non terminées
         $expertises = $expertiseRepository->findExpertisesDyn();
 
-        ///////////////////////
+        // /////////////////////
 
         return $this->render('expertise/dyn.html.twig',
-                             [ 'expertises' => $expertises ]);
+            ['expertises' => $expertises]);
     }
 
     // Helper function used by modifierAction
     private static function expprjfirst($a, $b): int
     {
-        if ($a === $b) return 0;
+        if ($a === $b) {
+            return 0;
+        }
 
         // rallonge - version
-        if ($a->getVersion() === null && $b->getVersion() !== null)
-        {
+        if (null === $a->getVersion() && null !== $b->getVersion()) {
             return 1;
         }
 
         // version - rallonge
-        if ($a->getVersion() !== null && $b->getVersion() === null)
-        {
+        if (null !== $a->getVersion() && null === $b->getVersion()) {
             return -1;
         }
 
         // version - version
-        if ($a->getVersion() !== null)
-        {
-            if ($a->getVersion()->getProjet()->getId() < $b->getVersion()->getId())
-            {
+        if (null !== $a->getVersion()) {
+            if ($a->getVersion()->getProjet()->getId() < $b->getVersion()->getId()) {
                 return -1;
-            }
-            else
-            {
+            } else {
                 return 1;
             }
         }
 
         // rallonge - rallonge
-        if ($a->getRallonge() !== null)
-        {
-            if ($a->getRallonge()->getVersion()->getProjet()->getId() < $b->getRallonge()->getVersion()->getId())
-            {
+        if (null !== $a->getRallonge()) {
+            if ($a->getRallonge()->getVersion()->getProjet()->getId() < $b->getRallonge()->getVersion()->getId()) {
                 return -1;
-            }
-            else
-            {
+            } else {
                 return 1;
             }
-            
         }
 
         // Ne devrait jamais arriver là
-        throw new \Exception( "OUPS - Expertise mauvaise");
+        throw new \Exception('OUPS - Expertise mauvaise');
     }
 
     /**
      * Le valideur vient de cliquer sur le bouton "Modifier expertise"
-     * Il entre son expertise et éventuellement l'envoie
+     * Il entre son expertise et éventuellement l'envoie.
      *
      * ATTENTION - La même fonction permet de valider PROJETS ET RALLONGES
      *
@@ -277,38 +240,36 @@ class ExpertiseController extends AbstractController
         $version = $expertise->getVersion();
         $rallonge = $expertise->getRallonge();
         $expRallonge = false;
-        if ($rallonge !== null)
-        {
+        if (null !== $rallonge) {
             $expRallonge = true;
             $version = $rallonge->getVersion();
         }
-        if ($version === null && $rallonge === null) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $expertise . " n'a pas de version !");
+        if (null === $version && null === $rallonge) {
+            $sj->throwException(__METHOD__.':'.__LINE__.'  '.$expertise." n'a pas de version !");
         }
-        if (is_string($moi))
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
-        };
+        if (is_string($moi)) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' personne connecté');
+        }
 
         $redirect_to_route = 'expertise_liste_dyn';
-        
+
         // Si expertise déjà faite on revient à la liste
         if ($expertise->getDefinitif()) {
-            $request->getSession()->getFlashbag()->add("flash erreur","Version ou rallonge déjà validée !");
+            $request->getSession()->getFlashbag()->add('flash erreur', 'Version ou rallonge déjà validée !');
+
             return $this->redirectToRoute($redirect_to_route);
         }
 
         $expertiseRepository = $em->getRepository(Expertise::class);
-        $anneeCour  = intval($grdt->format('Y'));
-        $anneePrec  = $anneeCour - 1;
+        $anneeCour = intval($grdt->format('Y'));
+        $anneePrec = $anneeCour - 1;
 
         // Version est-elle nouvelle ?
         $isnouvelle = $sv->isNouvelle($version);
-        $projet      = $version -> getProjet();
-        $projet_type = $projet  -> getTypeProjet();
-        if ($projet_type !== Projet::PROJET_DYN)
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Le projet $projet n'est pas un projet dynamique (type=$projet_type)");
+        $projet = $version->getProjet();
+        $projet_type = $projet->getTypeProjet();
+        if (Projet::PROJET_DYN !== $projet_type) {
+            $sj->throwException(__METHOD__.':'.__LINE__." Le projet $projet n'est pas un projet dynamique (type=$projet_type)");
         }
 
         // $peut_envoyer -> Si true, on affiche le bouton Envoyer
@@ -316,19 +277,19 @@ class ExpertiseController extends AbstractController
 
         // Création du formulaire
         $editForm = $this->createFormBuilder($expertise)
-            ->add('commentaireInterne', TextAreaType::class, [ 'required' => false ])
-            ->add('commentaireExterne', TextAreaType::class, [ 'required' => false ])
+            ->add('commentaireInterne', TextAreaType::class, ['required' => false])
+            ->add('commentaireExterne', TextAreaType::class, ['required' => false])
             ->add(
-                  'validation',
-                  ChoiceType::class,
-                  [
-                      'multiple' => false,
-                      'choices'   =>  [ 'Accepter' => 1, 'Refuser' => 0,],
-                  ],
-                  )
-            ->add('enregistrer', SubmitType::class, ['label' =>  'Enregistrer' ])
-            ->add('envoyer', SubmitType::class, ['label' =>  'Envoyer' ])
-            ->add('annuler', SubmitType::class, ['label' =>  'Annuler' ])
+                'validation',
+                ChoiceType::class,
+                [
+                    'multiple' => false,
+                    'choices' => ['Accepter' => 1, 'Refuser' => 0],
+                ],
+            )
+            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer'])
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer'])
+            ->add('annuler', SubmitType::class, ['label' => 'Annuler'])
             ->add('fermer', SubmitType::class)
             ->getForm();
 
@@ -339,16 +300,14 @@ class ExpertiseController extends AbstractController
         $ressource_form->handleRequest($request);
 
         // Bouton ANNULER
-        if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked())
-        {
+        if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked()) {
             return $this->redirectToRoute($redirect_to_route);
         }
 
         // Boutons ENREGISTRER, FERMER ou ENVOYER
-        $erreur  = 0;
+        $erreur = 0;
         $erreurs = [];
-        if ($editForm->isSubmitted())
-        {
+        if ($editForm->isSubmitted()) {
             $erreurs = Functions::dataError($sval, $expertise);
 
             // Projet dynamique = Dès qu'on enregistre une expertise, on est enregistré comme valideur
@@ -356,62 +315,55 @@ class ExpertiseController extends AbstractController
 
             $em->persist($expertise);
             $em->flush();
-            //dd($expertise);
+            // dd($expertise);
 
             // Bouton FERMER
-            if ($editForm->get('fermer')->isClicked())
-            {
+            if ($editForm->get('fermer')->isClicked()) {
                 return $this->redirectToRoute($redirect_to_route);
             }
 
             // Bouton ENVOYER --> Vérification des champs non renseignés
             //                    Si refus, on met toutes les attributions à zéro
             //                    Puis demande de confirmation
-            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && $erreurs === [])
-            {
-                if ($expertise->getValidation() === false)
-                {
-                    if ($expRallonge)
-                    {
+            if ($peut_envoyer && $editForm->get('envoyer')->isClicked() && [] === $erreurs) {
+                if (false === $expertise->getValidation()) {
+                    if ($expRallonge) {
                         $dars = $ressource_form->getData()['ressource'];
-                        foreach ($dars as $d)
-                        {
+                        foreach ($dars as $d) {
                             $d->setAttribution(0);
                             $em->persist($d);
                         }
                         $em->flush();
-                    }
-                    else
-                    {
+                    } else {
                         $dacs = $ressource_form->getData()['ressource'];
-                        foreach ($dacs as $d)
-                        {
+                        foreach ($dacs as $d) {
                             $d->setAttribution(0);
                             $em->persist($d);
                         }
                         $em->flush();
                     }
                 }
-                return $this->redirectToRoute('expertise_validation', [ 'id' => $expertise->getId() ]);
+
+                return $this->redirectToRoute('expertise_validation', ['id' => $expertise->getId()]);
             }
         }
 
         $twig = 'expertise/modifier_projet_dyn.html.twig';
         $expertises = $expertiseRepository->findExpertisesDyn();
-        uasort($expertises, "self::expprjfirst");
+        uasort($expertises, 'self::expprjfirst');
 
-        if (count($expertises)!=0) {
+        if (0 != count($expertises)) {
             $k = array_search($expertise, $expertises);
-            if ($k==0) {
+            if (0 == $k) {
                 $prev = null;
             } else {
-                $prev = $expertises[$k-1];
+                $prev = $expertises[$k - 1];
             }
             $next = null;
-            if ($k==count($expertises)-1) {
+            if ($k == count($expertises) - 1) {
                 $next = null;
             } else {
-                $next = $expertises[$k+1];
+                $next = $expertises[$k + 1];
             }
         } else {
             $prev = null;
@@ -421,7 +373,7 @@ class ExpertiseController extends AbstractController
         return $this->render(
             $twig,
             [
-                'exprallonge' => $expRallonge,        
+                'exprallonge' => $expRallonge,
                 'isNouvelle' => $isnouvelle,
                 'expertise' => $expertise,
                 'version' => $version,
@@ -435,15 +387,14 @@ class ExpertiseController extends AbstractController
                 'prev' => $prev,
                 'next' => $next,
                 'rapport' => null,
-                'document' => null
+                'document' => null,
             ]
         );
     }
 
     /**
-     *
      * L'expert vient de cliquer sur le bouton "Envoyer expertise"
-     * On lui envoie un écran de confirmation
+     * On lui envoie un écran de confirmation.
      *
      * @Security("is_granted('ROLE_VALIDEUR')")
      */
@@ -466,56 +417,47 @@ class ExpertiseController extends AbstractController
         $version = $expertise->getVersion();
         $rallonge = $expertise->getRallonge();
         $expRallonge = false;
-        if ($rallonge !== null)
-        {
+        if (null !== $rallonge) {
             $expRallonge = true;
             $twig = 'expertise/valider_rallonge_projet_dyn.html.twig';
             $version = $rallonge->getVersion();
         }
-        if ($version === null && $rallonge === null) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $expertise . " n'a pas de version !");
+        if (null === $version && null === $rallonge) {
+            $sj->throwException(__METHOD__.':'.__LINE__.'  '.$expertise." n'a pas de version !");
         }
 
         // ACL
         $moi = $token->getUser();
-        if (is_string($moi))
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " personne connecté");
-        }
-        elseif ($expertise->getExpert() === null)
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " aucun expert pour l'expertise " . $expertise);
-        }
-        elseif (! $expertise->getExpert()->isEqualTo($moi))
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . "  " . $moi .
-                " n'est pas un expert de l'expertise " . $expertise . ", c'est " . $expertise->getExpert());
+        if (is_string($moi)) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' personne connecté');
+        } elseif (null === $expertise->getExpert()) {
+            $sj->throwException(__METHOD__.':'.__LINE__." aucun expert pour l'expertise ".$expertise);
+        } elseif (!$expertise->getExpert()->isEqualTo($moi)) {
+            $sj->throwException(__METHOD__.':'.__LINE__.'  '.$moi.
+                " n'est pas un expert de l'expertise ".$expertise.", c'est ".$expertise->getExpert());
         }
 
         $editForm = $this->createFormBuilder($expertise)
-                    ->add('confirmer', SubmitType::class, ['label' =>  'Confirmer' ])
-                    ->add('annuler', SubmitType::class, ['label' =>  'Annuler' ])
+                    ->add('confirmer', SubmitType::class, ['label' => 'Confirmer'])
+                    ->add('annuler', SubmitType::class, ['label' => 'Annuler'])
                     ->getForm();
 
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted()) {
-
             // Bouton Annuler
             if ($editForm->get('annuler')->isClicked()) {
-                return $this->redirectToRoute('expertise_modifier', [ 'id' => $expertise->getId() ]);
+                return $this->redirectToRoute('expertise_modifier', ['id' => $expertise->getId()]);
             }
 
             // Bouton Confirmer
             // On envoie un signal CLK_VAL_EXP_XXX
-            if ($expRallonge)
-            {
+            if ($expRallonge) {
                 $this->validationForRallonge($rallonge, $expertise);
-            }
-            else
-            {
+            } else {
                 $this->validationForVersion($version, $expertise);
             }
+
             return $this->redirectToRoute($redirect_to_route);
         }
 
@@ -550,30 +492,26 @@ class ExpertiseController extends AbstractController
 
         // Si la version active existe, on positionne sa date de fin
         $veract = $projet->getVersionActive();
-        if ($veract !== null)
-        {
+        if (null !== $veract) {
             $veract->setEndDate($grdt);
             $em->persist($veract);
         }
 
-        $validation =  $expertise->getValidation();
+        $validation = $expertise->getValidation();
         $rtn = null;
-        $signal = ($validation === true) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
+        $signal = (true === $validation) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $version->getProjet());
-        if ($rtn !== true)
-        {
-            $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
-            . "(" . $signal . ") pour l'expertise " . $expertise . " avec rtn = " . Functions::show($rtn));
+        if (true !== $rtn) {
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' Transition avec '.Signal::getLibelle($signal)
+            .'('.$signal.") pour l'expertise ".$expertise.' avec rtn = '.Functions::show($rtn));
+
             return;
-        }
-        else
-        {
+        } else {
             $expertise->setDefinitif(true);
 
             // Version refusée = On met la date de fin à aujourd'hui'
-            if ( !$validation)
-            {
+            if (!$validation) {
                 $version->setEndDate($grdt->getNew());
                 $version->setLimitDate($grdt->getNew());
             }
@@ -594,19 +532,17 @@ class ExpertiseController extends AbstractController
         $workflow = $this->r4w;
         $em = $this->em;
 
-        $validation =  $expertise->getValidation();
+        $validation = $expertise->getValidation();
         $rtn = null;
-        $signal = ($validation === true) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
+        $signal = (true === $validation) ? Signal::CLK_VAL_EXP_OK : Signal::CLK_VAL_EXP_KO;
 
         $rtn = $workflow->execute($signal, $rallonge);
-        if ($rtn !== true)
-        {
-            $sj->errorMessage(__METHOD__ . ":" . __LINE__ . " Transition avec " .  Signal::getLibelle($signal)
-            . "(" . $signal . ") pour l'expertise " . $expertise . " avec rtn = " . Functions::show($rtn));
+        if (true !== $rtn) {
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' Transition avec '.Signal::getLibelle($signal)
+            .'('.$signal.") pour l'expertise ".$expertise.' avec rtn = '.Functions::show($rtn));
+
             return;
-        }
-        else
-        {
+        } else {
             $expertise->setDefinitif(true);
         }
 

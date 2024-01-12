@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,35 +24,23 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
+use App\Entity\Individu;
 use App\Entity\Projet;
 use App\Entity\Version;
-use App\Entity\Individu;
-
-use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceSessions;
-
-use App\Utils\Functions;
-
-use libphonenumber\PhoneNumberUtil;
-use libphonenumber\NumberParseException;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
-
-use JpGraph\JpGraph;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
@@ -64,7 +52,8 @@ class DefaultController extends AbstractController
         private ServiceSessions $ss,
         private FormFactoryInterface $ff,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * @Security("is_granted('ROLE_ADMIN')")
@@ -79,17 +68,20 @@ class DefaultController extends AbstractController
         $result = $query->getResult();
 
         return new Response(get_class($result[0]['individu']));
+
         return new Response(gettype($result[0]['individu']));
-        return new Response(implode(" ", array_keys($result[0])));
+
+        return new Response(implode(' ', array_keys($result[0])));
+
         return new Response($result[0]['score']);
 
-        if (gettype($result) == 'array') {
+        if ('array' == gettype($result)) {
             return new Response(gettype(end($result)));
         } else {
             return new Response(gettype($result));
         }
 
-        return new Response(implode(" ", array_keys($result)));
+        return new Response(implode(' ', array_keys($result)));
     }
 
     /**
@@ -101,16 +93,18 @@ class DefaultController extends AbstractController
         $sn = $this->sn;
         $em = $this->em;
 
-        $users    = [ 'a@x', 'b@x' ];
-        $users    = $em->getRepository(Individu::class)->findBy(['president' => true ]);
+        $users = ['a@x', 'b@x'];
+        $users = $em->getRepository(Individu::class)->findBy(['president' => true]);
         $versions = $em->getRepository(Version::class)->findAll();
-        $users    = $sn->mailUsers([ 'E','R' ], $versions[301]);
-        $output   = $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', [ 'projet' => [ 'idProjet' => 'ID' ] ], $users);
+        $users = $sn->mailUsers(['E', 'R'], $versions[301]);
+        $output = $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
 
-        //return new Response ( $users[0] );
+        // return new Response ( $users[0] );
 
         return new Response($output['to']);
+
         return new Response($output['contenu']);
+
         return new Response($output['subject']);
     }
 
@@ -131,6 +125,7 @@ class DefaultController extends AbstractController
     {
         $ss = $this->ss;
         var_dump($ss->getSessionCourante());
+
         return new Response('OK');
     }
 
@@ -142,20 +137,20 @@ class DefaultController extends AbstractController
     {
         $form = $this->ff
                    ->createNamedBuilder('image_form', FormType::class, [])
-                   ->add('image', TextType::class, [ 'required'       =>  false,])
-                   ->add('number', TextType::class, ['required'       =>  false,])
+                   ->add('image', TextType::class, ['required' => false])
+                   ->add('number', TextType::class, ['required' => false])
                    ->getForm();
 
         $form->handleRequest($request);
 
-        //if ($form->isSubmitted() )
+        // if ($form->isSubmitted() )
         print_r($_POST, true);
 
         return $this->render(
             'version/test_form.html.twig',
             [
-            'form'       =>   $form->createView(),
-            'print'     => print_r($_POST, true)
+            'form' => $form->createView(),
+            'print' => print_r($_POST, true),
             ]
         );
     }

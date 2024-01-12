@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,21 +24,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Serveur;
 use App\Entity\Projet;
-
+use App\Entity\Serveur;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceUsers;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormInterface;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Serveur controller.
@@ -47,9 +43,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class ServeurController extends AbstractController
 {
     public function __construct(private AuthorizationCheckerInterface $ac,
-                                private ServiceJournal $sj,
-                                private ServiceUsers $su,
-                                private EntityManagerInterface $em) {}
+        private ServiceJournal $sj,
+        private ServiceUsers $su,
+        private EntityManagerInterface $em)
+    {
+    }
 
     /**
      * @Security("is_granted('ROLE_OBS')")
@@ -61,19 +59,19 @@ class ServeurController extends AbstractController
         $em = $this->em;
 
         // Si on n'est pas admin on n'a pas accès au menu
-        $menu = $ac->isGranted('ROLE_ADMIN') ? [ ['ok' => true,'name' => 'ajouter_serveur' ,'lien' => 'Ajouter un serveur','commentaire'=> 'Ajouter un serveur'] ] : [];
+        $menu = $ac->isGranted('ROLE_ADMIN') ? [['ok' => true, 'name' => 'ajouter_serveur', 'lien' => 'Ajouter un serveur', 'commentaire' => 'Ajouter un serveur']] : [];
 
         return $this->render(
             'serveur/liste.html.twig',
             [
             'menu' => $menu,
-            'serveurs' => $em->getRepository(serveur::class)->findBy([], ['nom' => 'ASC'])
+            'serveurs' => $em->getRepository(serveur::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
 
     /**
-     * Nouveau serveur
+     * Nouveau serveur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
@@ -83,56 +81,54 @@ class ServeurController extends AbstractController
     {
         $su = $this->su;
         $em = $this->em;
-        
+
         $serveur = new serveur();
-        $form = $this->createForm('App\Form\ServeurType', $serveur, ['ajouter' => true ]);
+        $form = $this->createForm('App\Form\ServeurType', $serveur, ['ajouter' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->em;
             $em->persist($serveur);
             $ok = true;
-            try
-            {
+            try {
                 $em->flush($serveur);
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 $ok = false;
-                $request->getSession()->getFlashbag()->add("flash erreur", "Le serveur n'a pas été créé (nom du serveur ou de l'utilisateur API ?");
+                $request->getSession()->getFlashbag()->add('flash erreur', "Le serveur n'a pas été créé (nom du serveur ou de l'utilisateur API ?");
             }
 
-            if ($ok)
-            {
+            if ($ok) {
                 // Créer les User pour les collaborateurs et versions active ou dernière des projets en état RENOUVELABLE
                 $projets = $em->getRepository(Projet::class)->findNonTermines();
-                foreach ($projets as $p)
-                {
+                foreach ($projets as $p) {
                     $versions = [];
-                    if ($p->getVersionDerniere() != null) $versions[] = $p->getVersionDerniere();
-                    if ($p->getVersionActive() != null) $versions[] = $p->getVersionActive();
-                    foreach ($versions as $v)
-                    {
-                        foreach ($v->getCollaborateurVersion() as $cv)
-                        {
+                    if (null != $p->getVersionDerniere()) {
+                        $versions[] = $p->getVersionDerniere();
+                    }
+                    if (null != $p->getVersionActive()) {
+                        $versions[] = $p->getVersionActive();
+                    }
+                    foreach ($versions as $v) {
+                        foreach ($v->getCollaborateurVersion() as $cv) {
                             // Création du User si pas encore fait !
-                            $su->getUser($cv->getCollaborateur(),$p,$serveur);
-                        }                        
+                            $su->getUser($cv->getCollaborateur(), $p, $serveur);
+                        }
                     }
                 }
             }
+
             return $this->redirectToRoute('gerer_serveurs');
         }
 
         return $this->render(
             'serveur/ajouter.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_serveurs',
                         'lien' => 'Retour vers la liste des serveurs',
-                        'commentaire'=> 'Retour vers la liste des serveurs'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des serveurs',
+                        ]],
             'serveur' => $serveur,
             'form' => $form->createView(),
             ]
@@ -140,7 +136,7 @@ class ServeurController extends AbstractController
     }
 
     /**
-     * Modifier un serveur
+     * Modifier un serveur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
@@ -149,18 +145,14 @@ class ServeurController extends AbstractController
     public function modifierAction(Request $request, Serveur $serveur): Response
     {
         $em = $this->em;
-        $editForm = $this->createForm('App\Form\ServeurType', $serveur, ['modifier' => true ]);
+        $editForm = $this->createForm('App\Form\ServeurType', $serveur, ['modifier' => true]);
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid())
-        {
-            try
-            {
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            try {
                 $em->flush();
-            }
-            catch (\Exception $e)
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur", "Le serveur n'a pas été modifié (nom api ?)");
+            } catch (\Exception $e) {
+                $request->getSession()->getFlashbag()->add('flash erreur', "Le serveur n'a pas été modifié (nom api ?)");
             }
 
             return $this->redirectToRoute('gerer_serveurs');
@@ -169,12 +161,12 @@ class ServeurController extends AbstractController
         return $this->render(
             'serveur/modif.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_serveurs',
                         'lien' => 'Retour vers la liste des serveurs',
-                        'commentaire'=> 'Retour vers la liste des serveurs'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des serveurs',
+                        ]],
             'serveur' => $serveur,
             'edit_form' => $editForm->createView(),
             ]
@@ -182,7 +174,7 @@ class ServeurController extends AbstractController
     }
 
     /**
-     * Supprimer un serveur
+     * Supprimer un serveur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -192,20 +184,18 @@ class ServeurController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
 
-        $request->getSession()->getFlashbag()->add("flash erreur", "Fonctionnalité non implémentée");
+        $request->getSession()->getFlashbag()->add('flash erreur', 'Fonctionnalité non implémentée');
+
         return $this->redirectToRoute('gerer_serveurs');
-        
-        try
-        {
+
+        try {
             $em->remove($serveur);
             $em->flush($serveur);
+        } catch (\Exception $e) {
+            $request->getSession()->getFlashbag()->add('flash erreur', 'Pas possible de supprimer ce serveur actuellement');
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' : '.$e->getMessage());
         }
-        catch ( \Exception $e)
-        {
-            $request->getSession()->getFlashbag()->add("flash erreur", "Pas possible de supprimer ce serveur actuellement");
-            $sj->errorMessage(__METHOD__ .':' . __LINE__ . " : " . $e->getMessage());
-        }
+
         return $this->redirectToRoute('gerer_serveurs');
     }
 }
-

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,47 +24,33 @@
 namespace App\GramcServices;
 
 use App\Entity\Serveur;
-
-
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ServiceServeurs
 {
-    public function __construct(private EntityManagerInterface $em){}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     /* Renvoie la liste de tous les noms de serveurs, triée en ordre alphabétique */
     public function getNoms(): array
     {
         $serveurs = $this->getServeurs();
         $noms = [];
-        foreach ($serveurs as $s)
-        {
+        foreach ($serveurs as $s) {
             $noms[] = $s->getNom();
         }
+
         return $noms;
     }
 
     /***********************************************************
      * Renvoie la liste des serveurs connus, en ordre alphabétique par rapport au nom
      *********************************************************************/
-    public function getServeurs() : array
+    public function getServeurs(): array
     {
         $em = $this->em;
+
         return $em->getRepository(Serveur::class)->findAllsorted();
     }
-    
 }
-

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,51 +24,38 @@
 
 namespace App\Controller;
 
+use App\Entity\CollaborateurVersion;
+use App\Entity\Expertise;
 use App\Entity\Individu;
 use App\Entity\Invitation;
-use App\Entity\Thematique;
-use App\Entity\CollaborateurVersion;
-use App\Entity\CompteActivation;
-use App\Entity\Expertise;
 use App\Entity\Journal;
 use App\Entity\Rallonge;
 use App\Entity\Session;
 use App\Entity\Sso;
-use App\Entity\Version;
-
-use App\Utils\Functions;
-
-use App\Form\IndividuForm\IndividuForm;
-
-use App\GramcServices\ServiceJournal;
-use App\GramcServices\ServiceExperts\ServiceExperts;
-use App\GramcServices\ServiceInvitations;
-use App\GramcServices\ServiceIndividus;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-
+use App\Entity\Thematique;
 use App\Form\GererUtilisateurType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
+use App\Form\IndividuForm\IndividuForm;
+use App\GramcServices\ServiceExperts\ServiceExperts;
+use App\GramcServices\ServiceIndividus;
+use App\GramcServices\ServiceInvitations;
+use App\GramcServices\ServiceJournal;
+use App\Utils\Functions;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Individu controller.
@@ -85,10 +72,11 @@ class IndividuController extends AbstractController
         private TokenStorageInterface $tok,
         private AuthorizationCheckerInterface $ac,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
-     * Supprimer utilisateur
+     * Supprimer utilisateur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -98,11 +86,12 @@ class IndividuController extends AbstractController
         $em = $this->em;
         $em->remove($individu);
         $em->flush();
+
         return $this->redirectToRoute('individu_gerer');
     }
 
     /**
-     * Remplacer utilisateur: on a demandé la suppression d'un utilisateur qui a des projets, expertises etc
+     * Remplacer utilisateur: on a demandé la suppression d'un utilisateur qui a des projets, expertises etc.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -122,7 +111,7 @@ class IndividuController extends AbstractController
                 'submit',
                 SubmitType::class,
                 [
-                 'label' => "Le nouvel utilisateur",
+                 'label' => 'Le nouvel utilisateur',
                  ]
             )
             ->getForm();
@@ -147,40 +136,36 @@ class IndividuController extends AbstractController
             );
         }
 
-        $CollaborateurVersion       =   $em->getRepository(CollaborateurVersion::class)->findBy(['collaborateur' => $individu]);
-        $Expertise                  =   $em->getRepository(Expertise ::class)->findBy(['expert' => $individu]);
-        $Journal                    =   $em->getRepository(Journal::class)->findBy(['individu' => $individu]);
-        $Rallonge                   =   $em->getRepository(Rallonge::class)->findBy(['expert' => $individu]);
-        $Sso                        =   $em->getRepository(Sso::class)->findBy(['individu' => $individu]);
-        $Thematique                 =   $individu->getThematique();
-        $erreurs  =   [];
+        $CollaborateurVersion = $em->getRepository(CollaborateurVersion::class)->findBy(['collaborateur' => $individu]);
+        $Expertise = $em->getRepository(Expertise::class)->findBy(['expert' => $individu]);
+        $Journal = $em->getRepository(Journal::class)->findBy(['individu' => $individu]);
+        $Rallonge = $em->getRepository(Rallonge::class)->findBy(['expert' => $individu]);
+        $Sso = $em->getRepository(Sso::class)->findBy(['individu' => $individu]);
+        $Thematique = $individu->getThematique();
+        $erreurs = [];
 
         // utilisateur peu actif peut être effacé
-        if ($CollaborateurVersion == null && $Expertise == null && $Rallonge == null)
-        {
-
+        if (null == $CollaborateurVersion && null == $Expertise && null == $Rallonge) {
             foreach ($individu->getThematique() as $item) {
                 $em->persist($item);
                 $item->getExpert()->removeElement($individu);
             }
 
-            foreach ($Sso  as $item) {
+            foreach ($Sso as $item) {
                 $em->remove($item);
             }
 
-            try
-            {
+            try {
                 $em->remove($individu);
                 $em->flush();
-            }
-            catch (\Exception $e)
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur",$e->getMessage());
-                $sj->warningMessage('Utilisateur ' . $individu . ' (' .  $individu->getIdIndividu() . ') ne peut être effacé ');
+            } catch (\Exception $e) {
+                $request->getSession()->getFlashbag()->add('flash erreur', $e->getMessage());
+                $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getIdIndividu().') ne peut être effacé ');
             }
 
-            $request->getSession()->getFlashbag()->add("flash info",$individu. " supprimé");
+            $request->getSession()->getFlashbag()->add('flash info', $individu.' supprimé');
             $sj->infoMessage("Utilisateur $individu effacé");
+
             return $this->redirectToRoute('individu_gerer');
         }
 
@@ -189,29 +174,25 @@ class IndividuController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $mail = $form->getData()['mail'];
-            $new_individu = $em->getRepository(Individu::class)->findOneBy(['mail'=>$mail]);
+            $new_individu = $em->getRepository(Individu::class)->findOneBy(['mail' => $mail]);
 
-            if ($new_individu != null) {
-                try
-                {
+            if (null != $new_individu) {
+                try {
                     $sid->fusionnerIndividus($individu, $new_individu);
                     $em->remove($individu);
                     $em->flush();
+                } catch (\Exception $e) {
+                    $request->getSession()->getFlashbag()->add('flash erreur', $e->getMessage());
+                    $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getIdIndividu().') ne peut être effacé ');
                 }
-                catch (\Exception $e)
-                {
-                    $request->getSession()->getFlashbag()->add("flash erreur",$e->getMessage());
-                    $sj->warningMessage('Utilisateur ' . $individu . ' (' .  $individu->getIdIndividu() . ') ne peut être effacé ');
-                }
-    
-                $request->getSession()->getFlashbag()->add("flash info",$individu. " supprimé");
-                $sj->infoMessage('Utilisateur ' . $individu . '(' .  $individu->getIdIndividu()
-                . ') fusionné vers ' . $new_individu . ' (' .  $new_individu->getIdIndividu() . ')');
+
+                $request->getSession()->getFlashbag()->add('flash info', $individu.' supprimé');
+                $sj->infoMessage('Utilisateur '.$individu.'('.$individu->getIdIndividu()
+                .') fusionné vers '.$new_individu.' ('.$new_individu->getIdIndividu().')');
+
                 return $this->redirectToRoute('individu_gerer');
-            }
-            else
-            {
-                $erreurs[] = "Le mail du nouvel utilisateur \"" . $mail . "\" ne correspond à aucun utilisateur existant";
+            } else {
+                $erreurs[] = 'Le mail du nouvel utilisateur "'.$mail.'" ne correspond à aucun utilisateur existant';
             }
         }
 
@@ -220,19 +201,19 @@ class IndividuController extends AbstractController
             [
                 'form' => $form->createView(),
                 'erreurs' => $erreurs,
-                'CollaborateurVersion' =>  $CollaborateurVersion,
-                'Expertise' => $Expertise ,
-                'Journal ' =>  $Journal,
-                'Rallonge' =>  $Rallonge,
-                'Sso' =>  $Sso,
-                'individu' =>  $individu,
-                'Thematique' =>  $Thematique->toArray(),
+                'CollaborateurVersion' => $CollaborateurVersion,
+                'Expertise' => $Expertise,
+                'Journal ' => $Journal,
+                'Rallonge' => $Rallonge,
+                'Sso' => $Sso,
+                'individu' => $individu,
+                'Thematique' => $Thematique->toArray(),
             ]
         );
     }
 
     /**
-     * Deletes a individu entity (CRUD)
+     * Deletes a individu entity (CRUD).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -251,9 +232,8 @@ class IndividuController extends AbstractController
         return $this->redirectToRoute('individu_index');
     }
 
-
     /**
-     * Lists all individu entities (CRUD)
+     * Lists all individu entities (CRUD).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -264,13 +244,13 @@ class IndividuController extends AbstractController
 
         $individus = $em->getRepository(Individu::class)->findAll();
 
-        return $this->render('individu/index.html.twig', array(
+        return $this->render('individu/index.html.twig', [
             'individus' => $individus,
-        ));
+        ]);
     }
 
     /**
-     * Creates a new individu entity (CRUD)
+     * Creates a new individu entity (CRUD).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -286,17 +266,17 @@ class IndividuController extends AbstractController
             $em->persist($individu);
             $em->flush($individu);
 
-            return $this->redirectToRoute('individu_show', array('id' => $individu->getId()));
+            return $this->redirectToRoute('individu_show', ['id' => $individu->getId()]);
         }
 
-        return $this->render('individu/new.html.twig', array(
+        return $this->render('individu/new.html.twig', [
             'individu' => $individu,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Finds and displays a individu entity (CRUD)
+     * Finds and displays a individu entity (CRUD).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method("GET")
@@ -306,14 +286,14 @@ class IndividuController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($individu);
 
-        return $this->render('individu/show.html.twig', array(
+        return $this->render('individu/show.html.twig', [
             'individu' => $individu,
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Displays a form to edit an existing individu entity (CRUD)
+     * Displays a form to edit an existing individu entity (CRUD).
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -327,17 +307,15 @@ class IndividuController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->em->flush();
 
-            return $this->redirectToRoute('individu_edit', array('id' => $individu->getId()));
+            return $this->redirectToRoute('individu_edit', ['id' => $individu->getId()]);
         }
 
-        return $this->render('individu/edit.html.twig', array(
+        return $this->render('individu/edit.html.twig', [
             'individu' => $individu,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));
+        ]);
     }
-
-
 
     /**
      * Creates a form to delete a individu entity.
@@ -349,15 +327,15 @@ class IndividuController extends AbstractController
     private function createDeleteForm(Individu $individu)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('individu_delete', array('id' => $individu->getId())))
+            ->setAction($this->generateUrl('individu_delete', ['id' => $individu->getId()]))
             ->setMethod('DELETE')
             ->getForm()
         ;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Ajouter un individu
+     * Ajouter un individu.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -370,7 +348,7 @@ class IndividuController extends AbstractController
 
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() /*&& $editForm->isValid()*/) {
+        if ($editForm->isSubmitted() /* && $editForm->isValid() */) {
             $individu->setCreationStamp(new \DateTime());
             $em->persist($individu);
             $em->flush();
@@ -378,20 +356,19 @@ class IndividuController extends AbstractController
             return $this->redirectToRoute('individu_gerer');
         }
 
-        
         return $this->render(
             'individu/modif.html.twig',
             [
             'individu' => $individu,
             'formInd' => $editForm->createView(),
             'formSso' => null,
-            'formEppn' => null
+            'formEppn' => null,
             ]
         );
     }
 
     /**
-     * Modifier un individu
+     * Modifier un individu.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -400,26 +377,23 @@ class IndividuController extends AbstractController
     {
         $em = $this->em;
         $repos = $em->getRepository(Individu::class);
-        
+
         $formInd = $this->createForm('App\Form\IndividuType', $individu);
         $session = $request->getSession();
-        
-        $formInd->handleRequest($request);
-        if ($formInd->isSubmitted() /*&& $editForm->isValid()*/) {
 
+        $formInd->handleRequest($request);
+        if ($formInd->isSubmitted() /* && $editForm->isValid() */) {
             $exc = false;
-            try
-            {
+            try {
                 $em->flush();
-            }
-            catch (UniqueConstraintViolationException $e)
-            {
+            } catch (UniqueConstraintViolationException $e) {
                 $exc = true;
-            };
+            }
 
             // Si exception, aller vers l'écran de remplacement
-            if ( $exc) {
+            if ($exc) {
                 $session->set('new_mail', $individu->getMail());
+
                 return $this->redirectToRoute('remplacer_utilisateur', ['id' => $individu->getIdIndividu()]);
             } else {
                 return $this->redirectToRoute('individu_gerer');
@@ -428,9 +402,8 @@ class IndividuController extends AbstractController
 
         // Nouvel EPPN
         $formSso = $this->ajoutEppn($request, $individu);
-        if ($formSso == null)
-        {
-            return $this->redirectToRoute('individu_modify', [ 'id' => $individu->getId() ]);
+        if (null == $formSso) {
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
 
         // Supprimer un EPPN
@@ -450,23 +423,21 @@ class IndividuController extends AbstractController
                 'choice_value' => function ($t) { return $t; },
                 ]
             )
-            ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-            ->add('reset', ResetType::class, ['label' => 'Annuler' ])
+            ->add('submit', SubmitType::class, ['label' => 'modifier'])
+            ->add('reset', ResetType::class, ['label' => 'Annuler'])
             ->getForm();
 
         $formEppn->handleRequest($request);
 
-        if ($formEppn->isSubmitted() && $formEppn->isValid())
-        {
-            foreach ($ssos_old as $s)
-            {
-                if ( !$ssos->contains($s))
-                {
+        if ($formEppn->isSubmitted() && $formEppn->isValid()) {
+            foreach ($ssos_old as $s) {
+                if (!$ssos->contains($s)) {
                     $em->remove($s);
                 }
             }
             $em->flush();
-            return $this->redirectToRoute('individu_modify', [ 'id' => $individu->getId() ]);
+
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
 
         return $this->render(
@@ -475,14 +446,13 @@ class IndividuController extends AbstractController
             'individu' => $individu,
             'formInd' => $formInd->createView(),
             'formEppn' => $formEppn->createView(),
-            'formSso' => $formSso->createView()
+            'formSso' => $formSso->createView(),
             ]
         );
     }
 
     /**
-     *
-     * Envoyer une invitation
+     * Envoyer une invitation.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      ***************************************/
@@ -492,13 +462,13 @@ class IndividuController extends AbstractController
         $token = $this->tok->getToken();
         $user = $token->getUser();
         $this->si->sendInvitation($user, $individu);
-        $request->getSession()->getFlashbag()->add("flash info","Invitation envoyée à $individu");
+        $request->getSession()->getFlashbag()->add('flash info', "Invitation envoyée à $individu");
+
         return $this->redirectToRoute('individu_gerer');
     }
 
-     /**
-     *
-     * Afficher toutes les invitations
+    /**
+     * Afficher toutes les invitations.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      ***************************************/
@@ -506,16 +476,16 @@ class IndividuController extends AbstractController
     public function invitationsAction(Request $request): Response
     {
         $em = $this->em;
-        
+
         $invitations = $em->getRepository(Invitation::class)->findAll();
         $invit_duree = $this->getParameter('invit_duree');
         $duree = new \DateInterval($invit_duree);
+
         return $this->render('individu/invitations.html.twig', ['invitations' => $invitations, 'duree' => $duree]);
     }
 
     /**
-     *
-     * Supprimer une invitation
+     * Supprimer une invitation.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      ***************************************/
@@ -531,40 +501,39 @@ class IndividuController extends AbstractController
     }
 
     /*********************************
-     * 
+     *
      * Ajout d'un nouvel eppn
      *
      **************************************/
-    private function ajoutEppn(Request $request, Individu $individu) : ?FormInterface
+    private function ajoutEppn(Request $request, Individu $individu): ?FormInterface
     {
         $em = $this->em;
         $sso = new Sso();
         $sso->setIndividu($individu);
         $formSso = $this->createForm('App\Form\SsoType', $sso, ['widget_individu' => false]);
         $formSso
-            ->add('submit', SubmitType::class, ['label' => 'nouvel EPPN' ])
-            ->add('reset', ResetType::class, ['label' => 'Annuler' ]);
+            ->add('submit', SubmitType::class, ['label' => 'nouvel EPPN'])
+            ->add('reset', ResetType::class, ['label' => 'Annuler']);
 
         $formSso->handleRequest($request);
 
         if ($formSso->isSubmitted() && $formSso->isValid()) {
             $em->persist($sso);
 
-            try
-            {
+            try {
                 $em->flush($sso);
-            }
-            catch (UniqueConstraintViolationException $e)
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Cet eppn existe déjà !");
+            } catch (UniqueConstraintViolationException $e) {
+                $request->getSession()->getFlashbag()->add('flash erreur', 'Cet eppn existe déjà !');
+
                 return null;
-            };
+            }
         }
-        return $formSso;        
+
+        return $formSso;
     }
 
     /**
-     * Devenir Admin
+     * Devenir Admin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -579,14 +548,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être Admin
+     * Cesser d'être Admin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -599,14 +568,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Devenir Obs
+     * Devenir Obs.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -620,14 +589,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être Obs
+     * Cesser d'être Obs.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -640,14 +609,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Devenir Sysadmin
+     * Devenir Sysadmin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -660,14 +629,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être Sysadmin
+     * Cesser d'être Sysadmin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -680,14 +649,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Devenir President - PAS UTILISE
+     * Devenir President - PAS UTILISE.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -700,14 +669,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être President - PAS UTILISE
+     * Cesser d'être President - PAS UTILISE.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -720,14 +689,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Devenir Expert - PAS UTILISE
+     * Devenir Expert - PAS UTILISE.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -740,19 +709,19 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être Expert - PAS UTILISE
+     * Cesser d'être Expert - PAS UTILISE.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     #[Route(path: '/{id}/plus_expert', name: 'plus_expert', methods: ['GET'])]
-    public function plusExpertAction(Request $request, Individu $individu):Response
+    public function plusExpertAction(Request $request, Individu $individu): Response
     {
         $em = $this->em;
         $se = $this->se;
@@ -764,11 +733,11 @@ class IndividuController extends AbstractController
         $se->noThematique($individu);
         $em->flush();
 
-        return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+        return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
     }
 
     /**
-     * Devenir valideur
+     * Devenir valideur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -781,19 +750,19 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Cesser d'être valideur
+     * Cesser d'être valideur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     #[Route(path: '/{id}/plus_valideur', name: 'plus_valideur', methods: ['GET'])]
-    public function plusValideurAction(Request $request, Individu $individu):Response
+    public function plusValideurAction(Request $request, Individu $individu): Response
     {
         $em = $this->em;
         $se = $this->se;
@@ -803,11 +772,11 @@ class IndividuController extends AbstractController
 
         $em->flush();
 
-        return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+        return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
     }
 
     /**
-     * Activer individu
+     * Activer individu.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -820,14 +789,14 @@ class IndividuController extends AbstractController
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Desactiver individu
+     * Desactiver individu.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -838,30 +807,30 @@ class IndividuController extends AbstractController
 
         $individu->setDesactive(true);
 
-        //$ssos = $individu->getSso();
-        //foreach ($ssos as $sso) {
+        // $ssos = $individu->getSso();
+        // foreach ($ssos as $sso) {
         //    $em->remove($sso);
-        //}
+        // }
 
         $em->persist($individu);
         $em->flush($individu);
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('individu/ligne.html.twig', [ 'individu' => $individu ]);
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
             return $this->redirectToRoute('individu_gerer');
         }
     }
 
     /**
-     * Affecter l'individu à une ou des thematiques - PAS UTILISE
+     * Affecter l'individu à une ou des thematiques - PAS UTILISE.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     #[Route(path: '/{id}/thematique', name: 'choisir_thematique', methods: ['GET', 'POST'])]
     public function thematiqueAction(Request $request, Individu $individu): Response
     {
-        $em   = $this->em;
+        $em = $this->em;
         $form = $this->createFormBuilder($individu)
             ->add(
                 'thematique',
@@ -872,8 +841,8 @@ class IndividuController extends AbstractController
                 'class' => Thematique::class,
                 ]
             )
-            ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-            ->add('reset', ResetType::class, ['label' => 'reset' ])
+            ->add('submit', SubmitType::class, ['label' => 'modifier'])
+            ->add('reset', ResetType::class, ['label' => 'reset'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -903,14 +872,14 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Supprimer un ou plusieurs eppn de cet utilisateur
+     * Supprimer un ou plusieurs eppn de cet utilisateur.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     #[Route(path: '/{id}/eppn', name: 'gere_eppn', methods: ['GET', 'POST'])]
     public function eppnAction(Request $request, Individu $individu): Response
     {
-        $em   = $this->em;
+        $em = $this->em;
         $ssos = $individu->getSso();
         $form = $this->createFormBuilder($individu)
             ->add(
@@ -920,11 +889,11 @@ class IndividuController extends AbstractController
                 'multiple' => true,
                 'expanded' => true,
                 'class' => Sso::class,
-                'choices' => $ssos
+                'choices' => $ssos,
                 ]
             )
-            ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-            ->add('reset', ResetType::class, ['label' => 'reset' ])
+            ->add('submit', SubmitType::class, ['label' => 'modifier'])
+            ->add('reset', ResetType::class, ['label' => 'reset'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -956,7 +925,7 @@ class IndividuController extends AbstractController
 
     /**
      * Autocomplete: en lien avec l'autocomplete de jquery
-     *               Requête appelée lorsqu'on quitte le champ autocomplete "mail" dans le formulaire des collaborateurs
+     *               Requête appelée lorsqu'on quitte le champ autocomplete "mail" dans le formulaire des collaborateurs.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -968,37 +937,37 @@ class IndividuController extends AbstractController
         $em = $this->em;
         $form = $ff
             ->createNamedBuilder('autocomplete_form', FormType::class, [])
-            ->add('mail', TextType::class, [ 'required' => true, 'csrf_protection' => false])
+            ->add('mail', TextType::class, ['required' => true, 'csrf_protection' => false])
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) { // TODO - nous ne pouvons pas ajouter $form->isValid() et nous ne savons pas pourquoi
             if (array_key_exists('mail', $form->getData())) {
-                $data   =   $em->getRepository(Individu::class)->liste_mail_like($form->getData()['mail']);
+                $data = $em->getRepository(Individu::class)->liste_mail_like($form->getData()['mail']);
             } else {
-                $data  =   [ ['mail' => 'Problème avec AJAX dans IndividuController:mailAutocompleteAction' ] ];
+                $data = [['mail' => 'Problème avec AJAX dans IndividuController:mailAutocompleteAction']];
             }
 
             $output = [];
             foreach ($data as $item) {
                 if (array_key_exists('mail', $item)) {
-                    $output[]   =   $item['mail'];
+                    $output[] = $item['mail'];
                 }
             }
 
             $response = new Response(json_encode($output));
             $response->headers->set('Content-Type', 'application/json');
+
             return $response;
         }
 
         // on complète le reste des informations
         // TODO - IndividuForm n'est PAS un objet de type Form !!!! Grrrrr
         //        $form est un objet de type IndividuFormType, c'est bien un form associé à un object de type IndividuForm
-        $collaborateur    = new IndividuForm();
+        $collaborateur = new IndividuForm();
         $text_fields = true;
-        if ($this->getParameter('resp_peut_modif_collabs'))
-        {
+        if ($this->getParameter('resp_peut_modif_collabs')) {
             $text_fields = false;
         }
         $form = $this->createForm('App\Form\IndividuFormType', $collaborateur, ['csrf_protection' => false, 'text_fields' => $text_fields]);
@@ -1008,50 +977,49 @@ class IndividuController extends AbstractController
         // On vient de soumettre le formulaire via son adresse mail
         if ($form->isSubmitted() && $form->isValid()) {
             // On recherche l'individu ayant le bon mail et on complète l'objet $collaborateur
-            $individu = $em->getRepository(Individu::class)->findOneBy(['mail' => $collaborateur->getMail() ]);
-            if ($individu != null) {
-                if ($individu->getMail() != null) {
+            $individu = $em->getRepository(Individu::class)->findOneBy(['mail' => $collaborateur->getMail()]);
+            if (null != $individu) {
+                if (null != $individu->getMail()) {
                     $collaborateur->setMail($individu->getMail());
                 }
-                if ($individu->getPrenom() != null) {
+                if (null != $individu->getPrenom()) {
                     $collaborateur->setPrenom($individu->getPrenom());
                 }
-                if ($individu->getNom()    != null) {
+                if (null != $individu->getNom()) {
                     $collaborateur->setNom($individu->getNom());
                 }
-                if ($individu->getStatut() != null) {
+                if (null != $individu->getStatut()) {
                     $collaborateur->setStatut($individu->getStatut());
                 }
-                if ($individu->getLabo()   != null) {
+                if (null != $individu->getLabo()) {
                     $collaborateur->setLaboratoire($individu->getLabo());
                 }
-                if ($individu->getEtab()   != null) {
+                if (null != $individu->getEtab()) {
                     $collaborateur->setEtablissement($individu->getEtab());
                 }
-                if ($individu->getId()     != null) {
+                if (null != $individu->getId()) {
                     $collaborateur->setId($individu->getId());
                 }
 
                 // Maintenant on recrée un $form en utilisant le $collaborateur complété
                 $text_fields = true;
-                if ($this->getParameter('resp_peut_modif_collabs'))
-                {
+                if ($this->getParameter('resp_peut_modif_collabs')) {
                     $text_fields = false;
                 }
                 $form = $this->createForm('App\Form\IndividuFormType', $collaborateur, ['csrf_protection' => false, 'text_fields' => $text_fields]);
 
-                return $this->render('version/collaborateurs_ligne.html.twig', [ 'form' => $form->createView() ]);
+                return $this->render('version/collaborateurs_ligne.html.twig', ['form' => $form->createView()]);
             } else {
-                return  new Response('reallynouserrrrrrrr');
+                return new Response('reallynouserrrrrrrr');
             }
         }
-        //return new Response( 'no form submitted' );
+
+        // return new Response( 'no form submitted' );
         return new Response(json_encode('no form submitted'));
     }
 
-
     /**
-     * Liste tous les individus
+     * Liste tous les individus.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -1062,18 +1030,18 @@ class IndividuController extends AbstractController
         $ff = $this->ff;
         $em = $this->em;
 
-        $form = $ff->createNamedBuilder('tri', GererUtilisateurType::class, [], []) -> getform();
-        //$form = Functions::getFormBuilder($ff, 'tri', GererUtilisateurType::class, [])->getForm();
+        $form = $ff->createNamedBuilder('tri', GererUtilisateurType::class, [], [])->getform();
+        // $form = Functions::getFormBuilder($ff, 'tri', GererUtilisateurType::class, [])->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->getData()['all'] == true) {
+            if (true == $form->getData()['all']) {
                 $users = $em->getRepository(Individu::class)->findAll();
             } else {
                 $users = $em->getRepository(Individu::class)->getActiveUsers();
             }
 
-            $pattern = '/' . $form->getData()['filtre'] . '/i';
+            $pattern = '/'.$form->getData()['filtre'].'/i';
 
             $individus = [];
             foreach ($users as $individu) {
@@ -1083,7 +1051,7 @@ class IndividuController extends AbstractController
                     $individus[] = $individu;
                 } elseif (preg_match($pattern, $individu->getPrenom())) {
                     $individus[] = $individu;
-                };
+                }
             }
         } else {
             $individus = $em->getRepository(Individu::class)->getActiveUsers();
@@ -1095,8 +1063,8 @@ class IndividuController extends AbstractController
         $idps = [];
         foreach ($individus as $individu) {
             $individu_ssos = $individu->getSso()->toArray();
-            if (count($individu_ssos) > 0 && $individu->getDesactive() == false) {
-                $actifs++;
+            if (count($individu_ssos) > 0 && false == $individu->getDesactive()) {
+                ++$actifs;
             }
 
             $idps = array_merge(
@@ -1120,10 +1088,10 @@ class IndividuController extends AbstractController
         return $this->render(
             'individu/liste.html.twig',
             [
-            'idps'  => $idps,
+            'idps' => $idps,
             'total' => $total,
             'actifs' => $actifs,
-            'form'  => $form->createView(),
+            'form' => $form->createView(),
             'individus' => $individus,
             ]
         );

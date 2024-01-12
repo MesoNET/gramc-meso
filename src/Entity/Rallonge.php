@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,11 @@
 
 namespace App\Entity;
 
+use App\GramcServices\Etat;
+use App\Interfaces\Demande;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
-use App\GramcServices\Etat;
-use App\Utils\Functions;
-use App\Interfaces\Demande;
-
 use Symfony\Component\Validator\Constraints as Assert;
 
 /*
@@ -43,7 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  ************************************************************/
 /**
- * Rallonge
+ * Rallonge.
  */
 #[ORM\Table(name: 'rallonge')]
 #[ORM\Index(name: 'id_version', columns: ['id_version'])]
@@ -56,7 +52,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Rallonge implements Demande
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'etat_rallonge', type: 'integer', nullable: false)]
     private $etatRallonge;
@@ -68,14 +64,13 @@ class Rallonge implements Demande
     #[Assert\NotBlank(message: "Vous n'avez pas rempli la justification scientifique")]
     private $prjJustifRallonge;
 
-    
     #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     private $idRallonge;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'rallonge')]
@@ -96,65 +91,57 @@ class Rallonge implements Demande
     private $commentaireExterne;
 
     /**
-     * @var boolean
-     *
-     *
+     * @var bool
      */
     #[ORM\Column(name: 'validation', type: 'boolean', nullable: false)]
     private $validation = true;
 
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'id_expert', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu')]
     private $expert;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dar', mappedBy: 'rallonge', cascade: ['persist'])]
     private $dar;
 
-    ////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->dar = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->expertise = new \Doctrine\Common\Collections\ArrayCollection();
-
+        $this->dar = new ArrayCollection();
+        $this->expertise = new ArrayCollection();
     }
 
-    /////////////////////////////////////////////////////////////////////////////
-
+    // ///////////////////////////////////////////////////////////////////////////
 
     public function getId(): ?int
     {
         return $this->getIdRallonge();
     }
+
     public function __toString(): string
     {
         return $this->getIdRallonge();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     // Expertise
 
     /**
-     * Add expertise
-     *
-     * @param \App\Entity\Expertise $expertise
-     *
-     * @return Rallonge
+     * Add expertise.
      */
-    public function addExpertise(\App\Entity\Expertise $expertise): self
+    public function addExpertise(Expertise $expertise): self
     {
-        if (! $this->expertise->contains($expertise))
-        {
+        if (!$this->expertise->contains($expertise)) {
             $this->expertise[] = $expertise;
         }
 
@@ -162,23 +149,19 @@ class Rallonge implements Demande
     }
 
     /**
-     * Remove expertise
-     *
-     * @param \App\Entity\Expertise $expertise
-     * 
-     * @return Rallonge
-     * 
+     * Remove expertise.
      */
-    public function removeExpertise(\App\Entity\Expertise $expertise): self
+    public function removeExpertise(Expertise $expertise): self
     {
         $this->expertise->removeElement($expertise);
+
         return $this;
     }
 
     /**
-     * Get expertise
+     * Get expertise.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getExpertise()
     {
@@ -186,11 +169,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set etatRallonge
-     *
-     * @param integer $etatRallonge
-     *
-     * @return Rallonge
+     * Set etatRallonge.
      */
     public function setEtatRallonge(int $etatRallonge): self
     {
@@ -198,15 +177,14 @@ class Rallonge implements Demande
 
         return $this;
     }
+
     public function setEtat(int $etatRallonge): self
     {
         return $this->setEtatRallonge($etatRallonge);
     }
 
     /**
-     * Get etatRallonge
-     *
-     * @return integer
+     * Get etatRallonge.
      */
     public function getEtatRallonge(): ?int
     {
@@ -219,11 +197,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set prjJustifRallonge
-     *
-     * @param string $prjJustifRallonge
-     *
-     * @return Rallonge
+     * Set prjJustifRallonge.
      */
     public function setPrjJustifRallonge(?string $prjJustifRallonge): self
     {
@@ -233,9 +207,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get prjJustifRallonge
-     *
-     * @return string
+     * Get prjJustifRallonge.
      */
     public function getPrjJustifRallonge(): ?string
     {
@@ -243,11 +215,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set idRallonge
-     *
-     * @param string $idRallonge
-     *
-     * @return Rallonge
+     * Set idRallonge.
      */
     public function setIdRallonge(string $idRallonge): self
     {
@@ -257,9 +225,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get idRallonge
-     *
-     * @return string
+     * Get idRallonge.
      */
     public function getIdRallonge(): ?string
     {
@@ -267,13 +233,9 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set version
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Rallonge
+     * Set version.
      */
-    public function setVersion( ?\App\Entity\Version $version = null): self
+    public function setVersion(Version $version = null): self
     {
         $this->version = $version;
 
@@ -281,46 +243,41 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get version
-     *
-     * @return \App\Entity\Version
+     * Get version.
      */
-    public function getVersion(): ?\App\Entity\Version
+    public function getVersion(): ?Version
     {
         return $this->version;
     }
 
     /**
-     * Add dar
-     *
-     * @param \App\Entity\Dar $dar
+     * Add dar.
      *
      * @return Version
      */
-    public function addDar(\App\Entity\Dar $dar): self
+    public function addDar(Dar $dar): self
     {
-        if (! $this->dar->contains($dar))
-        {
+        if (!$this->dar->contains($dar)) {
             $this->dar[] = $dar;
         }
+
         return $this;
     }
 
     /**
-     * Remove dar
-     *
-     * @param \App\Entity\Dar $dar
+     * Remove dar.
      */
-    public function removeDar(\App\Entity\Dar $dar): self
+    public function removeDar(Dar $dar): self
     {
         $this->dar->removeElement($dar);
+
         return $this;
     }
 
     /**
-     * Get dar
+     * Get dar.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getDar()
     {
@@ -328,11 +285,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set commentaireInterne
-     *
-     * @param string $commentaireInterne
-     *
-     * @return Rallonge
+     * Set commentaireInterne.
      */
     public function setCommentaireInterne(?string $commentaireInterne): self
     {
@@ -342,9 +295,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get commentaireInterne
-     *
-     * @return string
+     * Get commentaireInterne.
      */
     public function getCommentaireInterne(): ?string
     {
@@ -352,11 +303,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set commentaireExterne
-     *
-     * @param string $commentaireExterne
-     *
-     * @return Rallonge
+     * Set commentaireExterne.
      */
     public function setCommentaireExterne(?string $commentaireExterne): self
     {
@@ -366,9 +313,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get commentaireExterne
-     *
-     * @return string
+     * Get commentaireExterne.
      */
     public function getCommentaireExterne(): ?string
     {
@@ -376,11 +321,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Set validation
-     *
-     * @param boolean $validation
-     *
-     * @return Rallonge
+     * Set validation.
      */
     public function setValidation(bool $validation): self
     {
@@ -390,9 +331,7 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get validation
-     *
-     * @return boolean
+     * Get validation.
      */
     public function getValidation(): bool
     {
@@ -400,19 +339,15 @@ class Rallonge implements Demande
     }
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'rallonge', cascade: ['persist'])]
     private $expertise;
 
     /**
-     * Set expert
-     *
-     * @param \App\Entity\Individu $expert
-     *
-     * @return Rallonge
+     * Set expert.
      */
-    public function setExpert(?\App\Entity\Individu $expert = null): self
+    public function setExpert(Individu $expert = null): self
     {
         $this->expert = $expert;
 
@@ -420,11 +355,9 @@ class Rallonge implements Demande
     }
 
     /**
-     * Get expert
-     *
-     * @return \App\Entity\Individu
+     * Get expert.
      */
-    public function getExpert(): ?\App\Entity\Individu
+    public function getExpert(): ?Individu
     {
         return $this->expert;
     }
@@ -433,15 +366,14 @@ class Rallonge implements Demande
     #[ORM\PrePersist]
     public function prePersist(): void
     {
-        $this->validation = (bool) $this->validation; //Force using boolean value of $this->active
+        $this->validation = (bool) $this->validation; // Force using boolean value of $this->active
     }
 
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {
         $this->validation = (bool) $this->validation;
-    }    
-
+    }
 
     /***************************************************
      * Fonctions utiles pour la class Workflow
@@ -451,21 +383,20 @@ class Rallonge implements Demande
     {
         return $this->getEtatRallonge();
     }
+
     public function setObjectState(int $state): self
     {
         $this->setEtatRallonge($state);
+
         return $this;
     }
 
     public function getResponsables(): array
     {
         $version = $this->getVersion();
-        if ($version != null)
-        {
+        if (null != $version) {
             return $version->getResponsables();
-        }
-        else
-        {
+        } else {
             return [];
         }
     }
@@ -473,31 +404,27 @@ class Rallonge implements Demande
     /***************************************************
      * Fonctions utiles pour les notifications
      ***************************************************/
-    public function getOneExpert(): ?\App\Entity\Individu
+    public function getOneExpert(): ?Individu
     {
         return $this->getExpert();
     }
 
     public function getExperts(): array
     {
-        return [ $this->getExpert() ];
+        return [$this->getExpert()];
     }
 
     public function getExpertsThematique(): array
     {
         $version = $this->getVersion();
-        if ($version === null)
-        {
+        if (null === $version) {
             return [];
         }
 
         $thematique = $version->getThematique();
-        if ($thematique === null)
-        {
+        if (null === $thematique) {
             return [];
-        }
-        else
-        {
+        } else {
             return $thematique->getExpert();
         }
     }
@@ -507,28 +434,22 @@ class Rallonge implements Demande
         return Etat::getLibelle($this->getEtatRallonge());
     }
 
-    ////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////
     // TODO - Mettre cette fonction dans ServiceRallonge
 
     public function isExpertDe(Individu $individu): bool
     {
-        if ($individu === null)
-        {
+        if (null === $individu) {
             return false;
         }
 
         $expert = $this->getExpert();
 
-        if ($expert === null)
-        {
+        if (null === $expert) {
             return false;
-        }
-        elseif ($expert->isEqualTo($individu))
-        {
+        } elseif ($expert->isEqualTo($individu)) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

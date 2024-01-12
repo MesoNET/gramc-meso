@@ -5,24 +5,19 @@ namespace App\Security;
 use App\Entity\Individu;
 use App\Entity\Sso;
 use App\GramcServices\ServiceJournal;
-
-use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
-
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 // Voir ici pour comprendre ce fichier:
 // https://www.youtube.com/watch?v=wCvGbv6E0AI
@@ -30,12 +25,13 @@ use Doctrine\ORM\EntityManagerInterface;
 class GramcAuthenticator extends AbstractAuthenticator
 {
     public function __construct(private $knl_debug,
-                                private $mode_auth,
-                                private EntityManagerInterface $em,
-                                private ServiceJournal $sj,
-                                private UrlGeneratorInterface $urg)
-    {}
-    
+        private $mode_auth,
+        private EntityManagerInterface $em,
+        private ServiceJournal $sj,
+        private UrlGeneratorInterface $urg)
+    {
+    }
+
     /**
      * Does the authenticator support the given Request?
      *
@@ -46,9 +42,14 @@ class GramcAuthenticator extends AbstractAuthenticator
     public function supports(Request $request): ?bool
     {
         $rvl = false;
-        if ($request->attributes->get('_route') === 'remlogin' && $request->isMethod('GET')) $rvl = true;
+        if ('remlogin' === $request->attributes->get('_route') && $request->isMethod('GET')) {
+            $rvl = true;
+        }
         // if ($request->attributes->get('_route') === 'connexionshiblogin' && $request->isMethod('GET')) $rvl = true;
-        if ($request->attributes->get('_route') === 'connexion_dbg' && $request->isMethod('POST')) $rvl = true;
+        if ('connexion_dbg' === $request->attributes->get('_route') && $request->isMethod('POST')) {
+            $rvl = true;
+        }
+
         return $rvl;
     }
 
@@ -74,71 +75,64 @@ class GramcAuthenticator extends AbstractAuthenticator
         $mail = '';
 
         // saml2 = Fédération d'identité ou Edugain
-        if ($mode_auth === 'saml2')
-        {
+        if ('saml2' === $mode_auth) {
             // vous devez avoir utilisé le paramètre
             // ShibUseHeaders On
             // dans la configuration apache
-            //dd($request);
-    
+            // dd($request);
+
             // Récupérer user/mail dans les headers
             // TODO - Pourquoi on ne peut pas récupérer REMOTE_USER ?
             $remote_user = $request->headers->get('eppn');
             $mail = $request->headers->get('mail');
-    
+
             // POUR LES TESTS UNIQUEMENT - On simule l'absence de eppn ou de mail
             // $remote_user = null;
             // $mail = null;
             // $mail = null;
-    
+
             // Pas d'eppn, on essaie persistent-id
             // TODO - L'authentifiant s'appelle eppn même si le header est persistent-id, ce n'est pas très propre
-            if (empty($remote_user))
-            {
+            if (empty($remote_user)) {
                 $remote_user = $request->headers->get('persistent-id');
             }
-    
+
             // POUR LES TESTS UNIQUEMENT - On prend un header stupide
-            //if (empty($remote_user))
-            //{
+            // if (empty($remote_user))
+            // {
             //    $remote_user = $request->headers->get('x-real-ip');
-            //}
-    
+            // }
+
             // $this->sj->debugMessage(__FILE__ . ":" . __LINE__ . " eppn=$remote_user, mail=$mail ");
-    
+
             // Authentification Shibboleth
-            if (! empty($remote_user))
-            {
+            if (!empty($remote_user)) {
                 // Mettre les authentifiants dans la session
-                $request->getSession()->set('eppn',$remote_user);
-                $request->getSession()->set('mail',$mail);
-    
+                $request->getSession()->set('eppn', $remote_user);
+                $request->getSession()->set('mail', $mail);
+
                 $repository = $this->em->getRepository(Sso::class);
                 $sso = $repository->findOneBy(['eppn' => $remote_user]);
-    
+
                 // Pas de sso --> nouveau compte ou nouvel eppn !
-                if ($sso == null)
-                {
+                if (null == $sso) {
                     // Récupérer les autres headers utiles dans la session
                     $this->shibbHeadersToSession($request);
                     throw new UserNotFoundException();
                 }
                 $individu = $sso->getIndividu();
-                if ($individu instanceof Individu)
-                {
+                if ($individu instanceof Individu) {
                     return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
-                    [
-                        new GramcBadge($individu, $request, $this->sj)
-                    ]);
-                }
-                else
-                {
+                        [
+                            new GramcBadge($individu, $request, $this->sj),
+                        ]);
+                } else {
                     // Ecrit le eppn dans le journal et refuse l'authentification
                     // On recherche les headers: eppn, subject_id, persistent_id et pairwise_id
                     // TODO - Une fonction privée, pour éviter le copier-coller (cf. ligne 250))
                     $eppn = $request->headers->get('eppn');
                     $persistent_id = $request->headers->get('persistent-id');
-                    $targeted_id  = $request->headers->get('targeted-id');
+                    $targeted_id = $request->headers->get('targeted-id');
                     $subject_id = $request->headers->get('subject-id');
                     $pairwise_id = $request->headers->get('pairwise-id');
                     $this->sj->warningMessage("Un utilisateur a tenté de se connecter - remote_user = $remote_user, mail = $mail");
@@ -150,83 +144,69 @@ class GramcAuthenticator extends AbstractAuthenticator
                     throw new UserNotFoundException("votre compte n'est pas encore opérationnel");
                 }
             }
-        }
-        
-        elseif ($mode_auth === 'openid')
-        {
+        } elseif ('openid' === $mode_auth) {
             $remote_user = $request->server->get('REDIRECT_REMOTE_USER');
             $mail = $request->server->get('REDIRECT_OIDC_CLAIM_email');
 
-            if (! empty($remote_user))
-            {
+            if (!empty($remote_user)) {
                 // Mettre les authentifiants dans la session
-                $request->getSession()->set('eppn',$remote_user);
-                $request->getSession()->set('mail',$mail);
-    
+                $request->getSession()->set('eppn', $remote_user);
+                $request->getSession()->set('mail', $mail);
+
                 // On recherche le sso, et donc l'individu associé, dans la base
                 $repository = $this->em->getRepository(Sso::class);
                 $sso = $repository->findOneBy(['eppn' => $remote_user]);
-    
+
                 // Pas de sso --> nouveau compte ou nouvel eppn !
-                if ($sso == null)
-                {
+                if (null == $sso) {
                     // Récupérer les variables d'environnement utiles dans la session
                     $this->oidcToSession($request);
                     throw new UserNotFoundException();
                 }
                 $individu = $sso->getIndividu();
-                if ($individu instanceof Individu)
-                {
+                if ($individu instanceof Individu) {
                     return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
-                    [
-                        new GramcBadge($individu, $request, $this->sj)
-                    ]);
-                }
-                else
-                {
+                        [
+                            new GramcBadge($individu, $request, $this->sj),
+                        ]);
+                } else {
                     // Ecrit le eppn dans le journal et refuse l'authentification
                     // On recherche les headers: eppn, subject_id, persistent_id et pairwise_id
                     // TODO - Une fonction privée, pour éviter le copier-coller (cf. ligne 250))
                     $eppn = $request->headers->get('eppn');
-                    //$persistent_id = $request->headers->get('persistent-id');
-                    //$targeted_id  = $request->headers->get('targeted-id');
-                    //$subject_id = $request->headers->get('subject-id');
-                    //$pairwise_id = $request->headers->get('pairwise-id');
+                    // $persistent_id = $request->headers->get('persistent-id');
+                    // $targeted_id  = $request->headers->get('targeted-id');
+                    // $subject_id = $request->headers->get('subject-id');
+                    // $pairwise_id = $request->headers->get('pairwise-id');
                     $this->sj->warningMessage("Un utilisateur a tenté de se connecter - remote_user = $remote_user, mail = $mail");
                     $this->sj->warningMessage("--> eppn = $eppn");
-                    //$this->sj->warningMessage("--> persistent-id = $persistent_id");
-                    //$this->sj->warningMessage("--> targeted-id = $targeted_id");
-                    //$this->sj->warningMessage("--> subject-id = $subject_id");
-                    //$this->sj->warningMessage("--> pairwise-id = $pairwise_id");
+                    // $this->sj->warningMessage("--> persistent-id = $persistent_id");
+                    // $this->sj->warningMessage("--> targeted-id = $targeted_id");
+                    // $this->sj->warningMessage("--> subject-id = $subject_id");
+                    // $this->sj->warningMessage("--> pairwise-id = $pairwise_id");
                     throw new UserNotFoundException("votre compte n'est pas encore opérationnel");
                 }
             }
-        }
-        else
-        {
+        } else {
             $this->sj->errorMessage("ERREUR - mode_auth = $mode_auth - Je ne connais pas ce mode d'authentification - Vérifiez parameters.yml");
             throw new AuthenticationException("mode_auth = $mode_auth - Je ne connais pas ce mode d'authentification");
-        };
+        }
 
         // On essaie ensuite le formulaire d'authentification bidon
         // Seulement si on est en debug
-        if ($this->knl_debug)
-        {
-            $form_data = $request->get("form");
-            if ($form_data != null)
-            {
-                if ( isset($form_data['data']) && $form_data['data'] != null)
-                {
+        if ($this->knl_debug) {
+            $form_data = $request->get('form');
+            if (null != $form_data) {
+                if (isset($form_data['data']) && null != $form_data['data']) {
                     $idIndividu = $form_data['data'];
                     $repository = $this->em->getRepository(Individu::class);
-                    $individu = $repository->findOneBy( ['idIndividu' => $idIndividu]);
-                    if ($individu instanceof Individu)
-                    {
+                    $individu = $repository->findOneBy(['idIndividu' => $idIndividu]);
+                    if ($individu instanceof Individu) {
                         return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
-                        [
-                            new CsrfTokenBadge('form',$form_data['_token']),
-                            new GramcBadge($individu, $request, $this->sj)
-                        ]);
+                            [
+                                new CsrfTokenBadge('form', $form_data['_token']),
+                                new GramcBadge($individu, $request, $this->sj),
+                            ]);
                     }
                 }
             }
@@ -244,11 +224,9 @@ class GramcAuthenticator extends AbstractAuthenticator
      * the AbstractAuthenticator class from your authenticator.
      *
      * @see AbstractAuthenticator
-     *
-     * @param Passport $passport The passport returned from authenticate()
      */
-    //public function createAuthenticatedToken(Passport $passport, string $firewallName): TokenInterface
-    
+    // public function createAuthenticatedToken(Passport $passport, string $firewallName): TokenInterface
+
     /**
      * Called when authentication executed and was successful!
      *
@@ -261,7 +239,7 @@ class GramcAuthenticator extends AbstractAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $individu = $token->getUser();
-        $this->sj->infoMessage($token->getUser() . " vient de s'authentifier");
+        $this->sj->infoMessage($token->getUser()." vient de s'authentifier");
         // $request->getSession()->getFlashbag()->add("flash info","Vous êtes authentifié");
 
         return null;
@@ -278,48 +256,40 @@ class GramcAuthenticator extends AbstractAuthenticator
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        //dd($exception,$request);
-        //dd($request);
+        // dd($exception,$request);
+        // dd($request);
 
         // Si le compte est marqué désactivé" par gramcBadge, on retourne à la page d'accueil
-        if ($request->getSession()->has('desactive') && $request->getSession()->get('desactive'))
-        {
+        if ($request->getSession()->has('desactive') && $request->getSession()->get('desactive')) {
             return new RedirectResponse($this->urg->generate('accueil'));
         }
-        
+
         // S'il y a eppn ET mail dans la session on redirige vers nouveau_compte
-        if ($request->getSession()->has('eppn') && $request->getSession()->has('mail'))
-        //if (0)
-        {
+        if ($request->getSession()->has('eppn') && $request->getSession()->has('mail')) {
+            // if (0)
             return new RedirectResponse($this->urg->generate('nouveau_compte'));
         }
 
         // Sinon nous avons un problème d'authentification
         else {
             $log_msg = " Erreur d'authentification - ";
-            if ($request->getSession()->has('eppn'))
-            {
+            if ($request->getSession()->has('eppn')) {
                 $eppn = $request->getSession()->get('eppn');
                 $log_msg .= "eppn = $eppn ";
-            }
-            else
-            {
+            } else {
                 $log_msg .= "PAS D'EPPN ";
             }
-            if ($request->getSession()->has('mail'))
-            {
+            if ($request->getSession()->has('mail')) {
                 $mail = $request->getSession()->get('mail');
                 $log_msg .= "mail = $mail ";
+            } else {
+                $log_msg .= 'PAS DE MAIL ';
             }
-            else
-            {
-                $log_msg .= "PAS DE MAIL ";
-            }
-            $log_msg .= "HTTP_REFERER = " . $request->server->get('HTTP_REFERER');
-            $this->sj->warningMessage(__FILE__ . ":" . __LINE__ . $log_msg);
+            $log_msg .= 'HTTP_REFERER = '.$request->server->get('HTTP_REFERER');
+            $this->sj->warningMessage(__FILE__.':'.__LINE__.$log_msg);
             $eppn = $request->headers->get('eppn');
             $persistent_id = $request->headers->get('persistent-id');
-            $targeted_id  = $request->headers->get('targeted-id');
+            $targeted_id = $request->headers->get('targeted-id');
             $subject_id = $request->headers->get('subject-id');
             $pairwise_id = $request->headers->get('pairwise-id');
             $this->sj->warningMessage("--> eppn = $eppn");
@@ -327,14 +297,15 @@ class GramcAuthenticator extends AbstractAuthenticator
             $this->sj->warningMessage("--> targeted-id = $targeted_id");
             $this->sj->warningMessage("--> subject-id = $subject_id");
             $this->sj->warningMessage("--> pairwise-id = $pairwise_id");
-            
+
             $message = "ERREUR d'AUTHENTIFICATION";
-            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+            $request->getSession()->getFlashbag()->add('flash erreur', $message);
+
             return new RedirectResponse($this->urg->generate('accueil'));
         }
     }
 
-    ////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////
 
     /*
      * Déposer dans la session les headers fournis par Shibboleth
@@ -344,12 +315,13 @@ class GramcAuthenticator extends AbstractAuthenticator
      *        vers Other eduPerson attributes)
      *
      ***/
-    private function shibbHeadersToSession(Request $request) {
+    private function shibbHeadersToSession(Request $request)
+    {
         $headers = ['givenName', 'sn', 'displayName', 'cn', 'affiliation', 'primary-affiliation'];
         $headers_values = [];
 
         // On recherche dans les headers
-        foreach($headers as $h) {
+        foreach ($headers as $h) {
             if ($request->headers->has($h)) {
                 $headers_values[$h] = $request->headers->get($h);
             }
@@ -357,9 +329,8 @@ class GramcAuthenticator extends AbstractAuthenticator
 
         // On recherche dans les variables du serveur
         $server = $request->server;
-        foreach($headers as $h) {
+        foreach ($headers as $h) {
             if (!isset($headers_values[$h])) {
-
                 // mail -> REDIRECT_mail
                 $k1 = 'REDIRECT_'.$h;
                 $k2 = 'HTTP_'.strtoupper($h);
@@ -371,15 +342,14 @@ class GramcAuthenticator extends AbstractAuthenticator
                 elseif ($server->has($k2)) {
                     $headers_values[$h] = $server->get($k2);
                 }
-                
             }
         }
-        
+
         $session = $request->getSession();
-        foreach($headers_values as $h => $v) {
+        foreach ($headers_values as $h => $v) {
             $session->set($h, $v);
         }
-    
+
         return $headers_values;
     }
 
@@ -388,28 +358,26 @@ class GramcAuthenticator extends AbstractAuthenticator
      * NOTE - On ne s'occupe QUE de given_name et family_name
      *
      ***/
-    private function oidcToSession(Request $request): array {
+    private function oidcToSession(Request $request): array
+    {
         $vars = ['given_name', 'family_name'];
         $vars_values = [];
 
         // On recherche dans les variables du serveur
         $server = $request->server;
-        foreach($vars as $v) {
+        foreach ($vars as $v) {
             // mail -> REDIRECT_mail
             $k = 'REDIRECT_OIDC_CLAIM_'.$v;
-            if ($server->has($k))
-            {
+            if ($server->has($k)) {
                 $vars_values[$v] = $server->get($k);
             }
         }
-        
+
         $session = $request->getSession();
-        foreach($vars_values as $v => $val) {
+        foreach ($vars_values as $v => $val) {
             $session->set($v, $val);
         }
-    
+
         return $vars_values;
     }
-
 }
-

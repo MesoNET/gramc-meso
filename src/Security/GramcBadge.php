@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,8 @@ namespace App\Security;
 
 use App\Entity\Individu;
 use App\GramcServices\ServiceJournal;
-
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
 
 /**
  * Passport badges allow to add more information to a passport (e.g. a CSRF token).
@@ -36,29 +35,29 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class GramcBadge implements BadgeInterface
 {
-    public function __construct(private Individu $ind, private Request $request, private ServiceJournal $sj) {}
+    public function __construct(private Individu $ind, private Request $request, private ServiceJournal $sj)
+    {
+    }
 
     /**
      * Checks if this badge is resolved by the security system.
      *
-     * Ici on teste le flag Désactivé 
+     * Ici on teste le flag Désactivé
      * After authentication, all badges must return `true` in this method in order
      * for the authentication to succeed.
      */
     public function isResolved(): bool
     {
-        //dd($this->ind);
-        if ( $this->ind->getDesactive() )
-        {
+        // dd($this->ind);
+        if ($this->ind->getDesactive()) {
             // Marque la session comme compte désactivé
-            $this->request->getSession()->set('desactive',true);
-            $message = "Ce compte est désactivé.";
-            $this->request->getSession()->getFlashbag()->add("flash erreur",$message);
-            $this->sj->errorMessage($this->ind . " n'a pas pu s'authentifier (compte désactivé)");
+            $this->request->getSession()->set('desactive', true);
+            $message = 'Ce compte est désactivé.';
+            $this->request->getSession()->getFlashbag()->add('flash erreur', $message);
+            $this->sj->errorMessage($this->ind." n'a pas pu s'authentifier (compte désactivé)");
+
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }

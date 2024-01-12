@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,20 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use App\Entity\Journal;
 use App\Entity\Individu;
-
-use App\Utils\Functions;
 use App\GramcServices\Etat;
 use App\GramcServices\GramcDate;
-
+use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SessionType extends AbstractType
 {
@@ -53,17 +46,15 @@ class SessionType extends AbstractType
 
     public function __construct(GramcDate $grdt, EntityManagerInterface $em)
     {
-        $this -> grdt = $grdt;
-        $this -> em   = $em;
+        $this->grdt = $grdt;
+        $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['commentaire']) {
             $builder->add('commGlobal');
+
             return;
         }
         if ($options['all']) {
@@ -75,29 +66,29 @@ class SessionType extends AbstractType
                 'dateDebutSession',
                 DateType::class,
                 [
-                    //'data'          => $options['from'], // valeur par défaut
-                    'label'         => 'Date de début des saisies:',
-                    'years'         => Functions::years(new \DateTime(), $this->grdt->getNew()),
+                    // 'data'          => $options['from'], // valeur par défaut
+                    'label' => 'Date de début des saisies:',
+                    'years' => Functions::years(new \DateTime(), $this->grdt->getNew()),
                     ]
             )
             ->add(
                 'dateFinSession',
                 DateType::class,
                 [
-                    //'data'          => $options['from'], // valeur par défaut
-                    'label'         => 'Date de fin des saisies:',
-                    'years'         => Functions::years(new \DateTime(), $this->grdt->getNew()),
+                    // 'data'          => $options['from'], // valeur par défaut
+                    'label' => 'Date de fin des saisies:',
+                    'years' => Functions::years(new \DateTime(), $this->grdt->getNew()),
                     ]
             )
             ->add(
                 'hParAnnee',
                 IntegerType::class,
                 [
-                    //'data'          => $options['from'], // valeur par défaut
-                    'label'         => 'Heures disponibles (par année):',
+                    // 'data'          => $options['from'], // valeur par défaut
+                    'label' => 'Heures disponibles (par année):',
                     ]
             );
-        //->add('president',  EntityType::class,
+        // ->add('president',  EntityType::class,
         //            [
         //        'multiple' => false,
         //        'class' => Individu::class,
@@ -106,52 +97,45 @@ class SessionType extends AbstractType
         //        'choices' =>  $this->em->getRepository(Individu::class)->findBy(['expert' => true]),
         //    ])
 
-        if ($options['all'] == true) {
+        if (true == $options['all']) {
             $builder->add(
                 'etatSession',
                 ChoiceType::class,
                 [
-                        'choices'           =>
-                                            [
-                                            'CREE_ATTENTE'          =>  Etat::CREE_ATTENTE,
-                                            'EDITION_DEMANDE'       =>  Etat::EDITION_DEMANDE,
-                                            'EDITION_EXPERTISE'     =>  Etat::EDITION_EXPERTISE,
-                                            'EN_ATTENTE'            =>  Etat::EN_ATTENTE,
-                                            'ACTIF'                 =>  Etat::ACTIF,
-                                            'TERMINE'               =>  Etat::TERMINE,
+                        'choices' => [
+                                            'CREE_ATTENTE' => Etat::CREE_ATTENTE,
+                                            'EDITION_DEMANDE' => Etat::EDITION_DEMANDE,
+                                            'EDITION_EXPERTISE' => Etat::EDITION_EXPERTISE,
+                                            'EN_ATTENTE' => Etat::EN_ATTENTE,
+                                            'ACTIF' => Etat::ACTIF,
+                                            'TERMINE' => Etat::TERMINE,
                                             ],
-                        'label'             => 'Etat',
+                        'label' => 'Etat',
                     ]
             )
                     ->add('idSession');
         }
 
-        if ($options['buttons'] == true) {
+        if (true == $options['buttons']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => $options['submit_label']  ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
+                ->add('submit', SubmitType::class, ['label' => $options['submit_label']])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
-            'data_class'    => 'App\Entity\Session',
-            'all'           =>  false,
-            'buttons'        => false,
-            'submit_label'  =>  'modifier',
-            'commentaire'   =>  false
+            'data_class' => 'App\Entity\Session',
+            'all' => false,
+            'buttons' => false,
+            'submit_label' => 'modifier',
+            'commentaire' => false,
             ]
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'appbundle_session';

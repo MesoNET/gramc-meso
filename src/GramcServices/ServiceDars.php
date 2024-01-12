@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,15 @@
 namespace App\GramcServices;
 
 use App\Entity\Dac;
-use App\Entity\Ressource;
 use App\Entity\Rallonge;
-
+use App\Entity\Ressource;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ServiceDars
 {
-    public function __construct(private ServiceRessources $sr, private EntityManagerInterface $em){}
+    public function __construct(private ServiceRessources $sr, private EntityManagerInterface $em)
+    {
+    }
 
     /*********************************************************
      * Renvoie UN dar et UN SEUL. Si le dar n'existe pas on le crée
@@ -53,25 +41,22 @@ class ServiceDars
     {
         $em = $this->em;
         $dars = $em->getRepository(Dac::class)->findBy(['rallonge' => $r, 'ressource' => $r]);
-        if (count($dars) === 0)
-        {
+        if (0 === count($dars)) {
             $d = new Dar();
             $d->setRessource($r);
             $d->setRallonge($r);
             $r->addDar($r);
             $em->persist($d);
             $em->flush($d);
-        }
-        elseif (count($dars) === 1)
-        {
+        } elseif (1 === count($dars)) {
             $d = $dars[0];
+        } else {
+            throw $this->sj->throwException('ServiceDars:getDar findBy renvoie '.count($dars).' objets '."$rg - $r");
         }
-        else
-        {
-            throw $this->sj->throwException("ServiceDars:getDar findBy renvoie " . count($dars) . " objets " . "$rg - $r");
-        }
+
         return $r;
     }
+
     /***********************************************
      * Renvoie les dars correspondant à la rallonge, dans un hash indexé par
      * le nom complet de la ressource associée
@@ -79,15 +64,15 @@ class ServiceDars
     public function getDarsByNr(Rallonge $rg): array
     {
         $sr = $this->sr;
-        
-        $dars=[];
+
+        $dars = [];
         $rgdars = $r->getDac();
-        foreach ($rgdars as $dar)
-        {
-            $k = $sr->getNomComplet($dar->getRessource(),'_');
+        foreach ($rgdars as $dar) {
+            $k = $sr->getNomComplet($dar->getRessource(), '_');
             $dars[$k] = $dar;
         }
         ksort($dars);
+
         return $dars;
     }
 }

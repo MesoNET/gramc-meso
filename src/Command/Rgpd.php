@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,32 +50,30 @@
 
 namespace App\Command;
 
-use App\GramcServices\GramcDate;
-use App\GramcServices\ServiceProjets;
-use App\GramcServices\ServiceVersions;
-use App\GramcServices\ServiceJournal;
-
 use App\Entity\Projet;
 use App\Entity\Version;
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use App\GramcServices\GramcDate;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceVersions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-//use App\GramcServices\ServiceNotifications;
+// use App\GramcServices\ServiceNotifications;
 
 // the name of the command (the part after "bin/console")
-#[AsCommand( name: 'app:rgpd', )]
+#[AsCommand(name: 'app:rgpd', )]
 class Rgpd extends Command
 {
     public function __construct(private GramcDate $sd,
-                                private ServiceProjets $sp,
-                                private ServiceVersions $sv,
-                                private ServiceJournal $sj,
-                                private EntityManagerInterface $em)
+        private ServiceProjets $sp,
+        private ServiceVersions $sv,
+        private ServiceJournal $sj,
+        private EntityManagerInterface $em)
     {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
@@ -96,27 +94,24 @@ class Rgpd extends Command
     {
         $sp = $this->sp;
         $em = $this->em;
-        
+
         // Effacer les versions
         foreach ($projet->getVersion() as $version) {
-
             $output->writeln("                VERSION $version");
             $sp->supprimerVersion($version);
         }
     }
 
     // Effacer les projets
-    protected function effacerProjets(OutputInterface $output, array $projets_annee) : void
+    protected function effacerProjets(OutputInterface $output, array $projets_annee): void
     {
         $em = $this->em;
         $sj = $this->sj;
-        foreach ($projets_annee as $a => $pAnnee)
-        {
+        foreach ($projets_annee as $a => $pAnnee) {
             $output->writeln("    ANNEE $a");
 
             // effacer les données des versions de projets
             foreach ($projets_annee[$a] as $projet) {
-
                 $output->writeln("        PROJET $projet");
 
                 // Effacer la version active
@@ -124,13 +119,13 @@ class Rgpd extends Command
 
                 // effacer les versions du projet
                 $this->effacerVersions($projet, $output);
-                
-                $sj->infoMessage('Le projet ' . $projet . ' a été effacé ');
+
+                $sj->infoMessage('Le projet '.$projet.' a été effacé ');
 
                 $em->remove($projet);
                 $em->flush();
 
-                $output->writeln("                Projet supprimé");
+                $output->writeln('                Projet supprimé');
             }
         }
     }
@@ -154,31 +149,29 @@ class Rgpd extends Command
 
         $projets_annee = [];
         foreach ($projets as $projet) {
-            if (in_array($projet->getIdProjet(),$toSkip))
-            {
+            if (in_array($projet->getIdProjet(), $toSkip)) {
                 continue;
             }
-    
-            $derniereVersion    =  $projet->derniereVersion();
-    
+
+            $derniereVersion = $projet->derniereVersion();
+
             // Projet merdique - On le met de côté
-            if ($derniereVersion == null) {
+            if (null == $derniereVersion) {
                 $mauvais_projets[$projet->getIdProjet()] = $projet;
                 $annee = 0;
-            }
-            else
-            {
+            } else {
                 $date_fin = $projet->derniereVersion()->getEndDate();
-                if ($date_fin === null) continue;
+                if (null === $date_fin) {
+                    continue;
+                }
                 $annee = $date_fin->format('Y');
             }
-    
-            if (intval($annee) <= $limite)
-            {
+
+            if (intval($annee) <= $limite) {
                 $projets_annee[$annee][] = $projet;
             }
-
         }
+
         return $projets_annee;
     }
 
@@ -189,22 +182,19 @@ class Rgpd extends Command
     //
     // retour: Le tableau des utilisateurs, sous la forme loginname-2015
     //
-    
-    protected function buildUsersList(array $projets_annee) : array
+
+    protected function buildUsersList(array $projets_annee): array
     {
         $loginnames = [];
         foreach ($projets_annee as $a => $pAnnee) {
             foreach ($pAnnee as $p) {
-                //$output->writeln("coucou " . $p->getIdProjet());
+                // $output->writeln("coucou " . $p->getIdProjet());
                 foreach ($p->getVersion() as $v) {
                     foreach ($v->getCollaborateurVersion() as $cv) {
                         $individu = $cv->getCollaborateur();
-                        foreach ($individu->getUser() as $u)
-                        {
-                            if ($u->getLogin())
-                            {
-                                if ($u->getLoginname() !== null)
-                                {
+                        foreach ($individu->getUser() as $u) {
+                            if ($u->getLogin()) {
+                                if (null !== $u->getLoginname()) {
                                     $loginnames[$u->getLoginname().'-'.$a] = 1;
                                 }
                             }
@@ -213,9 +203,10 @@ class Rgpd extends Command
                 }
             }
         }
+
         return $loginnames;
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // this method must return an integer number with the "exit status code"
@@ -223,7 +214,7 @@ class Rgpd extends Command
 
         // return this if there was no problem running the command
 
-        //$sn   = $this->sn;
+        // $sn   = $this->sn;
         $sd = $this->sd;
         $sp = $this->sp;
         $sj = $this->sj;
@@ -233,23 +224,24 @@ class Rgpd extends Command
         $anneeCourante = $sd->showYear();
         $anneeLimite = intval($anneeCourante) - intval($years);
 
-        $output->writeln("");
-        $output->writeln("======================================================");
+        $output->writeln('');
+        $output->writeln('======================================================');
         $output->writeln("Les projets terminés en $anneeLimite ou avant seront supprimés");
-        $output->writeln("======================================================");
+        $output->writeln('======================================================');
 
         if ($anneeLimite <= 2000) {
-            $output->writeln("ERREUR - vous devez rester au 21ème siècle !");
+            $output->writeln('ERREUR - vous devez rester au 21ème siècle !');
+
             return 1;
         }
-        
+
         $allProjets = $em->getRepository(Projet::class)->findAll();
         $mauvais_projets = [];
         $projets_annee = $this->buildProjetsByYear($anneeLimite, $allProjets);
 
         // On affiche le tableau $projets_annee
         foreach ($projets_annee as $a => $pAnnee) {
-            $output->writeln("");
+            $output->writeln('');
             $output->writeln("PROJETS TERMINES EN $a");
 
             foreach ($pAnnee as $p) {
@@ -258,21 +250,21 @@ class Rgpd extends Command
         }
 
         // On les affiche
-        $loginnames = $this->buildUsersList($projets_annee);        
+        $loginnames = $this->buildUsersList($projets_annee);
 
-        $output->writeln("");
-        $output->writeln("=============================================================================================================");
-        $output->writeln("Les utilisateurs suivants seront supprimés (loginname - date limite)");
-        $output->writeln("=============================================================================================================");
-        foreach (array_keys($loginnames) as $l)
-        {
+        $output->writeln('');
+        $output->writeln('=============================================================================================================');
+        $output->writeln('Les utilisateurs suivants seront supprimés (loginname - date limite)');
+        $output->writeln('=============================================================================================================');
+        foreach (array_keys($loginnames) as $l) {
             $output->writeln($l);
         }
 
-        $output->writeln("==========");
-        $ans = readline(" On y va ? (o/N) ");
-        if (strtolower($ans) != "o") {
-            $output->writeln("ANNULATION");
+        $output->writeln('==========');
+        $ans = readline(' On y va ? (o/N) ');
+        if ('o' != strtolower($ans)) {
+            $output->writeln('ANNULATION');
+
             return 0;
         }
 
@@ -283,15 +275,16 @@ class Rgpd extends Command
         $this->effacerProjets($output, $projets_annee);
         $individus_effaces = $sp->effacer_utilisateurs();
 
-        $output->writeln("");
-        $output->writeln("=================");
-        $output->writeln("INDIVIDUS EFFACES");
-        $output->writeln("=================");            
+        $output->writeln('');
+        $output->writeln('=================');
+        $output->writeln('INDIVIDUS EFFACES');
+        $output->writeln('=================');
         foreach ($individus_effaces as $i) {
-            $output->writeln("$i ".$i->getIdIndividu()." ".$i->getMail());
+            $output->writeln("$i ".$i->getIdIndividu().' '.$i->getMail());
         }
 
-        $output->writeln("bye");
+        $output->writeln('bye');
+
         return 0;
 
         // or return this if some error happened during the execution

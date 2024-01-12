@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,67 +24,50 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Individu;
-use App\Entity\Laboratoire;
 use App\Entity\Etablissement;
+use App\Entity\Laboratoire;
 use App\Entity\Statut;
 use App\Entity\Thematique;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class IndividuType extends AbstractType
 {
     public function __construct(private EntityManagerInterface $em)
     {
-        $this -> em = $em;
+        $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if ($options['admin'] == true) {
+        if (true == $options['admin']) {
             $builder->add('creationStamp');
         }
 
-        if ($options['user'] == true)
-        {
+        if (true == $options['user']) {
             $builder
-                ->add('nom', TextType::class, [ 'label' => 'Nom:'])
-                ->add('prenom', TextType::class, [ 'label' => 'Prénom']);
-                if ($options['mail'] == true)
-                {
-                    $builder->add('mail', EmailType::class);
-                }
-                else
-                {
-                   $builder->add('mail', EmailType::class, [ 'disabled' => true]);
-                }
-
-            if ($options['mail'] == true)
-            {
+                ->add('nom', TextType::class, ['label' => 'Nom:'])
+                ->add('prenom', TextType::class, ['label' => 'Prénom']);
+            if (true == $options['mail']) {
                 $builder->add('mail', EmailType::class);
+            } else {
+                $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
-            else
-            {
-               $builder->add('mail', EmailType::class, [ 'disabled' => true]); 
+
+            if (true == $options['mail']) {
+                $builder->add('mail', EmailType::class);
+            } else {
+                $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
         }
 
-        if ($options['admin'] == true) {
+        if (true == $options['admin']) {
             $builder
                 ->add('admin')
                 ->add('expert')
@@ -94,7 +77,7 @@ class IndividuType extends AbstractType
                 ->add('desactive');
         }
 
-        if ($options['user'] == true) {
+        if (true == $options['user']) {
             $builder
                 ->add(
                     'labo',
@@ -103,27 +86,26 @@ class IndividuType extends AbstractType
                     'label' => 'Laboratoire:',
                     'class' => Laboratoire::class,
                     'multiple' => false,
-                    'placeholder'   => '-- Indiquez le laboratoire',
-                    'required'  => false,
-                    'choices'   => $this->em->getRepository(Laboratoire::class)->findAllSorted(),
+                    'placeholder' => '-- Indiquez le laboratoire',
+                    'required' => false,
+                    'choices' => $this->em->getRepository(Laboratoire::class)->findAllSorted(),
                     'attr' => ['style' => 'width:20em'],
                     ]
                 );
         }
 
-
-        if ($options['permanent'] == true) {
+        if (true == $options['permanent']) {
             $builder
                 ->add(
                     'statut',
                     EntityType::class,
                     [
-                    'placeholder'   => '-- Indiquez votre statut',
+                    'placeholder' => '-- Indiquez votre statut',
                     'label' => 'Statut:',
                     'class' => Statut::class,
                     'multiple' => false,
-                    'required'  => false,
-                    'choices'   => $this->em->getRepository(Statut::class)->findBy(['permanent' => true ]),
+                    'required' => false,
+                    'choices' => $this->em->getRepository(Statut::class)->findBy(['permanent' => true]),
                     'attr' => ['style' => 'width:20em'],
                     ]
                 );
@@ -133,11 +115,11 @@ class IndividuType extends AbstractType
                     'statut',
                     EntityType::class,
                     [
-                    'placeholder'   => '-- Indiquez votre statut',
+                    'placeholder' => '-- Indiquez votre statut',
                     'label' => 'Statut:',
                     'class' => Statut::class,
                     'multiple' => false,
-                    'required'  => false,
+                    'required' => false,
                     'attr' => ['style' => 'width:20em'],
                     ]
                 );
@@ -148,16 +130,16 @@ class IndividuType extends AbstractType
                 'etab',
                 EntityType::class,
                 [
-                    'placeholder'   => '-- Indiquez votre établissement',
+                    'placeholder' => '-- Indiquez votre établissement',
                     'label' => 'Établissement:',
                     'class' => Etablissement::class,
                     'multiple' => false,
-                    'required'  => false,
+                    'required' => false,
                     'attr' => ['style' => 'width:20em'],
                     ]
             );
 
-        if ($options['thematique'] == true) {
+        if (true == $options['thematique']) {
             $builder->add(
                 'thematique',
                 EntityType::class,
@@ -169,40 +151,34 @@ class IndividuType extends AbstractType
             );
         }
 
-        if ($options['submit'] == true) {
+        if (true == $options['submit']) {
             $builder
                 ->add(
                     'submit',
                     SubmitType::class,
                     [
                     'label' => 'Valider',
-                    'attr'  =>  ['style' => 'width:10em'],
+                    'attr' => ['style' => 'width:10em'],
                     ]
                 );
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
-            'data_class'    => 'App\Entity\Individu',
-            'admin'         => false,
-            'user'          => true,
-            'submit'        => true,
-            'thematique'    => false,
-            'permanent'     => false,
-            'mail'          => true,
+            'data_class' => 'App\Entity\Individu',
+            'admin' => false,
+            'user' => true,
+            'submit' => true,
+            'thematique' => false,
+            'permanent' => false,
+            'mail' => true,
             ]
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'appbundle_individu';

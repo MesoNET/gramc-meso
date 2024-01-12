@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,19 +24,19 @@
 
 namespace App\GramcServices\Workflow\Version4;
 
-use App\GramcServices\Workflow\Transition;
-use App\Utils\Functions;
+use App\Entity\Version;
 use App\GramcServices\Etat;
 use App\GramcServices\Signal;
-use App\Entity\Version;
-use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
 use App\GramcServices\Workflow\Projet\ProjetWorkflow;
+use App\GramcServices\Workflow\Rallonge4\Rallonge4Workflow;
+use App\GramcServices\Workflow\Transition;
+use App\Utils\Functions;
 
 class Version4Transition extends Transition
 {
-    private static $execute_en_cours     = false;
+    private static $execute_en_cours = false;
 
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
     public function canExecute(object $version): bool
     {
         if (!$version instanceof Version) {
@@ -53,7 +53,7 @@ class Version4Transition extends Transition
         $rtn = true;
         if (Transition::FAST == false && $this->getPropageSignal()) {
             $rallonges = $version->getRallonge();
-            if ($rallonges != null) {
+            if (null != $rallonges) {
                 $workflow = new Rallonge4Workflow($this->sn, $this->sj, $this->ss, $this->em);
                 foreach ($rallonges as $rallonge) {
                     $rtn = $rtn && $workflow->canExecute($this->getSignal(), $rallonge);
@@ -62,17 +62,18 @@ class Version4Transition extends Transition
         }
 
         self::$execute_en_cours = false;
+
         return $rtn;
     }
 
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
     public function execute(object $version): bool
     {
         if (!$version instanceof Version) {
             throw new \InvalidArgumentException();
         }
         if (Transition::DEBUG) {
-            $this->sj->debugMessage(">>> " .  __FILE__ . ":" . __LINE__ . " $this $version");
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__." $this $version");
         }
 
         // Pour éviter une boucle infinie entre projet et version !
@@ -85,7 +86,9 @@ class Version4Transition extends Transition
 
         // Propage le signal aux rallonges si demandé
         if ($this->getPropageSignal()) {
-            if (Transition::DEBUG) $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " Propagations aux rallonges (".count($rallonges).")");
+            if (Transition::DEBUG) {
+                $this->sj->debugMessage('<<< '.__FILE__.':'.__LINE__.' Propagations aux rallonges ('.count($rallonges).')');
+            }
             $rallonges = $version->getRallonge();
 
             if (count($rallonges) > 0) {
@@ -101,20 +104,22 @@ class Version4Transition extends Transition
 
         // Propage le signal au projet si demandé
         if ($this->getPropageSignal()) {
-            if (Transition::DEBUG) $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " Propagations au projet");
+            if (Transition::DEBUG) {
+                $this->sj->debugMessage('<<< '.__FILE__.':'.__LINE__.' Propagations au projet');
+            }
             $projet = $version->getProjet();
             $workflow = new ProjetWorkflow($this->sn, $this->sj, $this->ss, $this->em);
-            $output   = $workflow->execute($this->getSignal(), $projet);
+            $output = $workflow->execute($this->getSignal(), $projet);
             $rtn = Functions::merge_return($rtn, $output);
         }
 
         // Si on passe en état ACTIF, on signale aux hébergeurs qu'ils ont des choses à faire
         // Pas besoin de sauvegarder ce sera fait par changeEtat
-        if ($this->getetat() === Etat::ACTIF)
-        {
-            foreach ($version->getDac() as $d)
-            {
-                if ($d->getAttribution() > 0) $d->setTodof(true);
+        if (Etat::ACTIF === $this->getetat()) {
+            foreach ($version->getDac() as $d) {
+                if ($d->getAttribution() > 0) {
+                    $d->setTodof(true);
+                }
             }
         }
 
@@ -126,7 +131,7 @@ class Version4Transition extends Transition
 
         self::$execute_en_cours = false;
         if (Transition::DEBUG) {
-            $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " rtn = " . Functions::show($rtn));
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__.' rtn = '.Functions::show($rtn));
         }
 
         return $rtn;
