@@ -30,17 +30,19 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Journal controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  */
+#[isGranted('ROLE_ADMIN')]
 #[Route(path: 'journal')]
 class JournalController extends AbstractController
 {
@@ -169,7 +171,7 @@ class JournalController extends AbstractController
      *
      * @param Journal $journal The journal entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Form The form
      */
     private function createDeleteForm(Journal $journal): FormInterface
     {
