@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,74 +25,63 @@
 namespace App\Form;
 
 use App\Entity\Serveur;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use Doctrine\ORM\EntityManagerInterface;
 
 class RessourceType extends AbstractType
 {
     public function __construct(private EntityManagerInterface $em)
     {
-        $this -> em = $em;
+        $this->em = $em;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('serveur', EntityType::class,
-                    [
-                    'label' => 'Serveur:',
-                    'class' => Serveur::class,
-                    'multiple' => false,
-                    'placeholder'   => '-- Serveur',
-                    'required'  => true,
-                    'choices'   => $this->em->getRepository(Serveur::class)->findAllSorted(),
-                    'attr' => ['style' => 'width:20em'],
-                    ]
-                )
-            ->add('nom', TextType::class, ['required' => false, 'label' => 'nom de la ressource (optionnel, 8 char max):', 'attr' => [ 'maxlength' => 8] ])
-            ->add('desc', TextAreaType::class, ['required' => true, 'label' => 'Description (balises html ok):', 'attr' => ['rows' => '5', 'cols' => '50' ] ])
-            ->add('docUrl', TextType::class, ['required' => false, 'label' => 'URL vers la doc :', 'attr' => ['size' => '40' ] ])
-            ->add('unite', TextType::class, ['required' => false, 'label' => 'Unité :' ])
-            ->add('maxDem', IntegerType::class, ['required' => false, 'label' => 'Valeur max de la demande :' ])
-            ->add('co2', IntegerType::class, ['required' => false, 'label' => 'co2 (g) émis par unite et par heure :' ]);
+                [
+                'label' => 'Serveur:',
+                'class' => Serveur::class,
+                'multiple' => false,
+                'placeholder' => '-- Serveur',
+                'required' => true,
+                'choices' => $this->em->getRepository(Serveur::class)->findAllSorted(),
+                'attr' => ['style' => 'width:20em'],
+                ]
+            )
+            ->add('nom', TextType::class, ['required' => false, 'label' => 'nom de la ressource (optionnel, 8 char max):', 'attr' => ['maxlength' => 8]])
+            ->add('desc', TextAreaType::class, ['required' => true, 'label' => 'Description (balises html ok):', 'attr' => ['rows' => '5', 'cols' => '50']])
+            ->add('docUrl', TextType::class, ['required' => false, 'label' => 'URL vers la doc :', 'attr' => ['size' => '40']])
+            ->add('unite', TextType::class, ['required' => false, 'label' => 'Unité :'])
+            ->add('maxDem', IntegerType::class, ['required' => false, 'label' => 'Valeur max de la demande :'])
+            ->add('co2', IntegerType::class, ['required' => false, 'label' => 'co2 (g) émis par unite et par heure :']);
 
-        if ($options['modifier'] == true) {
+        if (true == $options['modifier']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        }
-        elseif ($options['ajouter'] == true)
-        {
+                ->add('submit', SubmitType::class, ['label' => 'modifier'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
+        } elseif (true == $options['ajouter']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
+                ->add('submit', SubmitType::class, ['label' => 'ajouter'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
             'data_class' => 'App\Entity\Ressource',
             'modifier' => false,
-            'ajouter'  => false,
+            'ajouter' => false,
             ]
         );
     }

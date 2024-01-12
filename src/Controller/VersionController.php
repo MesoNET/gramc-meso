@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,68 +24,52 @@
 
 namespace App\Controller;
 
-use App\Entity\Version;
-use App\Entity\Projet;
-use App\Entity\Session;
-use App\Entity\Individu;
-use App\Entity\CollaborateurVersion;
-use App\Entity\RapportActivite;
 use App\Entity\Expertise;
+use App\Entity\Individu;
+use App\Entity\Projet;
+use App\Entity\RapportActivite;
 use App\Entity\Thematique;
-use App\GramcServices\Workflow\Projet4\Projet4Workflow;
-use App\GramcServices\ServiceMenus;
-use App\GramcServices\ServiceJournal;
-use App\GramcServices\ServiceServeurs;
-use App\GramcServices\ServiceNotifications;
-use App\GramcServices\ServiceProjets;
-use App\GramcServices\ServiceSessions;
-use App\GramcServices\ServiceForms;
-use App\GramcServices\ServiceVersions;
-use App\GramcServices\ServiceRessources;
+use App\Entity\Version;
+use App\Form\IndividuFormType;
+use App\GramcServices\Etat;
+use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceDacs;
 use App\GramcServices\ServiceExperts\ServiceExperts;
-use App\GramcServices\GramcDate;
-
-use Psr\Log\LoggerInterface;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Routing\Annotation\Route;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-
-use App\Utils\Functions;
-use App\GramcServices\Etat;
+use App\GramcServices\ServiceForms;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceNotifications;
+use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceRessources;
+use App\GramcServices\ServiceServeurs;
+use App\GramcServices\ServiceSessions;
+use App\GramcServices\ServiceVersions;
 use App\GramcServices\Signal;
-use App\Form\IndividuFormType;
-
+use App\GramcServices\Workflow\Projet4\Projet4Workflow;
+use App\Utils\Functions;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Snappy\Pdf;
+use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\form;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
-use App\Validator\Constraints\PagesNumber;
-use Knp\Snappy\Pdf;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
-
-use Doctrine\ORM\EntityManagerInterface;
 
 /******************************************
  *
@@ -129,10 +113,11 @@ class VersionController extends AbstractController
         private AuthorizationCheckerInterface $ac,
         private Pdf $pdf,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
-     * Lists all version entities. CRUD
+     * Lists all version entities. CRUD.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -143,13 +128,13 @@ class VersionController extends AbstractController
 
         $versions = $em->getRepository(Version::class)->findAll();
 
-        return $this->render('version/index.html.twig', array(
+        return $this->render('version/index.html.twig', [
             'versions' => $versions,
-        ));
+        ]);
     }
 
     /**
-     * Creates a new version entity. CRUD
+     * Creates a new version entity. CRUD.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -165,21 +150,20 @@ class VersionController extends AbstractController
             $em->persist($version);
             $em->flush($version);
 
-            return $this->redirectToRoute('version_show', array('id' => $version->getId()));
+            return $this->redirectToRoute('version_show', ['id' => $version->getId()]);
         }
 
-        return $this->render('version/new.html.twig', array(
+        return $this->render('version/new.html.twig', [
             'version' => $version,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Affichage d'un écran de confirmation avant la suppression d'une version de projet
+     * Affichage d'un écran de confirmation avant la suppression d'une version de projet.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
-     *
      */
     #[Route(path: '/{id}/avant_supprimer', name: 'version_avant_supprimer', methods: ['GET'])]
     public function avantSupprimerAction(Version $version): Response
@@ -188,9 +172,9 @@ class VersionController extends AbstractController
         $sj = $this->sj;
 
         // ACL
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " impossible de supprimer la version " . $version->getIdVersion().
-                " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de supprimer la version '.$version->getIdVersion().
+                ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
 
         return $this->render(
@@ -202,10 +186,9 @@ class VersionController extends AbstractController
     }
 
     /**
-     * Supprimer version (en base de données et dans le répertoire data)
+     * Supprimer version (en base de données et dans le répertoire data).
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     *
      */
     #[Route(path: '/{id}/supprimer', name: 'version_supprimer', methods: ['GET'])]
     public function supprimerAction(Version $version): Response
@@ -217,21 +200,20 @@ class VersionController extends AbstractController
         $sj = $this->sj;
 
         // ACL
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " impossible de supprimer la version " . $version->getIdVersion().
-                " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de supprimer la version '.$version->getIdVersion().
+                ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
 
         $sp->supprimerVersion($version);
-        
+
         return $this->redirectToRoute('projet_accueil');
     }
 
     /**
-     * Supprimer Fichier attaché à une version
+     * Supprimer Fichier attaché à une version.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     *
      */
     #[Route(path: '/{id}/{filename}/supprimer_fichier', name: 'version_supprimer_fichier', methods: ['GET'])]
     public function supprimerFichierAction(Version $version, string $filename): Response
@@ -243,24 +225,23 @@ class VersionController extends AbstractController
         $ac = $this->ac;
 
         // ACL - Les mêmes que pour supprimer version !
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " impossible de supprimer des images de cette version " . $version->getIdVersion().
-                " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de supprimer des images de cette version '.$version->getIdVersion().
+                ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
 
         $etat = $version->getEtatVersion();
         $idProjet = null;
         $idVersion = null;
-        if ($version->getProjet() === null) {
+        if (null === $version->getProjet()) {
             $idProjet = null;
             $idVersion = $version->getIdVersion();
         } else {
-            $idProjet   =  $version->getProjet()->getIdProjet();
+            $idProjet = $version->getProjet()->getIdProjet();
         }
 
         // Seulement en édition demande, ou alors si je suis admin !
-        if ($etat === Etat::EDITION_DEMANDE || $ac->isGranted('ROLE_ADMIN'))
-        {
+        if (Etat::EDITION_DEMANDE === $etat || $ac->isGranted('ROLE_ADMIN')) {
             // suppression des fichiers liés à la version
             $sv->effacerFichier($version, $filename);
         }
@@ -268,9 +249,9 @@ class VersionController extends AbstractController
         return new Response(json_encode("OK $filename"));
     }
 
-    //////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////
     /**
-     * Convertit et affiche la version au format pdf
+     * Convertit et affiche la version au format pdf.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
@@ -284,8 +265,8 @@ class VersionController extends AbstractController
         $spdf = $this->pdf;
 
         $projet = $version->getProjet();
-        if (! $sp->projetACL($projet)) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ .' problème avec ACL');
+        if (!$sp->projetACL($projet)) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' problème avec ACL');
         }
 
         $img_expose = [
@@ -299,32 +280,33 @@ class VersionController extends AbstractController
             $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version),
         ];
-        
-        $html4pdf =  $this->render(
+
+        $html4pdf = $this->render(
             'version/pdf.html.twig',
             [
-            'warn_type'          => false,
-            'projet'             => $projet,
-            'pdf'                => true,
-            'version'            => $version,
-            'menu'               => null,
-            'img_expose'         => $img_expose,
-            'img_justif_renou'   => $img_justif_renou,
-            'rapport_1'          => null,
-            'rapport'            => null,
+            'warn_type' => false,
+            'projet' => $projet,
+            'pdf' => true,
+            'version' => $version,
+            'menu' => null,
+            'img_expose' => $img_expose,
+            'img_justif_renou' => $img_justif_renou,
+            'rapport_1' => null,
+            'rapport' => null,
             ]
         );
 
-        // NOTE - Pour déboguer la version pdf, décommentez 
-        //return $html4pdf;
-        
+        // NOTE - Pour déboguer la version pdf, décommentez
+        // return $html4pdf;
+
         $pdf = $spdf->setOption('enable-local-file-access', true);
         $pdf = $spdf->getOutputFromHtml($html4pdf->getContent());
+
         return Functions::pdf($pdf);
     }
 
     /**
-     * Téléchargement de la fiche Projet
+     * Téléchargement de la fiche Projet.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method("GET")
@@ -332,36 +314,36 @@ class VersionController extends AbstractController
     #[Route(path: '/{id}/fiche_pdf', name: 'version_fiche_pdf', methods: ['GET'])]
     public function fichePdfAction(Version $version, Request $request): Response
     {
-        $sm   = $this->sm;
-        $sj   = $this->sj;
+        $sm = $this->sm;
+        $sj = $this->sj;
         $spdf = $this->pdf;
 
-        $projet =  $version->getProjet();
+        $projet = $version->getProjet();
 
         // ACL
-        if ($sm->telechargerFiche($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " impossible de télécharger la fiche du projet " . $projet .
-                " parce que : " . $sm->telechargerFiche($version)['raison']);
+        if (false === $sm->telechargerFiche($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de télécharger la fiche du projet '.$projet.
+                ' parce que : '.$sm->telechargerFiche($version)['raison']);
         }
 
-        $html4pdf =  $this->render(
+        $html4pdf = $this->render(
             'version/fiche_pdf.html.twig',
             [
                 'projet' => $projet,
-                'version'   =>  $version,
+                'version' => $version,
                 ]
         );
         // return $html4pdf;
-        //$html4pdf->prepare($request);
-        //$pdf = App::getPDF($html4pdf);
-        //$pdf = App::getPDF($html4pdf->getContent());
+        // $html4pdf->prepare($request);
+        // $pdf = App::getPDF($html4pdf);
+        // $pdf = App::getPDF($html4pdf->getContent());
         $pdf = $spdf->getOutputFromHtml($html4pdf->getContent());
 
         return Functions::pdf($pdf);
     }
 
     /**
-     * Téléversement de la fiche projet
+     * Téléversement de la fiche projet.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -373,47 +355,45 @@ class VersionController extends AbstractController
         $sj = $this->sj;
 
         // ACL
-        if ($sm->televerserFiche($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " impossible de téléverser la fiche de la version " . $version .
-                " parce que : " . $sm -> televerserFiche($version)['raison']);
+        if (false === $sm->televerserFiche($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de téléverser la fiche de la version '.$version.
+                ' parce que : '.$sm->televerserFiche($version)['raison']);
         }
 
-        $rtn = $this->televerser($request, $version, "fiche.pdf");
+        $rtn = $this->televerser($request, $version, 'fiche.pdf');
 
         // Si on récupère un formulaire on l'affiche
-        if (is_a($rtn, 'Symfony\Component\Form\Form'))
-        {
+        if (is_a($rtn, 'Symfony\Component\Form\Form')) {
             return $this->render(
                 'version/televerser_fiche.html.twig',
                 [
                     'version' => $version,
                     'form' => $rtn->createView(),
-                    'resultat' => null
+                    'resultat' => null,
                 ]);
         }
 
         // Sinon c'est une chaine de caractères en json.
-        else
-        {
+        else {
             $resultat = json_decode($rtn, true);
 
-            if ($resultat['OK'])
-            {
+            if ($resultat['OK']) {
                 $this->modifyFiche($version);
-                $request->getSession()->getFlashbag()->add("flash info","La fiche projet a été correctement téléversée");
-                return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
+                $request->getSession()->getFlashbag()->add('flash info', 'La fiche projet a été correctement téléversée');
+
+                return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet()]);
+            } else {
+                $request->getSession()->getFlashbag()->add('flash erreur', strip_tags($resultat['message']));
+
+                return $this->redirectToRoute('version_televerser_fiche', ['id' => $version->getIdVersion()]);
             }
-            else
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur",strip_tags($resultat['message']));
-                return $this->redirectToRoute('version_televerser_fiche', ['id' => $version->getIdVersion() ]);
-            }
-            return new Response ($rtn);
+
+            return new Response($rtn);
         }
     }
 
     /**
-     * Téléversement de la fiche projet en tant qu'admin
+     * Téléversement de la fiche projet en tant qu'admin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -424,44 +404,42 @@ class VersionController extends AbstractController
         $sm = $this->sm;
         $sj = $this->sj;
 
-        $rtn = $this->televerser($request, $version, "fiche.pdf");
+        $rtn = $this->televerser($request, $version, 'fiche.pdf');
 
         // Si on récupère un formulaire on l'affiche
-        if (is_a($rtn, 'Symfony\Component\Form\Form'))
-        {
+        if (is_a($rtn, 'Symfony\Component\Form\Form')) {
             return $this->render(
                 'version/televerser_fiche.html.twig',
                 [
                     'version' => $version,
                     'form' => $rtn->createView(),
-                    'resultat' => null
+                    'resultat' => null,
                 ]);
         }
 
         // Sinon c'est une chaine de caractères en json.
-        else
-        {
+        else {
             $resultat = json_decode($rtn, true);
 
-            if ($resultat['OK'])
-            {
+            if ($resultat['OK']) {
                 $this->modifyFiche($version);
-                $request->getSession()->getFlashbag()->add("flash info","La fiche projet a été correctement téléversée");
-                return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
+                $request->getSession()->getFlashbag()->add('flash info', 'La fiche projet a été correctement téléversée');
+
+                return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet()]);
+            } else {
+                $request->getSession()->getFlashbag()->add('flash erreur', strip_tags($resultat['message']));
+
+                return $this->redirectToRoute('version_televerser_fiche', ['id' => $version->getIdVersion()]);
             }
-            else
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur",strip_tags($resultat['message']));
-                return $this->redirectToRoute('version_televerser_fiche', ['id' => $version->getIdVersion() ]);
-            }
-            return new Response ($rtn);
+
+            return new Response($rtn);
         }
     }
 
-    private function modifyFiche(Version $version) : void
+    private function modifyFiche(Version $version): void
     {
         $em = $this->em;
-        
+
         // on marque le téléversement de la fiche projet
         $version->setPrjFicheVal(true);
         $em->persist($version);
@@ -486,13 +464,13 @@ class VersionController extends AbstractController
         // ACL
         $moi = $token->getUser();
 
-        if ($version === null) {
-            $sj->throwException(__METHOD__ .":". __LINE__ .' version null');
+        if (null === $version) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' version null');
         }
 
-        if ($sm->changerResponsable($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ .
-                    " impossible de changer de responsable parce que " . $sm->changerResponsable($version)['raison']);
+        if (false === $sm->changerResponsable($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.
+                    ' impossible de changer de responsable parce que '.$sm->changerResponsable($version)['raison']);
         }
 
         // préparation de la liste des responsables potentiels
@@ -506,28 +484,28 @@ class VersionController extends AbstractController
                 [
                     'multiple' => false,
                     'class' => Individu::class,
-                    'required'  =>  true,
-                    'label'     => '',
-                    'choices' =>  $collaborateurs,
+                    'required' => true,
+                    'label' => '',
+                    'choices' => $collaborateurs,
                 ]
             )
             ->add('submit', SubmitType::class, ['label' => 'Nouveau responsable'])
             ->getForm();
         $change_form->handleRequest($request);
 
-        $projet =  $version->getProjet();
+        $projet = $version->getProjet();
 
-        if ($projet != null) {
-            $idProjet   =   $projet->getIdProjet();
+        if (null != $projet) {
+            $idProjet = $projet->getIdProjet();
         } else {
-            $sj->errorMessage(__METHOD__ .":". __LINE__ . " projet null pour version " . $version->getIdVersion());
-            $idProjet   =   null;
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' projet null pour version '.$version->getIdVersion());
+            $idProjet = null;
         }
 
         if ($change_form->isSubmitted() && $change_form->isValid()) {
-            $ancien_responsable  = $version->getResponsable();
+            $ancien_responsable = $version->getResponsable();
             $nouveau_responsable = $change_form->getData()['responsable'];
-            if ($nouveau_responsable === null) {
+            if (null === $nouveau_responsable) {
                 return $this->redirectToRoute('consulter_version', ['id' => $idProjet, 'version' => $version->getId()]);
             }
 
@@ -536,8 +514,8 @@ class VersionController extends AbstractController
 
                 $params = [
                             'ancien' => $ancien_responsable,
-                            'nouveau'=> $nouveau_responsable,
-                            'version'=> $version
+                            'nouveau' => $nouveau_responsable,
+                            'version' => $version,
                            ];
 
                 // envoyer une notification à l'ancien et au nouveau responsable
@@ -562,11 +540,12 @@ class VersionController extends AbstractController
                     $sn->mailUsers(['A'], null)
                 );
             }
+
             return $this->redirectToRoute(
                 'consulter_version',
                 [
                     'version' => $version->getIdVersion(),
-                    'id'    =>  $idProjet,
+                    'id' => $idProjet,
                 ]
             );
         }
@@ -575,8 +554,8 @@ class VersionController extends AbstractController
             'version/responsable.html.twig',
             [
                 'projet' => $idProjet,
-                'change_form'   => $change_form->createView(),
-                'version'   =>  $version,
+                'change_form' => $change_form->createView(),
+                'version' => $version,
             ]
         );
     }
@@ -591,95 +570,92 @@ class VersionController extends AbstractController
     {
         $sm = $this->sm;
         $sj = $this->sj;
-        $sval= $this->vl;
+        $sval = $this->vl;
         $sv = $this->sv;
         $sr = $this->sr;
         $em = $this->em;
 
-
-        if ($sm->modifierCollaborateurs($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de modifier la liste des collaborateurs de la version " . $version .
-                " parce que : " . $sm->modifierCollaborateurs($version)['raison']);
+        if (false === $sm->modifierCollaborateurs($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de modifier la liste des collaborateurs de la version '.$version.
+                ' parce que : '.$sm->modifierCollaborateurs($version)['raison']);
         }
 
         $text_fields = true;
-        if ($this->getParameter('resp_peut_modif_collabs'))
-        {
+        if ($this->getParameter('resp_peut_modif_collabs')) {
             $text_fields = false;
         }
 
         $collaborateur_form = $this->ff
                                    ->createNamedBuilder('form_projet', FormType::class, [
-                                       'individus' => $sv->prepareCollaborateurs($version, $sj, $sval)
+                                       'individus' => $sv->prepareCollaborateurs($version, $sj, $sval),
                                    ])
                                    ->add('individus', CollectionType::class, [
-                                       'entry_type'   =>  IndividuFormType::class,
-                                       'label'        =>  false,
-                                       'allow_add'    =>  true,
-                                       'allow_delete' =>  true,
-                                       'prototype'    =>  true,
-                                       'required'     =>  true,
-                                       'by_reference' =>  false,
-                                       'delete_empty' =>  true,
-                                       'attr'         => ['class' => "profil-horiz"],
-                                       'entry_options' =>['text_fields' => $text_fields,'srv_noms' => $sr->getnoms()],
-                                       //'prototype_options' =>['text_fields' => $text_fields,'srv_noms' => $srv_noms],
+                                       'entry_type' => IndividuFormType::class,
+                                       'label' => false,
+                                       'allow_add' => true,
+                                       'allow_delete' => true,
+                                       'prototype' => true,
+                                       'required' => true,
+                                       'by_reference' => false,
+                                       'delete_empty' => true,
+                                       'attr' => ['class' => 'profil-horiz'],
+                                       'entry_options' => ['text_fields' => $text_fields, 'srv_noms' => $sr->getnoms()],
+                                       // 'prototype_options' =>['text_fields' => $text_fields,'srv_noms' => $srv_noms],
                                    ])
                                    ->add('submit', SubmitType::class, [
                                         'label' => 'Sauvegarder',
-                                        'attr' => ['title' => "Sauvegarder et revenir au projet"],
+                                        'attr' => ['title' => 'Sauvegarder et revenir au projet'],
                                    ])
                                    ->add('annuler', SubmitType::class, [
                                         'label' => 'Annuler',
-                                        'attr' => ['title' => "Annuler et revenir au projet"],
+                                        'attr' => ['title' => 'Annuler et revenir au projet'],
                                    ])
                                    ->getForm();
 
         $collaborateur_form->handleRequest($request);
 
-        $projet =  $version->getProjet();
-        if ($projet != null) {
-            $idProjet   =   $projet->getIdProjet();
+        $projet = $version->getProjet();
+        if (null != $projet) {
+            $idProjet = $projet->getIdProjet();
         } else {
-            $sj->errorMessage(__METHOD__ .':' . __LINE__ . " : projet null pour version " . $version->getIdVersion());
-            $idProjet   =   null;
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' : projet null pour version '.$version->getIdVersion());
+            $idProjet = null;
         }
 
         if ($collaborateur_form->isSubmitted() && $collaborateur_form->isValid()) {
-
             // Annuler ou Sauvegarder ?
-            if ($collaborateur_form->get('submit')->isClicked())
-            {
+            if ($collaborateur_form->get('submit')->isClicked()) {
                 // Un formulaire par individu
-                $individu_forms =  $collaborateur_form->getData()['individus'];
+                $individu_forms = $collaborateur_form->getData()['individus'];
                 $validated = $sv->validateIndividuForms($individu_forms);
-                if (! $validated) {
-                    $message = "Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom";
-                    $request->getSession()->getFlashbag()->add("flash erreur",$message);
-                    return $this->redirectToRoute('modifier_collaborateurs', ['id' => $version ]);
+                if (!$validated) {
+                    $message = 'Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom';
+                    $request->getSession()->getFlashbag()->add('flash erreur', $message);
+
+                    return $this->redirectToRoute('modifier_collaborateurs', ['id' => $version]);
                 }
-                
+
                 // On traite les formulaires d'individus un par un
                 $sv->handleIndividuForms($individu_forms, $version);
             }
 
             // On retourne à la page du projet
-            return $this->redirectToRoute('consulter_version', ['id' => $version->getProjet() ]);
+            return $this->redirectToRoute('consulter_version', ['id' => $version->getProjet()]);
         }
 
-        //return new Response( dump( $collaborateur_form->createView() ) );
+        // return new Response( dump( $collaborateur_form->createView() ) );
         return $this->render(
             'version/collaborateurs.html.twig',
             [
              'projet' => $idProjet,
-             'collaborateur_form'   => $collaborateur_form->createView(),
-             'version'   =>  $version,
+             'collaborateur_form' => $collaborateur_form->createView(),
+             'version' => $version,
          ]
         );
     }
 
     /**
-     * envoyer à l'expert
+     * envoyer à l'expert.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      */
@@ -692,21 +668,18 @@ class VersionController extends AbstractController
         $se = $this->se;
         $em = $this->em;
 
-        if ($version->getTypeVersion() === Projet::PROJET_DYN)
-        {
+        if (Projet::PROJET_DYN === $version->getTypeVersion()) {
             $projetWorkflow = $this->pw4;
-        }
-        else
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " $version n'est PAS de type 4 (type ".$version->getTypeVersion().")");
+        } else {
+            $sj->throwException(__METHOD__.':'.__LINE__." $version n'est PAS de type 4 (type ".$version->getTypeVersion().')');
         }
 
-        if ($sm->envoyerEnExpertise($version)['ok'] === false) {
-        $sj->throwException(__METHOD__ . ":" . __LINE__ .
-            " impossible d'envoyer le projet parce que " . $sm->envoyerEnExpertise($version)['raison']);
+        if (false === $sm->envoyerEnExpertise($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.
+                " impossible d'envoyer le projet parce que ".$sm->envoyerEnExpertise($version)['raison']);
         }
 
-        $projet  = $version->getProjet();
+        $projet = $version->getProjet();
 
         // NOTE - devrait être CGA plutôt que CGU...
         $form = Functions::createFormBuilder($ff)
@@ -714,29 +687,26 @@ class VersionController extends AbstractController
                     'CGU',
                     CheckBoxType::class,
                     [
-                        'required'  =>  false,
-                        'label'     => '',
+                        'required' => false,
+                        'label' => '',
                     ]
                 )
-            ->add('envoyer', SubmitType::class, ['label' => "Envoyer le projet"])
-            ->add('annuler', SubmitType::class, ['label' => "Annuler"])
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer le projet'])
+            ->add('annuler', SubmitType::class, ['label' => 'Annuler'])
             ->getForm();
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $CGU = $form->getData()['CGU'];
-            if ($form->get('annuler')->isClicked())
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet ne nous a pas été envoyé");
-                return $this->redirectToRoute('consulter_projet', [ 'id' => $projet->getIdProjet() ]);
+            if ($form->get('annuler')->isClicked()) {
+                $request->getSession()->getFlashbag()->add('flash erreur', 'Votre projet ne nous a pas été envoyé');
+
+                return $this->redirectToRoute('consulter_projet', ['id' => $projet->getIdProjet()]);
             }
 
-            if ($CGU === false && $form->get('envoyer')->isClicked())
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Vous ne pouvez pas envoyer votre projet si vous n'acceptez pas les CGU");
-            }
-            elseif ($CGU === true && $form->get('envoyer')->isClicked())
-            {
+            if (false === $CGU && $form->get('envoyer')->isClicked()) {
+                $request->getSession()->getFlashbag()->add('flash erreur', "Vous ne pouvez pas envoyer votre projet si vous n'acceptez pas les CGU");
+            } elseif (true === $CGU && $form->get('envoyer')->isClicked()) {
                 $version->setCGU(true);
                 Functions::sauvegarder($version, $em, $lg);
 
@@ -746,34 +716,30 @@ class VersionController extends AbstractController
                 // Avance du workflow
                 $rtn = $projetWorkflow->execute(Signal::CLK_VAL_DEM, $projet);
 
-                if ($rtn === true)
-                {
-                    $request->getSession()->getFlashbag()->add("flash info","Votre projet nous a été envoyé. Vous allez recevoir un courriel de confirmation.");
+                if (true === $rtn) {
+                    $request->getSession()->getFlashbag()->add('flash info', 'Votre projet nous a été envoyé. Vous allez recevoir un courriel de confirmation.');
+                } else {
+                    $sj->errorMessage(__METHOD__.':'.__LINE__.' Le projet '.$projet->getIdProjet()." n'a pas pu etre envoyé à l'expert correctement.");
+                    $request->getSession()->getFlashbag()->add('flash erreur', "Votre projet n'a pas pu être envoyé en validation. Merci de vous rapprocher du support");
                 }
-                else
-                {
-                    $sj->errorMessage(__METHOD__ .  ":" . __LINE__ . " Le projet " . $projet->getIdProjet() . " n'a pas pu etre envoyé à l'expert correctement.");
-                    $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas pu être envoyé en validation. Merci de vous rapprocher du support");
-                }
+
                 return $this->redirectToRoute('projet_accueil');
-            }
-            else
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Votre projet n'a pas pu être envoyé en expertise. Merci de vous rapprocher du support");
-                $sj->throwException(__METHOD__ .":". __LINE__ ." Problème avec le formulaire d'envoi à l'expert du projet " . $version->getIdVersion());
+            } else {
+                $request->getSession()->getFlashbag()->add('flash erreur', "Votre projet n'a pas pu être envoyé en expertise. Merci de vous rapprocher du support");
+                $sj->throwException(__METHOD__.':'.__LINE__." Problème avec le formulaire d'envoi à l'expert du projet ".$version->getIdVersion());
             }
         }
 
         return $this->render(
             'version/envoyer_en_expertise.html.twig',
-            [ 'projet' => $projet,
+            ['projet' => $projet,
               'form' => $form->createView(),
             ]
         );
     }
 
     /**
-     * Téléversements génériques de rapport d'activité ou de fiche projet
+     * Téléversements génériques de rapport d'activité ou de fiche projet.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -789,87 +755,79 @@ class VersionController extends AbstractController
         // Premier formulaire = téléversement de la fiche projet
         $form = $this
            ->ff
-           ->createNamedBuilder('upload', FormType::class, [], ['csrf_protection' => false ])
-           ->add('version', TextType::class, [ 'label'=> "", 'required' => true, 'attr' => ['placeholder' => '01M23999']])
+           ->createNamedBuilder('upload', FormType::class, [], ['csrf_protection' => false])
+           ->add('version', TextType::class, ['label' => '', 'required' => true, 'attr' => ['placeholder' => '01M23999']])
            ->add(
                'type',
                ChoiceType::class,
                [
                 'required' => true,
-                'choices'  => [
-                                "Fiche projet" => "f",
-                                "Rapport d'activité" => "r",
+                'choices' => [
+                                'Fiche projet' => 'f',
+                                "Rapport d'activité" => 'r',
                               ],
-                'label'    => "",
+                'label' => '',
             ]
            )
            ->add('televerser', SubmitType::class)
-           ->add('attribution', SubmitType::class,[ 'label'=> "Changer l'attribution" ] )
+           ->add('attribution', SubmitType::class, ['label' => "Changer l'attribution"])
            ->getForm();
 
-        $erreurs  = [];
+        $erreurs = [];
         $resultat = [];
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             // Récupérer la version
-            if (isset($data['version']) && $data['version'] != null)
-            {
+            if (isset($data['version']) && null != $data['version']) {
                 $version = $em->getRepository(Version::class)->find($data['version']);
-                if ($version === null)
-                {
-                    $request->getSession()->getFlashbag()->add("flash erreur","Pas de version " . $data['version']);
+                if (null === $version) {
+                    $request->getSession()->getFlashbag()->add('flash erreur', 'Pas de version '.$data['version']);
+
                     return $this->redirectToRoute('televersement_generique');
                 }
-            }
-            else
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Erreur interne");
+            } else {
+                $request->getSession()->getFlashbag()->add('flash erreur', 'Erreur interne');
+
                 return $this->redirectToRoute('televersement_generique');
             }
 
             // Bouton Téléverser
-            if ($form->get('televerser')->isClicked())
-            {
-                if (isset($data['type']) && $data['type'] === 'f')
-                {
-                    return $this->redirectToRoute('version_televerser_fiche_admin', ['id' => $version->getIdVersion() ]);
-                }
-                elseif (isset($data['type']) && $data['type'] === 'r')
-                {
-                    $request->getSession()->getFlashbag()->add("flash erreur","PAS DE RAPPORT D'ACTIVITE dans cette version de gramc-meso");
+            if ($form->get('televerser')->isClicked()) {
+                if (isset($data['type']) && 'f' === $data['type']) {
+                    return $this->redirectToRoute('version_televerser_fiche_admin', ['id' => $version->getIdVersion()]);
+                } elseif (isset($data['type']) && 'r' === $data['type']) {
+                    $request->getSession()->getFlashbag()->add('flash erreur', "PAS DE RAPPORT D'ACTIVITE dans cette version de gramc-meso");
+
                     return $this->redirectToRoute('televersement_generique');
-                }
-                else
-                {
-                    $request->getSession()->getFlashbag()->add("flash erreur","Erreur interne");
+                } else {
+                    $request->getSession()->getFlashbag()->add('flash erreur', 'Erreur interne');
+
                     return $this->redirectToRoute('televersement_generique');
                 }
             }
 
             // Bouton Attribution
-            if ($form->get('attribution')->isClicked())
-            {
-                //dd('ATTRIB',$version);
-                return $this->redirectToRoute('version_attribution_admin', ['id' => $version->getIdVersion() ]);
+            if ($form->get('attribution')->isClicked()) {
+                // dd('ATTRIB',$version);
+                return $this->redirectToRoute('version_attribution_admin', ['id' => $version->getIdVersion()]);
             }
         }
 
         return $this->render(
             'version/televersement_generique.html.twig',
             [
-            'form'     => $form->createView(),
-            'erreurs'  => $erreurs,
+            'form' => $form->createView(),
+            'erreurs' => $erreurs,
             'resultat' => $resultat,
         ]
         );
     }
 
     /**
-     * Changer l'attribution d'une version en mode admin
+     * Changer l'attribution d'une version en mode admin.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -886,50 +844,44 @@ class VersionController extends AbstractController
         $ressource_forms = $data['ressource'];
 
         $editForm = $this->createFormBuilder($version)
-            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer' ])
-            ->add('fermer', SubmitType::class, ['label' => 'Fermer' ])
-            ->add('annuler', SubmitType::class, ['label' => 'Annuler' ])
+            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer'])
+            ->add('fermer', SubmitType::class, ['label' => 'Fermer'])
+            ->add('annuler', SubmitType::class, ['label' => 'Annuler'])
             ->getForm();
 
         $erreurs = [];
         $editForm->handleRequest($request);
-        if ($editForm->isSubmitted())
-        {
-            if ($editForm->get('annuler')->isClicked())
-            {
+        if ($editForm->isSubmitted()) {
+            if ($editForm->get('annuler')->isClicked()) {
                 return $this->redirectToRoute('televersement_generique');
-            }
-            else
-            {
+            } else {
                 $validated = $sv->validateRessourceForms($ressource_forms);
-                if (! $validated)
-                {
-                    $message = "Erreur dans une de vos attributions";
-                    $request->getSession()->getFlashbag()->add("flash erreur",$message);
-                }
-                else
-                {
+                if (!$validated) {
+                    $message = 'Erreur dans une de vos attributions';
+                    $request->getSession()->getFlashbag()->add('flash erreur', $message);
+                } else {
                     $em->flush();
-                    $request->getSession()->getFlashbag()->add("flash info","Attributions enregistrées");
+                    $request->getSession()->getFlashbag()->add('flash info', 'Attributions enregistrées');
                     if ($editForm->get('fermer')->isClicked()) {
                         return $this->redirectToRoute('televersement_generique');
                     }
                 }
             }
         }
+
         return $this->render(
             'version/attribution.html.twig',
             [
-            'version'  => $version,
+            'version' => $version,
             'edit_form' => $editForm->createView(),
             'ressource_form' => $ressource_form->createView(),
-            'erreurs'   => $erreurs,
+            'erreurs' => $erreurs,
             ]);
     }
- 
-    ///////////////////////////////////////////////////////////////
+
+    // /////////////////////////////////////////////////////////////
     /**
-     * Téléverser un fichier lié à une version (images, document attaché, rapport d'activité)
+     * Téléverser un fichier lié à une version (images, document attaché, rapport d'activité).
      *
      * DOIT ETRE APPELE EN AJAX, Sinon ça NE VA PAS MARCHER !
      *      Renvoie normalement une réponse en json
@@ -943,18 +895,15 @@ class VersionController extends AbstractController
         $sj = $this->sj;
 
         // ACL - Mêmes ACL que modification de version !
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de modifier la version " . $version->getIdVersion().
-        " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de modifier la version '.$version->getIdVersion().
+        ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
 
         $rtn = $this->televerser($request, $version, $filename);
-        if (is_a($rtn, 'Symfony\Component\Form\Form'))
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - televerser a renvoyé un Form");
-        }
-        else
-        {
+        if (is_a($rtn, 'Symfony\Component\Form\Form')) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' Erreur interne - televerser a renvoyé un Form');
+        } else {
             return new Response($rtn);
         }
     }
@@ -967,7 +916,7 @@ class VersionController extends AbstractController
     {
         $sv = $this->sv;
         $sf = $this->sf;
-        
+
         // SEULEMENT CERTAINS NOMS !!!!
         $valid_filenames = ['document.pdf',
                             'rapport.pdf',
@@ -979,40 +928,37 @@ class VersionController extends AbstractController
                             'img_justif_renou_2',
                             'img_justif_renou_3'];
 
-        if (!in_array($filename, $valid_filenames))
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - $filename pas un nom autorisé");
+        if (!in_array($filename, $valid_filenames)) {
+            $sj->throwException(__METHOD__.':'.__LINE__." Erreur interne - $filename pas un nom autorisé");
         }
 
         // Calcul du répertoire et du type de fichier: dépend du nom de fichier
-        $dir = "";
-        switch ($filename)
-        {
-            case "document.pdf":
-            case "img_expose_1":
-            case "img_expose_2":
-            case "img_expose_3":
-            case "img_justif_renou_1":
-            case "img_justif_renou_2":
-            case "img_justif_renou_3":
+        $dir = '';
+        switch ($filename) {
+            case 'document.pdf':
+            case 'img_expose_1':
+            case 'img_expose_2':
+            case 'img_expose_3':
+            case 'img_justif_renou_1':
+            case 'img_justif_renou_2':
+            case 'img_justif_renou_3':
                 $dir = $sv->imageDir($version);
                 break;
-            case "rapport.pdf":
+            case 'rapport.pdf':
                 $dir = $sv->rapportDir($version);
                 break;
-            case "fiche.pdf":
+            case 'fiche.pdf':
                 $dir = $sv->getSigneDir($version);
                 break;
             default:
-                $sj->throwException(__METHOD__ . ":" . __LINE__ . " Erreur interne - $filename - calcul de dir pas possible");
+                $sj->throwException(__METHOD__.':'.__LINE__." Erreur interne - $filename - calcul de dir pas possible");
                 break;
         }
 
-        $type = substr($filename,-3);   // 'pdf' ou ... n'importe quoi !
+        $type = substr($filename, -3);   // 'pdf' ou ... n'importe quoi !
 
         // Seulement deux types supportés = pdf ou jpg
-        if ($type != 'pdf')
-        {
+        if ('pdf' != $type) {
             $type = 'jpg';
         }
 
@@ -1022,14 +968,12 @@ class VersionController extends AbstractController
         //    On doit le faire ici car on est en ajax et on appelle la fonction "générique" téléverser...
         //
         // TODO: Pas bien joli tout ça...
-        if ($filename === 'rapport.pdf')
-        {
+        if ('rapport.pdf' === $filename) {
             $d = basename($dir); // /a/b/c/d/2022 -> 2022
-            $filename = $d . $version->getProjet()->getIdProjet() . ".pdf";
+            $filename = $d.$version->getProjet()->getIdProjet().'.pdf';
             $rtn = $sv->televerserFichier($request, $version, $dir, $filename, $type);
             $resultat = json_decode($rtn, true);
-            if ($resultat['OK'])
-            {
+            if ($resultat['OK']) {
                 $this->modifyRapport($version->getProjet(), $version->anneeRapport(), $filename);
             }
         }
@@ -1039,19 +983,17 @@ class VersionController extends AbstractController
         // 2/ La fonction modifyFiche sera appelée par le controleur televerserFicheAction
         //
         // TODO: Pas bien joli tout ça...
-        elseif ($filename === 'fiche.pdf')
-        {
-            $filename = $sv ->getSignePath($version);
+        elseif ('fiche.pdf' === $filename) {
+            $filename = $sv->getSignePath($version);
+            $rtn = $sv->televerserFichier($request, $version, $dir, $filename, $type);
+        } else {
             $rtn = $sv->televerserFichier($request, $version, $dir, $filename, $type);
         }
-        else
-        {
-            $rtn = $sv->televerserFichier($request, $version, $dir, $filename, $type);
-        }
+
         return $rtn;
     }
 
-    ////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////
 
     private function modifyRapport(Projet $projet, string $annee, string $filename): void
     {
@@ -1065,15 +1007,16 @@ class VersionController extends AbstractController
             'annee' => $annee,
         ]
         );
-        if ($rapportActivite === null) {
+        if (null === $rapportActivite) {
             $rapportActivite = new RapportActivite($projet, $annee);
         }
 
-        $size = filesize($sv->rapportDir1($projet, $annee) . '/' .$filename );
+        $size = filesize($sv->rapportDir1($projet, $annee).'/'.$filename);
         $rapportActivite->setTaille($size);
         $em->persist($rapportActivite);
         $em->flush();
     }
+
     /**
      * Appelé par le bouton Envoyer à l'expert: si la demande est incomplète
      * on envoie un écran pour la compléter. Sinon on passe à envoyer à l'expert
@@ -1091,31 +1034,28 @@ class VersionController extends AbstractController
         $em = $this->em;
 
         // ACL
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de modifier la version " . $version->getIdVersion().
-                " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de modifier la version '.$version->getIdVersion().
+                ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
-        if ($sv->validateVersion($version) != []) {
+        if ([] != $sv->validateVersion($version)) {
             return $this->render(
                 'version/avant_modifier.html.twig',
                 [
-                'version'   => $version
+                'version' => $version,
                 ]);
-        }
-        else
-        {
-            return $this->redirectToRoute('envoyer_en_expertise', [ 'id' => $version->getIdVersion() ]);
+        } else {
+            return $this->redirectToRoute('envoyer_en_expertise', ['id' => $version->getIdVersion()]);
         }
     }
 
     /**
-     * Modification d'une version existante
+     * Modification d'une version existante.
      *
      *      1/ D'abord une partie générique (images, collaborateurs)
      *      2/ Ensuite on appelle modifierTypeX, car le formulaire dépend du type de projet
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
-     *
      */
     #[Route(path: '/{id}/modifier', name: 'modifier_version', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Version $version): Response
@@ -1125,11 +1065,11 @@ class VersionController extends AbstractController
         $sj = $this->sj;
         $twig = $this->tw;
         $html = [];
-        
+
         // ACL
-        if ($sm->modifierVersion($version)['ok'] === false) {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " impossible de modifier la version " . $version->getIdVersion().
-        " parce que : " . $sm->modifierVersion($version)['raison']);
+        if (false === $sm->modifierVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' impossible de modifier la version '.$version->getIdVersion().
+        ' parce que : '.$sm->modifierVersion($version)['raison']);
         }
 
         // FORMULAIRE DES FORMATIONS
@@ -1151,42 +1091,38 @@ class VersionController extends AbstractController
 
         // NOTE - On met à zéro les demandes qui sont invalides
         $validated = $sv->validateRessourceForms($ressource_forms);
-        if (! $validated)
-        {
-            $message = "Erreur dans une de vos demandes, elle a été mise à 0";
-            $request->getSession()->getFlashbag()->add("flash erreur",$message);
+        if (!$validated) {
+            $message = 'Erreur dans une de vos demandes, elle a été mise à 0';
+            $request->getSession()->getFlashbag()->add('flash erreur', $message);
         }
-        
+
         // FORMULAIRE DES COLLABORATEURS
         $collaborateur_form = $sv->getCollaborateurForm($version);
         $collaborateur_form->handleRequest($request);
         $data = $collaborateur_form->getData();
         $individu_forms = $data['individus'];
         $validated = $sv->validateIndividuForms($individu_forms);
-        if (! $validated)
-        {
-            $message = "Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom";
-            $request->getSession()->getFlashbag()->add("flash erreur",$message);
-        }
-        else
-        {
-            if ($data != null && array_key_exists('individus', $data)) {
+        if (!$validated) {
+            $message = 'Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom';
+            $request->getSession()->getFlashbag()->add('flash erreur', $message);
+        } else {
+            if (null != $data && array_key_exists('individus', $data)) {
                 $sj->debugMessage('modifierAction traitement des collaborateurs');
                 $sv->handleIndividuForms($data['individus'], $version);
-    
+
                 // ASTUCE : le mail est disabled en HTML et en cas de POST il est annulé
                 // nous devons donc refaire le formulaire pour récupérer ces mails
                 $collaborateur_form = $sv->getCollaborateurForm($version);
             }
         }
-        
+
         // DES FORMULAIRES QUI DEPENDENT DU TYPE DE PROJET
         $type = $version->getProjet()->getTypeProjet();
         switch ($type) {
             case Projet::PROJET_DYN:
-            return $this->__modifier4($request, $version, $collaborateur_form, $formation_form, $ressource_form);
+                return $this->__modifier4($request, $version, $collaborateur_form, $formation_form, $ressource_form);
             default:
-               $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
+                $sj->throwException(__METHOD__.':'.__LINE__.' mauvais type de projet '.Functions::show($type));
         }
     }
 
@@ -1199,12 +1135,11 @@ class VersionController extends AbstractController
      *
      */
     private function __modifier4(Request $request,
-                                 Version $version,
-                                 FormInterface $collaborateur_form,
-                                 FormInterface $formation_form,
-                                 FormInterface $ressource_form
-                                 ): Response
-    {
+        Version $version,
+        FormInterface $collaborateur_form,
+        FormInterface $formation_form,
+        FormInterface $ressource_form
+    ): Response {
         $sj = $this->sj;
         $sv = $this->sv;
         $ss = $this->ss;
@@ -1220,7 +1155,7 @@ class VersionController extends AbstractController
 
         $form_builder
             ->add('fermer', SubmitType::class)
-            ->add( 'enregistrer',   SubmitType::Class )
+            ->add('enregistrer', SubmitType::class)
             ->add('annuler', SubmitType::class);
 
         $form = $form_builder->getForm();
@@ -1240,14 +1175,15 @@ class VersionController extends AbstractController
 
             // Si Enregistrer
             if ($request->isXmlHttpRequest()) {
-                $sj->debugMessage(__METHOD__ . ' isXmlHttpRequest clicked');
-                if ($return === true) {
+                $sj->debugMessage(__METHOD__.' isXmlHttpRequest clicked');
+                if (true === $return) {
                     return new Response(json_encode('OK - Votre projet est correctement enregistré'));
                 } else {
                     return new Response(json_encode("ERREUR - Votre projet n'a PAS été enregistré !"));
                 }
             }
-            return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet() ]);
+
+            return $this->redirectToRoute('consulter_projet', ['id' => $version->getProjet()->getIdProjet()]);
         }
 
         $img_expose = [$sv->imageProperties('img_expose_1', 'Figure 1', $version),
@@ -1269,7 +1205,7 @@ class VersionController extends AbstractController
                 'formation_form' => $formation_form->createView(),
                 'ressource_form' => $ressource_form->createView(),
                 'todo' => $sv->validateVersion($version),
-                'nb_form' => $nb_form
+                'nb_form' => $nb_form,
             ]
         );
     }
@@ -1279,29 +1215,29 @@ class VersionController extends AbstractController
     {
         $em = $this->em;
         $form
-        ->add('prjTitre', TextType::class, [ 'required'       =>  false ])
+        ->add('prjTitre', TextType::class, ['required' => false])
         ->add(
             'prjThematique',
             EntityType::class,
             [
-            'required'    => false,
-            'multiple'    => false,
-            'class'       => Thematique::class,
-            'label'       => '',
+            'required' => false,
+            'multiple' => false,
+            'class' => Thematique::class,
+            'label' => '',
             'placeholder' => '-- Indiquez la thématique',
             ]
         );
 
         $form
-            ->add('prjFinancement', TextType::class, [ 'required'     => false ])
-            ->add('prjGenciCentre', TextType::class, [ 'required' => false ])
-            ->add('prjGenciMachines', TextType::class, [ 'required' => false ])
-            ->add('prjGenciHeures', TextType::class, [ 'required' => false ])
-            ->add('prjGenciDari', TextType::class, [ 'required'   => false ]);
+            ->add('prjFinancement', TextType::class, ['required' => false])
+            ->add('prjGenciCentre', TextType::class, ['required' => false])
+            ->add('prjGenciMachines', TextType::class, ['required' => false])
+            ->add('prjGenciHeures', TextType::class, ['required' => false])
+            ->add('prjGenciDari', TextType::class, ['required' => false]);
 
         /* Pour un renouvellement, ajouter la justification du renouvellement */
         if (count($version->getProjet()->getVersion()) > 1) {
-            $form = $form->add('prjJustifRenouv', TextAreaType::class, [ 'required' => false ]);
+            $form = $form->add('prjJustifRenouv', TextAreaType::class, ['required' => false]);
         }
     }
 
@@ -1309,19 +1245,19 @@ class VersionController extends AbstractController
     private function __modifier4PartieII($version, &$form): void
     {
         $form
-        ->add('prjExpose', TextAreaType::class, [ 'required'       =>  false ]);
+        ->add('prjExpose', TextAreaType::class, ['required' => false]);
     }
 
     /* Les champs de la partie III */
     private function __modifier4PartieIII($version, &$form): void
     {
         $form
-        ->add('codeNom', TextType::class, [ 'required'       =>  false ])
-        ->add('codeLicence', TextAreaType::class, [ 'required'       =>  false ]);
+        ->add('codeNom', TextType::class, ['required' => false])
+        ->add('codeLicence', TextAreaType::class, ['required' => false]);
     }
 
     /**
-     * Renouvellement d'une version
+     * Renouvellement d'une version.
      *
      * @Security("is_granted('ROLE_DEMANDEUR')")
      * Method({"GET", "POST"})
@@ -1335,7 +1271,7 @@ class VersionController extends AbstractController
                 return $this->__renouveler4($request, $version);
 
             default:
-               $sj->throwException(__METHOD__ . ":" . __LINE__ . " mauvais type de projet " . Functions::show($type));
+                $sj->throwException(__METHOD__.':'.__LINE__.' mauvais type de projet '.Functions::show($type));
         }
     }
 
@@ -1358,17 +1294,15 @@ class VersionController extends AbstractController
         $sd = $this->sd;
         $em = $this->em;
 
-
         // ACL
-        if ($sm->renouvelerVersion($version)['ok'] === false)
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " Impossible de renouveler la version " . $version->getIdVersion());
+        if (false === $sm->renouvelerVersion($version)['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' Impossible de renouveler la version '.$version->getIdVersion());
         }
 
         // Création de la nouvelle version
         $projet = $version->getProjet();
         $version = $sv->creerVersion($projet);
-        
+
         $version->setPrjGenciCentre('');
         $version->setPrjGenciDari('');
         $version->setPrjGenciHeures(0);
@@ -1386,7 +1320,7 @@ class VersionController extends AbstractController
 
         Functions::sauvegarder($version, $em, $this->lg);
 
-        return $this->redirect($this->generateUrl('modifier_version', [ 'id' => $version->getIdVersion() ]));
+        return $this->redirect($this->generateUrl('modifier_version', ['id' => $version->getIdVersion()]));
     }
 
     /******
@@ -1395,7 +1329,8 @@ class VersionController extends AbstractController
     private function __incrNbVersion(string $nbVersion): string
     {
         $n = intval($nbVersion);
-        $n += 1;
+        ++$n;
+
         return sprintf('%02d', $n);
     }
 }

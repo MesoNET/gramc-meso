@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,23 +24,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Ressource;
 use App\Entity\Projet;
-use App\Entity\Dac;
-
-use App\GramcServices\ServiceJournal;
+use App\Entity\Ressource;
 use App\GramcServices\ServiceDacs;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\GramcServices\ServiceJournal;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormInterface;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Serveur controller.
@@ -48,7 +42,9 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: '/ressource')]
 class RessourceController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private ServiceDacs $sd, private ServiceJournal $sj, private EntityManagerInterface $em) {}
+    public function __construct(private AuthorizationCheckerInterface $ac, private ServiceDacs $sd, private ServiceJournal $sj, private EntityManagerInterface $em)
+    {
+    }
 
     /**
      * @Security("is_granted('ROLE_OBS')")
@@ -60,19 +56,19 @@ class RessourceController extends AbstractController
         $em = $this->em;
 
         // Si on n'est pas admin on n'a pas accès au menu
-        $menu = $ac->isGranted('ROLE_ADMIN') ? [ ['ok' => true,'name' => 'ajouter_ressource' ,'lien' => 'Ajouter une ressource','commentaire'=> 'Ajouter une ressource'] ] : [];
+        $menu = $ac->isGranted('ROLE_ADMIN') ? [['ok' => true, 'name' => 'ajouter_ressource', 'lien' => 'Ajouter une ressource', 'commentaire' => 'Ajouter une ressource']] : [];
 
         return $this->render(
             'ressource/liste.html.twig',
             [
             'menu' => $menu,
-            'ressources' => $em->getRepository(ressource::class)->findBy([], ['nom' => 'ASC'])
+            'ressources' => $em->getRepository(ressource::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
 
     /**
-     * Nouvelle ressource
+     * Nouvelle ressource.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      * Method({"GET", "POST"})
@@ -84,7 +80,7 @@ class RessourceController extends AbstractController
         $em = $this->em;
 
         $ressource = new ressource();
-        $form = $this->createForm('App\Form\RessourceType', $ressource, ['ajouter' => true ]);
+        $form = $this->createForm('App\Form\RessourceType', $ressource, ['ajouter' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -94,14 +90,16 @@ class RessourceController extends AbstractController
 
             // Créer les User pour les versions active ou dernière des projets en état RENOUVELABLE
             $projets = $em->getRepository(Projet::class)->findNonTermines();
-            foreach ($projets as $p)
-            {
+            foreach ($projets as $p) {
                 $versions = [];
-                if ($p->getVersionDerniere() != null) $versions[] = $p->getVersionDerniere();
-                if ($p->getVersionActive() != null) $versions[] = $p->getVersionActive();
-                foreach ($versions as $v)
-                {
-                    $sd->getDac($v,$ressource);
+                if (null != $p->getVersionDerniere()) {
+                    $versions[] = $p->getVersionDerniere();
+                }
+                if (null != $p->getVersionActive()) {
+                    $versions[] = $p->getVersionActive();
+                }
+                foreach ($versions as $v) {
+                    $sd->getDac($v, $ressource);
                 }
             }
 
@@ -111,12 +109,12 @@ class RessourceController extends AbstractController
         return $this->render(
             'ressource/ajouter.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_ressources',
                         'lien' => 'Retour vers la liste des ressources',
-                        'commentaire'=> 'Retour vers la liste des ressources'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des ressources',
+                        ]],
             'ressource' => $ressource,
             'form' => $form->createView(),
             ]
@@ -124,15 +122,14 @@ class RessourceController extends AbstractController
     }
 
     /**
-     * Modifier une ressource
+     * Modifier une ressource.
      *
      * @Security("is_granted('ROLE_ADMIN')")
-     *
      */
     #[Route(path: '/{id}/modifier_ressource', name: 'modifier_ressource', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Ressource $ressource): Response
     {
-        $editForm = $this->createForm('App\Form\RessourceType', $ressource, ['modifier' => true ]);
+        $editForm = $this->createForm('App\Form\RessourceType', $ressource, ['modifier' => true]);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
@@ -144,12 +141,12 @@ class RessourceController extends AbstractController
         return $this->render(
             'ressource/modif.html.twig',
             [
-            'menu' => [ [
+            'menu' => [[
                         'ok' => true,
                         'name' => 'gerer_ressources',
                         'lien' => 'Retour vers la liste des ressources',
-                        'commentaire'=> 'Retour vers la liste des ressources'
-                        ] ],
+                        'commentaire' => 'Retour vers la liste des ressources',
+                        ]],
             'ressource' => $ressource,
             'edit_form' => $editForm->createView(),
             ]
@@ -157,7 +154,7 @@ class RessourceController extends AbstractController
     }
 
     /**
-     * Supprimer une ressource
+     * Supprimer une ressource.
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -167,16 +164,14 @@ class RessourceController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
 
-        try
-        {
+        try {
             $em->remove($ressource);
             $em->flush($ressource);
+        } catch (\Exception $e) {
+            $request->getSession()->getFlashbag()->add('flash erreur', 'Pas possible de supprimer cette ressource actuellement');
+            $sj->errorMessage(__METHOD__.':'.__LINE__.' : '.$e->getMessage());
         }
-        catch ( \Exception $e)
-        {
-            $request->getSession()->getFlashbag()->add("flash erreur", "Pas possible de supprimer cette ressource actuellement");
-            $sj->errorMessage(__METHOD__ .':' . __LINE__ . " : " . $e->getMessage());
-        }
+
         return $this->redirectToRoute('gerer_ressources');
     }
 }

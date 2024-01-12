@@ -2,15 +2,13 @@
 
 namespace App\Entity;
 
-use App\GramcServices\GramcDate;
 use App\Repository\FormationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Formation
+ * Formation.
  *
  * Ecrans Formation, permet de déclarer le nombre de personnes intéressées par les formations à venir
  */
@@ -21,7 +19,7 @@ class Formation
     {
         $this->startDate = new \DateTime();
         $this->endDate = new \DateTime();
-        $this->formationVersion = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->formationVersion = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -30,7 +28,7 @@ class Formation
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\FormationVersion', mappedBy: 'formation', cascade: ['persist'])]
     private $formationVersion;
@@ -46,14 +44,14 @@ class Formation
 
     /**
      * @var \DateTime
-     * Date à partir de laquelle on propose la formation
+     *                Date à partir de laquelle on propose la formation
      */
     #[ORM\Column(name: 'start_date', type: 'datetime', nullable: false)]
     private $startDate;
 
     /**
      * @var \DateTime
-     * Date à partir de laquelle on ne propose PLUS la formation
+     *                Date à partir de laquelle on ne propose PLUS la formation
      */
     #[ORM\Column(name: 'end_date', type: 'datetime', nullable: false)]
     private $endDate;
@@ -64,16 +62,11 @@ class Formation
     }
 
     /**
-     * Add formationVersion
-     *
-     * @param \App\Entity\FormationVersion $formationVersion
-     *
-     * @return Formation
+     * Add formationVersion.
      */
-    public function addFormationVersion(\App\Entity\FormationVersion $formationVersion): self
+    public function addFormationVersion(FormationVersion $formationVersion): self
     {
-        if (! $this->formationVersion->contains($formationVersion))
-        {
+        if (!$this->formationVersion->contains($formationVersion)) {
             $this->formationVersion[] = $formationVersion;
         }
 
@@ -81,20 +74,21 @@ class Formation
     }
 
     /**
-     * Remove formationVersion
+     * Remove formationVersion.
      *
-     * @param \App\Entity\FormationVersion $formationVersion
+     * @param FormationVersion $formationVersion
      */
-    public function removeFormationVersion(\App\Entity\Rallonge $formationVersion): self
+    public function removeFormationVersion(Rallonge $formationVersion): self
     {
         $this->rallonge->removeElement($formationVersion);
+
         return $this;
     }
 
     /**
-     * Get formationVersion
+     * Get formationVersion.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getFormationVersion()
     {
@@ -142,7 +136,7 @@ class Formation
         return $this->startDate;
     }
 
-    public function setStartDate(\Datetime $startDate): self
+    public function setStartDate(\DateTime $startDate): self
     {
         $this->startDate = $startDate;
 
@@ -154,7 +148,7 @@ class Formation
         return $this->endDate;
     }
 
-    public function setEndDate(\Datetime $endDate): self
+    public function setEndDate(\DateTime $endDate): self
     {
         $this->endDate = $endDate;
 

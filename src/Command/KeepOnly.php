@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,26 +40,23 @@
 
 namespace App\Command;
 
+use App\Entity\Compta;
+use App\Entity\Projet;
 use App\GramcServices\GramcDate;
+use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceVersions;
-use App\GramcServices\ServiceJournal;
-
-use App\Entity\Projet;
-use App\Entity\Version;
-use App\Entity\Compta;
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-//use App\GramcServices\ServiceNotifications;
+// use App\GramcServices\ServiceNotifications;
 
 // the name of the command (the part after "bin/console")
-#[AsCommand( name: 'app:keeponly', )]
+#[AsCommand(name: 'app:keeponly', )]
 class KeepOnly extends Rgpd
 {
     public function __construct(protected $debug, protected GramcDate $sd, protected ServiceProjets $sp, protected ServiceVersions $sv, protected ServiceJournal $sj, protected EntityManagerInterface $em)
@@ -68,14 +65,14 @@ class KeepOnly extends Rgpd
         // then set your own properties. That wouldn't work in this case
         // because configure() needs the properties set in this constructor
 
-        parent::__construct($sd,$sp,$sv,$sj,$em);
+        parent::__construct($sd, $sp, $sv, $sj, $em);
     }
 
     protected function configure()
     {
         $this->setDescription('KeepOnly: Vide presque complètement la base de données: ne garde que quelques projets, et les utilisateurs associés');
         $this->setHelp('Vidage massif de la base de données');
-        $this->addArgument('keeponly', InputArgument::REQUIRED, "Projets à conserver: P123456,P234567");
+        $this->addArgument('keeponly', InputArgument::REQUIRED, 'Projets à conserver: P123456,P234567');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -85,15 +82,13 @@ class KeepOnly extends Rgpd
 
         // return this if there was no problem running the command
 
-        if ($this->debug == false)
-        {
+        if (false == $this->debug) {
             $output->writeln("OUPS - VOUS N'ETES PAS EN MODE DEBUG !");
+
             return 1;
-        }
-        else
-        {
-            $output->writeln("EXECUTION DE LA COMMANDE: keeponly");
-            $this->sj->infoMessage("EXECUTION DE LA COMMANDE: keeponly");
+        } else {
+            $output->writeln('EXECUTION DE LA COMMANDE: keeponly');
+            $this->sj->infoMessage('EXECUTION DE LA COMMANDE: keeponly');
         }
 
         $sd = $this->sd;
@@ -101,15 +96,15 @@ class KeepOnly extends Rgpd
         $sj = $this->sj;
         $em = $this->em;
         $kept = $input->getArgument('keeponly');
-        $a_kept = explode(',',$kept);
-        
-        $anneeCourante = $sd->showYear();
-        $anneeLimite   = $anneeCourante;    // On supprime même les projets de cette année !
+        $a_kept = explode(',', $kept);
 
-        $output->writeln("");
-        $output->writeln("======================================================");
+        $anneeCourante = $sd->showYear();
+        $anneeLimite = $anneeCourante;    // On supprime même les projets de cette année !
+
+        $output->writeln('');
+        $output->writeln('======================================================');
         $output->writeln("Tous les projets seront supprimés... sauf $kept");
-        $output->writeln("======================================================");
+        $output->writeln('======================================================');
 
         $allProjets = $em->getRepository(Projet::class)->findAll();
         $mauvais_projets = [];
@@ -117,7 +112,7 @@ class KeepOnly extends Rgpd
 
         // On affiche le tableau $projets_annee
         foreach ($projets_annee as $a => $pAnnee) {
-            $output->writeln("");
+            $output->writeln('');
             $output->writeln("PROJETS TERMINES EN $a");
 
             foreach ($pAnnee as $p) {
@@ -128,19 +123,19 @@ class KeepOnly extends Rgpd
         $loginnames = $this->buildUsersList($projets_annee);
 
         // On les affiche
-        $output->writeln("");
-        $output->writeln("=============================================================================================================");
-        $output->writeln("Les enregistrements de compta des groupes ou utilisateurs suivants seront supprimés (loginname - date limite)");
-        $output->writeln("=============================================================================================================");
-        foreach (array_keys($loginnames) as $l)
-        {
+        $output->writeln('');
+        $output->writeln('=============================================================================================================');
+        $output->writeln('Les enregistrements de compta des groupes ou utilisateurs suivants seront supprimés (loginname - date limite)');
+        $output->writeln('=============================================================================================================');
+        foreach (array_keys($loginnames) as $l) {
             $output->writeln($l);
         }
 
-        $output->writeln("==========");
-        $ans = readline(" On y va ? (o/N) ");
-        if (strtolower($ans) != "o") {
-            $output->writeln("ANNULATION");
+        $output->writeln('==========');
+        $ans = readline(' On y va ? (o/N) ');
+        if ('o' != strtolower($ans)) {
+            $output->writeln('ANNULATION');
+
             return 0;
         }
 
@@ -152,15 +147,16 @@ class KeepOnly extends Rgpd
         $this->effacerProjets($output, $projets_annee);
         $individus_effaces = $sp->effacer_utilisateurs();
 
-        $output->writeln("");
-        $output->writeln("=================");
-        $output->writeln("INDIVIDUS EFFACES");
-        $output->writeln("=================");            
+        $output->writeln('');
+        $output->writeln('=================');
+        $output->writeln('INDIVIDUS EFFACES');
+        $output->writeln('=================');
         foreach ($individus_effaces as $i) {
-            $output->writeln("$i ".$i->getIdIndividu()." ".$i->getMail());
+            $output->writeln("$i ".$i->getIdIndividu().' '.$i->getMail());
         }
 
-        $output->writeln("bye");
+        $output->writeln('bye');
+
         return 0;
 
         // or return this if some error happened during the execution

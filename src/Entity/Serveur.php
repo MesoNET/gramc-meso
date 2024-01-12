@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Serveur
- *
+ * Serveur.
  */
 #[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
@@ -38,12 +37,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Serveur
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->ressource = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->user = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->ressource = new ArrayCollection();
+        $this->user = new ArrayCollection();
     }
 
     /**
@@ -55,13 +54,13 @@ class Serveur
     private $nom;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Ressource', mappedBy: 'serveur', cascade: ['persist'])]
     private $ressource;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'serveur', cascade: ['persist'])]
     private $user;
@@ -70,31 +69,24 @@ class Serveur
      * @var desc
      *
      * Attention desc est un nom réservé !
-     *
      */
     #[ORM\Column(name: 'descr', type: 'string', length: 200, nullable: true, options: ['default' => ''])]
     private $desc;
 
     /**
      * @var cguUrl
-     *
-     *
      */
     #[ORM\Column(name: 'cgu_url', type: 'string', nullable: true, length: 200)]
     private $cguUrl;
 
     /**
      * @var admname
-     *
-     *
      */
     #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
     private $admname;
 
     /**
-     * Get nom
-     *
-     * @return string
+     * Get nom.
      */
     public function getNom(): ?string
     {
@@ -102,48 +94,45 @@ class Serveur
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string
+     *
      * @return Sso
      */
     public function setNom(string $nom): Serveur
     {
         $this->nom = $nom;
+
         return $this;
     }
 
     /**
-     * Add ressource
-     *
-     * @param \App\Entity\Ressource $ressource
-     *
-     * @return Serveur
+     * Add ressource.
      */
-    public function addRessource(\App\Entity\Ressource $ressource): self
+    public function addRessource(Ressource $ressource): self
     {
-        if (! $this->ressource->contains($ressource))
-        {
+        if (!$this->ressource->contains($ressource)) {
             $this->ressource[] = $ressource;
         }
+
         return $this;
     }
 
     /**
-     * Remove resource
-     *
-     * @param \App\Entity\Ressource $ressource
+     * Remove resource.
      */
-    public function removeRessource(\App\Entity\Ressource $ressource): self
+    public function removeRessource(Ressource $ressource): self
     {
         $this->ressource->removeElement($ressource);
+
         return $this;
     }
 
     /**
-     * Get ressource
+     * Get ressource.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getRessource()
     {
@@ -151,36 +140,31 @@ class Serveur
     }
 
     /**
-     * Add user
-     *
-     * @param \App\Entity\User $user
-     *
-     * @return Serveur
+     * Add user.
      */
-    public function addUser(\App\Entity\User $user): self
+    public function addUser(User $user): self
     {
-        if (! $this->user->contains($user))
-        {
+        if (!$this->user->contains($user)) {
             $this->user[] = $user;
         }
+
         return $this;
     }
 
     /**
-     * Remove user
-     *
-     * @param \App\Entity\User $user
+     * Remove user.
      */
-    public function removeUser(\App\Entity\User $user): self
+    public function removeUser(User $user): self
     {
         $this->user->removeElement($user);
+
         return $this;
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getUser()
     {
@@ -188,9 +172,7 @@ class Serveur
     }
 
     /**
-     * Get desc
-     *
-     * @return string
+     * Get desc.
      */
     public function getDesc(): ?string
     {
@@ -198,21 +180,21 @@ class Serveur
     }
 
     /**
-     * Set desc
+     * Set desc.
      *
      * @param string
+     *
      * @return Sso
      */
     public function setDesc(?string $desc): Serveur
     {
         $this->desc = $desc;
+
         return $this;
     }
 
     /**
-     * Get cguUrl
-     *
-     * @return string
+     * Get cguUrl.
      */
     public function getCguUrl(): ?string
     {
@@ -220,21 +202,21 @@ class Serveur
     }
 
     /**
-     * Set cguUrl
+     * Set cguUrl.
      *
      * @param string
+     *
      * @return Ressource
      */
     public function setCguUrl(?string $cguUrl): self
     {
         $this->cguUrl = $cguUrl;
+
         return $this;
     }
 
     /**
-     * Get Admname
-     *
-     * @return string
+     * Get Admname.
      */
     public function getAdmname(): ?string
     {
@@ -242,14 +224,14 @@ class Serveur
     }
 
     /**
-     * Set Admname
+     * Set Admname.
      *
      * @param string
-     * @return Serveur
      */
     public function setAdmname(?string $admname): Serveur
     {
         $this->admname = $admname;
+
         return $this;
     }
 

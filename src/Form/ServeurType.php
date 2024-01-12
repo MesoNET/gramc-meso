@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,53 +25,41 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-
-
 class ServeurType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:', 'disabled' => $options['modifier']])
-            ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :' ])
-            ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :' ])
+            ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :'])
+            ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :'])
             ->add('admname', TextType::class,
-                  ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :']);
+                ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :']);
 
-        if ($options['modifier'] == true) {
+        if (true == $options['modifier']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'modifier' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
-        }
-        elseif ($options['ajouter'] == true)
-        {
+                ->add('submit', SubmitType::class, ['label' => 'modifier'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
+        } elseif (true == $options['ajouter']) {
             $builder
-                ->add('submit', SubmitType::class, ['label' => 'ajouter' ])
-                ->add('reset', ResetType::class, ['label' => 'reset' ]);
+                ->add('submit', SubmitType::class, ['label' => 'ajouter'])
+                ->add('reset', ResetType::class, ['label' => 'reset']);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
             'data_class' => 'App\Entity\Serveur',
             'modifier' => false,
-            'ajouter'  => false,
+            'ajouter' => false,
             ]
         );
     }

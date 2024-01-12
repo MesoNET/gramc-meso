@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Publication
+ * Publication.
  */
 #[ORM\Table(name: 'adresseip')]
 #[ORM\UniqueConstraint(name: 'adresseip', columns: ['adresse', 'id_labo'])]
@@ -37,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Adresseip
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -51,27 +50,20 @@ class Adresseip
     private $adresse;
 
     /**
-     * @var \App\Entity\Laboratoire
-     * ORM\Column(name="id_labo", type="integer", length=11, nullable=false)
+     * @var Laboratoire
+     *                  ORM\Column(name="id_labo", type="integer", length=11, nullable=false)
      */
     #[ORM\JoinColumn(name: 'id_labo', referencedColumnName: 'id_labo')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Laboratoire', inversedBy: 'adresseip')]
     private $labo;
-
-
 
     public function __toString(): string
     {
         return $this->getAdresse();
     }
 
-
-
-
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -79,10 +71,8 @@ class Adresseip
     }
 
     /**
-     * Set adresse
+     * Set adresse.
      *
-     * @param string $adresse
-     * 
      * @return string
      */
     public function setAdresse(string $adresse): self
@@ -93,11 +83,9 @@ class Adresseip
     }
 
     /**
-     * Get adresse
+     * Get adresse.
      *
      * @Assert\Cidr(message="Valeur non conforme - Essayer 1.2.3.4/32", version="4", netmaskMin=16, netmaskMax=32,netmaskRangeViolationMessage="Le masque doit être un entier compris entre {{ min }} et {{ max }}")
-     *
-     * @return string
      */
     #[Assert\NotBlank(message: 'remerde')]
     public function getAdresse(): ?string
@@ -106,13 +94,9 @@ class Adresseip
     }
 
     /**
-     * Set labo
-     *
-     * @param \App\Entity\Laboratoire $labo
-     *
-     * @return adresseip
+     * Set labo.
      */
-    public function setLabo(?\App\Entity\Laboratoire $labo): self
+    public function setLabo(?Laboratoire $labo): self
     {
         $this->labo = $labo;
 
@@ -120,11 +104,9 @@ class Adresseip
     }
 
     /**
-     * Get labo
-     *
-     * @return \App\Entity\Laboratoire
+     * Get labo.
      */
-    public function getLabo(): \App\Entity\Laboratoire
+    public function getLabo(): Laboratoire
     {
         return $this->labo;
     }

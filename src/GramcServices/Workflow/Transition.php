@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,12 @@
 
 namespace App\GramcServices\Workflow;
 
-use App\Utils\Functions;
 use App\GramcServices\Etat;
-use App\GramcServices\Signal;
-
-use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceSessions;
+use App\GramcServices\Signal;
+use App\Utils\Functions;
 use Doctrine\ORM\EntityManager;
 
 /************************
@@ -45,30 +44,33 @@ use Doctrine\ORM\EntityManager;
 abstract class Transition
 {
     public const DEBUG = false;   // Activer - ou pas - le debug dans les transitions
-                                  // ATTENTION ! Mettre à false pour la prod, sinon perte de perfs !
-    public const FAST  = false;   // TODO - VIRER TOUTE PROPAGATION DANS canExecute !!!
-                                  // Si FAST est à false, on appelle canExecute pour TOUS les objets
-                                  // Si canExecute sur Session on appelle canExecute pour tous les versions,
-                                  // Les versions appellent canExecute pour tous les projets etc.
-                                  // Cela est lent et pas très utile et pratique
+    // ATTENTION ! Mettre à false pour la prod, sinon perte de perfs !
+    public const FAST = false;   // TODO - VIRER TOUTE PROPAGATION DANS canExecute !!!
+    // Si FAST est à false, on appelle canExecute pour TOUS les objets
+    // Si canExecute sur Session on appelle canExecute pour tous les versions,
+    // Les versions appellent canExecute pour tous les projets etc.
+    // Cela est lent et pas très utile et pratique
 
     abstract public function canExecute(object $object): bool;
+
     abstract public function execute(object $object): bool;
 
     // TODO - Les services devraient être des variables de classe !
-    protected $sn = null;
-    protected $sj = null;
-    protected $ss = null;
-    protected $em = null;
+    protected $sn;
+    protected $sj;
+    protected $ss;
+    protected $em;
 
     /*********************************************
      * Le constructeur commun à toutes les classes dérivées
      * Les classes filles peuvent ajouter des paramètres après les 4 paramètres prédéfinis
      *****************************************************************************/
     public function __construct(private int $etat,
-                                private int $signal,
-                                private array $mail=[],
-                                private bool $propage_signal = false) {}
+        private int $signal,
+        private array $mail = [],
+        private bool $propage_signal = false)
+    {
+    }
 
     /******************************
      * Il est préférable de passer ces services après construction !
@@ -91,14 +93,17 @@ abstract class Transition
     {
         return $this->etat;
     }
+
     protected function getSignal(): int
     {
         return $this->signal;
     }
+
     protected function getMail(): array
     {
         return $this->mail;
     }
+
     protected function getPropageSignal(): bool
     {
         return $this->propage_signal;
@@ -109,17 +114,18 @@ abstract class Transition
      *******************************************************************/
     public function __toString(): string
     {
-        $reflect    = new \ReflectionClass($this);
-        $output  = $reflect->getShortName().':etat='. Etat::getLibelle($this->etat);
-        $output .= ', signal=' . Signal::getLibelle($this->signal);
-        if ($this->mail != []) {
-            $output .= ', mail=' .Functions::show($this->mail);
+        $reflect = new \ReflectionClass($this);
+        $output = $reflect->getShortName().':etat='.Etat::getLibelle($this->etat);
+        $output .= ', signal='.Signal::getLibelle($this->signal);
+        if ([] != $this->mail) {
+            $output .= ', mail='.Functions::show($this->mail);
         }
         if ($this->propage_signal) {
             $output .= ', propagation ON';
         } else {
             $output .= ', propagation OFF';
         }
+
         return $output;
     }
 
@@ -137,9 +143,8 @@ abstract class Transition
             $object->setObjectState($this->getEtat());
             Functions::sauvegarder($object, $this->em);
             $reflect = new \ReflectionClass($object);
-            $classe  = $reflect->getShortName();
-            $this->sj->debugMessage('>>> ' . __FILE__ . ":" . __LINE__ . " $classe " . $object . " est passé de l'état " . $old_etat . " à " . $object->getObjectState() . " suite au signal " . $this->getSignal());
-
+            $classe = $reflect->getShortName();
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__." $classe ".$object." est passé de l'état ".$old_etat.' à '.$object->getObjectState().' suite au signal '.$this->getSignal());
         } else {
             $object->setObjectState($this->getEtat());
             Functions::sauvegarder($object, $this->em);
@@ -155,7 +160,7 @@ abstract class Transition
         foreach ($this->getMail() as $mail_role => $template) {
             $users = $this->sn->mailUsers([$mail_role], $object);
             $params['object'] = $object;
-            $params['liste_mail_destinataires'] =   implode(',', $this->sn->usersToMail($users));
+            $params['liste_mail_destinataires'] = implode(',', $this->sn->usersToMail($users));
             $this->sn->sendMessage(
                 'notification/'.$template.'-sujet.html.twig',
                 'notification/'.$template.'-contenu.html.twig',

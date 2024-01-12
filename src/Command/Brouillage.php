@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,33 +68,28 @@
 
 namespace App\Command;
 
-use App\GramcServices\GramcDate;
-use App\GramcServices\ServiceProjets;
-use App\GramcServices\ServiceVersions;
-
-use App\GramcServices\ServiceJournal;
-
-use App\Entity\Projet;
 use App\Entity\Compta;
 use App\Entity\Individu;
-
+use App\Entity\Projet;
+use App\GramcServices\GramcDate;
+use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceProjets;
+use App\GramcServices\ServiceVersions;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
 
 // the name of the command (the part after "bin/console")
-#[AsCommand(name: 'app:brouillage',)]
+#[AsCommand(name: 'app:brouillage', )]
 class Brouillage extends Command
 {
-
-    private $sd = null;
-    private $sp = null;
-    private $sv = null;
-    private $sj = null;
-    private $em = null;
+    private $sd;
+    private $sp;
+    private $sv;
+    private $sj;
+    private $em;
 
     public function __construct(private $debug, GramcDate $sd, ServiceProjets $sp, ServiceVersions $sv, ServiceJournal $sj, EntityManagerInterface $em)
     {
@@ -108,9 +103,9 @@ class Brouillage extends Command
         $this->sj = $sj;
         $this->em = $em;
 
-        $this->minuscules = [ 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-        $this->majuscules = [ 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','x','Y','Z'];
-        $this->chiffres = [ '0','1','2','3','4','5','6','7','8','9'];
+        $this->minuscules = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+        $this->majuscules = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'x', 'Y', 'Z'];
+        $this->chiffres = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
         parent::__construct();
     }
@@ -124,27 +119,22 @@ class Brouillage extends Command
     private function brouilleString($string)
     {
         $a_string = mb_str_split($string);
-        foreach ($a_string as &$c)
-        {
-            if ($c >='a' && $c <= 'z')
-            {
+        foreach ($a_string as &$c) {
+            if ($c >= 'a' && $c <= 'z') {
                 shuffle($this->minuscules);
                 $c = $this->minuscules[0];
-            }
-            else if ($c >= 'A' && $c <= 'Z')
-            {
+            } elseif ($c >= 'A' && $c <= 'Z') {
                 shuffle($this->majuscules);
                 $c = $this->majuscules[0];
-            }
-            else if ($c >= '0' && $c <= '9')
-            {
+            } elseif ($c >= '0' && $c <= '9') {
                 shuffle($this->chiffres);
                 $c = $this->chiffres[0];
             }
         }
-        return implode($a_string);        
+
+        return implode($a_string);
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // this method must return an integer number with the "exit status code"
@@ -152,15 +142,13 @@ class Brouillage extends Command
 
         // return this if there was no problem running the command
 
-        if ($this->debug == false)
-        {
+        if (false == $this->debug) {
             $output->writeln("OUPS - VOUS N'ETES PAS EN MODE DEBUG !");
+
             return 1;
-        }
-        else
-        {
-            $output->writeln("EXECUTION DE LA COMMANDE: brouillage");
-            $this->sj->infoMessage("EXECUTION DE LA COMMANDE: brouillage");
+        } else {
+            $output->writeln('EXECUTION DE LA COMMANDE: brouillage');
+            $this->sj->infoMessage('EXECUTION DE LA COMMANDE: brouillage');
         }
 
         $sd = $this->sd;
@@ -168,19 +156,16 @@ class Brouillage extends Command
         $sj = $this->sj;
         $em = $this->em;
 
-
-        //dd($this->brouilleString("é~#è£\$azerty toto"));
+        // dd($this->brouilleString("é~#è£\$azerty toto"));
         $projets = $em->getRepository(Projet::class)->findAll();
-        foreach ($projets as $p)
-        {
+        foreach ($projets as $p) {
             $output->writeln("Projet: $p");
-            $output->writeln("=========");
+            $output->writeln('=========');
 
-            foreach ( $p->getVersion() as $v)
-            {
+            foreach ($p->getVersion() as $v) {
                 $output->writeln("Version: $v");
-                $output->writeln("=========");
-                
+                $output->writeln('=========');
+
                 $v->setPrjTitre($this->brouilleString($v->getPrjTitre()));
                 $v->setPrjSousThematique($this->brouilleString($v->getPrjSousThematique()));
                 $v->setPrjFinancement($this->brouilleString($v->getPrjFinancement()));
@@ -199,25 +184,31 @@ class Brouillage extends Command
         }
 
         $individus = $em->getRepository(Individu::class)->findAll();
-        foreach ( $individus as $i)
-        {
-            if ($i->getAdmin()) continue;
-            if ($i->getObs()) continue;
-            if ($i->getPresident()) continue;
+        foreach ($individus as $i) {
+            if ($i->getAdmin()) {
+                continue;
+            }
+            if ($i->getObs()) {
+                continue;
+            }
+            if ($i->getPresident()) {
+                continue;
+            }
             $i->setNom($this->brouilleString($i->getNom()));
             $i->setPrenom($this->brouilleString($i->getPrenom()));
             $i->setMail($this->brouilleString($i->getMail()));
             $em->persist($v);
             $em->flush();
         }
+
         return 0;
     }
 
-    
     private function supprimeDonnees($j)
     {
         $em = $this->em;
         $repo = $em->getRepository(Compta::class);
+
         return $repo->removeDate($j);
     }
 }

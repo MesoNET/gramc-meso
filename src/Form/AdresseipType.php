@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,42 +25,35 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AdresseipType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('adresse', TextType::class,
-                        ['required' => true,
-                         'label' => "Plage d'adresses IP (CIDR):", 'attr' => [ "placeholder" => "1.2.3.4/32"] ])
+            ['required' => true,
+             'label' => "Plage d'adresses IP (CIDR):", 'attr' => ['placeholder' => '1.2.3.4/32']])
                 ->add('submit', SubmitType::class, ['label' => 'nouvelle IP (CIDR)'])
-                ->add('reset', ResetType::class, ['label' => 'Annuler' ]);
+                ->add('reset', ResetType::class, ['label' => 'Annuler']);
 
-        if ($options['widget_laboratoire']) $builder->add('laboratoire');
+        if ($options['widget_laboratoire']) {
+            $builder->add('laboratoire');
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'App\Entity\Adresseip',
-            'widget_laboratoire' => true
-        ));
+            'widget_laboratoire' => true,
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'adresseip';

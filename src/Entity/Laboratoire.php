@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Laboratoire
- *
- *
+ * Laboratoire.
  */
 #[ORM\Table(name: 'laboratoire')]
 #[ORM\UniqueConstraint(name: 'acro', columns: ['acro_labo'])]
@@ -40,17 +38,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Laboratoire
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->collaborateurVersion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->adresseip = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->collaborateurVersion = new ArrayCollection();
+        $this->individu = new ArrayCollection();
+        $this->adresseip = new ArrayCollection();
     }
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'numero_labo', type: 'integer', nullable: false)]
     #[Assert\NotBlank]
@@ -71,7 +69,7 @@ class Laboratoire
     private $nomLabo = '';
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_labo', type: 'integer')]
     #[ORM\Id]
@@ -79,32 +77,30 @@ class Laboratoire
     private $idLabo;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\CollaborateurVersion', mappedBy: 'labo')]
     private $collaborateurVersion;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'labo')]
     private $individu;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     *
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
     private $adresseip;
 
     public function __toString(): string
     {
-        if ($this->getAcroLabo() != null && $this->getNomLabo() != null) {
-            return $this->getAcroLabo() . ' - ' . $this->getNomLabo();
-        } elseif ($this->getAcroLabo() != null) {
+        if (null != $this->getAcroLabo() && null != $this->getNomLabo()) {
+            return $this->getAcroLabo().' - '.$this->getNomLabo();
+        } elseif (null != $this->getAcroLabo()) {
             return $this->getAcroLabo();
-        } elseif ($this->getNomLabo() != null) {
+        } elseif (null != $this->getNomLabo()) {
             return $this->getNomLabo();
         } else {
             return $this->getIdLabo();
@@ -117,11 +113,7 @@ class Laboratoire
     }
 
     /**
-     * Set numeroLabo
-     *
-     * @param integer $numeroLabo
-     *
-     * @return Laboratoire
+     * Set numeroLabo.
      */
     public function setNumeroLabo(int $numeroLabo): self
     {
@@ -131,9 +123,7 @@ class Laboratoire
     }
 
     /**
-     * Get numeroLabo
-     *
-     * @return integer
+     * Get numeroLabo.
      */
     public function getNumeroLabo(): ?int
     {
@@ -141,11 +131,7 @@ class Laboratoire
     }
 
     /**
-     * Set acroLabo
-     *
-     * @param string $acroLabo
-     *
-     * @return Laboratoire
+     * Set acroLabo.
      */
     public function setAcroLabo(string $acroLabo): self
     {
@@ -155,9 +141,7 @@ class Laboratoire
     }
 
     /**
-     * Get acroLabo
-     *
-     * @return string
+     * Get acroLabo.
      */
     public function getAcroLabo(): ?string
     {
@@ -165,11 +149,7 @@ class Laboratoire
     }
 
     /**
-     * Set nomLabo
-     *
-     * @param string $nomLabo
-     *
-     * @return Laboratoire
+     * Set nomLabo.
      */
     public function setNomLabo(string $nomLabo): self
     {
@@ -179,9 +159,7 @@ class Laboratoire
     }
 
     /**
-     * Get nomLabo
-     *
-     * @return string
+     * Get nomLabo.
      */
     public function getNomLabo(): ?string
     {
@@ -189,9 +167,9 @@ class Laboratoire
     }
 
     /**
-     * Get idLabo
+     * Get idLabo.
      *
-     * @return integer
+     * @return int
      */
     public function getIdLabo()
     {
@@ -199,16 +177,11 @@ class Laboratoire
     }
 
     /**
-     * Add collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
-     *
-     * @return Laboratoire
+     * Add collaborateurVersion.
      */
-    public function addCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function addCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
-        if ( ! $this->collaborateurVersion->contains($collaborateurVersion))
-        {
+        if (!$this->collaborateurVersion->contains($collaborateurVersion)) {
             $this->collaborateurVersion[] = $collaborateurVersion;
         }
 
@@ -216,20 +189,19 @@ class Laboratoire
     }
 
     /**
-     * Remove collaborateurVersion
-     *
-     * @param \App\Entity\CollaborateurVersion $collaborateurVersion
+     * Remove collaborateurVersion.
      */
-    public function removeCollaborateurVersion(\App\Entity\CollaborateurVersion $collaborateurVersion): self
+    public function removeCollaborateurVersion(CollaborateurVersion $collaborateurVersion): self
     {
         $this->collaborateurVersion->removeElement($collaborateurVersion);
+
         return $this;
     }
 
     /**
-     * Get collaborateurVersion
+     * Get collaborateurVersion.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCollaborateurVersion()
     {
@@ -237,15 +209,13 @@ class Laboratoire
     }
 
     /**
-     * Add adresseip
-     *
-     * @param \App\Entity\Adresseip $adresseip
+     * Add adresseip.
      *
      * @return Projet
      */
-    public function addAdresseip(\App\Entity\Adresseip $adresseip): self
+    public function addAdresseip(Adresseip $adresseip): self
     {
-        if (! $this->adresseip->contains($adresseip)) {
+        if (!$this->adresseip->contains($adresseip)) {
             $this->adresseip[] = $adresseip;
         }
 
@@ -253,20 +223,19 @@ class Laboratoire
     }
 
     /**
-     * Remove adresseip
-     *
-     * @param \App\Entity\Adresseip $adresseip
+     * Remove adresseip.
      */
-    public function removeAdresseip(\App\Entity\Adresseip $adresseip): self
+    public function removeAdresseip(Adresseip $adresseip): self
     {
         $this->adresseip->removeElement($adresseip);
+
         return $this;
     }
 
     /**
-     * Get adresseip
+     * Get adresseip.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getAdresseip()
     {
@@ -274,16 +243,11 @@ class Laboratoire
     }
 
     /**
-     * Add individu
-     *
-     * @param \App\Entity\Individu $individu
-     *
-     * @return Laboratoire
+     * Add individu.
      */
-    public function addIndividu(\App\Entity\Individu $individu): self
+    public function addIndividu(Individu $individu): self
     {
-        if (! $this->individu->contains($individu))
-        {
+        if (!$this->individu->contains($individu)) {
             $this->individu[] = $individu;
         }
 
@@ -291,29 +255,26 @@ class Laboratoire
     }
 
     /**
-     * Remove individu
-     *
-     * @param \App\Entity\Individu $individu
+     * Remove individu.
      */
-    public function removeIndividu(\App\Entity\Individu $individu): self
+    public function removeIndividu(Individu $individu): self
     {
         $this->individu->removeElement($individu);
+
         return $this;
     }
 
     /**
-     * Get individu
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * Get individu.
      */
-    public function getIndividu(): \Doctrine\Common\Collections\Collection
+    public function getIndividu(): Collection
     {
         return $this->individu;
     }
 
-    //////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////
 
-    public function isLaboRegional() : bool
+    public function isLaboRegional(): bool
     {
         return $this->idLabo > 1;
     }

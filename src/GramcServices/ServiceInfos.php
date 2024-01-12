@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,9 @@
 
 namespace App\GramcServices;
 
-use App\GramcServices\GramcDate;
-use App\GramcServices\Etat;
-use App\Entity\Session;
-
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-const VERSION = "0.6.8";
+const VERSION = '0.6.8';
 
 /*
  * Cette classe garde des informations pouvant être reprises par
@@ -41,7 +34,9 @@ const VERSION = "0.6.8";
  ******/
 class ServiceInfos
 {
-    public function __construct(private GramcDate $grdte, private EntityManagerInterface $em) {}
+    public function __construct(private GramcDate $grdte, private EntityManagerInterface $em)
+    {
+    }
 
     public function mail_replace($mail): string
     {
@@ -51,12 +46,9 @@ class ServiceInfos
     public function gramc_date($format): GramcDate|string
     {
         $d = $this->grdte;
-        if ($format === 'raw')
-        {
+        if ('raw' === $format) {
             return $d;
-        }
-        else
-        {
+        } else {
             return $d->format($format);
         }
     }
@@ -65,18 +57,15 @@ class ServiceInfos
     public function strftime_fr($format, $date): string
     {
         setlocale(LC_TIME, 'fr_FR.UTF-8');
+
         return strftime($format, $date->getTimestamp());
     } // function strftime_fr
 
-
     public function tronquer_chaine(?string $s, string|int $l): ?string
     {
-        if (grapheme_strlen($s)>=intval($l))
-        {
+        if (grapheme_strlen($s) >= intval($l)) {
             return grapheme_substr($s, 0, intval($l)).'...';
-        }
-        else
-        {
+        } else {
             return $s;
         }
     }

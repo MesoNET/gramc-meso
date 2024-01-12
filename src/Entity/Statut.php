@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,10 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Sso
+ * Sso.
  */
 #[ORM\Table(name: 'statut')]
 #[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
@@ -52,28 +51,26 @@ class Statut
     private $libelleStatut;
 
     /**
-     * @var boolean
+     * @var bool
      */
     #[ORM\Column(name: 'permanent', type: 'boolean', nullable: false)]
     private $permanent = false;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Individu', mappedBy: 'statut')]
     private $individu;
 
-    //////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////
 
     public function __toString(): string
     {
         return $this->getLibelleStatut();
     }
-    
+
     /**
-     * Get idStatut
-     *
-     * @return integer
+     * Get idStatut.
      */
     public function getIdStatut(): ?int
     {
@@ -86,11 +83,7 @@ class Statut
     }
 
     /**
-     * Set idStatut
-     *
-     * @param integer $idStatut
-     *
-     * @return Statut
+     * Set idStatut.
      */
     public function setIdStatut(int $idStatut): self
     {
@@ -99,22 +92,18 @@ class Statut
         return $this;
     }
 
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->individu = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->individu = new ArrayCollection();
     }
 
     /**
-     * Set libelleStatut
-     *
-     * @param string $libelleStatut
-     *
-     * @return Statut
+     * Set libelleStatut.
      */
     public function setLibelleStatut(string $libelleStatut): self
     {
@@ -124,9 +113,7 @@ class Statut
     }
 
     /**
-     * Get libelleStatut
-     *
-     * @return string
+     * Get libelleStatut.
      */
     public function getLibelleStatut(): ?string
     {
@@ -134,11 +121,7 @@ class Statut
     }
 
     /**
-     * Set permanent
-     *
-     * @param boolean $permanent
-     *
-     * @return Statut
+     * Set permanent.
      */
     public function setPermanent(bool $permanent): self
     {
@@ -148,9 +131,7 @@ class Statut
     }
 
     /**
-     * Get permanent
-     *
-     * @return boolean
+     * Get permanent.
      */
     public function getPermanent(): bool
     {
@@ -158,9 +139,7 @@ class Statut
     }
 
     /**
-     * Is permanent
-     *
-     * @return boolean
+     * Is permanent.
      */
     public function isPermanent(): bool
     {
@@ -168,13 +147,9 @@ class Statut
     }
 
     /**
-     * Add individu
-     *
-     * @param \App\Entity\Individu $individu
-     *
-     * @return Statut
+     * Add individu.
      */
-    public function addIndividu(\App\Entity\Individu $individu): self
+    public function addIndividu(Individu $individu): self
     {
         if (!$this->individu->contains($individu)) {
             $this->individu[] = $individu;
@@ -184,20 +159,19 @@ class Statut
     }
 
     /**
-     * Remove individu
-     *
-     * @param \App\Entity\Individu $individu
+     * Remove individu.
      */
-    public function removeIndividu(\App\Entity\Individu $individu): self
+    public function removeIndividu(Individu $individu): self
     {
         $this->individu->removeElement($individu);
+
         return $this;
     }
 
     /**
-     * Get individu
+     * Get individu.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getIndividu()
     {

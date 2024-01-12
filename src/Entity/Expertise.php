@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,16 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
- * Expertise
+ * Expertise.
  *
  * Argumentaire des valiteurs pour la validation d'un projet
  * NOTE - Cette classe peut servir à valider une VERSION de projet aussi bien qu'une RALLONGE de version (=extension)
  *        Le champ $version ou $rallonge sera différent de null
  *        Le champ $expert renvoie sur le valideur (de class $individu, peut être nul si personne n'a encore modifié l'expertise)
- *
- *
  */
 #[ORM\Table(name: 'expertise')]
 #[ORM\Index(name: 'version_expertise_fk', columns: ['id_version'])]
@@ -49,13 +45,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Expertise
 {
     /**
-     * @var boolean
+     * @var bool
      *
      * true = L'expert a répondu positivement et a attribué des heures (éventuellement 0 heure si le projet est validé mais la machine surchargée)
      * false= L'expert a répondu négativement (et l'attribution est obligatoirement 0)
      */
     #[ORM\Column(name: 'validation', type: 'integer', nullable: false)]
-    private $validation=1;
+    private $validation = 1;
 
     /**
      * @var string
@@ -64,7 +60,7 @@ class Expertise
      */
     #[ORM\Column(name: 'commentaire_interne', type: 'text', length: 65535, nullable: true)]
     #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire pour le comité")]
-    private $commentaireInterne = "";
+    private $commentaireInterne = '';
 
     /**
      * @var string
@@ -73,10 +69,10 @@ class Expertise
      */
     #[ORM\Column(name: 'commentaire_externe', type: 'text', length: 65535, nullable: true)]
     #[Assert\NotBlank(message: "Vous n'avez pas rempli le commentaire pour le responsable")]
-    private $commentaireExterne = "";
+    private $commentaireExterne = '';
 
     /**
-     * @var boolean
+     * @var bool
      *
      * false = Nous sommes en phase d'édition, l'expertise n'a pas encore été envoyée
      * true  = Expertise envoyée, pas de modification possible
@@ -85,7 +81,7 @@ class Expertise
     private $definitif = false;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -93,21 +89,21 @@ class Expertise
     private $id;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'expertise')]
     private $version;
 
     /**
-     * @var \App\Entity\Rallonge
+     * @var Rallonge
      */
     #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'expertise')]
     private $rallonge;
 
     /**
-     * @var \App\Entity\Individu
+     * @var Individu
      */
     #[ORM\JoinColumn(name: 'id_expert', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'expertise')]
@@ -115,15 +111,11 @@ class Expertise
 
     public function __toString()
     {
-        return 'Expertise '. $this->getId() . " par l'expert " . $this->getExpert();
+        return 'Expertise '.$this->getId()." par l'expert ".$this->getExpert();
     }
 
     /**
-     * Set validation
-     *
-     * @param boolean $validation
-     *
-     * @return Expertise
+     * Set validation.
      */
     public function setValidation(bool $validation): self
     {
@@ -133,9 +125,7 @@ class Expertise
     }
 
     /**
-     * Get validation
-     *
-     * @return boolean
+     * Get validation.
      */
     public function getValidation(): bool
     {
@@ -143,11 +133,7 @@ class Expertise
     }
 
     /**
-     * Set commentaireInterne
-     *
-     * @param string $commentaireInterne
-     *
-     * @return Expertise
+     * Set commentaireInterne.
      */
     public function setCommentaireInterne(?string $commentaireInterne): self
     {
@@ -157,9 +143,7 @@ class Expertise
     }
 
     /**
-     * Get commentaireInterne
-     *
-     * @return string
+     * Get commentaireInterne.
      */
     public function getCommentaireInterne(): ?string
     {
@@ -167,11 +151,7 @@ class Expertise
     }
 
     /**
-     * Set commentaireExterne
-     *
-     * @param string $commentaireExterne
-     *
-     * @return Expertise
+     * Set commentaireExterne.
      */
     public function setCommentaireExterne(?string $commentaireExterne): self
     {
@@ -181,9 +161,7 @@ class Expertise
     }
 
     /**
-     * Get commentaireExterne
-     *
-     * @return string
+     * Get commentaireExterne.
      */
     public function getCommentaireExterne(): ?string
     {
@@ -191,11 +169,7 @@ class Expertise
     }
 
     /**
-     * Set definitif
-     *
-     * @param boolean $definitif
-     *
-     * @return Expertise
+     * Set definitif.
      */
     public function setDefinitif(bool $definitif): self
     {
@@ -205,9 +179,7 @@ class Expertise
     }
 
     /**
-     * Get definitif
-     *
-     * @return boolean
+     * Get definitif.
      */
     public function getDefinitif(): bool
     {
@@ -215,9 +187,7 @@ class Expertise
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -225,13 +195,9 @@ class Expertise
     }
 
     /**
-     * Set version
-     *
-     * @param \App\Entity\Version $idVersion
-     *
-     * @return Expertise
+     * Set version.
      */
-    public function setVersion(?\App\Entity\Version $idVersion = null): self
+    public function setVersion(Version $idVersion = null): self
     {
         $this->version = $idVersion;
 
@@ -239,23 +205,17 @@ class Expertise
     }
 
     /**
-     * Get version
-     *
-     * @return \App\Entity\Version
+     * Get version.
      */
-    public function getVersion(): ?\App\Entity\Version
+    public function getVersion(): ?Version
     {
         return $this->version;
     }
 
     /**
-     * Set rallonge
-     *
-     * @param \App\Entity\Rallonge $idRallonge
-     *
-     * @return Expertise
+     * Set rallonge.
      */
-    public function setRallonge(?\App\Entity\Rallonge $idRallonge = null): self
+    public function setRallonge(Rallonge $idRallonge = null): self
     {
         $this->rallonge = $idRallonge;
 
@@ -263,23 +223,17 @@ class Expertise
     }
 
     /**
-     * Get rallonge
-     *
-     * @return \App\Entity\Rallonge
+     * Get rallonge.
      */
-    public function getRallonge(): ?\App\Entity\Rallonge
+    public function getRallonge(): ?Rallonge
     {
         return $this->rallonge;
     }
 
     /**
-     * Set expert
-     *
-     * @param \App\Entity\Individu $idExpert
-     *
-     * @return Expertise
+     * Set expert.
      */
-    public function setExpert(?\App\Entity\Individu $expert = null): self
+    public function setExpert(Individu $expert = null): self
     {
         $this->expert = $expert;
 
@@ -287,11 +241,9 @@ class Expertise
     }
 
     /**
-     * Get expert
-     *
-     * @return \App\Entity\Individu
+     * Get expert.
      */
-    public function getExpert(): ?\App\Entity\Individu
+    public function getExpert(): ?Individu
     {
         return $this->expert;
     }

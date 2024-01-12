@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,19 @@
 
 namespace App\GramcServices;
 
-use App\Entity\Invitation;
 use App\Entity\Individu;
-use App\GramcServices\ServiceNotifications;
-
+use App\Entity\Invitation;
 use Doctrine\ORM\EntityManagerInterface;
 
 /********************
  * Ce service permet de créer et envoyer des invitaiotn pour de nouveaux utilisateurs
  ********************/
- 
+
 class ServiceInvitations
 {
-    public function __construct(private $invit_duree, private ServiceNotifications $sn, private EntityManagerInterface $em){}
+    public function __construct(private $invit_duree, private ServiceNotifications $sn, private EntityManagerInterface $em)
+    {
+    }
 
     /*****************************
      * Ces deux fonctions sont pompées sur https://stackoverflow.com/questions/1846202/how-to-generate-a-random-unique-alphanumeric-string/13733588#13733588
@@ -43,33 +43,34 @@ class ServiceInvitations
     private function crypto_rand_secure($min, $max): int
     {
         $range = $max - $min;
-        if ($range < 1) return $min; // not so random...
+        if ($range < 1) {
+            return $min;
+        } // not so random...
 
         $log = ceil(log($range, 2));
         $bytes = (int) ($log / 8) + 1; // length in bytes
         $bits = (int) $log + 1; // length in bits
         $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
-        do
-        {
+        do {
             $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
             $rnd = $rnd & $filter; // discard irrelevant bits
-        }
-        while ($rnd > $range);
+        } while ($rnd > $range);
+
         return $min + $rnd;
     }
 
     private function getToken($length): string
     {
-        $token = "";
-        $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
-        $codeAlphabet.= "0123456789";
+        $token = '';
+        $codeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codeAlphabet .= 'abcdefghijklmnopqrstuvwxyz';
+        $codeAlphabet .= '0123456789';
         $max = strlen($codeAlphabet);
-    
-        for ($i=0; $i < $length; $i++) {
-            $token .= $codeAlphabet[$this->crypto_rand_secure(0, $max-1)];
+
+        for ($i = 0; $i < $length; ++$i) {
+            $token .= $codeAlphabet[$this->crypto_rand_secure(0, $max - 1)];
         }
-    
+
         return $token;
     }
 
@@ -87,7 +88,7 @@ class ServiceInvitations
         $key = $this->getToken(50);
         $stamp = new \DateTime();
 
-        $invitation = new Invitation;
+        $invitation = new Invitation();
         $invitation->setInviting($inviting)
                    ->setInvited($invited)
                    ->setCreationStamp($stamp)
@@ -107,13 +108,13 @@ class ServiceInvitations
     {
         $invit_duree = $this->invit_duree;
         $sn = $this->sn;
-        
+
         $invitation = $this->newInvitation($inviting, $invited);
         $date_limite = $invitation->getCreationStamp()->add(new \DateInterval($invit_duree));
-        
+
         $sn->sendMessage('notification/invitation-sujet.html.twig',
-                         'notification/invitation-contenu.html.twig',
-                         [ 'invitation' => $invitation, 'date_limite' => $date_limite ],
-                         [ $invited->getMail() ]);
+            'notification/invitation-contenu.html.twig',
+            ['invitation' => $invitation, 'date_limite' => $date_limite],
+            [$invited->getMail()]);
     }
 }

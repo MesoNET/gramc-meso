@@ -41,6 +41,7 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "*",
         "symfony/browser-kit": "^7.0",
         "symfony/css-selector": "^7.0",
         "symfony/debug-bundle": "^7.0",
@@ -93,6 +94,12 @@
             "php bin/console doctrine:database:drop --force --if-exists",
             "php bin/console doctrine:database:create",
             "php bin/console doctrine:migrations:migrate --no-interaction"
+        ],
+        "test:cs": [
+            "vendor/bin/php-cs-fixer fix --dry-run"
+        ],
+        "fix:cs": [
+            "vendor/bin/php-cs-fixer fix"
         ]
     },
     "conflict": {

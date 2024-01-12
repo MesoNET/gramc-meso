@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,42 +24,25 @@
 
 namespace App\GramcServices\ServiceExperts;
 
-use App\Entity\Projet;
-use App\Entity\Version;
-use App\Entity\CollaborateurVersion;
 use App\AffectationExperts\AffectationExperts;
-use App\Interfaces\Demande;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-
+use App\Entity\CollaborateurVersion;
+use App\Entity\Version;
 use App\Form\ChoiceList\ExpertChoiceLoader;
+use App\Interfaces\Demande;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
-use App\Entity\Thematique;
-//use App\App;
-use App\Utils\Functions;
+// use App\App;
 
 class ServiceExpertsRallonge extends ServiceExperts
 {
     protected function getExpertForms(Demande $rallonge)
     {
-
         // Liste d'exclusion = Les collaborateurs + de la version
         $exclus = $this->em->getRepository(CollaborateurVersion::class)->getCollaborateurs($rallonge->getVersion()->getProjet());
 
         $expert = $rallonge->getExpert();
-        if ($expert == null) {
+        if (null == $expert) {
             $expert = $rallonge->getVersion()->getExpert();
         }
 
@@ -72,28 +55,29 @@ class ServiceExpertsRallonge extends ServiceExperts
         // cf AffectationExperts::getExpertForms
         //
         $forms = [];
-        $forms[] = $this->formFactory->createNamedBuilder($nom, FormType::class, null, ['csrf_protection' => false ])
+        $forms[] = $this->formFactory->createNamedBuilder($nom, FormType::class, null, ['csrf_protection' => false])
                         ->add(
                             'expert',
                             ChoiceType::class,
                             [
-                            'multiple'  =>  false,
-                            'required'  =>  false,
-                            //'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
+                            'multiple' => false,
+                            'required' => false,
+                            // 'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
                             'choice_loader' => $choice, // nécessaire pour contourner le bogue de symfony
-                            'data'          => $expert,
-                            //'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
-                            'choice_label'  => function ($individu) {
+                            'data' => $expert,
+                            // 'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
+                            'choice_label' => function ($individu) {
                                 return $individu->__toString();
                             },
                             ]
                         )
                         ->getForm();
+
         return $forms;
     }
 
     /**
-     * Sauvegarde les experts associés à une rallonge
+     * Sauvegarde les experts associés à une rallonge.
      *
      ***/
     protected function affecterExpertsToDemande($experts, Demande $rallonge)
@@ -103,7 +87,6 @@ class ServiceExpertsRallonge extends ServiceExperts
         $em->persist($rallonge);
         $em->flush();
     }
-
 
     /******
      * Ajoute des données dans le tableau notifications
@@ -116,9 +99,9 @@ class ServiceExpertsRallonge extends ServiceExperts
      *****/
     protected function addNotification($demande)
     {
-        //$notifications = $this    -> notifications;
-        $expert = $demande -> getExpert();
-        $exp_mail = $expert -> getMail();
+        // $notifications = $this    -> notifications;
+        $expert = $demande->getExpert();
+        $exp_mail = $expert->getMail();
         if (!array_key_exists($exp_mail, $this->notifications)) {
             $this->notifications[$exp_mail] = [];
         }
@@ -132,16 +115,16 @@ class ServiceExpertsRallonge extends ServiceExperts
     *****/
     protected function notifierExperts()
     {
-        $sn            = $this->sn;
+        $sn = $this->sn;
         $notifications = $this->notifications;
-        $sj            = $this->sj;
+        $sj = $this->sj;
 
-        $sj->debugMessage(__METHOD__ . count($notifications) . " notifications à envoyer");
+        $sj->debugMessage(__METHOD__.count($notifications).' notifications à envoyer');
 
         foreach ($notifications as $e => $liste_d) {
-            $dest   = [ $e ];
-            $params = [ 'object' => $liste_d ];
-            //$sj->debugMessage( __METHOD__ . "Envoi d'un message à " . join(',',$dest) . " - " . $this->sj->show($liste_d) );
+            $dest = [$e];
+            $params = ['object' => $liste_d];
+            // $sj->debugMessage( __METHOD__ . "Envoi d'un message à " . join(',',$dest) . " - " . $this->sj->show($liste_d) );
 
             $sn->sendMessage(
                 'notification/affectation_expert_rallonge-sujet.html.twig',

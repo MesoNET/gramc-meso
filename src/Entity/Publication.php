@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,10 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Publication
+ * Publication.
  */
 #[ORM\Table(name: 'publication')]
 #[ORM\Entity(repositoryClass: 'App\Repository\PublicationRepository')]
@@ -55,13 +54,13 @@ class Publication
     private $openUrl;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'annee', type: 'integer', nullable: false)]
     private $annee;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_publi', type: 'integer')]
     #[ORM\Id]
@@ -69,14 +68,12 @@ class Publication
     private $idPubli;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     *
+     * @var Collection
      */
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Projet', mappedBy: 'publi')]
     private $projet;
 
-    ////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////
 
     public function __toString(): string
     {
@@ -84,30 +81,24 @@ class Publication
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
         return $this->getIdPubli();
     }
 
-    ////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->projet = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->projet = new ArrayCollection();
     }
 
     /**
-     * Set refbib
-     *
-     * @param string $refbib
-     *
-     * @return Publication
+     * Set refbib.
      */
     public function setRefbib(string $refbib): self
     {
@@ -117,9 +108,7 @@ class Publication
     }
 
     /**
-     * Get refbib
-     *
-     * @return string
+     * Get refbib.
      */
     public function getRefbib(): ?string
     {
@@ -127,11 +116,7 @@ class Publication
     }
 
     /**
-     * Set doi
-     *
-     * @param string $doi
-     *
-     * @return Publication
+     * Set doi.
      */
     public function setDoi(?string $doi): self
     {
@@ -141,9 +126,7 @@ class Publication
     }
 
     /**
-     * Get doi
-     *
-     * @return string
+     * Get doi.
      */
     public function getDoi(): ?string
     {
@@ -151,11 +134,7 @@ class Publication
     }
 
     /**
-     * Set openUrl
-     *
-     * @param string $openUrl
-     *
-     * @return Publication
+     * Set openUrl.
      */
     public function setOpenUrl(?string $openUrl): self
     {
@@ -165,9 +144,7 @@ class Publication
     }
 
     /**
-     * Get openUrl
-     *
-     * @return string
+     * Get openUrl.
      */
     public function getOpenUrl(): ?string
     {
@@ -175,11 +152,7 @@ class Publication
     }
 
     /**
-     * Set annee
-     *
-     * @param integer $annee
-     *
-     * @return Publication
+     * Set annee.
      */
     public function setAnnee(int $annee): self
     {
@@ -189,9 +162,7 @@ class Publication
     }
 
     /**
-     * Get annee
-     *
-     * @return integer
+     * Get annee.
      */
     public function getAnnee(): ?int
     {
@@ -199,11 +170,10 @@ class Publication
     }
 
     /**
-     * Get idPubli
+     * Get idPubli.
      *
      * NOTE - Peut retourner null avant insertion dans la B.D. - cf. PublicationController::
      * gererAction
-     * @return integer
      */
     public function getIdPubli(): ?int
     {
@@ -211,15 +181,11 @@ class Publication
     }
 
     /**
-     * Add projet
-     *
-     * @param \App\Entity\Projet $projet
-     *
-     * @return Publication
+     * Add projet.
      */
-    public function addProjet(\App\Entity\Projet $projet): self
+    public function addProjet(Projet $projet): self
     {
-        if (! $this->projet->contains($projet)) {
+        if (!$this->projet->contains($projet)) {
             $this->projet[] = $projet;
         }
 
@@ -227,43 +193,41 @@ class Publication
     }
 
     /**
-     * Remove projet
-     *
-     * @param \App\Entity\Projet $projet
+     * Remove projet.
      */
-    public function removeProjet(\App\Entity\Projet $projet): self
+    public function removeProjet(Projet $projet): self
     {
         $this->projet->removeElement($projet);
+
         return $this;
     }
 
     /**
-     * Get projet
+     * Get projet.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getProjet()
     {
         return $this->projet;
     }
 
-    ///////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////
 
     /**
-     * Get doi, cleaned
+     * Get doi, cleaned.
      *************************************/
     public function getDoiCleaned(): ?string
     {
         $doi = $this->getDoi();
         $prf = 'https://doi.org/';
 
-        if (! empty($doi))
-        {
-            if (str_starts_with($doi, $prf))
-            {
+        if (!empty($doi)) {
+            if (str_starts_with($doi, $prf)) {
                 $doi = substr($doi, strlen($prf));
             }
         }
+
         return $doi;
     }
 }

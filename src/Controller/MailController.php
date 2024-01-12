@@ -11,49 +11,31 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
-use App\Form\IndividuType;
 use App\Entity\Individu;
-use App\Entity\Scalar;
-use App\Entity\Sso;
-use App\Entity\Journal;
 use App\Entity\Projet;
 use App\Entity\Version;
-
+use App\GramcServices\Etat;
+use App\GramcServices\GramcDateTime;
 use App\GramcServices\ServiceJournal;
+use App\GramcServices\ServiceMenus;
 use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
-use App\GramcServices\ServiceMenus;
-use App\GramcServices\GramcDateTime;
-
 use App\Utils\Functions;
-use App\Utils\Menu;
-use App\GramcServices\Etat;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-
-/////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////
 /**
  * Mail controller.
  *
@@ -70,7 +52,8 @@ class MailController extends AbstractController
         private FormFactoryInterface $ff,
         private GramcDateTime $grdt,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
@@ -86,13 +69,13 @@ class MailController extends AbstractController
         $sm = $this->sm;
 
         // ACL
-        if ($sm->mailToResponsablesFiche()['ok'] == false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " Action impossible - " . $sm->mailToResponsablesFiche()['raison']);
+        if (false == $sm->mailToResponsablesFiche()['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' Action impossible - '.$sm->mailToResponsablesFiche()['raison']);
         }
 
         // On lit directement les templates de mail pour laisser à l'admin la possibilité de les modifier !
-        $sujet   = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables_fiche-sujet.html.twig");
-        $body    = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables_fiche-contenu.html.twig");
+        $sujet = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables_fiche-sujet.html.twig');
+        $body = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables_fiche-contenu.html.twig');
 
         $responsables = $this->getResponsablesFiche($session);
 
@@ -101,7 +84,7 @@ class MailController extends AbstractController
 
         return $this->mailToResponsablesBody($request, $session, 0, $responsables, $sujet, $body, $template);
     }
-    
+
     /***********************************************************
      *
      * Renvoie la liste des responsables de projet (et des projets) qui n'ont pas (encore)
@@ -118,23 +101,23 @@ class MailController extends AbstractController
 
         foreach ($all_versions as $version) {
             $projet = $version->getProjet();
-            if ($projet == null) {
-                $sj->errorMessage(__METHOD__ . ':'. __LINE__ . " version " . $version . " n'a pas de projet !");
+            if (null == $projet) {
+                $sj->errorMessage(__METHOD__.':'.__LINE__.' version '.$version." n'a pas de projet !");
                 continue;
             }
 
-            if ($version->getEtatVersion() != Etat::ACTIF && $version->getEtatVersion() != Etat::EN_ATTENTE) {
+            if (Etat::ACTIF != $version->getEtatVersion() && Etat::EN_ATTENTE != $version->getEtatVersion()) {
                 continue;
             }
 
-            $responsable    =  $version->getResponsable();
+            $responsable = $version->getResponsable();
 
-            if ($responsable != null) {
-                $responsables[$responsable->getIdIndividu()]['selform']                         = $this->getSelForm($responsable)->createView();
-                $responsables[$responsable->getIdIndividu()]['responsable']                     = $responsable;
+            if (null != $responsable) {
+                $responsables[$responsable->getIdIndividu()]['selform'] = $this->getSelForm($responsable)->createView();
+                $responsables[$responsable->getIdIndividu()]['responsable'] = $responsable;
                 $responsables[$responsable->getIdIndividu()]['projets'][$projet->getIdProjet()] = $projet;
             } else {
-                $sj->errorMessage(__METHOD__ . ':'. __LINE__ . " version " . $version . " n'a pas de responsable !");
+                $sj->errorMessage(__METHOD__.':'.__LINE__.' version '.$version." n'a pas de responsable !");
             }
         }
 
@@ -150,17 +133,17 @@ class MailController extends AbstractController
         $sj = $this->sj;
         $sm = $this->sm;
         $grdt = $this->grdt;
-        
+
         // ACL
-        if ($sm->mailToResponsablesRallonge()['ok'] == false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " Action impossible - " . $sm->mailToResponsablesRallonge()['raison']);
+        if (false == $sm->mailToResponsablesRallonge()['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' Action impossible - '.$sm->mailToResponsablesRallonge()['raison']);
         }
 
         $responsables = $this->getResponsablesActifs();
 
         // On lit directement les templates de mail pour laisser à l'admin la possibilité de les modifier !
-        $sujet   = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables_rallonge-sujet.html.twig");
-        $body    = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables_rallonge-contenu.html.twig");
+        $sujet = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables_rallonge-sujet.html.twig');
+        $body = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables_rallonge-contenu.html.twig');
 
         // Le template d'affichage de la page
         $template = 'mail/mail_to_responsables_rallonge.html.twig';
@@ -178,15 +161,15 @@ class MailController extends AbstractController
         $sm = $this->sm;
 
         // ACL
-        if ($sm->mailToResponsables()['ok'] == false) {
-            $sj->throwException(__METHOD__ . ':' . __LINE__ . " Action impossible - " . $sm->mailToResponsables()['raison']);
+        if (false == $sm->mailToResponsables()['ok']) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' Action impossible - '.$sm->mailToResponsables()['raison']);
         }
 
         $responsables = $this->getResponsables($session);
 
         // On lit directement les templates de mail pour laisser à l'admin la possibilité de les modifier !
-        $sujet   = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables-sujet.html.twig");
-        $body    = \file_get_contents(__DIR__."/../../templates/notification/mail_to_responsables-contenu.html.twig");
+        $sujet = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables-sujet.html.twig');
+        $body = \file_get_contents(__DIR__.'/../../templates/notification/mail_to_responsables-contenu.html.twig');
 
         // Le template d'affichage de la page
         $template = 'mail/mail_to_responsables.html.twig';
@@ -194,17 +177,16 @@ class MailController extends AbstractController
         return $this->mailToResponsablesBody($request, $session, 0, $responsables, $sujet, $body, $template);
     }
 
-
     /*********************************************
      * Méthode utilisée par les controleurs MailTo...
      ***************************************************/
     private function mailToResponsablesBody(Request $request,
-                                            Session $session,
-                                            int $annee,
-                                            array $responsables,
-                                            string $sujet,
-                                            string $body,
-                                            string $template): response
+        Session $session,
+        int $annee,
+        array $responsables,
+        string $sujet,
+        string $body,
+        string $template): response
     {
         $em = $this->em;
         $sn = $this->sn;
@@ -215,58 +197,55 @@ class MailController extends AbstractController
         $nb_projets = 0;
 
         $sent = false;
-        $form   =  Functions::createFormBuilder($ff)
+        $form = Functions::createFormBuilder($ff)
                     ->add('texte', TextareaType::class, [
-                        'label' => " ",
+                        'label' => ' ',
                         'data' => $body,
-                        'attr' => ['rows'=>10,'cols'=>150]])
-                    ->add('submit', SubmitType::class, ['label' => "Envoyer le message"])
+                        'attr' => ['rows' => 10, 'cols' => 150]])
+                    ->add('submit', SubmitType::class, ['label' => 'Envoyer le message'])
                     ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $body   = $form->getData()['texte'];
+            $body = $form->getData()['texte'];
 
             foreach ($responsables as $item) {
-                $individus[ $item['responsable']->getIdIndividu() ] = $item['responsable'];
+                $individus[$item['responsable']->getIdIndividu()] = $item['responsable'];
                 $selform = $this->getSelForm($item['responsable']);
                 $selform->handleRequest($request);
                 if (empty($selform->getData()['sel'])) {
-                    //$sj->debugMessage( __METHOD__ . $version->getIdVersion().' selection NON');
+                    // $sj->debugMessage( __METHOD__ . $version->getIdVersion().' selection NON');
                     continue;
                 }
                 $sn->sendMessageFromString(
                     $sujet,
                     $body,
-                    [ 'session' => $session,
+                    ['session' => $session,
                       'projets' => $item['projets'],
-                      'responsable' => $item['responsable'] ],
+                      'responsable' => $item['responsable']],
                     [$item['responsable']]
                 );
-                $nb_msg++;
+                ++$nb_msg;
                 $nb_projets += count($item['projets']);
                 // DEBUG = Envoi d'un seul message
-                 // break;
+                // break;
             }
-            if ($nb_msg)
-            {
-                $request->getSession()->getFlashbag()->add("flash info","$nb_msg message(s) envoyé(s)");
-            }
-            else
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Pas de message à envoyer");
+            if ($nb_msg) {
+                $request->getSession()->getFlashbag()->add('flash info', "$nb_msg message(s) envoyé(s)");
+            } else {
+                $request->getSession()->getFlashbag()->add('flash erreur', 'Pas de message à envoyer');
             }
         }
 
         return $this->render(
             $template,
             [
-                'nb_msg'        => $nb_msg,
-                'responsables'  => $responsables,
-                'nb_projets'    => $nb_projets,
-                'session'       => $session,
-                'form'          => $form->createView(),
+                'nb_msg' => $nb_msg,
+                'responsables' => $responsables,
+                'nb_projets' => $nb_projets,
+                'session' => $session,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -288,50 +267,59 @@ class MailController extends AbstractController
         $seuil = 80;
         $all_projets = $em->getRepository(Projet::class)->findAll();
 
-        foreach ($all_projets as $projet)
-        {
-            if ($projet->isProjetTest())
-            {
+        foreach ($all_projets as $projet) {
+            if ($projet->isProjetTest()) {
                 continue;
             }
-            if ($projet->getEtatProjet() == Etat::TERMINE ||  $projet->getEtatProjet() == Etat::ANNULE)
-            {
+            if (Etat::TERMINE == $projet->getEtatProjet() || Etat::ANNULE == $projet->getEtatProjet()) {
                 continue;
             }
 
             $derniereVersion = $projet->derniereVersion();
             $versionActive = $projet->getVersionActive();
-            if ($derniereVersion == null) continue;
-            if ($versionActive == null) continue;
-            if ($derniereVersion->getSession() == null) continue;
+            if (null == $derniereVersion) {
+                continue;
+            }
+            if (null == $versionActive) {
+                continue;
+            }
+            if (null == $derniereVersion->getSession()) {
+                continue;
+            }
 
             $responsable = $derniereVersion->getResponsable();
-            if ($responsable == null) continue;
+            if (null == $responsable) {
+                continue;
+            }
 
             // Filtre sur la conso !
-            $c = $sp->getConsoRessource($projet,'cpu');
-            if ($c[1]==0) continue;   // quota nul, ne devrait pas arriver !
-            $conso = intval(100*$c[0]/$c[1]);
-            if ($conso < 80) continue;  // On ne garde que les projets avec quota >= 80%
+            $c = $sp->getConsoRessource($projet, 'cpu');
+            if (0 == $c[1]) {
+                continue;
+            }   // quota nul, ne devrait pas arriver !
+            $conso = intval(100 * $c[0] / $c[1]);
+            if ($conso < 80) {
+                continue;
+            }  // On ne garde que les projets avec quota >= 80%
 
             $ind = $responsable->getIdIndividu();
-            $responsables[$ind]['selform']                         = $this->getSelForm($responsable)->createView();
-            $responsables[$ind]['responsable']                     = $responsable;
+            $responsables[$ind]['selform'] = $this->getSelForm($responsable)->createView();
+            $responsables[$ind]['responsable'] = $responsable;
             $responsables[$ind]['projets'][$projet->getIdProjet()] = $projet;
             if (!isset($responsables[$ind]['max_attr'])) {
                 $responsables[$ind]['max_attr'] = 0;
             }
             $attr = $projet->getVersionActive()->getAttrHeures();
             if ($attr > $responsables[$ind]['max_attr']) {
-                $responsables[$ind]['max_attr']=$attr;
+                $responsables[$ind]['max_attr'] = $attr;
             }
         }
 
         // On trie $responsables en commençant par les responsables qui on le plus d'heures attribuées !
-        usort($responsables, "self::compAttr");
+        usort($responsables, 'self::compAttr');
+
         return $responsables;
     }
-
 
     /***
      * Renvoie un formulaire avec une case à cocher, rien d'autre
@@ -340,15 +328,15 @@ class MailController extends AbstractController
      *   return  une form
      *
      */
-    private function getSelForm(Individu $individu):FormInterface
+    private function getSelForm(Individu $individu): FormInterface
     {
         $nom = 'selection_'.$individu->getId();
-        return $this->get('form.factory')  -> createNamedBuilder($nom, FormType::class, null, ['csrf_protection' => false ])
-                                            -> add('sel', CheckboxType::class, [ 'required' =>  false, 'label' => " " ])
+
+        return $this->get('form.factory')->createNamedBuilder($nom, FormType::class, null, ['csrf_protection' => false])
+                                            ->add('sel', CheckboxType::class, ['required' => false, 'label' => ' '])
                                             ->getForm();
     }
 
-    
     #[Route(path: '/tester', name: 'mail_tester', methods: ['GET', 'POST'])]
     public function testerAction(Request $request): Response
     {
@@ -356,34 +344,33 @@ class MailController extends AbstractController
         $sn = $this->sn;
         $ff = $this->ff;
 
-/*        $now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
-        if ($now == null) {
-            $now = new Param();
-            $now->setCle('now');
-            //$em->persist( $now );
-        }
+        /*        $now = $em->getRepository(Param::class)->findOneBy(['cle' => 'now']);
+                if ($now == null) {
+                    $now = new Param();
+                    $now->setCle('now');
+                    //$em->persist( $now );
+                }
 
-        if ($now->getVal() == null) {
-            $date = new \DateTime();
-        } else {
-            $date = new \DateTime($now->getVal());
-        }
-*/
+                if ($now->getVal() == null) {
+                    $date = new \DateTime();
+                } else {
+                    $date = new \DateTime($now->getVal());
+                }
+        */
 
-    //    $defaults = [ 'date' => $date ];
+        //    $defaults = [ 'date' => $date ];
         $form = $ff->createBuilder(FormType::class, [])
-                        ->add('addr', textType::class, [ 'label' => "Destinataire" ])
+                        ->add('addr', textType::class, ['label' => 'Destinataire'])
                         ->add('Envoyer', SubmitType::class)
                         ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
             $addr = $form->getData()['addr'];
-            $sn -> sendTestMessage($addr);
+            $sn->sendTestMessage($addr);
 
-            $request->getSession()->getFlashbag()->add("flash info","Le mail est parti, on vous laisse vérifier qu'il est bien arrivé !");
+            $request->getSession()->getFlashbag()->add('flash info', "Le mail est parti, on vous laisse vérifier qu'il est bien arrivé !");
         }
 
         return $this->render(

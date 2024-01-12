@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,45 +25,34 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DarType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Formulaire de demande de ressources
-        if ($options['attribution'] == false)
-        {
-            $builder->add('demande', IntegerType::class,['label' => $options['label'] ]);
+        if (false == $options['attribution']) {
+            $builder->add('demande', IntegerType::class, ['label' => $options['label']]);
         }
-        
+
         // Formulaire d'attribution de ressources
-        else
-        {
-            $builder->add('attribution', IntegerType::class,['label' => $options['label'] ]);
+        else {
+            $builder->add('attribution', IntegerType::class, ['label' => $options['label']]);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'App\Entity\Dar',
             'label' => 'toto',
             'attribution' => false,
-        ));
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'dar';

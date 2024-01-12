@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * FormationVersion
+ * FormationVersion.
  */
 #[ORM\Table(name: 'formationVersion')]
 #[ORM\Index(name: 'id_formation', columns: ['id_formation'])]
@@ -37,7 +37,7 @@ use Doctrine\ORM\Mapping as ORM;
 class FormationVersion
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -45,52 +45,48 @@ class FormationVersion
     private $id;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'formationVersion')]
     private $version;
 
     /**
-     * @var \App\Entity\Formation
+     * @var Formation
      */
     #[ORM\JoinColumn(name: 'id_formation', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Formation', inversedBy: 'formationVersion')]
     private $formation;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'nombre', type: 'integer', nullable: false)]
     private $nombre = 0;
 
-
     public function __toString(): string
     {
-        $output .= 'version=' . $this->getVersion();
-        $output .= 'id=' . $this->getId() . ':';
-        $output .= 'formation=' . $this->getFormation();
+        $output .= 'version='.$this->getVersion();
+        $output .= 'id='.$this->getId().':';
+        $output .= 'formation='.$this->getFormation();
+
         return $output;
     }
 
     public function __construct(Formation $formation = null, Version $version = null)
     {
-        if ($formation != null)
-        {
+        if (null != $formation) {
             $this->formation = $formation;
         }
-        if ($version != null)
-        {
-            $this->version  =   $version;
+        if (null != $version) {
+            $this->version = $version;
         }
     }
 
     /**
-     * Set nombre
+     * Set nombre.
      *
-     * @param boolean $nombre
-     *
-     * @return FormationVersion
+     * @param bool $nombre
      */
     public function setNombre(int $nombre): self
     {
@@ -100,9 +96,7 @@ class FormationVersion
     }
 
     /**
-     * Get nombre
-     *
-     * @return integer
+     * Get nombre.
      */
     public function getNombre(): ?int
     {
@@ -110,9 +104,7 @@ class FormationVersion
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): ?int
     {
@@ -120,13 +112,11 @@ class FormationVersion
     }
 
     /**
-     * Set version
-     *
-     * @param \App\Entity\Version $version
+     * Set version.
      *
      * @return CollaborateurVersion
      */
-    public function setVersion(?\App\Entity\Version $version = null): self
+    public function setVersion(Version $version = null): self
     {
         $this->version = $version;
 
@@ -134,23 +124,19 @@ class FormationVersion
     }
 
     /**
-     * Get version
-     *
-     * @return \App\Entity\Version
+     * Get version.
      */
-    public function getVersion(): ?\App\Entity\Version
+    public function getVersion(): ?Version
     {
         return $this->version;
     }
 
     /**
-     * Set formation
-     *
-     * @param \App\Entity\Formation $formation
+     * Set formation.
      *
      * @return CollaborateurFormation
      */
-    public function setFormation(?\App\Entity\Formation $formation = null): self
+    public function setFormation(Formation $formation = null): self
     {
         $this->formation = $formation;
 
@@ -158,13 +144,10 @@ class FormationVersion
     }
 
     /**
-     * Get formation
-     *
-     * @return \App\Entity\Formation
+     * Get formation.
      */
-    public function getFormation(): ?\App\Entity\Formation
+    public function getFormation(): ?Formation
     {
         return $this->formation;
     }
-
 }

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,12 @@ namespace App\GramcServices;
 
 use App\Entity\Individu;
 use App\Entity\Journal;
-
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
 /********************
@@ -43,18 +42,19 @@ class ServiceJournal
     // request_stack, session,logger, security.helper, doc
     // request_stack, session,logger, security.token_storage,doc
 
-    private $token = null;
-    
+    private $token;
+
     public function __construct(
         private RequestStack $rs,
         private LoggerInterface $log,
         private TokenStorageInterface $tok,
         private AuthorizationCheckerInterface $ac,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
-     * Ecrire quelque chose dans le journal
+     * Ecrire quelque chose dans le journal.
      *
      * param $message
      * param $niveau Le niveau de log, Journal::WARNING, Journal::INFO etc.
@@ -65,36 +65,29 @@ class ServiceJournal
      ***/
     private function journalMessage($message, $niveau): Journal
     {
-        $rs    = $this->rs;
-        $log   = $this->log;
+        $rs = $this->rs;
+        $log = $this->log;
         $token = $this->tok->getToken();
-        $em    = $this->em;
+        $em = $this->em;
 
         $journal = new Journal();
         $journal->setStamp(new \DateTime());
 
         // Si l'erreur provient de l'API, getUser() n'est pas un Individu
-        if ($token !== null && $token->getUser() !== null && $token->getUser() instanceof Individu)
-        {
+        if (null !== $token && null !== $token->getUser() && $token->getUser() instanceof Individu) {
             $journal->setIndividu($token->getUser());
-        }
-        else
-        {
+        } else {
             $journal->setIndividu(null);
         }
 
-        if ($rs->getCurrentRequest() !==null)
-        {
+        if (null !== $rs->getCurrentRequest()) {
             $journal->setGramcSessId($rs->getCurrentRequest()->getSession()->getId());
         }
 
-        if ($rs->getMainRequest() !== null
-        && $rs->getMainRequest()->getClientIp() !== null)
-        {
+        if (null !== $rs->getMainRequest()
+        && null !== $rs->getMainRequest()->getClientIp()) {
             $ip = $rs->getMainRequest()->getClientIp();
-        }
-        else
-        {
+        } else {
             $ip = '0.0.0.0';
         }
 
@@ -104,18 +97,15 @@ class ServiceJournal
         $journal->setType(Journal::LIBELLE[$niveau]);
 
         // nous testons des problèmes de Doctrine pour éviter une exception
-        //if( App::getEnvironment() !== 'test' )
-        //{
-        if ($em->isOpen())
-        {
+        // if( App::getEnvironment() !== 'test' )
+        // {
+        if ($em->isOpen()) {
             $em->persist($journal);
             $em->flush();
+        } else {
+            $log->error('Entity manager closed, message = '.$message);
         }
-        else
-        {
-            $log->error('Entity manager closed, message = ' . $message);
-        }
-        //}
+        // }
 
         return $journal;
     }
@@ -123,6 +113,7 @@ class ServiceJournal
     public function emergencyMessage($message): Journal
     {
         $this->log->emergency($message);
+
         return $this->journalMessage($message, Journal::EMERGENCY);
     }
 
@@ -135,36 +126,42 @@ class ServiceJournal
     public function criticalMessage($message): Journal
     {
         $this->log->critical($message);
+
         return $this->journalMessage($message, Journal::CRITICAL);
     }
 
     public function errorMessage($message): Journal
     {
         $this->log->error($message);
+
         return $this->journalMessage($message, Journal::ERROR);
     }
 
     public function warningMessage($message): Journal
     {
         $this->log->warning($message);
+
         return $this->journalMessage($message, Journal::WARNING);
     }
 
     public function noticeMessage($message): Journal
     {
         $this->log->notice($message);
+
         return $this->journalMessage($message, Journal::NOTICE);
     }
 
     public function infoMessage($message): Journal
     {
         $this->log->info($message);
+
         return $this->journalMessage($message, Journal::INFO);
     }
 
     public function debugMessage($message): Journal
     {
         $this->log->debug($message);
+
         return $this->journalMessage($message, Journal::DEBUG);
     }
 
@@ -176,17 +173,13 @@ class ServiceJournal
      **************************************/
     public function throwException($text = null)
     {
-        if ($text !== null)
-        {
-            $this->warningMessage("EXCEPTION " . $text);
+        if (null !== $text) {
+            $this->warningMessage('EXCEPTION '.$text);
         }
 
-        if ($this->ac->isGranted('IS_AUTHENTICATED_FULLY'))
-        {
+        if ($this->ac->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw new AccessDeniedHttpException();
-        }
-        else
-        {
+        } else {
             throw new InsufficientAuthenticationException();
         }
     }

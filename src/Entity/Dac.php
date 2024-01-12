@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,17 +27,16 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Dac
+ * Dac.
  *
  * Demande, Attribution, consommation
- *
  */
 #[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
 class Dac
 {
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_dac', type: 'integer')]
     #[ORM\Id]
@@ -45,7 +44,7 @@ class Dac
     private $idDac;
 
     /**
-     * @var \App\Entity\Version
+     * @var Version
      */
     #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
     #[ORM\Column(name: 'id_version', type: 'string', length: 13)]
@@ -53,47 +52,39 @@ class Dac
     private $version;
 
     /**
-     * @var \App\Entity\Ressource
+     * @var Ressource
      */
     #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Ressource', inversedBy: 'dac')]
     private $ressource;
 
     /**
-     * @var integer
-     *
-     *
+     * @var int
      */
     #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
     private $demande = 0;
 
     /**
-     * @var integer
-     *
-     *
+     * @var int
      */
     #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
     private $attribution = 0;
 
     /**
-     * @var boolean
+     * @var bool
      */
     // Le "todo flag": si true, il y a un truc à faire sur la machine !
     #[ORM\Column(name: 'todof', type: 'boolean')]
     private $todof = false;
 
     /**
-     * @var integer
-     *
-     *
+     * @var int
      */
     #[ORM\Column(name: 'consommation', type: 'integer', nullable: false, options: ['comment' => "consommation, l'unité est celle de la ressource associée"])]
     private $consommation = 0;
 
     /**
-     * Get idDac
-     *
-     * @return integer
+     * Get idDac.
      */
     public function getIdDac(): ?int
     {
@@ -107,24 +98,18 @@ class Dac
 
     public function __construct(Ressource $ressource = null, Version $version = null)
     {
-        if ($ressource != null)
-        {
+        if (null != $ressource) {
             $this->ressource = $ressource;
         }
-        if ($version != null)
-        {
-            $this->version  =   $version;
+        if (null != $version) {
+            $this->version = $version;
         }
     }
 
     /**
-     * Set version
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Dac
+     * Set version.
      */
-    public function setVersion(?\App\Entity\Version $version): self
+    public function setVersion(?Version $version): self
     {
         $this->version = $version;
 
@@ -132,23 +117,17 @@ class Dac
     }
 
     /**
-     * Get version
-     *
-     * @return \App\Entity\Version
+     * Get version.
      */
-    public function getVersion(): ?\App\Entity\Version
+    public function getVersion(): ?Version
     {
         return $this->version;
     }
 
     /**
-     * Set ressource
-     *
-     * @param \App\Entity\Ressource $ressource
-     *
-     * @return Dac
+     * Set ressource.
      */
-    public function setRessource(?\App\Entity\Ressource $ressource): self
+    public function setRessource(?Ressource $ressource): self
     {
         $this->ressource = $ressource;
 
@@ -156,19 +135,15 @@ class Dac
     }
 
     /**
-     * Get ressource
-     *
-     * @return \App\Entity\Ressource
+     * Get ressource.
      */
-    public function getRessource(): ?\App\Entity\Ressource
+    public function getRessource(): ?Ressource
     {
         return $this->ressource;
     }
 
     /**
-     * Get demande
-     *
-     * @return integer
+     * Get demande.
      */
     public function getDemande(): ?int
     {
@@ -176,21 +151,19 @@ class Dac
     }
 
     /**
-     * Set demande
+     * Set demande.
      *
      * @param int
-     * @return Dac
      */
     public function setDemande(int $demande): self
     {
         $this->demande = $demande;
+
         return $this;
     }
 
     /**
-     * Get attribution
-     *
-     * @return integer
+     * Get attribution.
      */
     public function getAttribution(): ?int
     {
@@ -198,21 +171,19 @@ class Dac
     }
 
     /**
-     * Set attribution
+     * Set attribution.
      *
-     * @param integer
-     * @return Dac
+     * @param int
      */
     public function setAttribution(int $attribution): self
     {
         $this->attribution = $attribution;
+
         return $this;
     }
 
     /**
-     * Get consommation
-     *
-     * @return integer
+     * Get consommation.
      */
     public function getConsommation(): ?int
     {
@@ -220,21 +191,19 @@ class Dac
     }
 
     /**
-     * Set consommation
+     * Set consommation.
      *
-     * @param integer
-     * @return Dac
+     * @param int
      */
     public function setConsommation(int $consommation): self
     {
         $this->consommation = $consommation;
+
         return $this;
     }
 
     /**
-     * Set todof
-     *
-     * @param boolean $todof
+     * Set todof.
      *
      * @return Version
      */
@@ -246,9 +215,7 @@ class Dac
     }
 
     /**
-     * Get todof
-     *
-     * @return boolean
+     * Get todof.
      */
     public function getTodof(): bool
     {

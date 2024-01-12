@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,22 +24,16 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\Clessh;
-use App\Entity\CollaborateurVersion;
-
+use App\Entity\User;
 use App\Form\UserType;
-
 use App\GramcServices\ServiceJournal;
-
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * User controller.
@@ -49,53 +43,46 @@ use Doctrine\ORM\EntityManagerInterface;
 #[Route(path: 'user')]
 class UserController extends AbstractController
 {
-
     public function __construct(
         private ServiceJournal $sj,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /**
-     * Modification par le demandeur de la clé ssh liée à ce user
+     * Modification par le demandeur de la clé ssh liée à ce user.
      *
      * NOTE - Le demandeur ne peut PAS CHANGER AUTRE CHOSE
-     *
-     *
      */
     #[Route(path: '/{id}/modif', name: 'user_modif', methods: ['GET', 'POST'])]
     public function modifAction(Request $request, User $user): Response
     {
         $em = $this->em;
-        
-        if ($user == null)
-        {
-            $sj->throwException(__METHOD__ . ":" . __LINE__ . " ERREUR INTERNE: User null");
+
+        if (null == $user) {
+            $sj->throwException(__METHOD__.':'.__LINE__.' ERREUR INTERNE: User null');
         }
 
         $individu = $user->getIndividu();
         $clessh = $em->getRepository(Clessh::class)->findBy(['individu' => $individu, 'rvk' => false]);
 
         $old_clessh = $user->getClessh();
-        $form = $this->createForm(UserType::class, $user, ['clessh' => $clessh] );
+        $form = $this->createForm(UserType::class, $user, ['clessh' => $clessh]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->getData()->getCgu() == false)
-            {
-                $request->getSession()->getFlashbag()->add("flash erreur","Vous devez accepter les CGU");
-            }
-            else
-            {
+            if (false == $form->getData()->getCgu()) {
+                $request->getSession()->getFlashbag()->add('flash erreur', 'Vous devez accepter les CGU');
+            } else {
                 // Si on a changé de cle ssh, remettre à false le flag de déploiement
                 $new_clessh = $form->getData()->getClessh();
-                if ($old_clessh != null)
-                {
-                    if ($new_clessh != null && $old_clessh->getId() != $new_clessh->getId())
-                    {
+                if (null != $old_clessh) {
+                    if (null != $new_clessh && $old_clessh->getId() != $new_clessh->getId()) {
                         $user->setDeply(false);
                     }
                 }
                 $em->flush();
+
                 return $this->redirectToRoute('projet_accueil');
             }
         }
@@ -103,14 +90,16 @@ class UserController extends AbstractController
         // TODO - Traitement d'erreur si serveur est null
         $serveur_nom = $user->getServeur()->getNom();
         $serveur_cgu = $user->getServeur()->getCguUrl();
-        if ($serveur_cgu === null) $serveur_cgu = "";
-        
-        return $this->render('user/modif.html.twig', array(
+        if (null === $serveur_cgu) {
+            $serveur_cgu = '';
+        }
+
+        return $this->render('user/modif.html.twig', [
             'user' => $user,
             'clessh' => $clessh,
             'form' => $form->createView(),
             'serveur_cgu' => $serveur_cgu,
-            'serveur_nom' => $serveur_nom
-        ));
+            'serveur_nom' => $serveur_nom,
+        ]);
     }
 }

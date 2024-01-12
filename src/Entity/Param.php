@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,10 @@
 
 namespace App\Entity;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Code
+ * Code.
  */
 #[ORM\Table(name: 'param')]
 #[ORM\UniqueConstraint(columns: ['cle'])]
@@ -57,14 +56,11 @@ class Param
 
     public function __toString()
     {
-        return $this->cle . '='. $this->val;
+        return $this->cle.'='.$this->val;
     }
 
     /**
-     * Set cle
-     *
-     * @param string $cle
-     * @return Param
+     * Set cle.
      */
     public function setCle(string $cle): self
     {
@@ -74,19 +70,15 @@ class Param
     }
 
     /**
-     * Get cle
-     *
-     * @return string
+     * Get cle.
      */
     public function getCle(): ?string
     {
         return $this->cle;
     }
+
     /**
-     * Set val
-     *
-     * @param string $val
-     * @return Param
+     * Set val.
      */
     public function setVal(string $val): self
     {
@@ -94,10 +86,9 @@ class Param
 
         return $this;
     }
+
     /**
-     * Get val
-     *
-     * @return string
+     * Get val.
      */
     public function getVal(): ?string
     {

@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,13 @@
 
 namespace App\GramcServices;
 
-use App\Entity\Session;
 use App\Utils\Functions;
-use App\GramcServices\Etat;
-use App\GramcServices\GramcDate;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactoryInterface;
-
+use Symfony\Component\HttpFoundation\Request;
 
 class ServiceSessions
 {
@@ -43,7 +37,8 @@ class ServiceSessions
         private GramcDate $grdt,
         private FormFactoryInterface $ff,
         private EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 
     /************
      * Formulaire permettant de choisir une année
@@ -63,23 +58,23 @@ class ServiceSessions
     public function selectAnnee(Request $request, $annee = null): array
     {
         $grdt = $this->grdt;
-        
+
         $annee_max = new \DateTime($grdt->showYear().'-01-01');
-        $annee_min = new \DateTime('2023-01-01'); // Mesonet commence en 2023 
-        if ($annee === null) {
+        $annee_min = new \DateTime('2023-01-01'); // Mesonet commence en 2023
+        if (null === $annee) {
             $annee = $annee_max->format('Y');
         }
 
         $choices = array_reverse(Functions::choicesYear($annee_min, $annee_max, 0), true);
-        $form    = Functions::createFormBuilder($this->ff, ['annee' => $annee ])
+        $form = Functions::createFormBuilder($this->ff, ['annee' => $annee])
                     ->add(
                         'annee',
                         ChoiceType::class,
                         [
                             'multiple' => false,
-                            'required' =>  true,
-                            'label'    => '',
-                            'choices'  => $choices,
+                            'required' => true,
+                            'label' => '',
+                            'choices' => $choices,
                         ]
                     )
                     ->add('submit', SubmitType::class, ['label' => 'Choisir'])
@@ -90,6 +85,6 @@ class ServiceSessions
             $annee = $form->getData()['annee'];
         }
 
-        return ['form'  =>  $form, 'annee'    => $annee ];
+        return ['form' => $form, 'annee' => $annee];
     }
 }

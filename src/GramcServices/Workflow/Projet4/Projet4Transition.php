@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,18 +24,16 @@
 
 namespace App\GramcServices\Workflow\Projet4;
 
-use App\GramcServices\Workflow\Transition;
-use App\Utils\Functions;
-
-use App\GramcServices\Etat;
-use App\GramcServices\Signal;
-
 use App\Entity\Projet;
 use App\Entity\Version;
+use App\GramcServices\Etat;
+use App\GramcServices\Signal;
+use App\GramcServices\Workflow\Transition;
 use App\GramcServices\Workflow\Version4\Version4Workflow;
+use App\Utils\Functions;
 
 /***********************************************************************
- * 
+ *
  * Version4Workflow   = L'implémentation du workflow des versions
  * Version4Transition   pour des projets / versions de type 4 (projets dynamiques)
  *
@@ -45,10 +43,10 @@ class Projet4Transition extends Transition
 {
     private static $execute_en_cours = false;
 
-    ////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////
     public function canExecute(object $projet): bool
     {
-        $projet->getTypeProjet() == 4 || throw new \InvalidArgumentException();
+        4 == $projet->getTypeProjet() || throw new \InvalidArgumentException();
 
         // Pour éviter une boucle infinie entre projet et version !
         if (self::$execute_en_cours) {
@@ -57,33 +55,34 @@ class Projet4Transition extends Transition
             self::$execute_en_cours = true;
         }
 
-        $rtn    =   true;
+        $rtn = true;
         if (Transition::FAST == false && $this->getPropageSignal()) {
             $versionWorkflow = new Version4Workflow($this->sn, $this->sj, $this->ss, $this->em);
             foreach ($projet->getVersion() as $version) {
-                if ($version->getEtatVersion() != Etat::TERMINE && $version->getEtatVersion() != Etat::ANNULE) {
+                if (Etat::TERMINE != $version->getEtatVersion() && Etat::ANNULE != $version->getEtatVersion()) {
                     $output = $versionWorkflow->canExecute($this->getSignal(), $version);
-                    if ($output != true) {
-                        $this->sj->warningMessage(__METHOD__ . ':' . __LINE__ . " Version " . $version . " état "
-                            . Etat::getLibelle($version->getEtatVersion()) . " signal = " . Signal::getLibelle($this->getSignal()));
+                    if (true != $output) {
+                        $this->sj->warningMessage(__METHOD__.':'.__LINE__.' Version '.$version.' état '
+                            .Etat::getLibelle($version->getEtatVersion()).' signal = '.Signal::getLibelle($this->getSignal()));
                     }
                     $rtn = $rtn && $output;
                 }
             }
         }
         self::$execute_en_cours = false;
+
         return $rtn;
     }
 
-    ///////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////
     // Transmet le signal aux versions du projet qui ne sont ni annulées ni terminées
 
     public function execute(object $projet): bool
     {
-        $projet->getTypeProjet() == 4  || throw new \InvalidArgumentException();
+        4 == $projet->getTypeProjet() || throw new \InvalidArgumentException();
 
         if (Transition::DEBUG) {
-            $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " $this $projet");
+            $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__." $this $projet");
         }
 
         // Pour éviter une boucle infinie entre projet et version !
@@ -97,9 +96,11 @@ class Projet4Transition extends Transition
             $signal = $this->getSignal();
             $versionWorkflow = new Version4Workflow($this->sn, $this->sj, $this->ss, $this->em);
             foreach ($projet->getVersion() as $version) {
-                if ($version->getEtatVersion() != Etat::TERMINE && $version->getEtatVersion() != Etat::ANNULE) {
+                if (Etat::TERMINE != $version->getEtatVersion() && Etat::ANNULE != $version->getEtatVersion()) {
                     $return = $versionWorkflow->execute($signal, $version);
-                    if (Transition::DEBUG) $this->sj->debugMessage(">>> " . __FILE__ . ":" . __LINE__ . " version=$version signal=$signal rtn=" . Functions::show($rtn));
+                    if (Transition::DEBUG) {
+                        $this->sj->debugMessage('>>> '.__FILE__.':'.__LINE__." version=$version signal=$signal rtn=".Functions::show($rtn));
+                    }
                     $rtn = Functions::merge_return($rtn, $return);
                 }
             }
@@ -113,7 +114,7 @@ class Projet4Transition extends Transition
 
         self::$execute_en_cours = false;
         if (Transition::DEBUG) {
-            $this->sj->debugMessage("<<< " . __FILE__ . ":" . __LINE__ . " rtn = " . Functions::show($rtn));
+            $this->sj->debugMessage('<<< '.__FILE__.':'.__LINE__.' rtn = '.Functions::show($rtn));
         }
 
         return $rtn;

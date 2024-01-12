@@ -2,7 +2,7 @@
 
 /**
  * This file is part of GRAMC (Computing Ressource Granting Software)
- * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul
+ * GRAMC stands for : Gestion des Ressources et de leurs Attributions pour Mésocentre de Calcul.
  *
  * GRAMC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Thematique
+ * Thematique.
  */
 #[ORM\Table(name: 'thematique')]
 #[ORM\Entity]
@@ -42,7 +42,7 @@ class Thematique
     private $libelleThematique;
 
     /**
-     * @var integer
+     * @var int
      */
     #[ORM\Column(name: 'id_thematique', type: 'integer')]
     #[ORM\Id]
@@ -50,7 +50,7 @@ class Thematique
     private $idThematique;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\JoinTable(name: 'thematiqueExpert')]
     #[ORM\JoinColumn(name: 'id_thematique', referencedColumnName: 'id_thematique')]
@@ -59,42 +59,37 @@ class Thematique
     private $expert;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'prjThematique')]
     private $version;
 
-
-    //////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////
 
     public function getId(): ?int
     {
         return $this->getIdThematique();
     }
+
     public function __toString(): string
     {
         return $this->getLibelleThematique();
     }
 
-    //////////////////////////////////////////////////////////
-
+    // ////////////////////////////////////////////////////////
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->expert = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->version = new \Doctrine\Common\Collections\ArrayCollection();
-        //$this->projetTest = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->expert = new ArrayCollection();
+        $this->version = new ArrayCollection();
+        // $this->projetTest = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Set libelleThematique
-     *
-     * @param string $libelleThematique
-     *
-     * @return Thematique
+     * Set libelleThematique.
      */
     public function setLibelleThematique(string $libelleThematique): self
     {
@@ -104,9 +99,7 @@ class Thematique
     }
 
     /**
-     * Get libelleThematique
-     *
-     * @return string
+     * Get libelleThematique.
      */
     public function getLibelleThematique(): ?string
     {
@@ -114,9 +107,7 @@ class Thematique
     }
 
     /**
-     * Get idThematique
-     *
-     * @return integer
+     * Get idThematique.
      */
     public function getIdThematique(): ?int
     {
@@ -124,15 +115,11 @@ class Thematique
     }
 
     /**
-     * Add expert
-     *
-     * @param \App\Entity\Individu $expert
-     *
-     * @return Thematique
+     * Add expert.
      */
-    public function addExpert(\App\Entity\Individu $expert): self
+    public function addExpert(Individu $expert): self
     {
-        if (! $this->expert->contains($expert)) {
+        if (!$this->expert->contains($expert)) {
             $this->expert[] = $expert;
         }
 
@@ -140,20 +127,19 @@ class Thematique
     }
 
     /**
-     * Remove expert
-     *
-     * @param \App\Entity\Individu $expert
+     * Remove expert.
      */
-    public function removeExpert(\App\Entity\Individu $expert): self
+    public function removeExpert(Individu $expert): self
     {
         $this->expert->removeElement($expert);
+
         return $this;
     }
 
     /**
-     * Get expert
+     * Get expert.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getExpert()
     {
@@ -161,16 +147,11 @@ class Thematique
     }
 
     /**
-     * Add version
-     *
-     * @param \App\Entity\Version $version
-     *
-     * @return Thematique
+     * Add version.
      */
-    public function addVersion(\App\Entity\Version $version): self
+    public function addVersion(Version $version): self
     {
-        if (! $this->version->contains($version))
-        {
+        if (!$this->version->contains($version)) {
             $this->version[] = $version;
         }
 
@@ -178,20 +159,19 @@ class Thematique
     }
 
     /**
-     * Remove version
-     *
-     * @param \App\Entity\Version $version
+     * Remove version.
      */
-    public function removeVersion(\App\Entity\Version $version): self
+    public function removeVersion(Version $version): self
     {
         $this->version->removeElement($version);
+
         return $this;
     }
 
     /**
-     * Get version
+     * Get version.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getVersion()
     {
