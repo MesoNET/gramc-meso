@@ -29,11 +29,13 @@ use App\Entity\Thematique;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Thematique controller.
@@ -48,8 +50,8 @@ class ThematiqueController extends AbstractController
     /**
      * Lists all thematique entities.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'thematique_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -83,9 +85,8 @@ class ThematiqueController extends AbstractController
     /**
      * Creates a new thematique entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'thematique_new', methods: ['GET', 'POST'])]
     #[Route(path: '/ajouter', name: 'ajouter_thematique', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
@@ -128,9 +129,8 @@ class ThematiqueController extends AbstractController
     /**
      * Deletes a thematique entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_thematique', methods: ['GET'])]
     public function supprimerAction(Request $request, Thematique $thematique): Response
     {
@@ -148,9 +148,8 @@ class ThematiqueController extends AbstractController
     /**
      * Displays a form to edit an existing laboratoire entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modify', name: 'modifier_thematique', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Thematique $thematique): Response
     {
@@ -189,9 +188,8 @@ class ThematiqueController extends AbstractController
     /**
      * Finds and displays a thematique entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("GET")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}', name: 'thematique_show', methods: ['GET'])]
     public function showAction(Thematique $thematique): Response
     {
@@ -206,9 +204,8 @@ class ThematiqueController extends AbstractController
     /**
      * Displays a form to edit an existing thematique entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/edit', name: 'thematique_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Thematique $thematique): Response
     {
@@ -232,9 +229,8 @@ class ThematiqueController extends AbstractController
     /**
      * Deletes a thematique entity.
      *
-     * @Security("is_granted('ROLE_ADMIN')")
-     * Method("DELETE")
      */
+    #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}', name: 'thematique_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Thematique $thematique): Response
     {
@@ -255,7 +251,7 @@ class ThematiqueController extends AbstractController
      *
      * @param Thematique $thematique The thematique entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return Form The form
      */
     private function createDeleteForm(Thematique $thematique): FormInterface
     {
