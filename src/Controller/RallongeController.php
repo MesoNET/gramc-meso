@@ -50,6 +50,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -78,8 +79,8 @@ class RallongeController extends AbstractController
     /**
      * Affichage des rallonges dynamiques.
      *
-     * @Security("is_granted('ROLE_OBS')")
      */
+    #[isGranted('ROLE_OBS')]
     #[Route(path: '/dynamiques', name: 'rallonge_dynamique', methods: ['GET'])]
     public function rallongesDynamiquesAction(): Response
     {
@@ -133,8 +134,8 @@ class RallongeController extends AbstractController
     /**
      * Nouvelle rallonge.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/creation', name: 'nouvelle_rallonge', methods: ['GET'])]
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
@@ -163,9 +164,8 @@ class RallongeController extends AbstractController
     /**
      * Afficher une rallonge.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method("GET")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_rallonge', methods: ['GET'])]
     public function consulterAction(Request $request, Rallonge $rallonge): Response
     {
@@ -197,9 +197,8 @@ class RallongeController extends AbstractController
     /**
      * Modifier une rallonge.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method({"GET", "POST"})
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/modifier', name: 'modifier_rallonge', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Rallonge $rallonge): Response
     {
@@ -268,9 +267,8 @@ class RallongeController extends AbstractController
     /**
      * TODO - VIRER CETTE FONCTION.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method("GET")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/avant_envoyer', name: 'avant_envoyer_rallonge', methods: ['GET'])]
     public function avantEnvoyerAction(Request $request, Rallonge $rallonge): Response
     {
@@ -301,9 +299,8 @@ class RallongeController extends AbstractController
     /**
      * Envoi d'une rallonge en expertise.
      *
-     * @Security("is_granted('ROLE_DEMANDEUR')")
-     * Method("GET")
      */
+    #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/envoyer', name: 'envoyer_rallonge', methods: ['GET'])]
     public function envoyerAction(Request $request, Rallonge $rallonge): Response
     {
