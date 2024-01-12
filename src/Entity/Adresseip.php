@@ -47,7 +47,7 @@ class Adresseip
     /**
      * @var string
      */
-    #[ORM\Column(name: 'adresse', type: 'text', length: 45, nullable: false)]
+    #[ORM\Column(name: 'adresse', type: 'string', length: 45, nullable: false)]
     private $adresse;
 
     /**
