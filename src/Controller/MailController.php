@@ -34,13 +34,14 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 // ///////////////////////////////////////////////////
 /**
  * Mail controller.
  *
- * @Security("is_granted('ROLE_ADMIN')")
  */
+#[isGranted('ROLE_ADMIN')]
 #[Route(path: 'mail')]
 class MailController extends AbstractController
 {
@@ -56,9 +57,9 @@ class MailController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
      *
      **/
+    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
     #[Route(path: '/{id}/mail_to_responsables_fiche', name: 'mail_to_responsables_fiche', methods: ['GET', 'POST'])]
     public function mailToResponsablesFicheAction(Request $request, Session $session): Response
     {
@@ -125,8 +126,8 @@ class MailController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
      **/
+    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
     #[Route(path: '/{id}/mail_to_responsables_rallonge', name: 'mail_to_responsables_rallonge', methods: ['GET', 'POST'])]
     public function mailToResponsablesRallonge(Request $request, Session $session): Response
     {
@@ -152,8 +153,8 @@ class MailController extends AbstractController
     }
 
     /**
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESIDENT')")
      **/
+    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
     #[Route(path: '/{id}/mail_to_responsables', name: 'mail_to_responsables', methods: ['GET', 'POST'])]
     public function mailToResponsablesAction(Request $request, Session $session): Response
     {
