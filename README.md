@@ -198,18 +198,19 @@ Si APP_DEBUG vaut zéro le mail sera envoyé à titi@toto.fr
 Si APP_DEBUG vaut 1 le mail sera envoyé à MAILER_RECIPIENT
 
 **Installation d'une base de donnees déjà en exploitation sur une instance de développement:**
-
+1. Copier reprise/reload-db.dist en reload-db et copier la DATABASE_URL du .env.local pour obtenir une ligne similaire à:
+export DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8&charset=utf8mb4"
+1. Copier le dump de la base de données  sous le nom reprise/gramc_reprise.sql
+1. puis lancez le script
 ~~~~
-cd reprise
-sudo -u www-data ./reload-db un-dump-de-la-bd.sql
+composer db
 ~~~~
 
 **Installation d'une base de données vide sur une instance de développement:**
+~~~~
+composer db:schema
+~~~~
 
-~~~~
-cd reprise
-sudo -u www-data ./reload-db gramc-meso.sql.dist
-~~~~
 
 La commande reload-db va effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
 
