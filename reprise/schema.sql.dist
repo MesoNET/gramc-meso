@@ -1,0 +1,693 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : lun. 15 jan. 2024 à 08:51
+-- Version du serveur : 8.0.31
+-- Version de PHP : 8.1.23
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `gramc`
+--
+CREATE DATABASE IF NOT EXISTS `gramc` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `gramc`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `adresseip`
+--
+
+DROP TABLE IF EXISTS `adresseip`;
+CREATE TABLE IF NOT EXISTS `adresseip` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_labo` int DEFAULT NULL,
+  `adresse` tinytext COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `adresseip` (`adresse`(44),`id_labo`),
+  KEY `IDX_B7A04D9718475F5E` (`id_labo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `clessh`
+--
+
+DROP TABLE IF EXISTS `clessh`;
+CREATE TABLE IF NOT EXISTS `clessh` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_individu` int DEFAULT NULL,
+  `nom` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pub` varchar(5000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `emp` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rvk` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pubuniq` (`emp`),
+  UNIQUE KEY `nom_individu` (`id_individu`,`nom`),
+  KEY `IDX_7E54547CE3FC35B` (`id_individu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `collaborateurversion`
+--
+
+DROP TABLE IF EXISTS `collaborateurversion`;
+CREATE TABLE IF NOT EXISTS `collaborateurversion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_coll_statut` smallint DEFAULT NULL,
+  `id_version` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_coll_labo` int DEFAULT NULL,
+  `id_coll_etab` int DEFAULT NULL,
+  `id_collaborateur` int DEFAULT NULL,
+  `responsable` tinyint(1) NOT NULL,
+  `deleted` tinyint(1) NOT NULL COMMENT 'supprimé prochainement',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_version_2` (`id_version`,`id_collaborateur`),
+  KEY `id_coll_labo` (`id_coll_labo`),
+  KEY `id_coll_statut` (`id_coll_statut`),
+  KEY `id_coll_etab` (`id_coll_etab`),
+  KEY `collaborateur_collaborateurprojet_fk` (`id_collaborateur`),
+  KEY `id_version` (`id_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `dac`
+--
+
+DROP TABLE IF EXISTS `dac`;
+CREATE TABLE IF NOT EXISTS `dac` (
+  `id_dac` int NOT NULL AUTO_INCREMENT,
+  `id_ressource` int DEFAULT NULL,
+  `id_version` varchar(13) COLLATE utf8mb4_general_ci NOT NULL,
+  `demande` int NOT NULL COMMENT 'demande, l''unité est celle de la ressource associée',
+  `attribution` int NOT NULL COMMENT 'attribution, l''unité est celle de la ressource associée',
+  `todof` tinyint(1) NOT NULL,
+  `consommation` int NOT NULL COMMENT 'consommation, l''unité est celle de la ressource associée',
+  PRIMARY KEY (`id_dac`),
+  KEY `IDX_18C2D0EA13AAF963` (`id_ressource`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `dar`
+--
+
+DROP TABLE IF EXISTS `dar`;
+CREATE TABLE IF NOT EXISTS `dar` (
+  `id_dar` int NOT NULL AUTO_INCREMENT,
+  `id_ressource` int DEFAULT NULL,
+  `id_rallonge` varchar(15) COLLATE utf8mb4_general_ci NOT NULL,
+  `demande` int NOT NULL COMMENT 'demande, l''unité est celle de la ressource associée',
+  `attribution` int NOT NULL COMMENT 'attribution, l''unité est celle de la ressource associée',
+  `todof` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_dar`),
+  KEY `IDX_7272F01813AAF963` (`id_ressource`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `doctrine_migration_versions`
+--
+
+DROP TABLE IF EXISTS `doctrine_migration_versions`;
+CREATE TABLE IF NOT EXISTS `doctrine_migration_versions` (
+  `version` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `etablissement`
+--
+
+DROP TABLE IF EXISTS `etablissement`;
+CREATE TABLE IF NOT EXISTS `etablissement` (
+  `id_etab` int NOT NULL AUTO_INCREMENT,
+  `libelle_etab` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_etab`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `expertise`
+--
+
+DROP TABLE IF EXISTS `expertise`;
+CREATE TABLE IF NOT EXISTS `expertise` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_version` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_rallonge` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_expert` int DEFAULT NULL,
+  `validation` int NOT NULL,
+  `commentaire_interne` text COLLATE utf8mb4_unicode_ci,
+  `commentaire_externe` text COLLATE utf8mb4_unicode_ci,
+  `definitif` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_version_2` (`id_version`,`id_expert`),
+  KEY `IDX_229ADF8BE3D1DEE5` (`id_rallonge`),
+  KEY `version_expertise_fk` (`id_version`),
+  KEY `expert_expertise_fk` (`id_expert`),
+  KEY `id_version` (`id_version`),
+  KEY `id_expert` (`id_expert`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `formation`
+--
+
+DROP TABLE IF EXISTS `formation`;
+CREATE TABLE IF NOT EXISTS `formation` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `numero_form` int DEFAULT NULL,
+  `acro_form` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom_form` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `formationversion`
+--
+
+DROP TABLE IF EXISTS `formationversion`;
+CREATE TABLE IF NOT EXISTS `formationversion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_version` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_formation` int DEFAULT NULL,
+  `nombre` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_version2` (`id_version`,`id_formation`),
+  KEY `id_formation` (`id_formation`),
+  KEY `id_version` (`id_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `individu`
+--
+
+DROP TABLE IF EXISTS `individu`;
+CREATE TABLE IF NOT EXISTS `individu` (
+  `id_individu` int NOT NULL AUTO_INCREMENT,
+  `id_statut` smallint DEFAULT NULL,
+  `id_labo` int DEFAULT NULL,
+  `id_etab` int DEFAULT NULL,
+  `creation_stamp` datetime NOT NULL,
+  `nom` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prenom` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `admin` tinyint(1) NOT NULL,
+  `sysadmin` tinyint(1) NOT NULL,
+  `obs` tinyint(1) NOT NULL,
+  `expert` tinyint(1) NOT NULL,
+  `valideur` tinyint(1) NOT NULL,
+  `president` tinyint(1) NOT NULL,
+  `desactive` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_individu`),
+  UNIQUE KEY `mail` (`mail`),
+  KEY `id_labo` (`id_labo`),
+  KEY `id_statut` (`id_statut`),
+  KEY `id_etab` (`id_etab`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `invitation`
+--
+
+DROP TABLE IF EXISTS `invitation`;
+CREATE TABLE IF NOT EXISTS `invitation` (
+  `id_invitation` int NOT NULL AUTO_INCREMENT,
+  `id_inviting` int DEFAULT NULL,
+  `id_invited` int DEFAULT NULL,
+  `clef` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `creation_stamp` datetime NOT NULL,
+  PRIMARY KEY (`id_invitation`),
+  UNIQUE KEY `clef` (`clef`),
+  UNIQUE KEY `invit` (`id_inviting`,`id_invited`),
+  KEY `IDX_F11D61A2E37E3182` (`id_inviting`),
+  KEY `IDX_F11D61A25E3046DB` (`id_invited`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `journal`
+--
+
+DROP TABLE IF EXISTS `journal`;
+CREATE TABLE IF NOT EXISTS `journal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `individu` int DEFAULT NULL,
+  `gramc_sess_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stamp` datetime NOT NULL,
+  `ip` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `niveau` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_C1A7E74D5EE42FCE` (`individu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `laboratoire`
+--
+
+DROP TABLE IF EXISTS `laboratoire`;
+CREATE TABLE IF NOT EXISTS `laboratoire` (
+  `id_labo` int NOT NULL AUTO_INCREMENT,
+  `numero_labo` int NOT NULL,
+  `acro_labo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nom_labo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_labo`),
+  UNIQUE KEY `acro` (`acro_labo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `param`
+--
+
+DROP TABLE IF EXISTS `param`;
+CREATE TABLE IF NOT EXISTS `param` (
+  `id_param` int NOT NULL AUTO_INCREMENT,
+  `cle` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `val` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_param`),
+  UNIQUE KEY `UNIQ_A4FA7C8941401D17` (`cle`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `projet`
+--
+
+DROP TABLE IF EXISTS `projet`;
+CREATE TABLE IF NOT EXISTS `projet` (
+  `id_projet` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_veract` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_verder` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `etat_projet` int NOT NULL,
+  `type_projet` int NOT NULL,
+  `limit_date` datetime DEFAULT NULL,
+  `tetat_projet` int DEFAULT NULL,
+  PRIMARY KEY (`id_projet`),
+  UNIQUE KEY `UNIQ_50159CA98AC746EE` (`id_veract`),
+  UNIQUE KEY `UNIQ_50159CA9333586B6` (`id_verder`),
+  KEY `etat_projet` (`etat_projet`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `publication`
+--
+
+DROP TABLE IF EXISTS `publication`;
+CREATE TABLE IF NOT EXISTS `publication` (
+  `id_publi` int NOT NULL AUTO_INCREMENT,
+  `refbib` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `doi` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `open_url` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `annee` int NOT NULL,
+  PRIMARY KEY (`id_publi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `publicationprojet`
+--
+
+DROP TABLE IF EXISTS `publicationprojet`;
+CREATE TABLE IF NOT EXISTS `publicationprojet` (
+  `id_projet` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_publi` int NOT NULL,
+  PRIMARY KEY (`id_projet`,`id_publi`),
+  KEY `IDX_385F338F76222944` (`id_projet`),
+  KEY `IDX_385F338F3BE1E455` (`id_publi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `rallonge`
+--
+
+DROP TABLE IF EXISTS `rallonge`;
+CREATE TABLE IF NOT EXISTS `rallonge` (
+  `id_rallonge` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_version` varchar(13) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_expert` int DEFAULT NULL,
+  `etat_rallonge` int NOT NULL,
+  `prj_justif_rallonge` text COLLATE utf8mb4_unicode_ci,
+  `commentaire_interne` text COLLATE utf8mb4_unicode_ci,
+  `commentaire_externe` text COLLATE utf8mb4_unicode_ci,
+  `validation` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_rallonge`),
+  KEY `IDX_B30A3270692C26AF` (`id_expert`),
+  KEY `id_version` (`id_version`),
+  KEY `num_rallonge` (`id_rallonge`),
+  KEY `etat_rallonge` (`etat_rallonge`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `rapportactivite`
+--
+
+DROP TABLE IF EXISTS `rapportactivite`;
+CREATE TABLE IF NOT EXISTS `rapportactivite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_projet` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `annee` int NOT NULL,
+  `nom_fichier` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `taille` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_projet_2` (`id_projet`,`annee`),
+  KEY `id_projet` (`id_projet`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ressource`
+--
+
+DROP TABLE IF EXISTS `ressource`;
+CREATE TABLE IF NOT EXISTS `ressource` (
+  `id_ressource` int NOT NULL AUTO_INCREMENT,
+  `id_serveur` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nom` varchar(8) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'optionnel, voir la fonction ServiceRessources::getNomComplet',
+  `descr` varchar(2000) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `doc_url` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `unite` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'unité utilisée pour les allocations',
+  `max_dem` int DEFAULT NULL COMMENT 'Valeur max qu''on a le droit de demander',
+  `co2` int DEFAULT NULL COMMENT 'gramme de co2 émis par unite et par heure',
+  PRIMARY KEY (`id_ressource`),
+  KEY `IDX_939F4544A951FAD6` (`id_serveur`),
+  KEY `nom` (`nom`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `serveur`
+--
+
+DROP TABLE IF EXISTS `serveur`;
+CREATE TABLE IF NOT EXISTS `serveur` (
+  `nom` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `descr` varchar(200) COLLATE utf8mb4_general_ci DEFAULT '',
+  `cgu_url` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `admname` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'username symfony pour l''api',
+  PRIMARY KEY (`nom`),
+  UNIQUE KEY `admname` (`admname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `sso`
+--
+
+DROP TABLE IF EXISTS `sso`;
+CREATE TABLE IF NOT EXISTS `sso` (
+  `eppn` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_individu` int DEFAULT NULL,
+  PRIMARY KEY (`eppn`),
+  KEY `id_individu` (`id_individu`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `statut`
+--
+
+DROP TABLE IF EXISTS `statut`;
+CREATE TABLE IF NOT EXISTS `statut` (
+  `id_statut` smallint NOT NULL,
+  `libelle_statut` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permanent` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_statut`),
+  KEY `id_statut` (`id_statut`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `thematique`
+--
+
+DROP TABLE IF EXISTS `thematique`;
+CREATE TABLE IF NOT EXISTS `thematique` (
+  `id_thematique` int NOT NULL AUTO_INCREMENT,
+  `libelle_thematique` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id_thematique`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `thematiqueexpert`
+--
+
+DROP TABLE IF EXISTS `thematiqueexpert`;
+CREATE TABLE IF NOT EXISTS `thematiqueexpert` (
+  `id_thematique` int NOT NULL,
+  `id_expert` int NOT NULL,
+  PRIMARY KEY (`id_thematique`,`id_expert`),
+  KEY `IDX_D89754909F04557F` (`id_thematique`),
+  KEY `IDX_D8975490692C26AF` (`id_expert`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_serveur` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_individu` int DEFAULT NULL,
+  `id_projet` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_clessh` int DEFAULT NULL,
+  `loginname` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login` tinyint(1) NOT NULL COMMENT 'login sur le serveur lié',
+  `password` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cpassword` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `expire` tinyint(1) DEFAULT NULL,
+  `pass_expiration` datetime DEFAULT NULL,
+  `cgu` tinyint(1) NOT NULL,
+  `deply` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `loginname` (`id_serveur`,`loginname`),
+  UNIQUE KEY `i_p_s` (`id_individu`,`id_projet`,`id_serveur`),
+  KEY `IDX_8D93D649A951FAD6` (`id_serveur`),
+  KEY `IDX_8D93D649E3FC35B` (`id_individu`),
+  KEY `IDX_8D93D64976222944` (`id_projet`),
+  KEY `IDX_8D93D6495863E191` (`id_clessh`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `version`
+--
+
+DROP TABLE IF EXISTS `version`;
+CREATE TABLE IF NOT EXISTS `version` (
+  `id_version` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `maj_ind` int DEFAULT NULL,
+  `prj_id_thematique` int DEFAULT NULL,
+  `id_projet` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `etat_version` int DEFAULT NULL,
+  `type_version` int DEFAULT NULL COMMENT 'type du projet associé (le type du projet peut changer)',
+  `prj_l_labo` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_titre` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_financement` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_genci_machines` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_genci_centre` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_genci_heures` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prj_expose` longtext COLLATE utf8mb4_unicode_ci,
+  `prj_justif_renouv` longtext COLLATE utf8mb4_unicode_ci,
+  `prj_fiche_val` tinyint(1) DEFAULT NULL,
+  `prj_genci_dari` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code_nom` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code_licence` text COLLATE utf8mb4_unicode_ci,
+  `libelle_thematique` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `maj_stamp` datetime DEFAULT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `limit_date` datetime DEFAULT NULL,
+  `prj_fiche_len` int DEFAULT NULL,
+  `cgu` tinyint(1) DEFAULT NULL,
+  `nb_version` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Numéro de version (01,02,03,...)',
+  PRIMARY KEY (`id_version`),
+  KEY `IDX_BF1CD3C32EE4D7B` (`maj_ind`),
+  KEY `etat_version` (`etat_version`),
+  KEY `id_projet` (`id_projet`),
+  KEY `prj_id_thematique` (`prj_id_thematique`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `adresseip`
+--
+ALTER TABLE `adresseip`
+  ADD CONSTRAINT `FK_B7A04D9718475F5E` FOREIGN KEY (`id_labo`) REFERENCES `laboratoire` (`id_labo`);
+
+--
+-- Contraintes pour la table `clessh`
+--
+ALTER TABLE `clessh`
+  ADD CONSTRAINT `FK_7E54547CE3FC35B` FOREIGN KEY (`id_individu`) REFERENCES `individu` (`id_individu`);
+
+--
+-- Contraintes pour la table `collaborateurversion`
+--
+ALTER TABLE `collaborateurversion`
+  ADD CONSTRAINT `FK_B49A55AD2667DCD9` FOREIGN KEY (`id_coll_statut`) REFERENCES `statut` (`id_statut`),
+  ADD CONSTRAINT `FK_B49A55AD31598A15` FOREIGN KEY (`id_coll_labo`) REFERENCES `laboratoire` (`id_labo`),
+  ADD CONSTRAINT `FK_B49A55AD3208B7A` FOREIGN KEY (`id_coll_etab`) REFERENCES `etablissement` (`id_etab`),
+  ADD CONSTRAINT `FK_B49A55AD61817AB3` FOREIGN KEY (`id_version`) REFERENCES `version` (`id_version`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_B49A55ADC9246DB6` FOREIGN KEY (`id_collaborateur`) REFERENCES `individu` (`id_individu`);
+
+--
+-- Contraintes pour la table `dac`
+--
+ALTER TABLE `dac`
+  ADD CONSTRAINT `FK_18C2D0EA13AAF963` FOREIGN KEY (`id_ressource`) REFERENCES `ressource` (`id_ressource`);
+
+--
+-- Contraintes pour la table `dar`
+--
+ALTER TABLE `dar`
+  ADD CONSTRAINT `FK_7272F01813AAF963` FOREIGN KEY (`id_ressource`) REFERENCES `ressource` (`id_ressource`);
+
+--
+-- Contraintes pour la table `expertise`
+--
+ALTER TABLE `expertise`
+  ADD CONSTRAINT `FK_229ADF8B61817AB3` FOREIGN KEY (`id_version`) REFERENCES `version` (`id_version`),
+  ADD CONSTRAINT `FK_229ADF8B692C26AF` FOREIGN KEY (`id_expert`) REFERENCES `individu` (`id_individu`),
+  ADD CONSTRAINT `FK_229ADF8BE3D1DEE5` FOREIGN KEY (`id_rallonge`) REFERENCES `rallonge` (`id_rallonge`);
+
+--
+-- Contraintes pour la table `formationversion`
+--
+ALTER TABLE `formationversion`
+  ADD CONSTRAINT `FK_A98B03F161817AB3` FOREIGN KEY (`id_version`) REFERENCES `version` (`id_version`),
+  ADD CONSTRAINT `FK_A98B03F1C0759D98` FOREIGN KEY (`id_formation`) REFERENCES `formation` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `individu`
+--
+ALTER TABLE `individu`
+  ADD CONSTRAINT `FK_5EE42FCE18475F5E` FOREIGN KEY (`id_labo`) REFERENCES `laboratoire` (`id_labo`),
+  ADD CONSTRAINT `FK_5EE42FCE2A3E5E31` FOREIGN KEY (`id_etab`) REFERENCES `etablissement` (`id_etab`),
+  ADD CONSTRAINT `FK_5EE42FCEC3534552` FOREIGN KEY (`id_statut`) REFERENCES `statut` (`id_statut`);
+
+--
+-- Contraintes pour la table `invitation`
+--
+ALTER TABLE `invitation`
+  ADD CONSTRAINT `FK_F11D61A25E3046DB` FOREIGN KEY (`id_invited`) REFERENCES `individu` (`id_individu`),
+  ADD CONSTRAINT `FK_F11D61A2E37E3182` FOREIGN KEY (`id_inviting`) REFERENCES `individu` (`id_individu`);
+
+--
+-- Contraintes pour la table `journal`
+--
+ALTER TABLE `journal`
+  ADD CONSTRAINT `FK_C1A7E74D5EE42FCE` FOREIGN KEY (`individu`) REFERENCES `individu` (`id_individu`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `projet`
+--
+ALTER TABLE `projet`
+  ADD CONSTRAINT `FK_50159CA9333586B6` FOREIGN KEY (`id_verder`) REFERENCES `version` (`id_version`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_50159CA98AC746EE` FOREIGN KEY (`id_veract`) REFERENCES `version` (`id_version`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `publicationprojet`
+--
+ALTER TABLE `publicationprojet`
+  ADD CONSTRAINT `FK_385F338F3BE1E455` FOREIGN KEY (`id_publi`) REFERENCES `publication` (`id_publi`),
+  ADD CONSTRAINT `FK_385F338F76222944` FOREIGN KEY (`id_projet`) REFERENCES `projet` (`id_projet`);
+
+--
+-- Contraintes pour la table `rallonge`
+--
+ALTER TABLE `rallonge`
+  ADD CONSTRAINT `FK_B30A327061817AB3` FOREIGN KEY (`id_version`) REFERENCES `version` (`id_version`),
+  ADD CONSTRAINT `FK_B30A3270692C26AF` FOREIGN KEY (`id_expert`) REFERENCES `individu` (`id_individu`);
+
+--
+-- Contraintes pour la table `rapportactivite`
+--
+ALTER TABLE `rapportactivite`
+  ADD CONSTRAINT `FK_4E9BB65D76222944` FOREIGN KEY (`id_projet`) REFERENCES `projet` (`id_projet`);
+
+--
+-- Contraintes pour la table `ressource`
+--
+ALTER TABLE `ressource`
+  ADD CONSTRAINT `FK_939F4544A951FAD6` FOREIGN KEY (`id_serveur`) REFERENCES `serveur` (`nom`);
+
+--
+-- Contraintes pour la table `sso`
+--
+ALTER TABLE `sso`
+  ADD CONSTRAINT `FK_70E959E7E3FC35B` FOREIGN KEY (`id_individu`) REFERENCES `individu` (`id_individu`);
+
+--
+-- Contraintes pour la table `thematiqueexpert`
+--
+ALTER TABLE `thematiqueexpert`
+  ADD CONSTRAINT `FK_D8975490692C26AF` FOREIGN KEY (`id_expert`) REFERENCES `individu` (`id_individu`),
+  ADD CONSTRAINT `FK_D89754909F04557F` FOREIGN KEY (`id_thematique`) REFERENCES `thematique` (`id_thematique`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
