@@ -37,11 +37,9 @@ web/tmp/*
 .env.local
 .idea
 adminer\.php
-
 vendor/**
 tools/phpstan/**
 tools/php-cs-fixer/**
-
 doc/**/*.png
 
 ###> symfony/framework-bundle ###
