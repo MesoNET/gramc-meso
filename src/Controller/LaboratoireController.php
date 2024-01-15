@@ -28,7 +28,6 @@ use App\Entity\Adresseip;
 use App\Entity\Laboratoire;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -36,7 +35,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -52,7 +51,6 @@ class LaboratoireController extends AbstractController
 
     /**
      * Liste tous les laboratoires.
-     *
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET'])]
@@ -75,9 +73,8 @@ class LaboratoireController extends AbstractController
 
     /**
      * Ajoute un nouveau laboratoire.
-     *
      */
-    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
+    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_laboratoire', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -110,9 +107,8 @@ class LaboratoireController extends AbstractController
 
     /**
      * Modifie un laboratoire.
-     *
      */
-    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
+    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
     #[Route(path: '/{id}/modifier', name: 'modifier_laboratoire', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
@@ -232,9 +228,8 @@ class LaboratoireController extends AbstractController
 
     /**
      * Supprime un laboratoire.
-     *
      */
-    #[isGranted('ROLE_ADMIN'||'ROLE_VALIDEUR')]
+    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_laboratoire', methods: ['GET'])]
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {
