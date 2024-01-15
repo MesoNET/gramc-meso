@@ -46,6 +46,11 @@ vos informations. <br><strong>Tous les champs doivent être renseignés.</strong
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
+    {% for message in app.flashes('success') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
     <p>&nbsp;</p>
     <div class="information attention">
         <em>Si votre laboratoire ne figure pas dans la liste,
