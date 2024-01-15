@@ -181,18 +181,18 @@ class GramcSessionController extends AbstractController
         $individu = $this->ts->getToken()->getUser();
 
         if ('anon.' == $individu || !($individu instanceof Individu)) {
-            return $this->redirectToRoute('profil');
+            return $this->redirectToRoute('accueil');
         }
         $old_individu = clone $individu;
 
         $form = $this->createForm(IndividuType::class, $individu, ['mail' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($old_individu->isPermanent() != $individu->isPermanent() && false == $individu->isPermanent()) {
+            if ($old_individu->isPermanent() != $individu->isPermanent() && !$individu->isPermanent()) {
                 $sj->warningMessage(__METHOD__.':'.__LINE__.' '.$individu." cesse d'être permanent !!");
             }
 
-            if ($old_individu->isFromLaboRegional() != $individu->isFromLaboRegional() && false == $individu->isFromLaboRegional()) {
+            if ($old_individu->isFromLaboRegional() != $individu->isFromLaboRegional() && !$individu->isFromLaboRegional()) {
                 $sj->warningMessage(__METHOD__.':'.__LINE__.' '.$individu." cesse d'être d'un labo regional !!");
             }
 
@@ -241,7 +241,11 @@ class GramcSessionController extends AbstractController
                 }
             }
 
-            return $this->redirectToRoute('accueil');
+            $this->addFlash(
+                'success',
+                'Vos modifications ont été enregistrées.'
+            );
+            return $this->redirectToRoute('profil');
         } else {
             return $this->render('default/profil.html.twig', ['form' => $form->createView(), 'individu' => $individu]);
         }
