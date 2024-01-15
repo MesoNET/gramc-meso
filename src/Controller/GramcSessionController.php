@@ -181,7 +181,7 @@ class GramcSessionController extends AbstractController
         $individu = $this->ts->getToken()->getUser();
 
         if ('anon.' == $individu || !($individu instanceof Individu)) {
-            return $this->redirectToRoute('accueil');
+            return $this->redirectToRoute('profil');
         }
         $old_individu = clone $individu;
 
