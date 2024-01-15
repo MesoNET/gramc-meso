@@ -43,6 +43,7 @@ mesocentres/
 .env.local
 .idea
 adminer\.php
+reprise/reload-db
 vendor/**
 tools/phpstan/**
 tools/php-cs-fixer/**
