@@ -96,6 +96,11 @@
             "php bin/console doctrine:migrations:diff",
             "php bin/console doctrine:migrations:migrate --allow-no-migration"
         ],
+        "db:schema": [
+            "sh reprise/reload-db ./reprise/schema.sql.dist",
+            "php bin/console doctrine:migrations:diff",
+            "php bin/console doctrine:migrations:migrate --allow-no-migration"
+        ],
         "test:cs": [
             "vendor/bin/php-cs-fixer fix --dry-run"
         ],
