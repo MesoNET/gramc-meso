@@ -1,0 +1,5 @@
+actor: ApplicationTester
+suite_namespace: App\Tests\Application
+modules:
+    # enable helpers as array
+    enabled: []
