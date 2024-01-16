@@ -44,14 +44,6 @@ class Dac
     private $idDac;
 
     /**
-     * @var Version
-     */
-    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
-    #[ORM\Column(name: 'id_version', type: 'string', length: 13)]
-    #[ORM\ManyToOne(targetEntity: 'App\Entity\Version', inversedBy: 'dac')]
-    private $version;
-
-    /**
      * @var Ressource
      */
     #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
@@ -83,6 +75,10 @@ class Dac
     #[ORM\Column(name: 'consommation', type: 'integer', nullable: false, options: ['comment' => "consommation, l'unité est celle de la ressource associée"])]
     private $consommation = 0;
 
+    #[ORM\ManyToOne(inversedBy: 'dac')]
+    #[ORM\JoinColumn(name: 'id_version', referencedColumnName: 'id_version')]
+    private ?Version $version = null;
+
     /**
      * Get idDac.
      */
@@ -104,24 +100,6 @@ class Dac
         if (null != $version) {
             $this->version = $version;
         }
-    }
-
-    /**
-     * Set version.
-     */
-    public function setVersion(?Version $version): self
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * Get version.
-     */
-    public function getVersion(): ?Version
-    {
-        return $this->version;
     }
 
     /**
@@ -225,5 +203,17 @@ class Dac
     public function isTodof(): ?bool
     {
         return $this->todof;
+    }
+
+    public function getVersion(): ?Version
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?Version $version): static
+    {
+        $this->version = $version;
+
+        return $this;
     }
 }

@@ -230,12 +230,6 @@ class Version implements Demande
     /**
      * @var Collection
      */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'version', cascade: ['persist'])]
-    private $dac;
-
-    /**
-     * @var Collection
-     */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Expertise', mappedBy: 'version', cascade: ['persist'])]
     private $expertise;
 
@@ -256,6 +250,9 @@ class Version implements Demande
      */
     #[ORM\OneToOne(targetEntity: '\App\Entity\Projet', mappedBy: 'versionActive', cascade: ['persist'])]
     private $versionActive;
+
+    #[ORM\OneToMany(mappedBy: 'version', targetEntity: Dac::class)]
+    private Collection $dac;
 
     // /////////////////////////////////////////////////////////
 
@@ -862,39 +859,6 @@ class Version implements Demande
     {
         return $this->rallonge;
     }
-
-    /**
-     * Add dac.
-     */
-    public function addDac(Dac $dac): self
-    {
-        if (!$this->dac->contains($dac)) {
-            $this->dac[] = $dac;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove dac.
-     */
-    public function removeDac(Dac $dac): self
-    {
-        $this->dac->removeElement($dac);
-
-        return $this;
-    }
-
-    /**
-     * Get dac.
-     *
-     * @return Collection
-     */
-    public function getDac()
-    {
-        return $this->dac;
-    }
-
     // Expertise
 
     /**
@@ -1433,6 +1397,36 @@ class Version implements Demande
         }
 
         $this->versionActive = $versionActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dac>
+     */
+    public function getDac(): Collection
+    {
+        return $this->dac;
+    }
+
+    public function addDac(Dac $dac): static
+    {
+        if (!$this->dac->contains($dac)) {
+            $this->dac->add($dac);
+            $dac->setVersion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDac(Dac $dac): static
+    {
+        if ($this->dac->removeElement($dac)) {
+            // set the owning side to null (unless already changed)
+            if ($dac->getVersion() === $this) {
+                $dac->setVersion(null);
+            }
+        }
 
         return $this;
     }
