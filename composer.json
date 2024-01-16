@@ -42,6 +42,8 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-doctrine2": "^3.0",
         "codeception/module-symfony": "^3.3",
         "friendsofphp/php-cs-fixer": "*",
         "symfony/browser-kit": "^7.0",
