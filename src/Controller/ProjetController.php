@@ -48,6 +48,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,7 +99,6 @@ class ProjetController extends AbstractController
 
     /**
      * Lists all projet entities.
-     *
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/', name: 'projet_index', methods: ['GET'])]
@@ -117,7 +117,6 @@ class ProjetController extends AbstractController
      * Rgpd !
      *
      * Ne fait rien, affiche simplement la commande à exécuter
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/rgpd', name: 'rgpd', methods: ['GET'])]
@@ -128,7 +127,6 @@ class ProjetController extends AbstractController
 
     /**
      * fermer un projet.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fermer', name: 'fermer_projet', methods: ['GET', 'POST'])]
@@ -157,7 +155,6 @@ class ProjetController extends AbstractController
 
     /**
      * Retour en arrière: un projet en validation repasse en édition.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/back', name: 'back_version', methods: ['GET', 'POST'])]
@@ -210,7 +207,6 @@ class ProjetController extends AbstractController
     /**
      * L'admin a cliqué sur le bouton Forward pour envoyer une version à l'expert
      * à la place du responsable.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fwd', name: 'fwd_version', methods: ['GET', 'POST'])]
@@ -260,7 +256,6 @@ class ProjetController extends AbstractController
      * Résumés de tous les projets qui ont une version cette annee.
      *
      * Param : $annee
-     *
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
@@ -314,9 +309,8 @@ class ProjetController extends AbstractController
 
     /**
      * Téléchargement du rapport d'activité.
-     *
      */
-    #[isGranted('ROLE_OBS'||'ROLE_DEMANDEUR')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_DEMANDEUR")'))]
     #[Route(path: '/{id}/rapport/{annee}', name: 'rapport', defaults: ['annee' => 0], methods: ['GET'])]
     public function rapportAction(Version $version, Request $request, $annee): Response
     {
@@ -342,7 +336,6 @@ class ProjetController extends AbstractController
 
     /**
      * Téléchargement de la fiche projet qui doit être signée par la direction du laboratoire demandeur.
-     *
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/{id}/signature', name: 'signature', methods: ['GET'])]
@@ -355,9 +348,8 @@ class ProjetController extends AbstractController
 
     /**
      * download doc attaché.
-     *
      */
-    #[isGranted('ROLE_OBS'||'ROLE_DEMANDEUR')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_DEMANDEUR")'))]
     #[Route(path: '/{id}/document', name: 'document', methods: ['GET'])]
     public function documentAction(Version $version, Request $request): Response
     {
@@ -368,7 +360,6 @@ class ProjetController extends AbstractController
 
     /**
      * Projets dynamiques.
-     *
      */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/dynamiques', name: 'projet_dynamique', methods: ['GET', 'POST'])]
@@ -445,7 +436,6 @@ class ProjetController extends AbstractController
 
     /**
      * Pas utilisé...
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
@@ -461,7 +451,6 @@ class ProjetController extends AbstractController
 
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/avant_nouveau/{type}', name: 'avant_nouveau_projet', methods: ['GET', 'POST'])]
@@ -495,7 +484,6 @@ class ProjetController extends AbstractController
 
     /**
      * Création d'un nouveau projet.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/nouveau/{type}', name: 'nouveau_projet', methods: ['GET', 'POST'])]
@@ -533,7 +521,6 @@ class ProjetController extends AbstractController
 
     /**
      * Montre les projets d'un utilisateur.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
@@ -708,7 +695,6 @@ class ProjetController extends AbstractController
 
     /**
      * Affiche un projet avec un menu pour choisir la version.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_projet', methods: ['GET', 'POST'])]

@@ -33,6 +33,7 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Form;
@@ -62,7 +63,6 @@ class PublicationController extends AbstractController
 
     /**
      * Autocomplete publication.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/autocomplete', name: 'publication_autocomplete', methods: ['GET', 'POST'])]
@@ -123,7 +123,6 @@ class PublicationController extends AbstractController
 
     /**
      * Lists all publication entities.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'publication_index', methods: ['GET'])]
@@ -138,8 +137,6 @@ class PublicationController extends AbstractController
         ]);
     }
 
-    /**
-     */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/gerer', name: 'gerer_publications', methods: ['GET', 'POST'])]
     public function gererAction(Projet $projet, Request $request, LoggerInterface $lg): Response
@@ -197,8 +194,6 @@ class PublicationController extends AbstractController
         );
     }
 
-    /**
-     */
     #[isGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_publications', methods: ['GET'])]
     public function consulterAction(Projet $projet, Request $request): Response
@@ -212,9 +207,7 @@ class PublicationController extends AbstractController
         );
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/annee', name: 'publication_annee', methods: ['GET', 'POST'])]
     public function AnneeAction(Request $request): Response
     {
@@ -234,9 +227,7 @@ class PublicationController extends AbstractController
         );
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{annee}/annee_csv', name: 'publication_annee_csv', methods: ['GET', 'POST'])]
     public function AnneeCsvAction($annee): Response
     {
@@ -268,7 +259,6 @@ class PublicationController extends AbstractController
 
     /**
      * Creates a new publication entity.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'publication_new', methods: ['GET', 'POST'])]
@@ -294,7 +284,6 @@ class PublicationController extends AbstractController
 
     /**
      * Finds and displays a publication entity.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/show', name: 'publication_show', methods: ['GET'])]
@@ -310,7 +299,6 @@ class PublicationController extends AbstractController
 
     /**
      * Displays a form to edit an existing publication entity.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
@@ -335,7 +323,6 @@ class PublicationController extends AbstractController
 
     /**
      * Displays a form to edit an existing publication entity.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/modify', name: 'modifier_publication', methods: ['GET', 'POST'])]
@@ -371,7 +358,6 @@ class PublicationController extends AbstractController
 
     /**
      * Deletes a publication entity.
-     *
      */
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}', name: 'publication_delete', methods: ['DELETE'])]
@@ -391,7 +377,6 @@ class PublicationController extends AbstractController
 
     /**
      * Deletes a publication entity.
-     *
      */
     #[isGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/supprimer', name: 'supprimer_publication', methods: ['GET', 'DELETE'])]
@@ -425,7 +410,6 @@ class PublicationController extends AbstractController
      * Creates a form to delete a publication entity.
      *
      * @param Publication $publication The publication entity
-     *
      *
      * @return Response The form
      */
