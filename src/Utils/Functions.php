@@ -31,7 +31,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use Symfony\Bridge\Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,7 +81,7 @@ class Functions
      *       - Si on est dans une requête ajax: renvoie false, sinon: relance l'exception
      *
      */
-    public static function sauvegarder(object $object, EntityManager $em, Logger $logger = null): bool
+    public static function sauvegarder(object $object, EntityManager $em, LoggerInterface $logger = null): bool
     {
         try {
             if ($em->isOpen()) {
@@ -91,26 +91,26 @@ class Functions
                 return true;
             } else {
                 if (null != $logger) {
-                    $logger()->error(__METHOD__.':'.__LINE__.' Entity manager closed');
+                    $logger->error(__METHOD__.':'.__LINE__.' Entity manager closed');
                 }
 
                 return static::exception_treatment(new ORMException());
             }
         } catch (ORMException $e) {
             if (null != $logger) {
-                $logger()->error(__METHOD__.':'.__LINE__.' ORMException');
+                $logger->error(__METHOD__.':'.__LINE__.' ORMException');
             }
 
             return static::exception_treatment($e);
         } catch (\InvalidArgumentException $e) {
             if (null != $logger) {
-                $logger()->error(__METHOD__.':'.__LINE__.' InvalidArgumentException');
+                $logger->error(__METHOD__.':'.__LINE__.' InvalidArgumentException');
             }
 
             return static::exception_treatment($e);
         } catch (DBALException $e) {
             if (null != $logger) {
-                $logger()->error(__METHOD__.':'.__LINE__.' DBALException');
+                $logger->error(__METHOD__.':'.__LINE__.' DBALException');
             }
 
             return static::exception_treatment($e);
