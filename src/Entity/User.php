@@ -52,7 +52,7 @@ class User
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'user')]
     private Serveur $serveur;
 
-    #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
+    #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu', onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
     private Individu $individu;
 
