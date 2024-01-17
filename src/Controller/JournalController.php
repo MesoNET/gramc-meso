@@ -123,7 +123,6 @@ class JournalController extends AbstractController
     }
 
     /* Probablement généré et initule
-    * @todo supprimer controller et templates associés si inutile
     #[Route(path: '/{id}/edit', name: 'journal_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Journal $journal): Response
     {
