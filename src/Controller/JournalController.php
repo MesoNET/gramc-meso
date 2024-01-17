@@ -26,7 +26,6 @@ namespace App\Controller;
 
 use App\Entity\Journal;
 use App\Form\SelectJournalType;
-use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Form;
@@ -39,9 +38,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Journal controller.
- *
  */
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route(path: 'journal')]
 class JournalController extends AbstractController
 {
@@ -124,9 +122,8 @@ class JournalController extends AbstractController
         ]);
     }
 
-    /**
-     * Displays a form to edit an existing journal entity. CRUD.
-     */
+    /* Probablement généré et initule
+    * @todo supprimer controller et templates associés si inutile
     #[Route(path: '/{id}/edit', name: 'journal_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Journal $journal): Response
     {
@@ -146,7 +143,7 @@ class JournalController extends AbstractController
             'delete_form' => $deleteForm->createView(),
         ]);
     }
-
+    */
     /**
      * Deletes a journal entity. CRUD.
      */
