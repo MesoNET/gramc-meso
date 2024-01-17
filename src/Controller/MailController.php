@@ -23,6 +23,7 @@ use App\GramcServices\ServiceProjets;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -38,7 +39,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 // ///////////////////////////////////////////////////
 /**
  * Mail controller.
- *
  */
 #[isGranted('ROLE_ADMIN')]
 #[Route(path: 'mail')]
@@ -55,10 +55,7 @@ class MailController extends AbstractController
     ) {
     }
 
-    /**
-     *
-     **/
-    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{id}/mail_to_responsables_fiche', name: 'mail_to_responsables_fiche', methods: ['GET', 'POST'])]
     public function mailToResponsablesFicheAction(Request $request, Session $session): Response
     {
@@ -124,9 +121,7 @@ class MailController extends AbstractController
         return $responsables;
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{id}/mail_to_responsables_rallonge', name: 'mail_to_responsables_rallonge', methods: ['GET', 'POST'])]
     public function mailToResponsablesRallonge(Request $request, Session $session): Response
     {
@@ -151,9 +146,7 @@ class MailController extends AbstractController
         return $this->mailToResponsablesBody($request, $session, 0, $responsables, $sujet, $body, $template);
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{id}/mail_to_responsables', name: 'mail_to_responsables', methods: ['GET', 'POST'])]
     public function mailToResponsablesAction(Request $request, Session $session): Response
     {
