@@ -253,11 +253,8 @@ class ProjetController extends AbstractController
         }
     }
 
-    /**
-     * Résumés de tous les projets qui ont une version cette annee.
-     *
-     * Param : $annee
-     */
+    /* Inutilisé
+    * @todo à supprimer si inutile
     #[IsGranted('ROLE_OBS')]
     #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
     public function resumesAction($annee): Response
@@ -307,6 +304,7 @@ class ProjetController extends AbstractController
                 ]
         );
     }
+    */
 
     /**
      * Téléchargement du rapport d'activité.
@@ -438,7 +436,7 @@ class ProjetController extends AbstractController
     /**
      * Pas utilisé...
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -449,6 +447,7 @@ class ProjetController extends AbstractController
             'projets' => $projets,
         ]);
     }
+
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
      */
