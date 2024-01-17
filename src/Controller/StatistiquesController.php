@@ -43,6 +43,7 @@ use App\GramcServices\ServiceSessions;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -51,9 +52,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 // include_once(__DIR__.'/../../jpgraph/JpGraph.php');
 /**
  * Statistiques controller.
- *
  */
-#[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+#[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
 #[Route(path: 'statistiques')]
 class StatistiquesController extends AbstractController
 {
@@ -66,9 +66,7 @@ class StatistiquesController extends AbstractController
     ) {
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/symfony', name: 'homepage', methods: ['GET', 'POST'])]
     public function homepageAction(Request $request): Response
     {
@@ -80,9 +78,7 @@ class StatistiquesController extends AbstractController
         ]);
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/', name: 'statistiques', methods: ['GET', 'POST'])]
     public function indexAction(Request $request): Response
     {
@@ -137,9 +133,7 @@ class StatistiquesController extends AbstractController
         );
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/dyn', name: 'statistiques_dyn', methods: ['GET', 'POST'])]
     public function indexDynAction(Request $request): Response
     {
@@ -185,8 +179,6 @@ class StatistiquesController extends AbstractController
         );
     }
 
-    /**
-     */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/formation', name: 'statistiques_formation', methods: ['GET'])]
     public function formationAction(Request $request): Response
@@ -202,9 +194,7 @@ class StatistiquesController extends AbstractController
         return $this->render('statistiques/formation.html.twig', ['fvstats' => $fvstats]);
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/repartition', name: 'statistiques_repartition', methods: ['GET'])]
     public function repartitionAction(Request $request): Response
     {
@@ -297,9 +287,7 @@ class StatistiquesController extends AbstractController
         );
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/collaborateur', name: 'statistiques_collaborateur', methods: ['GET'])]
     public function collaborateurAction(Request $request): Response
     {
@@ -586,17 +574,13 @@ class StatistiquesController extends AbstractController
         );
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/laboratoire', name: 'statistiques_laboratoire', methods: ['GET', 'POST'])]
     public function laboratoireAction(Request $request): Response
     {
         return $this->parCritere($request, 'getAcroLaboratoire', 'laboratoire');
     }
 
-    /**
-     */
     #[isGranted('ROLE_OBS')]
     #[Route(path: '/etablissement', name: 'statistiques_etablissement', methods: ['GET', 'POST'])]
     public function etablissementAction(Request $request): Response
@@ -604,9 +588,7 @@ class StatistiquesController extends AbstractController
         return $this->parCritere($request, 'getAcroEtablissement', 'établissement');
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/thematique', name: 'statistiques_thematique', methods: ['GET', 'POST'])]
     public function thematiqueAction(Request $request): Response
     {
@@ -654,27 +636,21 @@ class StatistiquesController extends AbstractController
         return Functions::csv($sortie, "statistiques_$titre.csv");
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{annee}/thematique_csv', name: 'statistiques_thématique_csv', methods: ['GET', 'POST'])]
     public function thematiqueCSVAction(Request $request, $annee): Response
     {
         return $this->parCritereCSV($request, $annee, 'getAcroThematique', 'thématique');
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{annee}/laboratoire_csv', name: 'statistiques_laboratoire_csv', methods: ['GET', 'POST'])]
     public function laboratoireCSVAction(Request $request, $annee): Response
     {
         return $this->parCritereCSV($request, $annee, 'getAcroLaboratoire', 'laboratoire');
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS'||'ROLE_PRESIDENT')]
+    #[IsGranted(new Expression('is_granted("ROLE_OBS") or is_granted("ROLE_PRESIDENT")'))]
     #[Route(path: '/{annee}/etablissement_csv', name: 'statistiques_établissement_csv', methods: ['GET', 'POST'])]
     public function etablissementCSVAction(Request $request, $annee): Response
     {
