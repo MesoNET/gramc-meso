@@ -449,7 +449,6 @@ class ProjetController extends AbstractController
             'projets' => $projets,
         ]);
     }
-    */
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
      */
