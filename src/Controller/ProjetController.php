@@ -27,6 +27,7 @@ namespace App\Controller;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Expertise;
 use App\Entity\Projet;
+use App\Entity\Sso;
 use App\Entity\User;
 use App\Entity\Version;
 use App\GramcServices\Etat;
@@ -100,7 +101,7 @@ class ProjetController extends AbstractController
     /**
      * Lists all projet entities.
      */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/', name: 'projet_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -118,7 +119,7 @@ class ProjetController extends AbstractController
      *
      * Ne fait rien, affiche simplement la commande à exécuter
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/rgpd', name: 'rgpd', methods: ['GET'])]
     public function rgpdAction(Request $request): Response
     {
@@ -128,7 +129,7 @@ class ProjetController extends AbstractController
     /**
      * fermer un projet.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fermer', name: 'fermer_projet', methods: ['GET', 'POST'])]
     public function fermerAction(Projet $projet, Request $request): Response
     {
@@ -156,7 +157,7 @@ class ProjetController extends AbstractController
     /**
      * Retour en arrière: un projet en validation repasse en édition.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/back', name: 'back_version', methods: ['GET', 'POST'])]
     public function backAction(Projet $projet, Request $request): Response
     {
@@ -208,7 +209,7 @@ class ProjetController extends AbstractController
      * L'admin a cliqué sur le bouton Forward pour envoyer une version à l'expert
      * à la place du responsable.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/fwd', name: 'fwd_version', methods: ['GET', 'POST'])]
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -257,7 +258,7 @@ class ProjetController extends AbstractController
      *
      * Param : $annee
      */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
     public function resumesAction($annee): Response
     {
@@ -337,7 +338,7 @@ class ProjetController extends AbstractController
     /**
      * Téléchargement de la fiche projet qui doit être signée par la direction du laboratoire demandeur.
      */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/{id}/signature', name: 'signature', methods: ['GET'])]
     public function signatureAction(Version $version, Request $request): Response
     {
@@ -361,7 +362,7 @@ class ProjetController extends AbstractController
     /**
      * Projets dynamiques.
      */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/dynamiques', name: 'projet_dynamique', methods: ['GET', 'POST'])]
     public function projetsDynamiquesAction(Request $request): Response
     {
@@ -448,11 +449,11 @@ class ProjetController extends AbstractController
             'projets' => $projets,
         ]);
     }
-
+    */
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/avant_nouveau/{type}', name: 'avant_nouveau_projet', methods: ['GET', 'POST'])]
     public function avantNouveauAction(Request $request, int $type): Response
     {
@@ -485,7 +486,7 @@ class ProjetController extends AbstractController
     /**
      * Création d'un nouveau projet.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/nouveau/{type}', name: 'nouveau_projet', methods: ['GET', 'POST'])]
     public function nouveauAction(Request $request, $type): Response
     {
@@ -522,7 +523,7 @@ class ProjetController extends AbstractController
     /**
      * Montre les projets d'un utilisateur.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
     public function accueilAction()
     {
@@ -696,7 +697,7 @@ class ProjetController extends AbstractController
     /**
      * Affiche un projet avec un menu pour choisir la version.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_projet', methods: ['GET', 'POST'])]
     #[Route(path: '/{id}/consulter/{version}', name: 'consulter_version', methods: ['GET', 'POST'])]
     public function consulterAction(Request $request, Projet $projet, Version $version = null)
@@ -821,5 +822,40 @@ class ProjetController extends AbstractController
                 'cv' => $cv,
             ]
         );
+    }
+
+    /**
+     * Finds and displays a sso entity.
+     */
+    #[Route(path: '/{id}', name: 'projet_show', methods: ['GET'])]
+    public function showAction(Projet $projet): Response
+    {
+        return $this->render('projet/show.html.twig', [
+            'projet' => $projet,
+            // 'delete_form' => $deleteForm->createView(),
+        ]);
+    }
+
+    /**
+     * Displays a form to edit an existing projet entity.
+     */
+    #[Route(path: '/{id}/edit', name: 'projet_edit', methods: ['GET', 'POST'])]
+    public function editAction(Request $request, Projet $projet): Response
+    {
+        $deleteForm = $this->createDeleteForm($projet);
+        $editForm = $this->createForm('App\Form\ProjetType', $projet);
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $this->em->flush();
+
+            return $this->redirectToRoute('projet_edit', ['id' => $projet->getId()]);
+        }
+
+        return $this->render('projet/edit.html.twig', [
+            'projet' => $projet,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ]);
     }
 }
