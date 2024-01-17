@@ -30,6 +30,7 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
@@ -74,7 +75,7 @@ class LaboratoireController extends AbstractController
     /**
      * Ajoute un nouveau laboratoire.
      */
-    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_VALIDEUR")'))]
     #[Route(path: '/ajouter', name: 'ajouter_laboratoire', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
@@ -108,7 +109,7 @@ class LaboratoireController extends AbstractController
     /**
      * Modifie un laboratoire.
      */
-    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_VALIDEUR")'))]
     #[Route(path: '/{id}/modifier', name: 'modifier_laboratoire', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Laboratoire $laboratoire): Response
     {
@@ -229,7 +230,7 @@ class LaboratoireController extends AbstractController
     /**
      * Supprime un laboratoire.
      */
-    #[isGranted('ROLE_ADMIN' || 'ROLE_VALIDEUR')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_VALIDEUR")'))]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_laboratoire', methods: ['GET'])]
     public function supprimerAction(Request $request, Laboratoire $laboratoire): Response
     {
