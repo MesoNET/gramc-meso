@@ -11,5 +11,4 @@ extensions:
     enabled:
         - Codeception\Extension\RunFailed
 params:
-    - .env
-    - .env.test
+    - .env.local
