@@ -803,7 +803,7 @@ class IndividuController extends AbstractController
 
     /**
      * Affecter l'individu à une ou des thematiques - PAS UTILISE.
-     */
+    * @todo inutilisé
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/thematique', name: 'choisir_thematique', methods: ['GET', 'POST'])]
     public function thematiqueAction(Request $request, Individu $individu): Response
@@ -848,10 +848,11 @@ class IndividuController extends AbstractController
         ]
         );
     }
+    */
 
     /**
      * Supprimer un ou plusieurs eppn de cet utilisateur.
-     */
+     * @todo non utilisé
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/eppn', name: 'gere_eppn', methods: ['GET', 'POST'])]
     public function eppnAction(Request $request, Individu $individu): Response
@@ -899,6 +900,7 @@ class IndividuController extends AbstractController
             ]
         );
     }
+    */
 
     /**
      * Autocomplete: en lien avec l'autocomplete de jquery
