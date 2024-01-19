@@ -43,7 +43,6 @@ namespace App\GramcServices;
 use App\Entity\Projet;
 use App\Entity\Rallonge;
 use App\Entity\RapportActivite;
-use App\Entity\Session;
 use App\Entity\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
