@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240117151914 extends AbstractMigration
+final class Version20240119132138 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -37,9 +37,9 @@ final class Version20240117151914 extends AbstractMigration
         $this->addSql('DROP INDEX adresseip ON adresseip');
         $this->addSql('ALTER TABLE adresseip CHANGE adresse adresse TEXT NOT NULL');
         $this->addSql('ALTER TABLE dar CHANGE id_rallonge id_rallonge VARCHAR(15) DEFAULT NULL');
-        $this->addSql('ALTER TABLE dar ADD CONSTRAINT FK_7272F018E3D1DEE5 FOREIGN KEY (id_rallonge) REFERENCES rallonge (id_rallonge) ON UPDATE NO ACTION ON DELETE NO ACTION');
+        $this->addSql('ALTER TABLE dar ADD CONSTRAINT FK_7272F018E3D1DEE5 FOREIGN KEY (id_rallonge) REFERENCES rallonge (id_rallonge)');
         $this->addSql('CREATE INDEX IDX_7272F018E3D1DEE5 ON dar (id_rallonge)');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649E3FC35B');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu) ON UPDATE NO ACTION ON DELETE NO ACTION');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu)');
     }
 }
