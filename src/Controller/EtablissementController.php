@@ -27,7 +27,7 @@ namespace App\Controller;
 use App\Entity\Etablissement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,9 +35,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Etablissement controller.
- *
  */
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route(path: 'etablissement')]
 class EtablissementController extends AbstractController
 {
@@ -95,7 +94,7 @@ class EtablissementController extends AbstractController
 
         return $this->render('etablissement/show.html.twig', [
             'etablissement' => $etablissement,
-            'delete_form' => $deleteForm->createView(),
+            'delete_form' => $deleteForm,
         ]);
     }
 
@@ -118,7 +117,7 @@ class EtablissementController extends AbstractController
         return $this->render('etablissement/edit.html.twig', [
             'etablissement' => $etablissement,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'delete_form' => $deleteForm,
         ]);
     }
 
@@ -145,9 +144,9 @@ class EtablissementController extends AbstractController
      *
      * @param Etablissement $etablissement The etablissement entity
      *
-     * @return Response The form
+     * @return FormInterface The form
      */
-    private function createDeleteForm(Etablissement $etablissement): Response
+    private function createDeleteForm(Etablissement $etablissement): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('etablissement_delete', ['id' => $etablissement->getId()]))
