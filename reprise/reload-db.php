@@ -49,7 +49,7 @@ restore_database($file_name);
 //           Si on ne le reçoit pas, MEFIANCE !
 
 echo "Appelle bin/console de Symfony\n";
-console_updamysqte();
+console_update();
 
 echo "Appelle /bin/console app:send-a-mail toto@exemple.fr, vérifiez que vous l'avez bien reçu !";
 envoie_mail_de_controle();

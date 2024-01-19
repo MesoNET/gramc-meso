@@ -95,12 +95,10 @@ class ExpertiseController extends AbstractController
     {
         return Etat::cmpEtatExpertise($a->getEtatVersion(), $b->getEtatVersion());
     }
-
     /**
+     * * @todo non utilisé, à compléter/supprimer
      * Afficher une expertise.
-     *
-     */
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/consulter/{id}', name: 'consulter_expertise', methods: ['GET'])]
     public function consulterAction(Request $request, Expertise $expertise): Response
     {
@@ -117,6 +115,7 @@ class ExpertiseController extends AbstractController
             return new RedirectResponse($this->generateUrl('accueil'));
         }
     }
+    */
 
     // Helper function used by listeAction
     private static function exptruefirst($a, $b): int
@@ -133,9 +132,8 @@ class ExpertiseController extends AbstractController
 
     /**
      * Liste les projets dynamiques non encore validés.
-     *
      */
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/listedyn', name: 'expertise_liste_dyn', methods: ['GET'])]
     public function listeDynAction(): Response
     {
@@ -217,9 +215,8 @@ class ExpertiseController extends AbstractController
      * Il entre son expertise et éventuellement l'envoie.
      *
      * ATTENTION - La même fonction permet de valider PROJETS ET RALLONGES
-     *
      */
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/modifier', name: 'expertise_modifier', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
@@ -277,8 +274,8 @@ class ExpertiseController extends AbstractController
 
         // Création du formulaire
         $editForm = $this->createFormBuilder($expertise)
-            ->add('commentaireInterne', TextAreaType::class, ['required' => false])
-            ->add('commentaireExterne', TextAreaType::class, ['required' => false])
+            ->add('commentaireInterne', TextareaType::class, ['required' => false])
+            ->add('commentaireExterne', TextareaType::class, ['required' => false])
             ->add(
                 'validation',
                 ChoiceType::class,
@@ -350,7 +347,7 @@ class ExpertiseController extends AbstractController
 
         $twig = 'expertise/modifier_projet_dyn.html.twig';
         $expertises = $expertiseRepository->findExpertisesDyn();
-        uasort($expertises, 'self::expprjfirst');
+        uasort($expertises, self::expprjfirst(...));
 
         if (0 != count($expertises)) {
             $k = array_search($expertise, $expertises);
@@ -395,9 +392,8 @@ class ExpertiseController extends AbstractController
     /**
      * L'expert vient de cliquer sur le bouton "Envoyer expertise"
      * On lui envoie un écran de confirmation.
-     *
      */
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/valider', name: 'expertise_validation', methods: ['GET', 'POST'])]
     public function validationAction(Request $request, Expertise $expertise): Response
     {

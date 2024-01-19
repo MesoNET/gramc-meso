@@ -53,7 +53,7 @@ class LaboratoireController extends AbstractController
     /**
      * Liste tous les laboratoires.
      */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET'])]
     public function gererAction(): Response
     {

@@ -1011,7 +1011,7 @@ class Version implements Demande
      * @return \App\Entity\Laboratoire
      */
     // TODO - Wrapper vers getPrjLLabo, ne sert à rien !
-    public function getLabo(): ?Laboratoire
+    public function getLabo(): Laboratoire
     {
         return $this->getPrjLLabo();
     }

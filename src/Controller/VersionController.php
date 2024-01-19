@@ -116,10 +116,8 @@ class VersionController extends AbstractController
     ) {
     }
 
-    /**
-     * Lists all version entities. CRUD.
-     *
-     */
+    /** Action générée mais n'a pas de temlate associé
+     * @todo supprimer le controller ou ajouter le template associé
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'version_index', methods: ['GET'])]
     public function indexAction(): Response
@@ -132,11 +130,11 @@ class VersionController extends AbstractController
             'versions' => $versions,
         ]);
     }
+    */
 
     /**
      * Creates a new version entity. CRUD.
-     *
-     */
+     * @todo autogénérée et imcoplet, déterminer si à supprioer ou complèter
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
@@ -158,6 +156,7 @@ class VersionController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    */
 
     /**
      * Affichage d'un écran de confirmation avant la suppression d'une version de projet.

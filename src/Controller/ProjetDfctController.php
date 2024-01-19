@@ -23,7 +23,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Compta;
 use App\Entity\Projet;
 use App\GramcServices\DonneesFacturation;
 use App\GramcServices\GramcDate;
@@ -61,11 +60,8 @@ class ProjetDfctController extends AbstractController
         private EntityManagerInterface $em
     ) {
     }
-
-    /**
-     * Appelé quand on clique sur le bouton € dans la page projets par année
-     * Affiche les données de facturation actuelles.
-     */
+    /* Inutilisé
+    * @todo à supprimé si pas utile ou à réparé
     #[Route(path: '/{id}/dfctliste/{annee}', name: 'dfct_liste', methods: ['GET', 'POST'])]
     public function dfctlisteAction(Projet $projet, $annee, Request $request): Response
     {
@@ -153,7 +149,7 @@ class ProjetDfctController extends AbstractController
                              ]
         );
     }
-
+       */
     /**
      * Téléchargement d'un pdf avec les données de facturation déjà émises.
      */
