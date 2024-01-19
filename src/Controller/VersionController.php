@@ -132,10 +132,9 @@ class VersionController extends AbstractController
     }
     */
 
-/**
+    /**
      * Creates a new version entity. CRUD.
-     *
-     */
+     * @todo autogénérée et imcoplet, déterminer si à supprioer ou complèter
     #[isGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
@@ -157,6 +156,7 @@ class VersionController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    */
 
     /**
      * Affichage d'un écran de confirmation avant la suppression d'une version de projet.
