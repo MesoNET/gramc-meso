@@ -23,6 +23,7 @@
 
 namespace App\GramcServices;
 
+use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 
 /*
