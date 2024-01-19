@@ -53,10 +53,10 @@
             {# <td>{{ publication.idPubli }}</td> #}
             <td>
                 {% if( not publication.doi == '' ) %}
-                    <a href="http://dx.doi.org/{{ publication.doi }}" target="_blank">{{ publication.doi | truncate(20)}}</a>
+                    <a href="http://dx.doi.org/{{ publication.doi }}" target="_blank">{{ publication.doi | u.truncate(20)}}</a>
                 {% endif %}
             </td>
-            <td>{% if( publication.openUrl != null ) %}<a href="{{ publication.openUrl }}">{{ publication.openUrl | truncate(20) }}</a>{% endif %}</td>
+            <td>{% if( publication.openUrl != null ) %}<a href="{{ publication.openUrl }}">{{ publication.openUrl | u.truncate(20) }}</a>{% endif %}</td>
         </tr>
     {% endfor %}
     </tbody>
