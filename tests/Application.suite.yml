@@ -10,3 +10,5 @@ modules:
         - Doctrine2:
             depends: Symfony # Tells Doctrine to fetch the Entity Manager through Symfony
             cleanup: true # All doctrine queries will be wrapped in a transaction, which will be rolled back at the end of each test
+        - App\Tests\Support\Helper\EntityManagerReset:
+            depends: Symfony
