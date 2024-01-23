@@ -39,6 +39,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -55,9 +58,7 @@ class DefaultController extends AbstractController
     ) {
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/test', name: 'test')]
     public function testAction(Request $request)
     {
@@ -84,11 +85,9 @@ class DefaultController extends AbstractController
         return new Response(implode(' ', array_keys($result)));
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/twig', name: 'twig')]
-    public function twigAction(Request $request)
+    public function twigAction(Request $request, NotifierInterface $notifier)
     {
         $sn = $this->sn;
         $em = $this->em;
@@ -96,30 +95,32 @@ class DefaultController extends AbstractController
         $users = ['a@x', 'b@x'];
         $users = $em->getRepository(Individu::class)->findBy(['president' => true]);
         $versions = $em->getRepository(Version::class)->findAll();
-        $users = $sn->mailUsers(['E', 'R'], $versions[301]);
-        $output = $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
+        dump($versions);
+        $users = $sn->mailUsers(['E', 'R'], $versions[20]);
+        dump('yo');
+        $notification = (new Notification('New Notification'))
+            ->content($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
+            ->subject($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
+            ->importance(Notification::IMPORTANCE_HIGH);
+        foreach ($users as $user) {
+            dump($user->getMail());
+            $recipient = new Recipient($user->getMail());
+            $notifier->send($notification, $recipient);
+        }
 
         // return new Response ( $users[0] );
 
-        return new Response($output['to']);
-
-        return new Response($output['contenu']);
-
-        return new Response($output['subject']);
+        return new Response();
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/test_params/{id1}/{id2}', name: 'test_params')]
     public function test_paramsAction(Request $request)
     {
         return new Response('ok');
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/test_session', name: 'test_session')]
     public function test_sessionAction(Request $request)
     {
@@ -129,9 +130,7 @@ class DefaultController extends AbstractController
         return new Response('OK');
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/test_form', name: 'test_session')]
     public function test_formAction(Request $request)
     {
