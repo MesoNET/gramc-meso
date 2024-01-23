@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'app:labo',
+    name: 'import:labo',
     description: 'Importe les nouveaux serveurs disponibles dans le RNSR',
 )]
 class ImporterLaboCommand extends Command
