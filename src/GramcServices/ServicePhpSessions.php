@@ -95,6 +95,8 @@ class ServicePhpSessions
                 $diff = intval(($time - $mtime) / 60);
                 $min = $diff % 60;
                 $heures = intval($diff / 60);
+                dump($dir.'/'.$filename);
+                dump(file_get_contents($dir.'/'.$filename));
                 $contents = file_get_contents($dir.'/'.$filename);
                 session_decode($contents);
                 if (!array_key_exists('_sf2_attributes', $_SESSION)) {
