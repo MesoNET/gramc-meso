@@ -95,15 +95,12 @@ class DefaultController extends AbstractController
         $users = ['a@x', 'b@x'];
         $users = $em->getRepository(Individu::class)->findBy(['president' => true]);
         $versions = $em->getRepository(Version::class)->findAll();
-        dump($versions);
         $users = $sn->mailUsers(['E', 'R'], $versions[20]);
-        dump('yo');
         $notification = (new Notification('New Notification'))
             ->content($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
             ->subject($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
             ->importance(Notification::IMPORTANCE_HIGH);
         foreach ($users as $user) {
-            dump($user->getMail());
             $recipient = new Recipient($user->getMail());
             $notifier->send($notification, $recipient);
         }
