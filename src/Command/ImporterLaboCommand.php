@@ -41,7 +41,8 @@ class ImporterLaboCommand extends Command
                 return $this::FAILURE;
             }
             $results = $response->toArray()['results'];
-            foreach ($results as $ligne) {
+            for ($i = 0; $i < count($results); ++$i) {
+                $ligne = $results[$i];
                 $libelle = $ligne['libelle'];
                 if (null != $libelle && !$this->entityManager->getRepository(Laboratoire::class)->findBy([
                         'nomLabo' => $libelle,
@@ -49,7 +50,7 @@ class ImporterLaboCommand extends Command
                     $lab = (new Laboratoire())
                         ->setNomLabo($libelle)
                         ->setAcroLabo($ligne['sigle'])
-                        ->setNumeroLabo('12');
+                        ->setNumeroLabo($currentIndex + $i);
                     $this->entityManager->persist($lab);
                     $output->writeln('Ajout du laboratoire '.$libelle);
                 }
