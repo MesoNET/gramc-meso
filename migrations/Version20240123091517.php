@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240119134221 extends AbstractMigration
+final class Version20240123091517 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -26,6 +26,7 @@ final class Version20240119134221 extends AbstractMigration
         $this->addSql('ALTER TABLE dar DROP FOREIGN KEY FK_7272F018E3D1DEE5');
         $this->addSql('DROP INDEX IDX_7272F018E3D1DEE5 ON dar');
         $this->addSql('ALTER TABLE dar CHANGE id_rallonge id_rallonge VARCHAR(15) NOT NULL');
+        $this->addSql('ALTER TABLE laboratoire CHANGE acro_labo acro_labo VARCHAR(100) DEFAULT NULL, CHANGE nom_labo nom_labo VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649E3FC35B');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu) ON DELETE CASCADE');
     }
@@ -34,12 +35,13 @@ final class Version20240119134221 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE templates (nom VARCHAR(40) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_general_ci`, sujet TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_general_ci`, contenu TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_general_ci`, PRIMARY KEY(nom)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_general_ci` ENGINE = InnoDB COMMENT = \'\' ');
+        $this->addSql('ALTER TABLE laboratoire CHANGE acro_labo acro_labo TEXT NOT NULL, CHANGE nom_labo nom_labo VARCHAR(100) NOT NULL');
         $this->addSql('ALTER TABLE dar CHANGE id_rallonge id_rallonge VARCHAR(15) DEFAULT NULL');
         $this->addSql('ALTER TABLE dar ADD CONSTRAINT FK_7272F018E3D1DEE5 FOREIGN KEY (id_rallonge) REFERENCES rallonge (id_rallonge)');
         $this->addSql('CREATE INDEX IDX_7272F018E3D1DEE5 ON dar (id_rallonge)');
-        $this->addSql('DROP INDEX adresseip ON adresseip');
-        $this->addSql('ALTER TABLE adresseip CHANGE adresse adresse TEXT NOT NULL');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649E3FC35B');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649E3FC35B FOREIGN KEY (id_individu) REFERENCES individu (id_individu)');
+        $this->addSql('DROP INDEX adresseip ON adresseip');
+        $this->addSql('ALTER TABLE adresseip CHANGE adresse adresse TEXT NOT NULL');
     }
 }

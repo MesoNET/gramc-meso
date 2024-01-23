@@ -33,7 +33,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Laboratoire.
  */
 #[ORM\Table(name: 'laboratoire')]
-#[ORM\UniqueConstraint(name: 'acro', columns: ['acro_labo'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\LaboratoireRepository')]
 class Laboratoire
 {
@@ -55,16 +54,16 @@ class Laboratoire
     private $numeroLabo = '99999';
 
     /**
-     * @var string
+     * @var ?string
      */
-    #[ORM\Column(name: 'acro_labo', type: 'string', length: 100, nullable: false)]
+    #[ORM\Column(name: 'acro_labo', type: 'string', length: 100, nullable: true)]
     #[Assert\NotBlank]
     private $acroLabo = '';
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'nom_labo', type: 'string', length: 100, nullable: false)]
+    #[ORM\Column(name: 'nom_labo', type: 'string', length: 255, nullable: false)]
     #[Assert\NotBlank]
     private $nomLabo = '';
 
@@ -133,7 +132,7 @@ class Laboratoire
     /**
      * Set acroLabo.
      */
-    public function setAcroLabo(string $acroLabo): self
+    public function setAcroLabo(?string $acroLabo): self
     {
         $this->acroLabo = $acroLabo;
 

@@ -96,6 +96,7 @@
         ],
         "db": [
             "sh reprise/reload-db ./reprise/gramc_reprise.sql",
+            "php bin/console doctrine:migrations:migrate --allow-no-migration",
             "php bin/console doctrine:migrations:diff",
             "php bin/console doctrine:migrations:migrate --allow-no-migration"
         ],
