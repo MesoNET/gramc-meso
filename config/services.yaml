@@ -159,3 +159,5 @@ services:
     App\Command\CronCmd:
         tags: ["console.command"]
 
+    App\Command\ImporterLaboCommand:
+        tags: ["console.command"]
