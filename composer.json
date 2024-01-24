@@ -10,6 +10,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/lexer": "2.0",
         "doctrine/orm": "^2.8",
+        "ext-xsl": "*",
         "knplabs/knp-snappy-bundle": "^1.8",
         "phpdocumentor/reflection-docblock": "^5.2",
         "symfony/apache-pack": "^1.0",
