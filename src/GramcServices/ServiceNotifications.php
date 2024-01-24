@@ -26,8 +26,12 @@ namespace App\GramcServices;
 use App\Entity\Individu;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /********************
@@ -42,7 +46,8 @@ class ServiceNotifications
         private TokenStorageInterface $tok,
         private MailerInterface $mailer,
         protected ServiceJournal $sj,
-        protected EntityManagerInterface $em
+        protected EntityManagerInterface $em,
+        private NotifierInterface $notifier
     ) {
         $this->token = $tok->getToken();
     }
@@ -76,6 +81,73 @@ class ServiceNotifications
         $body = $twig->render($twig_contenu, $params);
         $subject = $twig->render($twig_sujet, $params);
         $this->sendRawMessage($subject, $body, $users);
+    }
+
+
+    /*****
+     * Envoi d'une notification sur le site et par mail twig
+     *
+     * param $twig_sujet, $twig_contenu Templates Twig des messages:
+     *                                            - les tempalte twig
+     * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
+     *
+     *********/
+    public function sendNotificationTemplate($twig_sujet, $twig_contenu, $params, $users = null): void
+    {
+        $notification = (new Notification('New Notification'))
+            ->content('Un mail vous a été envoyé sur votre adresse mail')
+            ->subject('Un mail vous a été envoyé')
+            ->importance(Notification::IMPORTANCE_LOW);
+        foreach ($users as $user) {
+            $recipient = new Recipient($user->getMail());
+            $mail = (new TemplatedEmail())
+                ->htmlTemplate($twig_contenu)
+                ->subject($twig_sujet)
+                ->context($params)
+                ->to($user->getMail());
+            $this->mailer->send($mail);
+            $this->notifier->send($notification, $recipient);
+        }
+    }
+
+    /*****
+     * Envoi d'une notification sur le site et par mail
+     *
+     * param $sujet, $contenu des messages:
+     *                                  - string msg
+     * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
+     *
+     *********/
+    public function sendNotification($sujet, $contenu, $users = null): void
+    {
+        $notification = (new Notification('New Notification'))
+            ->content($sujet)
+            ->subject($contenu)
+            ->importance(Notification::IMPORTANCE_HIGH);
+        foreach ($users as $user) {
+            $recipient = new Recipient($user->getMail());
+            $this->notifier->send($notification, $recipient);
+        }
+    }
+
+    /*****
+     * Envoi d'une notification sur le site
+     *
+     * param $sujet, $contenu Templates Twig des messages:
+     *                                            - text
+     * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
+     *
+     *********/
+    public function showNotification($sujet, $contenu, $users = null): void
+    {
+        $notification = (new Notification('New Notification'))
+            ->content($sujet)
+            ->subject($contenu)
+            ->importance(Notification::IMPORTANCE_LOW);
+        foreach ($users as $user) {
+            $recipient = new Recipient($user->getMail());
+            $this->notifier->send($notification, $recipient);
+        }
     }
 
     /*****

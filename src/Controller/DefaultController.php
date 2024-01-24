@@ -39,9 +39,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Notifier\Notification\Notification;
-use Symfony\Component\Notifier\NotifierInterface;
-use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -87,7 +84,7 @@ class DefaultController extends AbstractController
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/twig', name: 'twig')]
-    public function twigAction(Request $request, NotifierInterface $notifier)
+    public function twigAction(Request $request)
     {
         $sn = $this->sn;
         $em = $this->em;
@@ -96,17 +93,10 @@ class DefaultController extends AbstractController
         $users = $em->getRepository(Individu::class)->findBy(['president' => true]);
         $versions = $em->getRepository(Version::class)->findAll();
         $users = $sn->mailUsers(['E', 'R'], $versions[20]);
-        $notification = (new Notification('New Notification'))
-            ->content($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
-            ->subject($this->render('projet/dialog_back.html.twig'), ['projet' => ['idProjet' => 'ID']])
-            ->importance(Notification::IMPORTANCE_HIGH);
-        foreach ($users as $user) {
-            $recipient = new Recipient($user->getMail());
-            $notifier->send($notification, $recipient);
-        }
+        // $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
+        $sn->sendNotificationTemplate('MESSONET choix édition', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
 
         // return new Response ( $users[0] );
-
         return new Response();
     }
 
