@@ -98,7 +98,6 @@ class ServiceNotifications
             ->content('Un mail vous a été envoyé sur votre adresse mail')
             ->subject('Un mail vous a été envoyé')
             ->importance(Notification::IMPORTANCE_LOW);
-        dump($users);
         foreach ($users as $user) {
             $recipient = new Recipient($user->getMail());
             $mail = (new TemplatedEmail())
