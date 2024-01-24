@@ -38,23 +38,31 @@ class ImporterLaboCommand extends Command
             $results = $response->toArray()['results'];
             for ($i = 0; $i < count($results); ++$i) {
                 $ligne = $results[$i];
-                // ajout des laboratoires actifs
+                // ajout des labosCorrespondants actifs
+                $numeroNnationalStructure = $ligne['numero_national_de_structure'];
+                $labosCorrespondants = $this->entityManager->getRepository(Laboratoire::class)->findBy([
+                    'numeroNnationalStructure' => $numeroNnationalStructure,
+                ]);
                 if ('active' == strtolower($ligne['etat'])) {
-                    $libelle = $ligne['libelle'];
-                    if (null != $libelle && !$this->entityManager->getRepository(Laboratoire::class)->findBy([
-                            'nomLabo' => $libelle,
-                        ])) {
+                    if (!$labosCorrespondants) {
                         $lab = (new Laboratoire())
-                            ->setNomLabo($libelle)
+                            ->setNomLabo($ligne['libelle'])
                             ->setAcroLabo($ligne['sigle'])
                             ->setNumeroLabo($currentIndex + $i)
-                            ->setNumeroNnationalStructure($ligne['numero_national_de_structure'])
+                            ->setNumeroNnationalStructure($numeroNnationalStructure)
                             ->setActif(true);
                         $this->entityManager->persist($lab);
-                        $output->writeln('Ajout du laboratoire '.$libelle);
+                        $output->writeln('Ajout du laboratoire '.$ligne['libelle']);
+                    }
+                } // Cherche les labosCorrespondants inactifs
+                else {
+                    if ($labosCorrespondants) {
+                        foreach ($labosCorrespondants as $lab) {
+                            $lab->setActif(false)->setNumeroDeStructureSuccesseur($ligne('numero_de_structure_successeur'));
+                            $output->writeln($lab->getNomLabo().' est devenu inactif');
+                        }
                     }
                 }
-                // Cherche les laboratoires inactifs
             }
             $currentIndex += 100;
         } while (0 != count($results) && $currentIndex < 9900);
