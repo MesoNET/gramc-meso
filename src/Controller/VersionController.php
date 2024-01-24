@@ -515,24 +515,19 @@ class VersionController extends AbstractController
                            ];
 
                 // envoyer une notification à l'ancien et au nouveau responsable
-                $sn->sendMessage(
+                $sn->sendNotificationTemplate(
                     'notification/changement_resp_pour_ancien-sujet.html.twig',
-                    'notification/changement_resp_pour_ancien-contenu.html.twig',
-                    $params,
-                    [$ancien_responsable]
-                );
-
-                $sn->sendMessage(
+                    $this->render('notification/changement_resp_pour_ancien-contenu.html.twig', $params),
+                    [$ancien_responsable]);
+                $sn->sendNotificationTemplate(
                     'notification/changement_resp_pour_nouveau-sujet.html.twig',
-                    'notification/changement_resp_pour_nouveau-contenu.html.twig',
-                    $params,
+                    $this->render('notification/changement_resp_pour_nouveau-contenu.html.twig', $params),
                     [$nouveau_responsable]
                 );
 
-                $sn->sendMessage(
+                $sn->sendNotificationTemplate(
                     'notification/changement_resp_pour_admin-sujet.html.twig',
-                    'notification/changement_resp_pour_admin-contenu.html.twig',
-                    $params,
+                    $this->render('notification/changement_resp_pour_admin-contenu.html.twig', $params),
                     $sn->mailUsers(['A'], null)
                 );
             }
