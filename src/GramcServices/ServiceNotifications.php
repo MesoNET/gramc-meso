@@ -83,30 +83,6 @@ class ServiceNotifications
         $this->sendRawMessage($subject, $body, $users);
     }
 
-    /*****
-     * Envoi d'une notification sur le site et par mail twig
-     *
-     * param $twig_sujet, $twig_contenu Templates Twig des messages:
-     *                                            - les renders de tempalte twig
-     * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
-     *
-     *********/
-    public function sendNotificationTemplate($twig_sujet, $twig_contenu, $users = null): void
-    {
-        $notification = (new Notification('New Notification'))
-            ->content($twig_contenu)
-            ->subject('Un mail vous a été envoyé')
-            ->importance(Notification::IMPORTANCE_LOW);
-        foreach ($users as $user) {
-            $recipient = new Recipient($user->getMail());
-            $mail = (new TemplatedEmail())
-                ->htmlTemplate($twig_contenu)
-                ->subject($twig_sujet)
-                ->to($user->getMail());
-            $this->mailer->send($mail);
-            $this->notifier->send($notification, $recipient);
-        }
-    }
 
     /*****
      * Envoi d'une notification sur le site et par mail twig
@@ -116,17 +92,19 @@ class ServiceNotifications
      * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
      *
      *********/
-    public function sendNotificationTemplateNoRender($twig_sujet, $twig_contenu, $params, $users = null): void
+    public function sendNotificationTemplate($twig_sujet, $twig_contenu, $params, $users = null): void
     {
         $notification = (new Notification('New Notification'))
-            ->content($this->twig->render($twig_contenu, $params))
+            ->content('Un mail vous a été envoyé sur votre adresse mail')
             ->subject('Un mail vous a été envoyé')
             ->importance(Notification::IMPORTANCE_LOW);
+        dump($users);
         foreach ($users as $user) {
             $recipient = new Recipient($user->getMail());
             $mail = (new TemplatedEmail())
-                ->htmlTemplate($this->twig->render($twig_contenu, $params))
-                ->subject($this->twig->render($twig_sujet, $params))
+                ->htmlTemplate($twig_contenu)
+                ->subject($twig_sujet)
+                ->context($params)
                 ->to($user->getMail());
             $this->mailer->send($mail);
             $this->notifier->send($notification, $recipient);
