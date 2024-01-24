@@ -125,8 +125,7 @@ class ServiceExpertsRallonge extends ServiceExperts
             $dest = [$e];
             $params = ['object' => $liste_d];
             // $sj->debugMessage( __METHOD__ . "Envoi d'un message à " . join(',',$dest) . " - " . $this->sj->show($liste_d) );
-
-            $sn->sendMessage(
+            $sn->sendNotificationTemplateNoRender(
                 'notification/affectation_expert_rallonge-sujet.html.twig',
                 'notification/affectation_expert_rallonge-contenu.html.twig',
                 $params,
