@@ -161,7 +161,7 @@ abstract class Transition
             $users = $this->sn->mailUsers([$mail_role], $object);
             $params['object'] = $object;
             $params['liste_mail_destinataires'] = implode(',', $this->sn->usersToMail($users));
-            $this->sn->sendMessage(
+            $this->sn->sendNotificationTemplateNoRender(
                 'notification/'.$template.'-sujet.html.twig',
                 'notification/'.$template.'-contenu.html.twig',
                 $params,
