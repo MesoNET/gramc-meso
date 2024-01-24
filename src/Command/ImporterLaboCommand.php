@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
@@ -29,36 +30,55 @@ class ImporterLaboCommand extends Command
         $currentIndex = 0; // utilisé pour le paramètre offset de l'api
         do {
             $output->writeln($currentIndex.' laboratoires scannés');
-            $response = $this->HTTPClient->request(
-                'GET',
-                $_ENV['API_LABO_URL'].'?where=etat%3D%27Active%27&limit=100&offset='.$currentIndex,
-                ['http_version' => '1.1']
-            );
+            $response = $this->faireRequete($currentIndex);
             if (!Response::HTTP_OK == $response->getStatusCode()) {
-                $output->writeln('erreur');
-                $output->writeln($response->getContent());
-
-                return $this::FAILURE;
+                $this->gererEchec($output, $response);
             }
+            $totalCount = (int) $response->toArray()['total_count'];
             $results = $response->toArray()['results'];
             for ($i = 0; $i < count($results); ++$i) {
                 $ligne = $results[$i];
-                $libelle = $ligne['libelle'];
-                if (null != $libelle && !$this->entityManager->getRepository(Laboratoire::class)->findBy([
-                        'nomLabo' => $libelle,
-                    ])) {
-                    $lab = (new Laboratoire())
-                        ->setNomLabo($libelle)
-                        ->setAcroLabo($ligne['sigle'])
-                        ->setNumeroLabo($currentIndex + $i);
-                    $this->entityManager->persist($lab);
-                    $output->writeln('Ajout du laboratoire '.$libelle);
+                // ajout des laboratoires actifs
+                if ('active' == strtolower($ligne['etat'])) {
+                    $libelle = $ligne['libelle'];
+                    if (null != $libelle && !$this->entityManager->getRepository(Laboratoire::class)->findBy([
+                            'nomLabo' => $libelle,
+                        ])) {
+                        $lab = (new Laboratoire())
+                            ->setNomLabo($libelle)
+                            ->setAcroLabo($ligne['sigle'])
+                            ->setNumeroLabo($currentIndex + $i)
+                            ->setNumeroNnationalStructure($ligne['numero_national_de_structure'])
+                            ->setActif(true);
+                        $this->entityManager->persist($lab);
+                        $output->writeln('Ajout du laboratoire '.$libelle);
+                    }
                 }
+                // Cherche les laboratoires inactifs
             }
             $currentIndex += 100;
-        } while (0 != count($results));
+        } while (0 != count($results) && $currentIndex < 9900);
         $this->entityManager->flush();
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function faireRequete(int $currentIndex): \Symfony\Contracts\HttpClient\ResponseInterface
+    {
+        return $this->HTTPClient->request(
+            'GET',
+            $_ENV['API_LABO_URL'].'?limit=100&offset='.$currentIndex,
+            ['http_version' => '1.1']);
+    }
+
+    public function gererEchec(OutputInterface $output, \Symfony\Contracts\HttpClient\ResponseInterface $response)
+    {
+        $output->writeln('erreur');
+        $output->writeln($response->getContent());
+
+        return $this::FAILURE;
     }
 }
