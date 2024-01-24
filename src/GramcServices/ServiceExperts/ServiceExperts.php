@@ -566,7 +566,7 @@ class ServiceExperts
             $params = ['object' => $liste_d];
             // $this->sj->debugMessage( __METHOD__ . "Envoi d'un message à " . join(',',$dest) . " - " . Functions::show($liste_d) );
 
-            $this->sn->sendNotificationTemplateNoRender('notification/affectation_expert_version-sujet.html.twig', 'notification/affectation_expert_version-contenu.html.twig', $params, $dest);
+            $this->sn->sendNotificationTemplate('notification/affectation_expert_version-sujet.html.twig', 'notification/affectation_expert_version-contenu.html.twig', $params, $dest);
         }
     }
 }
