@@ -93,6 +93,9 @@ class Laboratoire
     #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
     private $adresseip;
 
+    #[ORM\Column(length: 50)]
+    private ?string $numeroNnationalStructure = null;
+
     public function __toString(): string
     {
         if (null != $this->getAcroLabo() && null != $this->getNomLabo()) {
@@ -276,5 +279,17 @@ class Laboratoire
     public function isLaboRegional(): bool
     {
         return $this->idLabo > 1;
+    }
+
+    public function getNumeroNnationalStructure(): ?string
+    {
+        return $this->numeroNnationalStructure;
+    }
+
+    public function setNumeroNnationalStructure(string $numeroNnationalStructure): static
+    {
+        $this->numeroNnationalStructure = $numeroNnationalStructure;
+
+        return $this;
     }
 }
