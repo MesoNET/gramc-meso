@@ -93,6 +93,15 @@ class Laboratoire
     #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
     private $adresseip;
 
+    #[ORM\Column(length: 50,unique:  true)]
+    private ?string $numeroNnationalStructure = '';
+
+    #[ORM\Column(nullable: false)]
+    private bool $actif = true;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $numeroDeStructureSuccesseur = null;
+
     public function __toString(): string
     {
         if (null != $this->getAcroLabo() && null != $this->getNomLabo()) {
@@ -276,5 +285,41 @@ class Laboratoire
     public function isLaboRegional(): bool
     {
         return $this->idLabo > 1;
+    }
+
+    public function getNumeroNnationalStructure(): ?string
+    {
+        return $this->numeroNnationalStructure;
+    }
+
+    public function setNumeroNnationalStructure(string $numeroNnationalStructure): static
+    {
+        $this->numeroNnationalStructure = $numeroNnationalStructure;
+
+        return $this;
+    }
+
+    public function isActif(): ?bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
+
+        return $this;
+    }
+
+    public function getNumeroDeStructureSuccesseur(): ?string
+    {
+        return $this->numeroDeStructureSuccesseur;
+    }
+
+    public function setNumeroDeStructureSuccesseur(?string $numeroDeStructureSuccesseur): static
+    {
+        $this->numeroDeStructureSuccesseur = $numeroDeStructureSuccesseur;
+
+        return $this;
     }
 }
