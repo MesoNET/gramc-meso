@@ -179,7 +179,7 @@ class StatistiquesController extends AbstractController
         );
     }
 
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/formation', name: 'statistiques_formation', methods: ['GET'])]
     public function formationAction(Request $request): Response
     {
@@ -581,7 +581,7 @@ class StatistiquesController extends AbstractController
         return $this->parCritere($request, 'getAcroLaboratoire', 'laboratoire');
     }
 
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/etablissement', name: 'statistiques_etablissement', methods: ['GET', 'POST'])]
     public function etablissementAction(Request $request): Response
     {

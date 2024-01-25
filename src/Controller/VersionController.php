@@ -116,53 +116,53 @@ class VersionController extends AbstractController
     ) {
     }
 
-    /** Action générée mais n'a pas de temlate associé
+    /** Action générée mais n'a pas de temlate associé.
      * @todo supprimer le controller ou ajouter le template associé
-    #[isGranted('ROLE_ADMIN')]
-    #[Route(path: '/', name: 'version_index', methods: ['GET'])]
-    public function indexAction(): Response
-    {
-        $em = $this->em;
-
-        $versions = $em->getRepository(Version::class)->findAll();
-
-        return $this->render('version/index.html.twig', [
-            'versions' => $versions,
-        ]);
-    }
-    */
+     * #[isGranted('ROLE_ADMIN')]
+     * #[Route(path: '/', name: 'version_index', methods: ['GET'])]
+     * public function indexAction(): Response
+     * {
+     * $em = $this->em;
+     *
+     * $versions = $em->getRepository(Version::class)->findAll();
+     *
+     * return $this->render('version/index.html.twig', [
+     * 'versions' => $versions,
+     * ]);
+     * }
+     */
 
     /**
      * Creates a new version entity. CRUD.
+     *
      * @todo autogénérée et imcoplet, déterminer si à supprioer ou complèter
-    #[isGranted('ROLE_ADMIN')]
-    #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
-    public function newAction(Request $request): Response
-    {
-        $version = new Version();
-        $form = $this->createForm('App\Form\VersionType', $version);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->persist($version);
-            $em->flush($version);
-
-            return $this->redirectToRoute('version_show', ['id' => $version->getId()]);
-        }
-
-        return $this->render('version/new.html.twig', [
-            'version' => $version,
-            'form' => $form->createView(),
-        ]);
-    }
-    */
+     * #[isGranted('ROLE_ADMIN')]
+     * #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
+     * public function newAction(Request $request): Response
+     * {
+     * $version = new Version();
+     * $form = $this->createForm('App\Form\VersionType', $version);
+     * $form->handleRequest($request);
+     *
+     * if ($form->isSubmitted() && $form->isValid()) {
+     * $em = $this->em;
+     * $em->persist($version);
+     * $em->flush($version);
+     *
+     * return $this->redirectToRoute('version_show', ['id' => $version->getId()]);
+     * }
+     *
+     * return $this->render('version/new.html.twig', [
+     * 'version' => $version,
+     * 'form' => $form->createView(),
+     * ]);
+     * }
+     */
 
     /**
      * Affichage d'un écran de confirmation avant la suppression d'une version de projet.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/avant_supprimer', name: 'version_avant_supprimer', methods: ['GET'])]
     public function avantSupprimerAction(Version $version): Response
     {
@@ -185,9 +185,8 @@ class VersionController extends AbstractController
 
     /**
      * Supprimer version (en base de données et dans le répertoire data).
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/supprimer', name: 'version_supprimer', methods: ['GET'])]
     public function supprimerAction(Version $version): Response
     {
@@ -210,9 +209,8 @@ class VersionController extends AbstractController
 
     /**
      * Supprimer Fichier attaché à une version.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{filename}/supprimer_fichier', name: 'version_supprimer_fichier', methods: ['GET'])]
     public function supprimerFichierAction(Version $version, string $filename): Response
     {
@@ -250,9 +248,8 @@ class VersionController extends AbstractController
     // ////////////////////////////////////////////////////////////////////////
     /**
      * Convertit et affiche la version au format pdf.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/pdf', name: 'version_pdf', methods: ['GET'])]
     public function pdfAction(Version $version, Request $request): Response
     {
@@ -304,9 +301,8 @@ class VersionController extends AbstractController
 
     /**
      * Téléchargement de la fiche Projet.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/fiche_pdf', name: 'version_fiche_pdf', methods: ['GET'])]
     public function fichePdfAction(Version $version, Request $request): Response
     {
@@ -340,9 +336,8 @@ class VersionController extends AbstractController
 
     /**
      * Téléversement de la fiche projet.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/televerser_fiche', name: 'version_televerser_fiche', methods: ['GET', 'POST'])]
     public function televerserFicheAction(Request $request, Version $version): Response
     {
@@ -390,9 +385,8 @@ class VersionController extends AbstractController
 
     /**
      * Téléversement de la fiche projet en tant qu'admin.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/televerser_fiche_admin', name: 'version_televerser_fiche_admin', methods: ['GET', 'POST'])]
     public function televerserFicheAdminAction(Request $request, Version $version): Response
     {
@@ -444,9 +438,8 @@ class VersionController extends AbstractController
 
     /**
      * Changer le responsable d'une version.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/responsable', name: 'changer_responsable', methods: ['GET', 'POST'])]
     public function changerResponsableAction(Version $version, Request $request): Response
     {
@@ -552,9 +545,8 @@ class VersionController extends AbstractController
 
     /**
      * Modifier les collaborateurs d'une version.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/collaborateurs', name: 'modifier_collaborateurs', methods: ['GET', 'POST'])]
     public function modifierCollaborateursAction(Version $version, Request $request): Response
     {
@@ -646,9 +638,8 @@ class VersionController extends AbstractController
 
     /**
      * envoyer à l'expert.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/envoyer', name: 'envoyer_en_expertise', methods: ['GET', 'POST'])]
     public function envoyerAction(Version $version, Request $request, LoggerInterface $lg): Response
     {
@@ -675,7 +666,7 @@ class VersionController extends AbstractController
         $form = Functions::createFormBuilder($ff)
                 ->add(
                     'CGU',
-                    CheckBoxType::class,
+                    CheckboxType::class,
                     [
                         'required' => false,
                         'label' => '',
@@ -730,9 +721,8 @@ class VersionController extends AbstractController
 
     /**
      * Téléversements génériques de rapport d'activité ou de fiche projet.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/televersement', name: 'televersement_generique', methods: ['GET', 'POST'])]
     public function televersementGeneriqueAction(Request $request): Response
     {
@@ -818,9 +808,8 @@ class VersionController extends AbstractController
 
     /**
      * Changer l'attribution d'une version en mode admin.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/attribution', name: 'version_attribution_admin', methods: ['GET', 'POST'])]
     public function versionAttributionAction(Request $request, Version $version): Response
     {
@@ -875,11 +864,10 @@ class VersionController extends AbstractController
      *
      * DOIT ETRE APPELE EN AJAX, Sinon ça NE VA PAS MARCHER !
      *      Renvoie normalement une réponse en json
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/fichier/{filename}', name: 'televerser', methods: ['GET', 'POST'])]
-    public function televerserAction(Request $request, version $version, string $filename): Response
+    public function televerserAction(Request $request, Version $version, string $filename): Response
     {
         $sm = $this->sm;
         $sj = $this->sj;
@@ -902,7 +890,7 @@ class VersionController extends AbstractController
      * Fonction unique pour faire le téléversement, que ce soit en ajax ou pas
      *
      ****************************************************/
-    private function televerser(Request $request, version $version, string $filename): Form|string
+    private function televerser(Request $request, Version $version, string $filename): form|string
     {
         $sv = $this->sv;
         $sf = $this->sf;
@@ -1012,9 +1000,8 @@ class VersionController extends AbstractController
      * Appelé par le bouton Envoyer à l'expert: si la demande est incomplète
      * on envoie un écran pour la compléter. Sinon on passe à envoyer à l'expert
      * TODO - Un héritage ou un interface ici car tous les VersionSpecController ont le même code !
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/avant_modifier', name: 'avant_modifier_version', methods: ['GET', 'POST'])]
     public function avantModifierVersionAction(Request $request, Version $version): Response
     {
@@ -1045,9 +1032,8 @@ class VersionController extends AbstractController
      *
      *      1/ D'abord une partie générique (images, collaborateurs)
      *      2/ Ensuite on appelle modifierTypeX, car le formulaire dépend du type de projet
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/modifier', name: 'modifier_version', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Version $version): Response
     {
@@ -1228,7 +1214,7 @@ class VersionController extends AbstractController
 
         /* Pour un renouvellement, ajouter la justification du renouvellement */
         if (count($version->getProjet()->getVersion()) > 1) {
-            $form = $form->add('prjJustifRenouv', TextAreaType::class, ['required' => false]);
+            $form = $form->add('prjJustifRenouv', TextareaType::class, ['required' => false]);
         }
     }
 
@@ -1236,7 +1222,7 @@ class VersionController extends AbstractController
     private function __modifier4PartieII($version, &$form): void
     {
         $form
-        ->add('prjExpose', TextAreaType::class, ['required' => false]);
+        ->add('prjExpose', TextareaType::class, ['required' => false]);
     }
 
     /* Les champs de la partie III */
@@ -1244,14 +1230,13 @@ class VersionController extends AbstractController
     {
         $form
         ->add('codeNom', TextType::class, ['required' => false])
-        ->add('codeLicence', TextAreaType::class, ['required' => false]);
+        ->add('codeLicence', TextareaType::class, ['required' => false]);
     }
 
     /**
      * Renouvellement d'une version.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/renouveler', name: 'renouveler_version', methods: ['GET', 'POST'])]
     public function renouvelerAction(Request $request, Version $version): Response
     {

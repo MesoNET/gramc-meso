@@ -45,9 +45,7 @@ class FormationController extends AbstractController
     {
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_formations', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -68,13 +66,12 @@ class FormationController extends AbstractController
 
     /**
      * Nouvelle formation.
-     *
      */
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_formation', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
-        $formation = new formation();
+        $formation = new Formation();
         $form = $this->createForm('App\Form\FormationType', $formation, ['ajouter' => true]);
         $form->handleRequest($request);
 
@@ -103,9 +100,8 @@ class FormationController extends AbstractController
 
     /**
      * Modifier une formation.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier', name: 'modifier_formation', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Formation $formation): Response
     {
@@ -135,9 +131,8 @@ class FormationController extends AbstractController
 
     /**
      * Supprime une formation.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_formation', methods: ['GET'])]
     #[Route(path: '/{id}/supprimer', name: 'formation_delete', methods: ['GET'])]
     public function supprimerAction(Request $request, Formation $formation): Response
@@ -156,7 +151,7 @@ class FormationController extends AbstractController
      *
      * @return Form The form
      */
-    private function createDeleteForm(formation $formation): FormInterface
+    private function createDeleteForm(Formation $formation): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('formation_delete', ['id' => $formation->getId()]))

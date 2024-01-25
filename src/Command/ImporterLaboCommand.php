@@ -32,8 +32,8 @@ class ImporterLaboCommand extends Command
     /**
      * Importe les laboratoires actifs et note les inactifs déjà présents en bd. Doit être exécutée une fois pour les actifs et une fois pour les inactifs à cause d'une limitation de l'API qui n'autorise pas les requêtes au-delà de l'inex 10000.
      *
-     * @param OutputInterface $output
      * @param bool $actif Détermine si on gère les serveurs actifs ou inactifs
+     *
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface

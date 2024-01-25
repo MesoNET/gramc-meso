@@ -46,9 +46,7 @@ class RessourceController extends AbstractController
     {
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_ressources', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -62,23 +60,22 @@ class RessourceController extends AbstractController
             'ressource/liste.html.twig',
             [
             'menu' => $menu,
-            'ressources' => $em->getRepository(ressource::class)->findBy([], ['nom' => 'ASC']),
+            'ressources' => $em->getRepository(Ressource::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
 
     /**
      * Nouvelle ressource.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/ajouter', name: 'ajouter_ressource', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $sd = $this->sd;
         $em = $this->em;
 
-        $ressource = new ressource();
+        $ressource = new Ressource();
         $form = $this->createForm('App\Form\RessourceType', $ressource, ['ajouter' => true]);
         $form->handleRequest($request);
 
@@ -122,9 +119,8 @@ class RessourceController extends AbstractController
 
     /**
      * Modifier une ressource.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier_ressource', name: 'modifier_ressource', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Ressource $ressource): Response
     {
@@ -154,9 +150,8 @@ class RessourceController extends AbstractController
 
     /**
      * Supprimer une ressource.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/suppr', name: 'supprimer_ressource', methods: ['GET'])]
     public function supprimerAction(Request $request, Ressource $ressource): Response
     {

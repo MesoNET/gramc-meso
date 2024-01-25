@@ -36,9 +36,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Statut controller.
- *
  */
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route(path: 'statut')]
 class StatutController extends AbstractController
 {

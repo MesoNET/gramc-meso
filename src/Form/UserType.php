@@ -53,13 +53,13 @@ class UserType extends AbstractType
                 'required' => true,
                 'multiple' => false,
                 'expanded' => true,
-                'class' => clessh::class,
+                'class' => Clessh::class,
                 'choices' => $options['clessh'],
             ]
         )
                 ->add(
                     'cgu',
-                    CheckBoxType::class,
+                    CheckboxType::class,
                     [
                         'required' => false,
                         'label' => '',
