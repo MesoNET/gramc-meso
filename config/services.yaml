@@ -72,7 +72,6 @@ services:
             -   name: 'doctrine.orm.entity_listener'
                 event: 'postUpdate'
                 entity: 'App\Entity\Version'
-
     App\EventSubscriber\:
         resource: '../src/EventSubscriber/*'
         
