@@ -27,6 +27,7 @@ use App\Entity\Individu;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Notifier\Notification\Notification;
@@ -47,6 +48,7 @@ class ServiceNotifications
         private TokenStorageInterface $tok,
         private MailerInterface $mailer,
         protected ServiceJournal $sj,
+        private Security $security,
         protected EntityManagerInterface $em,
         private NotifierInterface $notifier,
         private UrlGeneratorInterface $router,
@@ -111,6 +113,12 @@ class ServiceNotifications
                 ->subject($twig_sujet)
                 ->context($params)
                 ->to($user->getMail());
+            $this->em->persist((new \App\Entity\Notification())->setSujet(
+                $broserSubject)
+                ->setDateCreation(new \DateTime())
+                ->setIndividu($user)
+            );
+            $this->em->flush();
             $this->mailer->send($mail);
             $this->notifier->send($notification, $recipient);
         }
