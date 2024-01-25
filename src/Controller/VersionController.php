@@ -116,49 +116,6 @@ class VersionController extends AbstractController
     ) {
     }
 
-    /** Action générée mais n'a pas de temlate associé.
-     * @todo supprimer le controller ou ajouter le template associé
-     * #[isGranted('ROLE_ADMIN')]
-     * #[Route(path: '/', name: 'version_index', methods: ['GET'])]
-     * public function indexAction(): Response
-     * {
-     * $em = $this->em;
-     *
-     * $versions = $em->getRepository(Version::class)->findAll();
-     *
-     * return $this->render('version/index.html.twig', [
-     * 'versions' => $versions,
-     * ]);
-     * }
-     */
-
-    /**
-     * Creates a new version entity. CRUD.
-     *
-     * @todo autogénérée et imcoplet, déterminer si à supprioer ou complèter
-     * #[isGranted('ROLE_ADMIN')]
-     * #[Route(path: '/new', name: 'version_new', methods: ['GET', 'POST'])]
-     * public function newAction(Request $request): Response
-     * {
-     * $version = new Version();
-     * $form = $this->createForm('App\Form\VersionType', $version);
-     * $form->handleRequest($request);
-     *
-     * if ($form->isSubmitted() && $form->isValid()) {
-     * $em = $this->em;
-     * $em->persist($version);
-     * $em->flush($version);
-     *
-     * return $this->redirectToRoute('version_show', ['id' => $version->getId()]);
-     * }
-     *
-     * return $this->render('version/new.html.twig', [
-     * 'version' => $version,
-     * 'form' => $form->createView(),
-     * ]);
-     * }
-     */
-
     /**
      * Affichage d'un écran de confirmation avant la suppression d'une version de projet.
      */

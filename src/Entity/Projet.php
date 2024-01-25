@@ -483,20 +483,6 @@ class Projet
         }
     }
 
-    /*
-     * Renvoie true si le projet est un projet test, false sinon
-     * TODO - A VIRER !
-     */
-    public function isProjetTest()
-    {
-        $type = $this->getTypeProjet();
-        if (Projet::PROJET_TEST === $this->getTypeProjet()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * derniereVersion - Alias de getVersionDerniere()
      *                   TODO - A supprimer !

@@ -64,7 +64,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route(path: 'expertise')]
 class ExpertiseController extends AbstractController
 {
-    private $token;
+    private ?\Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token;
 
     public function __construct(
         private $dyn_duree,
@@ -95,27 +95,25 @@ class ExpertiseController extends AbstractController
     {
         return Etat::cmpEtatExpertise($a->getEtatVersion(), $b->getEtatVersion());
     }
+
     /**
-     * * @todo non utilisé, à compléter/supprimer
      * Afficher une expertise.
-     * #[IsGranted('ROLE_VALIDEUR')]
-     * #[Route(path: '/consulter/{id}', name: 'consulter_expertise', methods: ['GET'])]
-     * public function consulterAction(Request $request, Expertise $expertise): Response
-     * {
-     * $token = $this->token;
-     * $sm = $this->sm;
-     *
-     * $menu[] = $sm->expert();
-     *
-     * $moi = $token->getUser();
-     * $version = $expertise->getVersion();
-     * if (null !== $version && $version->isExpertDe($moi)) {
-     * return $this->render('expertise/consulter.html.twig', ['expertise' => $expertise, 'menu' => $menu]);
-     * } else {
-     * return new RedirectResponse($this->generateUrl('accueil'));
-     * }
-     * }
      */
+    #[IsGranted('ROLE_VALIDEUR')]
+    #[Route(path: '/consulter/{id}', name: 'consulter_expertise', methods: ['GET'])]
+    public function consulterAction(Request $request, Expertise $expertise): Response
+    {
+        $token = $this->token;
+        $sm = $this->sm;
+        $menu[] = $sm->expert();
+        $moi = $token->getUser();
+        $version = $expertise->getVersion();
+        if (null !== $version && $version->isExpertDe($moi)) {
+            return $this->render('expertise/consulter.html.twig', ['expertise' => $expertise, 'menu' => $menu]);
+        } else {
+            return new RedirectResponse($this->generateUrl('accueil'));
+        }
+    }
 
     // Helper function used by listeAction
     private static function exptruefirst($a, $b): int

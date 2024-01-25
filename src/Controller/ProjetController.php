@@ -253,59 +253,6 @@ class ProjetController extends AbstractController
         }
     }
 
-    /* Inutilisé
-    * @todo à supprimer si inutile
-    #[IsGranted('ROLE_OBS')]
-    #[Route(path: '/{annee}/resumes', name: 'projet_resumes', methods: ['GET', 'POST'])]
-    public function resumesAction($annee): Response
-    {
-        $sp = $this->sp;
-        $sj = $this->sj;
-
-        $paa = $sp->projetsParAnnee($annee);
-        $prjs = $paa[0];
-        $total = $paa[1];
-
-        // construire une structure de données:
-        //     - tableau associatif indexé par la métathématique
-        //     - Pour chaque méta thématique liste des projets correspondants
-        //       On utilise version B si elle existe, version A sinon
-        //       On garde titre, les deux dernières publications, résumé
-        $projets = [];
-        foreach ($prjs as $p) {
-            $v = empty($p['vb']) ? $p['va'] : $p['vb'];
-
-            // On saute les projets en édition !
-            if (Etat::EDITION_DEMANDE == $v->getEtatVersion()) {
-                continue;
-            }
-            $thematique = $v->getPrjThematique();
-            $prj = [];
-            $prj['id'] = $v->getProjet()->getIdProjet();
-            $prj['titre'] = $v->getPrjTitre();
-            $prj['resume'] = $v->getPrjResume();
-            $prj['laboratoire'] = $v->getLabo();
-            $a = $v->getProjet()->getIdProjet();
-            $a = substr($a, 1, 2);
-            $a = 2000 + intval($a);
-            $prj['annee'] = $a;
-            $publis = array_slice($v->getProjet()->getPubli()->toArray(), -2, 2);
-            // $publis = array_slice($publis, -2, 2); // On garde seulement les deux dernières
-            $prj['publis'] = $publis;
-            $prj['porteur'] = $v->getResponsable()->getPrenom().' '.$v->getResponsable()->getNom();
-            $prjm[] = $prj;
-        }
-
-        return $this->render(
-            'projet/resumes.html.twig',
-            [
-                'annee' => $annee,
-                'projets' => $projets,
-                ]
-        );
-    }
-    */
-
     /**
      * Téléchargement du rapport d'activité.
      */
@@ -433,24 +380,7 @@ class ProjetController extends AbstractController
         );
     }
 
-    /**
-     * Pas utilisé...
-     *
-     * @todo non utilisé et non fonctionnel
-     * #[IsGranted('ROLE_ADMIN')]
-     * #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
-     * public function gererAction(): Response
-     * {
-     * $em = $this->em;
-     * $projets = $em->getRepository(Projet::class)->findAll();
-     *
-     * return $this->render('projet/gerer.html.twig', [
-     * 'projets' => $projets,
-     * ]);
-     * }
-     */
-
-    /**
+    /*    /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).
      */
     #[IsGranted('ROLE_DEMANDEUR')]
