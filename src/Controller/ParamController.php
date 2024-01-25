@@ -39,9 +39,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Param controller.
- *
  */
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route(path: 'param')]
 class ParamController extends AbstractController
 {

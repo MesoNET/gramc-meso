@@ -7,7 +7,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-    {% for message in app.flashes('notice') %}
+    {% for message in app.flashes('totification') %}
         <div class="flash-notice">
             {{ message }}
         </div>

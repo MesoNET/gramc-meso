@@ -64,7 +64,7 @@ class PublicationController extends AbstractController
     /**
      * Autocomplete publication.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/autocomplete', name: 'publication_autocomplete', methods: ['GET', 'POST'])]
     public function autocompleteAction(Request $request): Response
     {
@@ -124,7 +124,7 @@ class PublicationController extends AbstractController
     /**
      * Lists all publication entities.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'publication_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -137,7 +137,7 @@ class PublicationController extends AbstractController
         ]);
     }
 
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/gerer', name: 'gerer_publications', methods: ['GET', 'POST'])]
     public function gererAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
@@ -194,7 +194,7 @@ class PublicationController extends AbstractController
         );
     }
 
-    #[isGranted('ROLE_VALIDEUR')]
+    #[IsGranted('ROLE_VALIDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_publications', methods: ['GET'])]
     public function consulterAction(Projet $projet, Request $request): Response
     {
@@ -260,7 +260,7 @@ class PublicationController extends AbstractController
     /**
      * Creates a new publication entity.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'publication_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
@@ -285,7 +285,7 @@ class PublicationController extends AbstractController
     /**
      * Finds and displays a publication entity.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/show', name: 'publication_show', methods: ['GET'])]
     public function showAction(Publication $publication): Response
     {
@@ -300,7 +300,7 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Publication $publication): Response
     {
@@ -324,7 +324,7 @@ class PublicationController extends AbstractController
     /**
      * Displays a form to edit an existing publication entity.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/modify', name: 'modifier_publication', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
@@ -359,7 +359,7 @@ class PublicationController extends AbstractController
     /**
      * Deletes a publication entity.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}', name: 'publication_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Publication $publication): Response
     {
@@ -378,7 +378,7 @@ class PublicationController extends AbstractController
     /**
      * Deletes a publication entity.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/{projet}/supprimer', name: 'supprimer_publication', methods: ['GET', 'DELETE'])]
     public function supprimerAction(Request $request, Publication $publication, Projet $projet, LoggerInterface $lg): Response
     {
@@ -413,7 +413,7 @@ class PublicationController extends AbstractController
      *
      * @return Response The form
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     private function createDeleteForm(Publication $publication): Response
     {
         return $this->createFormBuilder()

@@ -195,9 +195,8 @@ class LoginController extends AbstractController
 
     /**
      * Sudo (l'admin change d'identité).
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/sudo', name: 'sudo', methods: ['GET'])]
     public function sudoAction(Request $request, Individu $individu): Response
     {

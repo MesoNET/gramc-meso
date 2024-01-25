@@ -47,9 +47,8 @@ class ClesshController extends AbstractController
 
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/gerer', name: 'gerer_clessh', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -82,9 +81,8 @@ class ClesshController extends AbstractController
 
     /**
      * Liste toutes les clés ssh associées à l'utilisateur connecté, même si elles sont révoquées.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/gerer_all', name: 'gerer_clessh_all', methods: ['GET'])]
     public function gererActionAll(): Response
     {
@@ -113,7 +111,7 @@ class ClesshController extends AbstractController
      *
      * Method("DELETE")
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_clessh', methods: ['GET'])]
     public function supprimerAction(Request $request, Clessh $clessh): Response
     {
@@ -138,9 +136,8 @@ class ClesshController extends AbstractController
 
     /**
      * Ajoute une nouvelle cléssh.
-     *
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/ajouter', name: 'ajouter_clessh', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {

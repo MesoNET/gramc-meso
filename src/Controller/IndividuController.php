@@ -79,7 +79,7 @@ class IndividuController extends AbstractController
     /**
      * Supprimer utilisateur.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_utilisateur', methods: ['GET'])]
     public function supprimerUtilisateurAction(Request $request, Individu $individu): Response
     {
@@ -93,7 +93,7 @@ class IndividuController extends AbstractController
     /**
      * Remplacer utilisateur: on a demandé la suppression d'un utilisateur qui a des projets, expertises etc.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/remplacer', name: 'remplacer_utilisateur', methods: ['GET', 'POST'])]
     public function remplacerUtilisateurAction(Request $request, Individu $individu): Response
     {
@@ -214,7 +214,7 @@ class IndividuController extends AbstractController
     /**
      * Deletes a individu entity (CRUD).
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/delete', name: 'individu_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Individu $individu): Response
     {
@@ -233,7 +233,7 @@ class IndividuController extends AbstractController
     /**
      * Lists all individu entities (CRUD).
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/', name: 'individu_index', methods: ['GET'])]
     public function indexAction(): Response
     {
@@ -249,7 +249,7 @@ class IndividuController extends AbstractController
     /**
      * Creates a new individu entity (CRUD).
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/new', name: 'individu_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request): Response
     {
@@ -274,7 +274,7 @@ class IndividuController extends AbstractController
     /**
      * Finds and displays a individu entity (CRUD).
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/show', name: 'individu_show', methods: ['GET'])]
     public function showAction(Individu $individu): Response
     {
@@ -289,7 +289,7 @@ class IndividuController extends AbstractController
     /**
      * Displays a form to edit an existing individu entity (CRUD).
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/edit', name: 'individu_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Individu $individu): Response
     {
@@ -329,7 +329,7 @@ class IndividuController extends AbstractController
     /**
      * Ajouter un individu.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/ajouter', name: 'individu_ajouter', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request)
     {
@@ -361,7 +361,7 @@ class IndividuController extends AbstractController
     /**
      * Modifier un individu.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modify', name: 'individu_modify', methods: ['GET', 'POST'])]
     public function modifyAction(Request $request, Individu $individu): Response
     {
@@ -445,7 +445,7 @@ class IndividuController extends AbstractController
      * Envoyer une invitation.
      *
      **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/invitation', name: 'invitation', methods: ['GET'])]
     public function invitationAction(Request $request, Individu $individu): Response
     {
@@ -461,7 +461,7 @@ class IndividuController extends AbstractController
      * Afficher toutes les invitations.
      *
      **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/invitations', name: 'invitations', methods: ['GET'])]
     public function invitationsAction(Request $request): Response
     {
@@ -478,7 +478,7 @@ class IndividuController extends AbstractController
      * Supprimer une invitation.
      *
      **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer_invitation', name: 'supprimer_invitation', methods: ['GET'])]
     public function supprimerInvitationAction(Request $request, Invitation $invitation): Response
     {
@@ -525,7 +525,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir Admin.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_admin', name: 'devenir_admin', methods: ['GET'])]
     public function devenirAdminAction(Request $request, Individu $individu): Response
     {
@@ -546,7 +546,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être Admin.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_admin', name: 'plus_admin', methods: ['GET'])]
     public function plusAdminAction(Request $request, Individu $individu): Response
     {
@@ -565,7 +565,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir Obs.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_obs', name: 'devenir_obs', methods: ['GET'])]
     public function devenirObsAction(Request $request, Individu $individu): Response
     {
@@ -585,7 +585,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être Obs.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_obs', name: 'plus_obs', methods: ['GET'])]
     public function plusObsAction(Request $request, Individu $individu): Response
     {
@@ -604,7 +604,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir Sysadmin.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_sysadmin', name: 'devenir_sysadmin', methods: ['GET'])]
     public function devenirSysadminAction(Request $request, Individu $individu): Response
     {
@@ -623,7 +623,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être Sysadmin.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_sysadmin', name: 'plus_sysadmin', methods: ['GET'])]
     public function plusSysadminAction(Request $request, Individu $individu): Response
     {
@@ -642,7 +642,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir President - PAS UTILISE.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_president', name: 'devenir_president', methods: ['GET'])]
     public function devenirPresidentAction(Request $request, Individu $individu): Response
     {
@@ -661,7 +661,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être President - PAS UTILISE.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_president', name: 'plus_president', methods: ['GET'])]
     public function plusPresidentAction(Request $request, Individu $individu): Response
     {
@@ -680,7 +680,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir Expert - PAS UTILISE.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_expert', name: 'devenir_expert', methods: ['GET'])]
     public function devenirExpertAction(Request $request, Individu $individu): Response
     {
@@ -699,7 +699,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être Expert - PAS UTILISE.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_expert', name: 'plus_expert', methods: ['GET'])]
     public function plusExpertAction(Request $request, Individu $individu): Response
     {
@@ -719,7 +719,7 @@ class IndividuController extends AbstractController
     /**
      * Devenir valideur.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/devenir_valideur', name: 'devenir_valideur', methods: ['GET'])]
     public function devenirValideurAction(Request $request, Individu $individu): Response
     {
@@ -738,7 +738,7 @@ class IndividuController extends AbstractController
     /**
      * Cesser d'être valideur.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/plus_valideur', name: 'plus_valideur', methods: ['GET'])]
     public function plusValideurAction(Request $request, Individu $individu): Response
     {
@@ -759,7 +759,7 @@ class IndividuController extends AbstractController
     /**
      * Activer individu.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/activer', name: 'activer_utilisateur', methods: ['GET'])]
     public function activerAction(Request $request, Individu $individu)
     {
@@ -778,7 +778,7 @@ class IndividuController extends AbstractController
     /**
      * Desactiver individu.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/desactiver', name: 'desactiver_utilisateur', methods: ['GET'])]
     public function desactiverAction(Request $request, Individu $individu): Response
     {
@@ -803,110 +803,112 @@ class IndividuController extends AbstractController
 
     /**
      * Affecter l'individu à une ou des thematiques - PAS UTILISE.
-    * @todo inutilisé
-    #[isGranted('ROLE_ADMIN')]
-    #[Route(path: '/{id}/thematique', name: 'choisir_thematique', methods: ['GET', 'POST'])]
-    public function thematiqueAction(Request $request, Individu $individu): Response
-    {
-        $em = $this->em;
-        $form = $this->createFormBuilder($individu)
-            ->add(
-                'thematique',
-                EntityType::class,
-                [
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Thematique::class,
-                ]
-            )
-            ->add('submit', SubmitType::class, ['label' => 'modifier'])
-            ->add('reset', ResetType::class, ['label' => 'reset'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // thématiques && Doctrine ManyToMany
-            $all_thematiques = $em->getRepository(Thematique::class)->findAll();
-            $my_thematiques = $individu->getThematique();
-
-            foreach ($all_thematiques as $thematique) {
-                if ($my_thematiques->contains($thematique)) {
-                    $thematique->addExpert($individu);
-                } else {
-                    $thematique->removeExpert($individu);
-                }
-            }
-            $em->flush();
-        }
-
-        return $this->render(
-            'individu/thematique.html.twig',
-            [
-            'individu' => $individu,
-            'form' => $form->createView(),
-        ]
-        );
-    }
-    */
+     *
+     * @todo inutilisé
+     * #[isGranted('ROLE_ADMIN')]
+     * #[Route(path: '/{id}/thematique', name: 'choisir_thematique', methods: ['GET', 'POST'])]
+     * public function thematiqueAction(Request $request, Individu $individu): Response
+     * {
+     * $em = $this->em;
+     * $form = $this->createFormBuilder($individu)
+     * ->add(
+     * 'thematique',
+     * EntityType::class,
+     * [
+     * 'multiple' => true,
+     * 'expanded' => true,
+     * 'class' => Thematique::class,
+     * ]
+     * )
+     * ->add('submit', SubmitType::class, ['label' => 'modifier'])
+     * ->add('reset', ResetType::class, ['label' => 'reset'])
+     * ->getForm();
+     *
+     * $form->handleRequest($request);
+     *
+     * if ($form->isSubmitted() && $form->isValid()) {
+     * // thématiques && Doctrine ManyToMany
+     * $all_thematiques = $em->getRepository(Thematique::class)->findAll();
+     * $my_thematiques = $individu->getThematique();
+     *
+     * foreach ($all_thematiques as $thematique) {
+     * if ($my_thematiques->contains($thematique)) {
+     * $thematique->addExpert($individu);
+     * } else {
+     * $thematique->removeExpert($individu);
+     * }
+     * }
+     * $em->flush();
+     * }
+     *
+     * return $this->render(
+     * 'individu/thematique.html.twig',
+     * [
+     * 'individu' => $individu,
+     * 'form' => $form->createView(),
+     * ]
+     * );
+     * }
+     */
 
     /**
      * Supprimer un ou plusieurs eppn de cet utilisateur.
+     *
      * @todo non utilisé
-    #[isGranted('ROLE_ADMIN')]
-    #[Route(path: '/{id}/eppn', name: 'gere_eppn', methods: ['GET', 'POST'])]
-    public function eppnAction(Request $request, Individu $individu): Response
-    {
-        $em = $this->em;
-        $ssos = $individu->getSso();
-        $form = $this->createFormBuilder($individu)
-            ->add(
-                'eppn',
-                EntityType::class,
-                [
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Sso::class,
-                'choices' => $ssos,
-                ]
-            )
-            ->add('submit', SubmitType::class, ['label' => 'modifier'])
-            ->add('reset', ResetType::class, ['label' => 'reset'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // thématiques && Doctrine ManyToMany
-            $all_thematiques = $em->getRepository(Thematique::class)->findAll();
-            $my_thematiques = $individu->getThematique();
-
-            foreach ($all_thematiques as $thematique) {
-                if ($my_thematiques->contains($thematique)) {
-                    $thematique->addExpert($individu);
-                } else {
-                    $thematique->removeExpert($individu);
-                }
-            }
-
-            $em->flush();
-        }
-
-        return $this->render(
-            'individu/thematique.html.twig',
-            [
-            'individu' => $individu,
-            'form' => $form->createView(),
-            ]
-        );
-    }
-    */
+     * #[isGranted('ROLE_ADMIN')]
+     * #[Route(path: '/{id}/eppn', name: 'gere_eppn', methods: ['GET', 'POST'])]
+     * public function eppnAction(Request $request, Individu $individu): Response
+     * {
+     * $em = $this->em;
+     * $ssos = $individu->getSso();
+     * $form = $this->createFormBuilder($individu)
+     * ->add(
+     * 'eppn',
+     * EntityType::class,
+     * [
+     * 'multiple' => true,
+     * 'expanded' => true,
+     * 'class' => Sso::class,
+     * 'choices' => $ssos,
+     * ]
+     * )
+     * ->add('submit', SubmitType::class, ['label' => 'modifier'])
+     * ->add('reset', ResetType::class, ['label' => 'reset'])
+     * ->getForm();
+     *
+     * $form->handleRequest($request);
+     *
+     * if ($form->isSubmitted() && $form->isValid()) {
+     * // thématiques && Doctrine ManyToMany
+     * $all_thematiques = $em->getRepository(Thematique::class)->findAll();
+     * $my_thematiques = $individu->getThematique();
+     *
+     * foreach ($all_thematiques as $thematique) {
+     * if ($my_thematiques->contains($thematique)) {
+     * $thematique->addExpert($individu);
+     * } else {
+     * $thematique->removeExpert($individu);
+     * }
+     * }
+     *
+     * $em->flush();
+     * }
+     *
+     * return $this->render(
+     * 'individu/thematique.html.twig',
+     * [
+     * 'individu' => $individu,
+     * 'form' => $form->createView(),
+     * ]
+     * );
+     * }
+     */
 
     /**
      * Autocomplete: en lien avec l'autocomplete de jquery
      *               Requête appelée lorsqu'on quitte le champ autocomplete "mail" dans le formulaire des collaborateurs.
      */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/mail_autocomplete', name: 'mail_autocomplete', methods: ['GET', 'POST'])]
     public function mailAutocompleteAction(Request $request): Response
     {
@@ -999,7 +1001,7 @@ class IndividuController extends AbstractController
     /**
      * Liste tous les individus.
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/gerer', name: 'individu_gerer', methods: ['GET', 'POST'])]
     #[Route(path: '/liste', methods: ['GET', 'POST'])]
     public function gererAction(Request $request): Response
