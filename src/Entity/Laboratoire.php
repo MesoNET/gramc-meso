@@ -94,7 +94,7 @@ class Laboratoire
     private $adresseip;
 
     #[ORM\Column(length: 50,unique:  true)]
-    private ?string $numeroNnationalStructure = '';
+    private ?string $numeroNationalStructure = '';
 
     #[ORM\Column(nullable: false)]
     private bool $actif = true;
@@ -287,14 +287,14 @@ class Laboratoire
         return $this->idLabo > 1;
     }
 
-    public function getNumeroNnationalStructure(): ?string
+    public function getNumeroNationalStructure(): ?string
     {
-        return $this->numeroNnationalStructure;
+        return $this->numeroNationalStructure;
     }
 
-    public function setNumeroNnationalStructure(string $numeroNnationalStructure): static
+    public function setNumeroNationalStructure(string $numeroNationalStructure): static
     {
-        $this->numeroNnationalStructure = $numeroNnationalStructure;
+        $this->numeroNationalStructure = $numeroNationalStructure;
 
         return $this;
     }
