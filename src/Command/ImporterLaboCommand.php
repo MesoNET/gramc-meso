@@ -9,6 +9,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -25,31 +29,41 @@ class ImporterLaboCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    /**
+     * Importe les laboratoires actifs et note les inactifs déjà présents en bd. Doit être exécutée une fois pour les actifs et une fois pour les inactifs à cause d'une limitation de l'API qui n'autorise pas les requêtes au-delà de l'inex 10000.
+     *
+     * @param OutputInterface $output
+     * @param bool $actif Détermine si on gère les serveurs actifs ou inactifs
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function gererLabos(OutputInterface $output, bool $actif): void
     {
         $currentIndex = 0; // utilisé pour le paramètre offset de l'api
         do {
             $output->writeln($currentIndex.' laboratoires scannés');
-            $response = $this->faireRequete($currentIndex);
+            $response = $this->faireRequete($currentIndex, $actif);
             if (!Response::HTTP_OK == $response->getStatusCode()) {
                 $this->gererEchec($output, $response);
             }
-            $totalCount = (int) $response->toArray()['total_count'];
             $results = $response->toArray()['results'];
             for ($i = 0; $i < count($results); ++$i) {
                 $ligne = $results[$i];
                 // ajout des labosCorrespondants actifs
-                $numeroNnationalStructure = $ligne['numero_national_de_structure'];
+                $numeroNationalStructure = $ligne['numero_national_de_structure'];
                 $labosCorrespondants = $this->entityManager->getRepository(Laboratoire::class)->findBy([
-                    'numeroNnationalStructure' => $numeroNnationalStructure,
+                    'numeroNationalStructure' => $numeroNationalStructure,
                 ]);
-                if ('active' == strtolower($ligne['etat'])) {
+                if ($actif) {
                     if (!$labosCorrespondants) {
                         $lab = (new Laboratoire())
                             ->setNomLabo($ligne['libelle'])
                             ->setAcroLabo($ligne['sigle'])
                             ->setNumeroLabo($currentIndex + $i)
-                            ->setNumeroNnationalStructure($numeroNnationalStructure)
+                            ->setNumeroNationalStructure($numeroNationalStructure)
                             ->setActif(true);
                         $this->entityManager->persist($lab);
                         $output->writeln('Ajout du laboratoire '.$ligne['libelle']);
@@ -65,8 +79,16 @@ class ImporterLaboCommand extends Command
                 }
             }
             $currentIndex += 100;
-        } while (0 != count($results) && $currentIndex < 9900);
+        } while (0 != count($results));
         $this->entityManager->flush();
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $output->writeln('Laboratoires actifs');
+        $output->writeln('Laboratoires inactifs');
+        $this->gererLabos($output, actif: true);
+        $this->gererLabos($output, actif: false);
 
         return Command::SUCCESS;
     }
@@ -74,11 +96,17 @@ class ImporterLaboCommand extends Command
     /**
      * @throws TransportExceptionInterface
      */
-    public function faireRequete(int $currentIndex): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function faireRequete(int $currentIndex, bool $actif): \Symfony\Contracts\HttpClient\ResponseInterface
     {
+        if ($actif) {
+            $etat = 'Active';
+        } else {
+            $etat = 'Inactive';
+        }
+
         return $this->HTTPClient->request(
             'GET',
-            $_ENV['API_LABO_URL'].'?limit=100&offset='.$currentIndex,
+            $_ENV['API_LABO_URL'].'?limit=100&where=etat%3D\''.$etat.'\'&offset='.$currentIndex,
             ['http_version' => '1.1']);
     }
 
