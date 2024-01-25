@@ -261,9 +261,6 @@ class MailController extends AbstractController
         $all_projets = $em->getRepository(Projet::class)->findAll();
 
         foreach ($all_projets as $projet) {
-            if ($projet->isProjetTest()) {
-                continue;
-            }
             if (Etat::TERMINE == $projet->getEtatProjet() || Etat::ANNULE == $projet->getEtatProjet()) {
                 continue;
             }

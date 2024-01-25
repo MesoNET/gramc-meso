@@ -21,7 +21,7 @@ class Notification
     private ?\DateTimeInterface $dateCreation = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
-    #[ORM\JoinColumn(nullable: false,referencedColumnName: 'id_individu')]
+    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'id_individu')]
     private ?Individu $individu = null;
 
     public function getId(): ?int
