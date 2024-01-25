@@ -32,6 +32,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Recipient\Recipient;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /********************
@@ -47,7 +48,8 @@ class ServiceNotifications
         private MailerInterface $mailer,
         protected ServiceJournal $sj,
         protected EntityManagerInterface $em,
-        private NotifierInterface $notifier
+        private NotifierInterface $notifier,
+        private UrlGeneratorInterface $router,
     ) {
         $this->token = $tok->getToken();
     }
@@ -83,7 +85,6 @@ class ServiceNotifications
         $this->sendRawMessage($subject, $body, $users);
     }
 
-
     /*****
      * Envoi d'une notification sur le site et par mail twig
      *
@@ -92,11 +93,16 @@ class ServiceNotifications
      * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
      *
      *********/
-    public function sendNotificationTemplate($twig_sujet, $twig_contenu, $params, $users = null): void
+    public function sendNotificationTemplate(string $twig_sujet, string $twig_contenu, ?array $params, array $users = null, string $route = null): void
     {
+        if (null != $route) {
+            $broserSubject = '<a href="'.$this->router->generate($route, $params).'">'.$twig_sujet.'</a>';
+        } else {
+            $broserSubject = $twig_sujet;
+        }
         $notification = (new Notification('New Notification'))
             ->content('Un mail vous a été envoyé sur votre adresse mail')
-            ->subject('Un mail vous a été envoyé')
+            ->subject($broserSubject)
             ->importance(Notification::IMPORTANCE_LOW);
         foreach ($users as $user) {
             $recipient = new Recipient($user->getMail());
