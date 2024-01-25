@@ -30,16 +30,13 @@ use App\Entity\Individu;
 use App\Entity\Invitation;
 use App\Entity\Journal;
 use App\Entity\Rallonge;
-use App\Entity\Session;
 use App\Entity\Sso;
-use App\Entity\Thematique;
 use App\Form\GererUtilisateurType;
 use App\Form\IndividuForm\IndividuForm;
 use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceInvitations;
 use App\GramcServices\ServiceJournal;
-use App\Utils\Functions;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -48,7 +45,6 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -802,109 +798,6 @@ class IndividuController extends AbstractController
     }
 
     /**
-     * Affecter l'individu à une ou des thematiques - PAS UTILISE.
-     *
-     * @todo inutilisé
-     * #[isGranted('ROLE_ADMIN')]
-     * #[Route(path: '/{id}/thematique', name: 'choisir_thematique', methods: ['GET', 'POST'])]
-     * public function thematiqueAction(Request $request, Individu $individu): Response
-     * {
-     * $em = $this->em;
-     * $form = $this->createFormBuilder($individu)
-     * ->add(
-     * 'thematique',
-     * EntityType::class,
-     * [
-     * 'multiple' => true,
-     * 'expanded' => true,
-     * 'class' => Thematique::class,
-     * ]
-     * )
-     * ->add('submit', SubmitType::class, ['label' => 'modifier'])
-     * ->add('reset', ResetType::class, ['label' => 'reset'])
-     * ->getForm();
-     *
-     * $form->handleRequest($request);
-     *
-     * if ($form->isSubmitted() && $form->isValid()) {
-     * // thématiques && Doctrine ManyToMany
-     * $all_thematiques = $em->getRepository(Thematique::class)->findAll();
-     * $my_thematiques = $individu->getThematique();
-     *
-     * foreach ($all_thematiques as $thematique) {
-     * if ($my_thematiques->contains($thematique)) {
-     * $thematique->addExpert($individu);
-     * } else {
-     * $thematique->removeExpert($individu);
-     * }
-     * }
-     * $em->flush();
-     * }
-     *
-     * return $this->render(
-     * 'individu/thematique.html.twig',
-     * [
-     * 'individu' => $individu,
-     * 'form' => $form->createView(),
-     * ]
-     * );
-     * }
-     */
-
-    /**
-     * Supprimer un ou plusieurs eppn de cet utilisateur.
-     *
-     * @todo non utilisé
-     * #[isGranted('ROLE_ADMIN')]
-     * #[Route(path: '/{id}/eppn', name: 'gere_eppn', methods: ['GET', 'POST'])]
-     * public function eppnAction(Request $request, Individu $individu): Response
-     * {
-     * $em = $this->em;
-     * $ssos = $individu->getSso();
-     * $form = $this->createFormBuilder($individu)
-     * ->add(
-     * 'eppn',
-     * EntityType::class,
-     * [
-     * 'multiple' => true,
-     * 'expanded' => true,
-     * 'class' => Sso::class,
-     * 'choices' => $ssos,
-     * ]
-     * )
-     * ->add('submit', SubmitType::class, ['label' => 'modifier'])
-     * ->add('reset', ResetType::class, ['label' => 'reset'])
-     * ->getForm();
-     *
-     * $form->handleRequest($request);
-     *
-     * if ($form->isSubmitted() && $form->isValid()) {
-     * // thématiques && Doctrine ManyToMany
-     * $all_thematiques = $em->getRepository(Thematique::class)->findAll();
-     * $my_thematiques = $individu->getThematique();
-     *
-     * foreach ($all_thematiques as $thematique) {
-     * if ($my_thematiques->contains($thematique)) {
-     * $thematique->addExpert($individu);
-     * } else {
-     * $thematique->removeExpert($individu);
-     * }
-     * }
-     *
-     * $em->flush();
-     * }
-     *
-     * return $this->render(
-     * 'individu/thematique.html.twig',
-     * [
-     * 'individu' => $individu,
-     * 'form' => $form->createView(),
-     * ]
-     * );
-     * }
-     */
-
-    /**
      * Autocomplete: en lien avec l'autocomplete de jquery
      *               Requête appelée lorsqu'on quitte le champ autocomplete "mail" dans le formulaire des collaborateurs.
      */
@@ -1014,7 +907,7 @@ class IndividuController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (true == $form->getData()['all']) {
+            if ($form->getData()['all']) {
                 $users = $em->getRepository(Individu::class)->findAll();
             } else {
                 $users = $em->getRepository(Individu::class)->getActiveUsers();

@@ -32,7 +32,7 @@
  *      commentaire      -> Ce que fait le controleur en une phrase
  *      ok               -> Si true le lien est actif sinon le lien est inactif
  *      reason           -> Si le lien est inactif, explication du pourquoi. Pas utilisé si le lien est inactif
- *      todo (optionnel) -> Si le lien est actif, permet de visualiser le menu sous forme de todo liste - cf. consulter.html.twig, vers la ligne 20
+*      todo (optionnel) -> Si le lien est actif, permet de visualiser le menu sous forme de todo liste - cf. consulter.html.twig        , vers la ligne 20
  *
  *****************************************************************************************************************************************************/
 
