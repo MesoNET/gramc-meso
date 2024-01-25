@@ -40,7 +40,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * Mail controller.
  */
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route(path: 'mail')]
 class MailController extends AbstractController
 {
@@ -179,7 +179,7 @@ class MailController extends AbstractController
         array $responsables,
         string $sujet,
         string $body,
-        string $template): response
+        string $template): Response
     {
         $em = $this->em;
         $sn = $this->sn;
@@ -353,7 +353,7 @@ class MailController extends AbstractController
 
         //    $defaults = [ 'date' => $date ];
         $form = $ff->createBuilder(FormType::class, [])
-                        ->add('addr', textType::class, ['label' => 'Destinataire'])
+                        ->add('addr', TextType::class, ['label' => 'Destinataire'])
                         ->add('Envoyer', SubmitType::class)
                         ->getForm();
 

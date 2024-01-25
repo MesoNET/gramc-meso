@@ -27,8 +27,8 @@ class TempsCronTask extends CronTaskBase
         protected ServiceJournal $sj,
         protected ServiceProjets $sp,
         protected GramcDate $grdt,
-        protected version4Workflow $v4w,
-        protected projet4Workflow $p4w)
+        protected Version4Workflow $v4w,
+        protected Projet4Workflow $p4w)
     {
         parent::__construct($em, $sj, $sp, $grdt);
     }

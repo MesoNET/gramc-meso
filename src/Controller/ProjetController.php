@@ -435,19 +435,20 @@ class ProjetController extends AbstractController
 
     /**
      * Pas utilisé...
+     *
      * @todo non utilisé et non fonctionnel
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
-    public function gererAction(): Response
-    {
-        $em = $this->em;
-        $projets = $em->getRepository(Projet::class)->findAll();
-
-        return $this->render('projet/gerer.html.twig', [
-            'projets' => $projets,
-        ]);
-    }
-    */
+     * #[IsGranted('ROLE_ADMIN')]
+     * #[Route(path: '/gerer', name: 'gerer_projets', methods: ['GET'])]
+     * public function gererAction(): Response
+     * {
+     * $em = $this->em;
+     * $projets = $em->getRepository(Projet::class)->findAll();
+     *
+     * return $this->render('projet/gerer.html.twig', [
+     * 'projets' => $projets,
+     * ]);
+     * }
+     */
 
     /**
      * Envoie un écran de mise en garde avant de créer un nouveau projet (inutilisé).

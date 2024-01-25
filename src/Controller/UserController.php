@@ -37,9 +37,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * User controller.
- *
  */
-#[isGranted('ROLE_DEMANDEUR')]
+#[IsGranted('ROLE_DEMANDEUR')]
 #[Route(path: 'user')]
 class UserController extends AbstractController
 {

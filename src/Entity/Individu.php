@@ -80,6 +80,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->collaborateurVersion = new ArrayCollection();
         $this->clessh = new ArrayCollection();
         $this->user = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     /**
@@ -219,6 +220,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     #[ORM\OneToMany(targetEntity: 'App\Entity\Journal', mappedBy: 'individu')]
     private $journal;
+
+    #[ORM\OneToMany(mappedBy: 'individu', targetEntity: Notification::class)]
+    private Collection $notifications;
 
     // /////////////////////////////////////////
     #[ORM\PrePersist]
@@ -941,5 +945,35 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function isDesactive(): ?bool
     {
         return $this->desactive;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setIndividu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getIndividu() === $this) {
+                $notification->setIndividu(null);
+            }
+        }
+
+        return $this;
     }
 }

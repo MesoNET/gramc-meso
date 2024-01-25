@@ -42,11 +42,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * ProjetFctController rassemble les controleurs dédiés au bouton "Euro" (données de facturation).
- *
  */
 // Tous ces controleurs sont exécutés au moins par OBS, certains par ADMIN seulement
 // et d'autres par DEMANDEUR
-#[isGranted('ROLE_OBS')]
+#[IsGranted('ROLE_OBS')]
 #[Route(path: 'projet')]
 class ProjetDfctController extends AbstractController
 {
@@ -60,6 +59,7 @@ class ProjetDfctController extends AbstractController
         private EntityManagerInterface $em
     ) {
     }
+
     /* Inutilisé
     * @todo à supprimé si pas utile ou à réparé
     #[Route(path: '/{id}/dfctliste/{annee}', name: 'dfct_liste', methods: ['GET', 'POST'])]

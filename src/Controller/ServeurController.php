@@ -49,9 +49,7 @@ class ServeurController extends AbstractController
     {
     }
 
-    /**
-     */
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_serveurs', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -65,23 +63,22 @@ class ServeurController extends AbstractController
             'serveur/liste.html.twig',
             [
             'menu' => $menu,
-            'serveurs' => $em->getRepository(serveur::class)->findBy([], ['nom' => 'ASC']),
+            'serveurs' => $em->getRepository(Serveur::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
 
     /**
      * Nouveau serveur.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/ajouter', name: 'ajouter_serveur', methods: ['GET', 'POST'])]
     public function ajouterAction(Request $request): Response
     {
         $su = $this->su;
         $em = $this->em;
 
-        $serveur = new serveur();
+        $serveur = new Serveur();
         $form = $this->createForm('App\Form\ServeurType', $serveur, ['ajouter' => true]);
         $form->handleRequest($request);
 
@@ -136,9 +133,8 @@ class ServeurController extends AbstractController
 
     /**
      * Modifier un serveur.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/modifier', name: 'modifier_serveur', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Serveur $serveur): Response
     {
@@ -173,9 +169,8 @@ class ServeurController extends AbstractController
 
     /**
      * Supprimer un serveur.
-     *
      */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/{id}/supprimer', name: 'supprimer_serveur', methods: ['GET'])]
     public function supprimerAction(Request $request, Serveur $serveur): Response
     {

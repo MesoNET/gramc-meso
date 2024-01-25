@@ -59,7 +59,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 
-
 // Pour connexionsAction
 function c_cmp($a, $b): bool
 {
@@ -88,9 +87,7 @@ class GramcSessionController extends AbstractController
     ) {
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_OBS')]
+    #[IsGranted('ROLE_OBS')]
     #[Route(path: '/admin/accueil', name: 'admin_accueil', methods: ['GET'])]
     public function adminAccueilAction(): Response
     {
@@ -169,9 +166,7 @@ class GramcSessionController extends AbstractController
         return $this->render('default/accueil.html.twig');
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/profil', name: 'profil', methods: ['GET', 'POST'])]
     public function profilAction(Request $request): Response
     {
@@ -245,6 +240,7 @@ class GramcSessionController extends AbstractController
                 'success',
                 'Vos modifications ont été enregistrées.'
             );
+
             return $this->redirectToRoute('profil');
         } else {
             return $this->render('default/profil.html.twig', ['form' => $form->createView(), 'individu' => $individu]);
@@ -317,6 +313,12 @@ class GramcSessionController extends AbstractController
         } else {
             return false;
         }
+    }
+
+    #[Route(path: '/nouveau_profil_notification', name: 'nouveau_profil_notification', methods: ['GET', 'POST'])]
+    public function nouveau_profilNotificationAction($individu, $eppn, $etab)
+    {
+        return $this->render('notification/compte_ouvert-contenu.html.twig', ['individu' => $individu, 'etab' => $etab, 'eppn' => $eppn]);
     }
 
     #[Route(path: '/nouveau_profil', name: 'nouveau_profil', methods: ['GET', 'POST'])]
@@ -405,11 +407,11 @@ class GramcSessionController extends AbstractController
             // Envoyer un mail de bienvenue à ce nouvel utilisateur
             $dest = [$mail];
             $etab = preg_replace('/.*@/', '', $eppn);
-            $sn->sendNotificationTemplate('notification/compte_ouvert-sujet.html.twig',
+            $sn->sendNotificationTemplate('Bienvenue sur GRAMC - Attribution des ressources {{mesoc}}',
                 'notification/compte_ouvert-contenu.html.twig', ['individu' => $individu, 'etab' => $etab, 'eppn' => $eppn],
-                $dest
+                $dest,
+                'nouveau_profil_notification'
             );
-
             // si c'est un compte cru, envoyer un mail aux admins
             if (false !== strpos($eppn, 'sac.cru.fr')) {
                 // $sj->debugMessage(__FILE__ .':' . __LINE__ . ' Demande de COMPTE CRU - '.$eppn);
@@ -431,9 +433,7 @@ class GramcSessionController extends AbstractController
         return $this->render('default/nouveau_profil.html.twig', ['mail' => $request->getSession()->get('mail'), 'form' => $form->createView()]);
     }
 
-    /**
-     */
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/connexions', name: 'connexions', methods: ['GET'])]
     public function connexionsAction(Request $request): Response
     {
@@ -476,9 +476,7 @@ class GramcSessionController extends AbstractController
         return $this->render('default/connexions.html.twig', ['connexions' => $connexions_uniq]);
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/phpinfo', name: 'phpinfo', methods: ['GET'])]
     public function infoAction(Request $request): Response
     {
@@ -490,10 +488,7 @@ class GramcSessionController extends AbstractController
         return $this->render('default/phpinfo.html.twig', ['sfversion' => $sf_version, 'info' => $info]);
     }
 
-
-    /**
-     */
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{clef}/repinvit', name: 'repinvit', methods: ['GET', 'POST'])]
     public function repinvitAction(Request $request, Invitation $invitation = null): Response
     {
@@ -556,8 +551,8 @@ class GramcSessionController extends AbstractController
         // On supprime les invitations expirées
         if ($now > $expiration) {
             // L'invitation est à usage unique, on la supprime
-            $em->remove($invitation);
-            $em->flush();
+            $this->em->remove($invitation);
+            $this->em->flush();
 
             $message = 'Cette invitation a expiré ';
             $request->getSession()->getFlashbag()->add('flash erreur', $message.' - Merci de vous rapprocher de CALMIP');
@@ -635,9 +630,7 @@ class GramcSessionController extends AbstractController
             ]);
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/md5', methods: ['GET'])]
     public function md5Action(): Response
     {
@@ -647,9 +640,7 @@ class GramcSessionController extends AbstractController
         return new Response('<pre>'.$salt.' '.$key.'</pre>');
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_DEMANDEUR')]
+    #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/uri', methods: ['GET'])]
     public function uri(Request $request): Response
     {
@@ -662,9 +653,7 @@ class GramcSessionController extends AbstractController
         return new Response('<pre>'.$output.'</pre>');
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/admin_red', name: 'admin_red', methods: ['GET'])]
     public function adminRedAction(Request $request): Response
     {
@@ -673,9 +662,7 @@ class GramcSessionController extends AbstractController
         return new Response(json_encode('OK'));
     }
 
-    /**
-     **/
-    #[isGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/admin_exp', name: 'admin_exp', methods: ['GET'])]
     public function adminExpAction(Request $request): Response
     {
