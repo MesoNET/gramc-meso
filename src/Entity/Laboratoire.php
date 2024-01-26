@@ -93,7 +93,7 @@ class Laboratoire
     #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
     private $adresseip;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     private ?string $numeroNationalStructure = '';
 
     #[ORM\Column(nullable: false)]
