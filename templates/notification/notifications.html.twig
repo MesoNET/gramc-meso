@@ -1,0 +1,6 @@
+{% for notification in app.user.nom %}
+    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+        {{ dump(notification.id) }}
+        <p class="mb-0 fs-3">{{ notification.sujet }}</p>
+    </a>
+{% endfor %}
