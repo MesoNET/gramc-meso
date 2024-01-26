@@ -210,14 +210,20 @@
                             <i class="ti ti-menu-2"></i>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-icon-hover" href="">
-                            <i class="ti ti-bell-ringing"></i>
-                            {% include "default/flash.html.twig" %}
-                        </a>
-                    </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-bell-ringing"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-start dropdown-menu-animate-up" aria-labelledby="drop2">
+                            <div class="message-body">
+                                {% include "notification/notifications.html.twig"%}
+                            </div>
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li class="nav-item">
                             <a class="nav-link nav-icon-hover" href="{{ path('gerer_clessh') }}">
                                 <span title="Gérer vos clés ssh"></span>
                                 {{ icones.trousseau(40,40) }}
@@ -225,13 +231,13 @@
                         </li>
                     {% endif %}
                 </ul>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                     <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
                                aria-expanded="false">
-                                <img src="../../public/icones/favicon.ico" width="35" height="35"
-                                     class="rounded-circle">
+                                <i class="ti ti-user"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                  aria-labelledby="drop2">
@@ -253,6 +259,7 @@
                         </li>
                     </ul>
                 </div>
+                {% endif %}
             </nav>
         </header>
 
