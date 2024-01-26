@@ -6,127 +6,278 @@
 
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <title>Plateforme d'attribution de ressources de {{mesoc}}</title>
-        <link rel="icon" href="{{ absolute_url(asset('icones/favicon.ico')) }}"  />
+<head>
+    <meta charset="utf-8">
+    <title>Plateforme d'attribution de ressources de {{ mesoc }}</title>
+    <link rel="icon" href="{{ absolute_url(asset('icones/favicon.ico')) }}"/>
 
-{% block stylesheets %}
-        <link href="{{ absolute_url(asset('js/jquery-ui/jquery-ui.css')) }}" rel="stylesheet" type="text/css" media="screen" />
-        <link href="{{ absolute_url(asset('js/jquery-upload-file-master/css/uploadfile.css') ) }}" rel="stylesheet" type="text/css" media="screen" />
-        <link href="{{ absolute_url(asset('js/DataTables-1.11.5/css/jquery.dataTables.min.css') ) }}" rel="stylesheet" type="text/css" media="screen" />
+    {% block stylesheets %}
 
-        <link href="{{ absolute_url(asset('css/colors.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
-        <link href="{{ absolute_url(asset('css/gramc3.css'))  }}" rel="stylesheet" type="text/css" media="screen" />
-{% endblock stylesheets %}
+        <link href="{{ absolute_url(asset('js/jquery-ui/jquery-ui.css')) }}" rel="stylesheet" type="text/css"
+              media="screen"/>
+        <link href="{{ absolute_url(asset('js/jquery-upload-file-master/css/uploadfile.css') ) }}" rel="stylesheet"
+              type="text/css" media="screen"/>
+        <link href="{{ absolute_url(asset('js/DataTables-1.11.5/css/jquery.dataTables.min.css') ) }}" rel="stylesheet"
+              type="text/css" media="screen"/>
+        <link href="{{ absolute_url(asset('css/styles.css')) }}" rel="stylesheet" type="text/css" media="screen"/>
+        <link href="{{ absolute_url(asset('css/colors.css')) }}" rel="stylesheet" type="text/css" media="screen"/>
+        <link href="{{ absolute_url(asset('css/gramc3.css')) }}" rel="stylesheet" type="text/css" media="screen"/>
+    {% endblock stylesheets %}
 
-{% block mystyles %}
-{% endblock mystyles %}
+    {% block mystyles %}
+    {% endblock mystyles %}
 
-{% block javascripts %}
-        <script   src="{{ absolute_url(asset('js/jquery-3.6.0.min.js') ) }}" ></script>
-        <script   src="{{ absolute_url(asset('js/jquery-ui/jquery-ui.js') ) }}" ></script>
-        <script   src="{{ absolute_url(asset('js/header_fixe.js') ) }}" ></script>
-        <script   src="{{ absolute_url(asset('js/base.js') ) }}" ></script>
-{% endblock javascripts %}
+    {% block javascripts %}
+        <script src="{{ absolute_url(asset('js/jquery-3.6.0.min.js') ) }}"></script>
+        <script src="{{ absolute_url(asset('js/jquery-ui/jquery-ui.js') ) }}"></script>
+        <script src="{{ absolute_url(asset('js/header_fixe.js') ) }}"></script>
+        <script src="{{ absolute_url(asset('js/base.js') ) }}"></script>
+        <script src="{{ absolute_url(asset("libs/jquery/dist/jquery.min.js")) }}"></script>
+        <script src="{{ absolute_url(asset("libs/bootstrap/dist/js/bootstrap.bundle.min.js")) }}"></script>
+        <script src="{{ absolute_url(asset("js/sidebarmenu.js")) }}"></script>
+        <script src="{{ absolute_url(asset("js/app.min.js")) }}"></script>
+        <script src="{{ absolute_url(asset("libs/apexcharts/dist/apexcharts.min.js")) }}"></script>
+        <script src="{{ absolute_url(asset("libs/simplebar/dist/simplebar.js")) }}"></script>
+        <script src="{{ absolute_url(asset("js/dashboard.js")) }}"></script>
+    {% endblock javascripts %}
 
-{% block myjavascripts %}
-{% endblock myjavascripts %}
+    {% block myjavascripts %}
+    {% endblock myjavascripts %}
 
-{% block datatables %}
-        <script   src="{{ absolute_url(asset('js/DataTables-1.11.5/js/jquery.dataTables.min.js') )  }}" ></script>
-        <script   src="{{ absolute_url(asset('js/datatable.js') ) }}" ></script>
-{% endblock datatables %}
+    {% block datatables %}
+        <script src="{{ absolute_url(asset('js/DataTables-1.11.5/js/jquery.dataTables.min.js') ) }}"></script>
+        <script src="{{ absolute_url(asset('js/datatable.js') ) }}"></script>
+    {% endblock datatables %}
 
-    </head>
+</head>
 
-    <body>
-
-        {% block header %}
-        {% if not app.request.xmlhttprequest %}
-        <header class="header">
-
-            {#{{app.request.attributes.get('_route')}}#}
-            <a class="lien_accueil" href="{{ path('accueil') }}"><img src="{{ asset('icones/banniere.png') }}" alt="logo" /></a>
-        
-            <nav class="nav">
-                {% if (app.request.attributes.get('_route') == 'accueil') or (app.request.attributes.get('_route') == 'connexion') or (app.request.attributes.get('_route') == 'connexion_dbg') %}
-                    <a class="lien_nav actif" href="{{ path('accueil') }}" title="Accéder à l'accueil">Accueil</a> 
-                {% else %}
-                    <a class="lien_nav" href="{{ path('accueil') }}" title="Accéder à l'accueil">Accueil</a> 
-                {% endif %}
-
-                {% if is_granted('ROLE_DEMANDEUR') %}
-                    {% if (app.request.attributes.get('_route') == 'projet_accueil') or (app.request.attributes.get('_route') == 'consulter_projet') %}
-                        <a class="lien_nav actif" href="{{ path('projet_accueil') }}" title="Accéder à l'espace demandeur">Demandeur</a> 
-                    {% else %}
-                        <a class="lien_nav" href="{{ path('projet_accueil') }}" title="Accéder à l'espace demandeur">Demandeur</a> 
+<body>
+{% block header %}
+{% if not app.request.xmlhttprequest %}
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+        <!-- Sidebar scroll-->
+        <div class="side">
+            <div class="brand-logo d-flex align-items-center justify-content-between">
+                <a href="{{ path('accueil') }}" class="text-nowrap logo-img">
+                    <img src="{{ asset('icones/banniere.png') }}" width="180" alt=""/>
+                </a>
+                <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <i class="ti ti-x fs-8"></i>
+                </div>
+            </div>
+            <!-- Sidebar navigation-->
+            <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                <ul id="sidebarnav">
+                    <li class="nav-small-cap">
+                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                        <span class="hide-menu">Home</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href=".{{ path('accueil') }}" aria-expanded="false">
+                            <span>
+                              <i class="ti ti-layout-dashboard"></i>
+                            </span>
+                            <span class="hide-menu">Dashboard</span>
+                        </a>
+                    </li>
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li class="nav-small-cap">
+                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                        <span class="hide-menu">Section</span>
+                    </li>
                     {% endif %}
-                {% endif %}
-
-                {% if is_granted('ROLE_VALIDEUR') %}
-                    {% if app.request.attributes.get('_route') == 'expertise_liste_dyn' %}
-                        <a class="lien_nav actif" href="{{ path('expertise_liste_dyn') }}" title="Accéder à l'espace valideur">Valideur</a> 
-                    {% else %}
-                        <a class="lien_nav" href="{{ path('expertise_liste_dyn') }}" title="Accéder à l'espace valideur">Valideur</a> 
+                    {% if is_granted('ROLE_DEMANDEUR') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ path('projet_accueil') }}"
+                               title="Accéder à l'espace demandeur">
+                                            <span>
+                                              <i class="ti ti-article"></i>
+                                            </span>
+                                <span class="hide-menu">Demandeur</span>
+                            </a>
+                        </li>
                     {% endif %}
-                {% endif %}
 
-                {% if is_granted('ROLE_OBS') %}
-                    {% if app.request.attributes.get('_route') == 'admin_accueil' %}
-                        <a class="lien_nav actif" href="{{ path('admin_accueil') }}" title="Accéder à l'espace Administrateur">Administrateur</a> 
-                    {% else %}
-                        <a class="lien_nav" href="{{ path('admin_accueil') }}"  title="Accéder à l'espace Administrateur">Administrateur</a> 
+                    {% if is_granted('ROLE_VALIDEUR') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ path('expertise_liste_dyn') }}" aria-expanded="false"
+                               title="Accéder à l'espace valideur">
+                                                <span>
+                                                  <i class="ti ti-alert-circle"></i>
+                                                </span>
+                                <span class="hide-menu">Valideur</span>
+                            </a>
+                        </li>
                     {% endif %}
-                {% endif %}
-
-                {% if is_granted('ROLE_PRESIDENT') %}
-                    {% if app.request.attributes.get('_route') == 'president_accueil' %}
-                        <a class="lien_nav actif" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
-                    {% else %}
-                        <a class="lien_nav" href="{{ path('president_accueil') }}" title="Accéder à l'espace Président">Président</a> 
+                    {% if is_granted('ROLE_OBS') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                               title="Accéder à l'espace Administrateur">
+                                                    <span>
+                                                      <i class="ti ti-cards"></i>
+                                                    </span>
+                                <span class="hide-menu">Administrateur</span>
+                            </a>
+                        </li>
                     {% endif %}
-                {% endif %}
+                    {% if is_granted('ROLE_PRESIDENT') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ path('president_accueil') }}"
+                               title="Accéder à l'espace Président" aria-expanded="false">
+                                                <span>
+                                                  <i class="ti ti-file-description"></i>
+                                                </span>
+                                <span class="hide-menu">Président</span>
+                            </a>
+                        </li>
+                    {% endif %}
 
-                {% if app.request.attributes.get('_route') == 'aide' %}
-                    <a class="aide_nav actif" href="{{ path('aide') }}">?</a>
-                {% else %}
-                    <a class="aide_nav" href="{{ path('aide') }}">?</a>
-                {% endif %}
+                    <li class="nav-small-cap">
+                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                        <span class="hide-menu">AUTH</span>
+                    </li>
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ path('deconnexion') }}" aria-expanded="false">
+                                            <span>
+                                              <i class="ti ti-login"></i>
+                                            </span>
+                                <span class="hide-menu">Déconnexion</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        {% if mode_auth == 'saml2' %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href=" {{ path('connexion') }}" aria-expanded="false">
+                                                <span>
+                                                  <i class="ti ti-login"></i>
+                                                </span>
+                                    <span class="hide-menu">Login</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if mode_auth == 'openid' %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href=" {{ path('remlogin') }}" aria-expanded="false">
+                                                <span>
+                                                  <i class="ti ti-login"></i>
+                                                </span>
+                                    <span class="hide-menu">connexion</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if app.debug %}
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href=" {{ path('connexion_dbg') }}" aria-expanded="false">
+                                                <span>
+                                                  <i class="ti ti-login"></i>
+                                                </span>
+                                    <span class="hide-menu">connexion (DBG)</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    <li class="nav-small-cap">
+                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                        <span class="hide-menu">EXTRA</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ path('aide') }}" aria-expanded="false">
+                                        <span>
+                                          <i class="ti ti-mood-happy"></i>
+                                        </span>
+                            <span class="hide-menu">aide</span>
+                        </a>
+                    </li>
+                </ul>
             </nav>
-            <img src="{{ asset('icones/header.png') }}" alt="élément graphique" class="elm_graphique"/>
-
+            <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item d-block d-xl-none">
+                        <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                            <i class="ti ti-menu-2"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-icon-hover" href="">
+                            <i class="ti ti-bell-ringing"></i>
+                            {% include "default/flash.html.twig" %}
+                        </a>
+                    </li>
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li>
+                            <a class="nav-link nav-icon-hover" href="{{ path('gerer_clessh') }}">
+                                <span title="Gérer vos clés ssh"></span>
+                                {{ icones.trousseau(40,40) }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                    <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <img src="../../public/icones/favicon.ico" width="35" height="35"
+                                     class="rounded-circle">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                 aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-user fs-6"></i>
+                                        <p class="mb-0 fs-3">My Profile</p>
+                                    </a>
+                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-mail fs-6"></i>
+                                        <p class="mb-0 fs-3">My Account</p>
+                                    </a>
+                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-list-check fs-6"></i>
+                                        <p class="mb-0 fs-3">My Task</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </header>
+
 
         <div class="sous_header">
             <p>&nbsp;</p>
-            {% include "default/flash.html.twig" %}
-            <div class="profil"  style="stroke:black">
+            <div class="profil">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <div>
-                    {% if is_granted('IS_IMPERSONATOR') %}
-                        <p> SUDO par {{ app.token.originalToken.user }}</p>
-                    {% endif %}
-                    <p>
-                    {% if app.debug %}
-                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a>
-                    {% else %}
-                        <p>Connecté en tant que : <a href="{{ path('profil') }}" class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }} ({{ app.user.id}})</a>
-                    {% endif %}
-                     <span title="Gérer vos clés ssh"><a href="{{ path('gerer_clessh') }}">{{ icones.trousseau(40,40)}}</a></span>
-                    </p>
+                        {% if is_granted('IS_IMPERSONATOR') %}
+                            <p> SUDO par {{ app.token.originalToken.user }}</p>
+                        {% endif %}
+                        <p>
+                            {% if app.debug %}
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}"
+                                                     class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }}
+                                ({{ app.user.id }})</a>
+                            {% else %}
+                        <p>Connecté en tant que : <a href="{{ path('profil') }}"
+                                                     class="nom_profil">{{ app.user.prenom }} {{ app.user.nom }}
+                                ({{ app.user.id }})</a>
+                            {% endif %}
                     </div>
-                    <a href=" {{ path('deconnexion') }}" class="deconnexion_profil">Déconnexion</a>
                 {% else %}
-                    {% if mode_auth == 'saml2' %}
-                        <p class="droite"><a class="droite" href=" {{ path('connexion') }}">connexion</a></p>
-                    {% endif %}
-                    {% if mode_auth == 'openid' %}
-                       <p><a href=" {{ path('remlogin') }}" class="connexion_profil">connexion</a></p>
-                    {% endif %}
-                    {% if app.debug %}
-                    <p><a href=" {{ path('connexion_dbg') }}" class="connexion_profil">connexion (DBG)</a>
-                    {% endif %}
+
                 {% endif %}
 
             </div>
@@ -140,105 +291,58 @@
             </a>
         </div>
 
-        
-        {% if is_granted('ROLE_ADMIN')  %}
-            <div {% if app.session.get('admin_red') %}
-                    class="role_admin_reduit" data-href="{{ path('admin_exp') }}" 
-                 {% else %}
-                    class="role_admin" data-href="{{ path('admin_red') }}"
-                 {% endif %}
-                 title="Vous êtes administrateur">
-                <span></span>
-                <p>ADMINISTRATEUR</p>
-            </div>
-        {% endif %}
 
         {% endif %} {# si ajax on saute tout ça #}
         {% endblock header %}
-    
-    {# ###################################################################### #}
 
-    {% block menu %}
-    {% endblock menu %}
+        {# ###################################################################### #}
+        <div class="container-fluid">
+                    {% block menu %}
+                    {% endblock menu %}
 
-    {% block before_body %}
-    {% endblock before_body %}
+                    {% block before_body %}
+                    {% endblock before_body %}
 
-    {% block body %}
-    {% endblock body  %}
+                    {% block body %}
+                    {% endblock body %}
 
-    {% block after_body %}
-    {% endblock after_body %}
-
-
+                    {% block after_body %}
+                    {% endblock after_body %}
+        </div>
+    </div>
     <br><br>
-
-    {# ###################################################################### #}
-
-
     {% block footer %}
         {# footer #}
         <footer class="footer">
             <div>
                 {{ infos.gramc_date('Y-m-d') }}
-
-                {# SUPPRIME CAR PAS DE SESSION}
-                {% block message %}
-                    
-                    {% if  infos.getLibelleEtatSessionCourante == 'CREE_ATTENTE' %}
-                        La prochaine session d'attribution sera ouverte le <strong>{{ infos.prochaine_session }}</strong>
-
-                    {% elseif  infos.getLibelleEtatSessionCourante == 'EDITION_DEMANDE'%}
-
-                        {% if infos.cette_session()['jours'] == 0 %}
-                        Vous avez encore <strong>JUSQU'A CE SOIR</strong> pour envoyer votre projet pour expertise
-
-                        {% elseif infos.cette_session()['jours'] > 0 %}
-                            Vous avez jusqu'au <strong>{{ infos.cette_session()['fin_sess'] }}  </strong> pour envoyer votre projet pour expertise
-
-                        {% else %}
-                        ATTENTION, la date de fin de session est dépassée
-                            {% if infos.cette_session()['jours'] == -1 %}
-                                <strong>d'un jour</strong>
-                        {% else %}
-                                <strong>de {{ - infos.cette_session()['jours'] }} jours</strong>
-                            {% endif %}
-
-                        {% endif %}
-
-                    {% else %}
-                    Prochaine session d'attribution: <strong>
-                        {%  if infos.prochaine_session_saison.type == 'P' %}
-                        Printemps {{  infos.prochaine_session_saison.annee }}
-                        {% else %}
-                        Automne {{  infos.prochaine_session_saison.annee }}
-                        {% endif %}
-                    </strong>
-                    {% endif %}
-
-                {% endblock message %}
-                #}
             </div>
-
             <div class="liens_importants_footer">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <span>gramc-meso {{ infos.VERSION }} - design <a href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8" target='_blank'>Ugo Mariotto</a> - <a href="mailto:{{ mailadmin }}" class="lien_footer">{{ mailadmin }}</a></span>
+                    <span>gramc-meso {{ infos.VERSION }} - design <a
+                                href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
+                                target='_blank'>Ugo Mariotto</a> - <a href="mailto:{{ mailadmin }}"
+                                                                      class="lien_footer">{{ mailadmin }}</a></span>
                 {% else %}
-                    <span>gramc-meso {{ infos.VERSION }} - design <a href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8" target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
+                    <span>gramc-meso {{ infos.VERSION }} - design <a
+                                href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
+                                target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
                 {% endif %}
                 {% if mentions_legales != null %}
-                    &nbsp;<a href="{{ asset(mentions_legales) }}" target="_blank" class="lien_footer" title="Lire les mentions légales"> Mentions légales </a>
+                    &nbsp;<a href="{{ asset(mentions_legales) }}" target="_blank" class="lien_footer"
+                             title="Lire les mentions légales"> Mentions légales </a>
                 {% endif %}
                 {% if mesoc_cga != null %}
-                    &nbsp;<a href="{{ asset(mesoc_cga) }}" target="_blank" class="lien_footer" title="Lire les conditions Générales d'Attribution">cga</a>
+                    &nbsp;<a href="{{ asset(mesoc_cga) }}" target="_blank" class="lien_footer"
+                             title="Lire les conditions Générales d'Attribution">cga</a>
                 {% endif %}
             </div>
 
         </footer>
 
     {% endblock footer %}
-
-    </body>
+</div>
+</body>
 
 </html>
 
