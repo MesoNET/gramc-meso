@@ -61,8 +61,8 @@ class RessourceType extends AbstractType
             ->add('desc', TextareaType::class, ['required' => true, 'label' => 'Description (balises html ok):', 'attr' => ['rows' => '5', 'cols' => '50']])
             ->add('docUrl', TextType::class, ['required' => false, 'label' => 'URL vers la doc :', 'attr' => ['size' => '40']])
             ->add('unite', TextType::class, ['required' => false, 'label' => 'Unité :'])
-            ->add('maxDem', IntegerType::class, ['required' => false, 'label' => 'Valeur max de la demande :'])
-            ->add('co2', IntegerType::class, ['required' => false, 'label' => 'co2 (g) émis par unite et par heure :']);
+            ->add('maxDem', IntegerType::class, ['required' => false, 'label' => 'Valeur max de la demande :', 'attr' => ['min' => 0]])
+            ->add('co2', IntegerType::class, ['required' => false, 'label' => 'co2 (g) émis par unite et par heure :', 'attr' => ['min' => 0]]);
 
         if (true == $options['modifier']) {
             $builder

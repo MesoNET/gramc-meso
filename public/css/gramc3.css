@@ -143,22 +143,16 @@ header img {
 
 .lien_nav{
     text-decoration: none;
-    color: var(--first-color);
-    border: var(--first-color) 2px solid;
-    border-radius: 10px;
     padding: 10px 20px;
     margin-right: 50px;
 }
 
 .lien_nav:hover{
     background: var(--first-color);
-    color: white;
+    color: #000000;
 }
 
-.lien_nav.actif{
-    background: var(--first-color);
-    color: white;
-}
+
 
 .aide_nav.actif{
     background: black;
@@ -629,7 +623,7 @@ nav{
     width: 90%;
     margin: auto;
 }
-
+/*
 nav ul{
     text-align: initial;
     list-style-type: none;
@@ -640,16 +634,14 @@ nav ul{
     justify-content: flex-start;
     align-items: center;
 }
-
-nav li{
+*/
+/*nav li{
     padding: 10px 20px;
     margin: 0 25px 25px 0;
-    border: solid 2px var(--first-color);
-    border-radius: 10px;
     width: 10rem;
 }
-
-nav li:hover{
+*/
+/*nav li:hover{
     background: var(--first-color-hover);
     color: white;
 }
@@ -662,7 +654,7 @@ nav li:hover a{
 nav li:hover a .fill{
     fill: white;
 }
-
+*/
 .lien_actif, .lien_inactif{
     padding: 0;
     margin: 0;
