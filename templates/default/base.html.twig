@@ -61,8 +61,8 @@
         <!-- Sidebar scroll-->
         <div class="side">
             <div class="brand-logo d-flex align-items-center justify-content-between">
-                <a href="{{ path('accueil') }}" class="text-nowrap logo-img">
-                    <img src="{{ asset('icones/banniere.png') }}" width="180" alt=""/>
+                <a href="{{ path('accueil') }}" class="text-nowrap logo-img" title="Accueil">
+                    <img src="{{ asset('icones/banniere.png') }}" width="180" alt="logo"/>
                 </a>
                 <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                     <i class="ti ti-x fs-8"></i>
@@ -141,7 +141,7 @@
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ path('deconnexion') }}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{ path('deconnexion') }}" aria-expanded="false" title="Déconnexion">
                                             <span>
                                               <i class="ti ti-login"></i>
                                             </span>
@@ -151,31 +151,31 @@
                     {% else %}
                         {% if mode_auth == 'saml2' %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('connexion') }}" aria-expanded="false">
+                                <a class="sidebar-link" href=" {{ path('connexion') }}" aria-expanded="false" title="Connexion">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
-                                    <span class="hide-menu">Login</span>
+                                    <span class="hide-menu">Connexion</span>
                                 </a>
                             </li>
                         {% endif %}
                         {% if mode_auth == 'openid' %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('remlogin') }}" aria-expanded="false">
+                                <a class="sidebar-link" href=" {{ path('remlogin') }}" aria-expanded="false" title="Connexion">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
-                                    <span class="hide-menu">connexion</span>
+                                    <span class="hide-menu">Connexion</span>
                                 </a>
                             </li>
                         {% endif %}
                         {% if app.debug %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('connexion_dbg') }}" aria-expanded="false">
+                                <a class="sidebar-link" href=" {{ path('connexion_dbg') }}" aria-expanded="false" title="Connexion (DBG)">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
-                                    <span class="hide-menu">connexion (DBG)</span>
+                                    <span class="hide-menu">Connexion (DBG)</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -185,11 +185,11 @@
                         <span class="hide-menu">EXTRA</span>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ path('aide') }}" aria-expanded="false">
+                        <a class="sidebar-link" href="{{ path('aide') }}" aria-expanded="false" title="Aide">
                                         <span>
                                           <i class="ti ti-mood-happy"></i>
                                         </span>
-                            <span class="hide-menu">aide</span>
+                            <span class="hide-menu">Aide</span>
                         </a>
                     </li>
                 </ul>
@@ -212,9 +212,9 @@
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="nav-item">
-                            <a class="nav-link nav-icon-hover" href="{{ path('gerer_clessh') }}">
+                            <a class="nav-link nav-icon-hover" href="{{ path('gerer_clessh') }}" title="Gérer vos clés ssh">
                                 <span title="Gérer vos clés ssh"></span>
-                                {{ icones.trousseau(40,40) }}
+                                <i class="ti ti-key"></i>
                             </a>
                         </li>
                     {% endif %}
@@ -224,7 +224,8 @@
                     <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                               aria-expanded="false"
+                               title="Notifications">
                                 <i class="ti ti-bell-ringing"></i>
                                 {% if app.user.notifications|length >0 %}
                                     <span class="badge rounded-pill badge-notification bg-danger">{{ app.user.notifications|length }}</span>
@@ -238,29 +239,31 @@
                                 <div class="message-body">
                                     {% include "notification/notifications.html.twig" %}
                                     <a href="{{ path('notifications') }}"
-                                       class="d-flex align-items-center gap-2 dropdown-item">
-                                        <p class="mb-0 fs-3">voir plus</p>
+                                       class="d-flex align-items-center gap-2 dropdown-item"
+                                       title="Voire plus">
+                                        <p class="mb-0 fs-3">Voire plus</p>
                                     </a>
                                 </div>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                               aria-expanded="false"
+                               title="Utilisateur">
                                 <i class="ti ti-user"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                  aria-labelledby="drop2">
                                 <div class="message-body">
-                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon profile">
                                         <i class="ti ti-user fs-6"></i>
                                         <p class="mb-0 fs-3">Mon profile</p>
                                     </a>
-                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon compte">
                                         <i class="ti ti-mail fs-6"></i>
                                         <p class="mb-0 fs-3">Mon compte</p>
                                     </a>
-                                    <a href="{{ path('notifications')}}" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('notifications')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon tâches">
                                         <i class="ti ti-list-check fs-6"></i>
                                         <p class="mb-0 fs-3">Mes tâches</p>
                                     </a>
