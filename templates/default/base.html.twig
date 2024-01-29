@@ -76,7 +76,7 @@
                         <span class="hide-menu">Home</span>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href=".{{ path('accueil') }}" aria-expanded="false">
+                        <a class="sidebar-link" href="{{ path('accueil') }}" aria-expanded="false">
                             <span>
                               <i class="ti ti-layout-dashboard"></i>
                             </span>
@@ -211,21 +211,6 @@
                         </a>
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-bell-ringing"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-start dropdown-menu-animate-up" aria-labelledby="drop2">
-                            <div class="message-body">
-                                {% include "notification/notifications.html.twig"%}
-                                <a href="{{ path('notifications') }}" class="d-flex align-items-center gap-2 dropdown-item">
-                                    <p class="mb-0 fs-3">voir plus</p>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                    {% endif %}
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="nav-item">
                             <a class="nav-link nav-icon-hover" href="{{ path('gerer_clessh') }}">
                                 <span title="Gérer vos clés ssh"></span>
@@ -240,22 +225,44 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
                                aria-expanded="false">
+                                <i class="ti ti-bell-ringing"></i>
+                                {% if app.user.notifications|length >0 %}
+                                    <span class="badge rounded-pill badge-notification bg-danger">{{ app.user.notifications|length }}</span>
+                                {% endif %}
+                                {% if app.user.notifications|length >100 %}
+                                    <span class="badge rounded-pill badge-notification bg-danger">99+</span>
+                                {% endif %}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                 aria-labelledby="drop2">
+                                <div class="message-body">
+                                    {% include "notification/notifications.html.twig" %}
+                                    <a href="{{ path('notifications') }}"
+                                       class="d-flex align-items-center gap-2 dropdown-item">
+                                        <p class="mb-0 fs-3">voir plus</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
+                               aria-expanded="false">
                                 <i class="ti ti-user"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                  aria-labelledby="drop2">
                                 <div class="message-body">
-                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item">
                                         <i class="ti ti-user fs-6"></i>
-                                        <p class="mb-0 fs-3">My Profile</p>
+                                        <p class="mb-0 fs-3">Mon profile</p>
                                     </a>
-                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item">
                                         <i class="ti ti-mail fs-6"></i>
-                                        <p class="mb-0 fs-3">My Account</p>
+                                        <p class="mb-0 fs-3">Mon compte</p>
                                     </a>
-                                    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="{{ path('notifications')}}" class="d-flex align-items-center gap-2 dropdown-item">
                                         <i class="ti ti-list-check fs-6"></i>
-                                        <p class="mb-0 fs-3">My Task</p>
+                                        <p class="mb-0 fs-3">Mes tâches</p>
                                     </a>
                                 </div>
                             </div>
