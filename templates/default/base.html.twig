@@ -284,10 +284,10 @@
                                title="Notifications">
                                 <i class="ti ti-bell-ringing"></i>
                                 {% if app.user.notifications|length >0 %}
-                                    <span class="badge rounded-pill badge-notification bg-danger">{{ app.user.notifications|length }}</span>
+                                    <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">{{ app.user.notifications|length }}</span>
                                 {% endif %}
                                 {% if app.user.notifications|length >100 %}
-                                    <span class="badge rounded-pill badge-notification bg-danger">99+</span>
+                                    <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">99+</span>
                                 {% endif %}
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
