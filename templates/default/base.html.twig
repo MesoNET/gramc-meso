@@ -73,7 +73,7 @@
                 <ul id="sidebarnav">
                     <li class="nav-small-cap">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                        <span class="hide-menu">Home</span>
+                        <span class="hide-menu">Projet</span>
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         {% if is_granted('ROLE_DEMANDEUR') %}
@@ -82,6 +82,13 @@
                                    title="Accéder à l'espace valideur">
                                     <i class="ti ti-alert-circle"></i>
                                     <span class="hide-menu">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ path('projet_accueil') }}" aria-expanded="false"
+                                   title="Accéder à l'espace valideur">
+                                    <i class="ti ti-alert-circle"></i>
+                                    <span class="hide-menu">Liste des projets</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -115,38 +122,38 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('individu_gerer') }}" aria-expanded="false"
                                    title="Accéder à l'espace Administrateur">
                                     <i class="ti ti-cards"></i>
-                                    <span class="hide-menu">tous</span>
+                                    <span class="hide-menu">Utilisateur</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('connexions') }}" aria-expanded="false"
                                    title="Accéder à l'espace Administrateur">
                                     <i class="ti ti-cards"></i>
-                                    <span class="hide-menu">tous</span>
+                                    <span class="hide-menu">Personnes connéctés</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('journal_list') }}" aria-expanded="false"
                                    title="Accéder à l'espace Administrateur">
                                     <i class="ti ti-cards"></i>
-                                    <span class="hide-menu">tous</span>
+                                    <span class="hide-menu">Logs</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('statistiques_dyn') }}" aria-expanded="false"
                                    title="Accéder à l'espace Administrateur">
                                     <i class="ti ti-cards"></i>
-                                    <span class="hide-menu">tous</span>
+                                    <span class="hide-menu">Statisitique dynamique</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('gerer_laboratoires') }}" aria-expanded="false"
                                    title="Accéder à l'espace Administrateur">
                                     <i class="ti ti-cards"></i>
-                                    <span class="hide-menu">tous</span>
+                                    <span class="hide-menu">Laboratoires</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -225,7 +232,7 @@
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link sidebar-icon" href="https://tickets.mesonet.fr/" title="Ticket">
-                                <span title="Gérer vos clés ssh">
+                                <span>
                                     <i class="ti ti-key"></i>
                                 </span>
                             <span class="hide-menu">ticket</span>
@@ -233,7 +240,7 @@
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link sidebar-icon" href="https://www.mesonet.fr/documentation/user-documentation/" title="Documentation">
-                                <span title="Gérer vos clés ssh">
+                                <span>
                                     <i class="ti ti-key"></i>
                                 </span>
                             <span class="hide-menu">documentation</span>
@@ -242,7 +249,7 @@
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-icon" href="{{ path('gerer_clessh') }}" title="Gérer vos clés ssh">
-                                <span title="Gérer vos clés ssh">
+                                <span>
                                     <i class="ti ti-key"></i>
                                 </span>
                                 <span class="hide-menu">Clés ssh</span>
