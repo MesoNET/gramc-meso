@@ -36,7 +36,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Index(name: 'nom', columns: ['nom'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
- #[ApiResource]
+#[ApiResource]
 class Ressource
 {
     /**
@@ -54,7 +54,7 @@ class Ressource
     #[ORM\Column(name: 'id_ressource', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $idRessource;
 
     /**
@@ -62,41 +62,42 @@ class Ressource
      */
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'ressource')]
+    #[Groups('projet_lecture')]
     private $serveur;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'ressource', cascade: ['persist'])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $dac;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dar', mappedBy: 'ressource', cascade: ['persist'])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $dar;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 8, nullable: true, options: ['comment' => 'optionnel, voir la fonction ServiceRessources::getNomComplet'])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $nom;
 
     /**
-     * @var desc
+     * @var string desc
      */
     #[ORM\Column(name: 'descr', type: 'string', length: 2000, nullable: true)]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $desc;
 
     /**
      * @var docUrl
      */
     #[ORM\Column(name: 'doc_url', type: 'string', nullable: true, length: 200)]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $docUrl;
 
     /**
@@ -105,7 +106,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'unite', type: 'string', length: 20, nullable: true, options: ['comment' => 'unité utilisée pour les allocations'])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $unite;
 
     /**
@@ -114,7 +115,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'max_dem', type: 'integer', nullable: true, options: ['comment' => "Valeur max qu'on a le droit de demander"])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $maxDem;
 
     /**
@@ -123,7 +124,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'co2', type: 'integer', nullable: true, options: ['comment' => 'gramme de co2 émis par unite et par heure'])]
-    #[Groups('Serveur')]
+    #[Groups('projet_lecture')]
     private $co2;
 
     /**
