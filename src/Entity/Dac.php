@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -33,6 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
+#[ApiResource]
 class Dac
 {
     /**

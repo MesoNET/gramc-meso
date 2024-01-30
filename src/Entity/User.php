@@ -23,6 +23,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +33,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
 #[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
+#[ApiResource]
 class User
 {
     /**

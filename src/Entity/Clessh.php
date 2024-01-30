@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,6 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'nom_individu', columns: ['id_individu', 'nom'])]
 #[ORM\UniqueConstraint(name: 'pubuniq', columns: ['emp'])]
 #[ORM\Entity]
+#[ApiResource]
 class Clessh
 {
     public function __construct()

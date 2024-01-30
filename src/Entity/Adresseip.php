@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -33,6 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'adresseip')]
 #[ORM\UniqueConstraint(name: 'adresseip', columns: ['adresse', 'id_labo'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\AdresseipRepository')]
+#[ApiResource]
 class Adresseip
 {
     /**

@@ -23,6 +23,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +33,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'clef', columns: ['clef'])]
 #[ORM\UniqueConstraint(name: 'invit', columns: ['id_inviting', 'id_invited'])]
 #[ORM\Entity]
+#[ApiResource]
 class Invitation
 {
     /**
