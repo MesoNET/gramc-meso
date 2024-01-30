@@ -28,6 +28,7 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Ressource.
@@ -35,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Index(name: 'nom', columns: ['nom'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
-#[ApiResource]
+ #[ApiResource]
 class Ressource
 {
     /**
@@ -53,6 +54,7 @@ class Ressource
     #[ORM\Column(name: 'id_ressource', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('Serveur')]
     private $idRessource;
 
     /**
@@ -66,30 +68,35 @@ class Ressource
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'ressource', cascade: ['persist'])]
+    #[Groups('Serveur')]
     private $dac;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dar', mappedBy: 'ressource', cascade: ['persist'])]
+    #[Groups('Serveur')]
     private $dar;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 8, nullable: true, options: ['comment' => 'optionnel, voir la fonction ServiceRessources::getNomComplet'])]
+    #[Groups('Serveur')]
     private $nom;
 
     /**
      * @var desc
      */
     #[ORM\Column(name: 'descr', type: 'string', length: 2000, nullable: true)]
+    #[Groups('Serveur')]
     private $desc;
 
     /**
      * @var docUrl
      */
     #[ORM\Column(name: 'doc_url', type: 'string', nullable: true, length: 200)]
+    #[Groups('Serveur')]
     private $docUrl;
 
     /**
@@ -98,6 +105,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'unite', type: 'string', length: 20, nullable: true, options: ['comment' => 'unité utilisée pour les allocations'])]
+    #[Groups('Serveur')]
     private $unite;
 
     /**
@@ -106,6 +114,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'max_dem', type: 'integer', nullable: true, options: ['comment' => "Valeur max qu'on a le droit de demander"])]
+    #[Groups('Serveur')]
     private $maxDem;
 
     /**
@@ -114,6 +123,7 @@ class Ressource
      *
      ****/
     #[ORM\Column(name: 'co2', type: 'integer', nullable: true, options: ['comment' => 'gramme de co2 émis par unite et par heure'])]
+    #[Groups('Serveur')]
     private $co2;
 
     /**

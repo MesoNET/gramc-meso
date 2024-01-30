@@ -28,6 +28,7 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Serveur.
@@ -35,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
-#[ApiResource]
+#[ApiResource(normalizationContext: ['groups' => ['Serveur']])]
 class Serveur
 {
     /**
@@ -53,38 +54,44 @@ class Serveur
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
+    #[Groups('Serveur')]
     private $nom;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Ressource', mappedBy: 'serveur', cascade: ['persist'])]
+    #[Groups('Serveur')]
     private $ressource;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'serveur', cascade: ['persist'])]
+    #[Groups('Serveur')]
     private $user;
 
     /**
-     * @var desc
+     * @var string $desc
      *
      * Attention desc est un nom réservé !
      */
     #[ORM\Column(name: 'descr', type: 'string', length: 200, nullable: true, options: ['default' => ''])]
+    #[Groups('Serveur')]
     private $desc;
 
     /**
-     * @var cguUrl
+     * @var string cguUrl
      */
     #[ORM\Column(name: 'cgu_url', type: 'string', nullable: true, length: 200)]
+    #[Groups('Serveur')]
     private $cguUrl;
 
     /**
      * @var admname
      */
     #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
+    #[Groups('Serveur')]
     private $admname;
 
     /**
