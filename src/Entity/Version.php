@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\GramcServices\Etat;
 use App\Interfaces\Demande;
 use App\Utils\Functions;
@@ -47,6 +48,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'prj_id_thematique', columns: ['prj_id_thematique'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\VersionRepository')]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource]
 class Version implements Demande
 {
     /**

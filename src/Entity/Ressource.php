@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,6 +35,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Index(name: 'nom', columns: ['nom'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
+#[ApiResource]
 class Ressource
 {
     /**

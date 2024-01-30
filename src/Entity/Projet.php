@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\GramcServices\Etat;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,6 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'projet')]
 #[ORM\Index(name: 'etat_projet', columns: ['etat_projet'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
+#[ApiResource]
 class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
