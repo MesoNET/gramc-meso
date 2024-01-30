@@ -101,9 +101,9 @@ Vous pouvez modifier les couleurs ainsi que les logos afin de les faire coller �
 
 Il faut générer **trois fichiers png**:
 
-- La bannière (en haut à gauche de l'écran): `public/icones/banniere.png`
+- La bannière (en haut à gauche de l'écran): `public/icones/banniere.jpg`
 - Le favicon: `public/icones/favicon.ico`
-- Un élément graphique tiré de votre charte et qui sera affiché en haut à droite: `public/icones/header.png`
+- Un élément graphique tiré de votre charte et qui sera affiché en haut à droite: `public/icones/header.jpg`
 
 Des fichiers `.dist` sont fournis, ils peuvent servir d'exemple *(à ne pas prendre pour une installation qui ne dépendrait pas de mesonet)*.
 

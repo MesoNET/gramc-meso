@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="stylesheet" href="../public/css/styles.min.css" />
     </head>
     <body>
     {% for message in app.flashes('totification') %}
         <div class="flash-notice">
             {{ message }}
         </div>
+    <!--  Body Wrapper -->
     {% endfor %}
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
