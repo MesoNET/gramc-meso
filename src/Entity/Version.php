@@ -262,6 +262,7 @@ class Version implements Demande
     private $versionActive;
 
     #[ORM\OneToMany(mappedBy: 'version', targetEntity: Dac::class)]
+    #[Groups('projet_lecture')]
     private Collection $dac;
 
     // /////////////////////////////////////////////////////////
