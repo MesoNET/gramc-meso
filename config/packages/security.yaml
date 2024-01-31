@@ -2,6 +2,7 @@ security:
     # https://symfony.com/doc/current/security/experimental_authenticators.html
     password_hashers:
       App\Entity\Individu: plaintext
+      App\Entity\Serveur: 'auto'
       Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:

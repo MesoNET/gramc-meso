@@ -26,6 +26,7 @@ namespace App\Controller;
 
 use App\Entity\Projet;
 use App\Entity\Serveur;
+use App\Form\ServeurType;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceUsers;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,11 +80,10 @@ class ServeurController extends AbstractController
         $em = $this->em;
 
         $serveur = new Serveur();
-        $form = $this->createForm('App\Form\ServeurType', $serveur, ['ajouter' => true]);
+        $form = $this->createForm(ServeurType::class, $serveur, ['ajouter' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
             $em->persist($serveur);
             $ok = true;
             try {

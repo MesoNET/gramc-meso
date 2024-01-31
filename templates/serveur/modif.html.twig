@@ -24,9 +24,12 @@
             <td>{{ form_widget(edit_form.admname) }}</td>
         </tr>
         <tr>
+            <th>{{ form_label(edit_form.plainPassword) }}</th>
+            <td>{{ form_widget(edit_form.plainPassword) }}</td>
+        </tr>
+        <tr>
             <th></th>
-            <td class="inputrond submitdyn">{{ form_widget(edit_form.submit) }}{{ form_widget(edit_form.reset) }}</td>
-        </tr>    
+e        </tr>
     </table>
     {{ form_end(edit_form) }}
 
