@@ -57,21 +57,15 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $nom;
 
     #[ORM\Column(type: 'json')]
-    private array $roles = [];
+    private ?array $roles = [];
 
     #[ORM\Column(type: 'string', nullable: true)]
     private string $password;
 
-    /**
-     * @var Collection
-     */
     #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\Ressource', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
     private Collection $ressource;
 
-    /**
-     * @var Collection
-     */
     #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\User', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
     private Collection $user;
@@ -277,9 +271,11 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(?array $roles): self
     {
-        $this->roles = $roles;
+        if (null != $roles) {
+            $this->roles = $roles;
+        }
 
         return $this;
     }
