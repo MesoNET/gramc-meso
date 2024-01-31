@@ -28,6 +28,8 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
@@ -37,7 +39,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
 #[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
-class Serveur
+class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * Constructor.
@@ -48,28 +50,31 @@ class Serveur
         $this->user = new ArrayCollection();
     }
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[Groups('serveur_lecture')]
-    private $nom;
+    private string $nom;
+
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string $password;
 
     /**
      * @var Collection
      */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\Ressource', mappedBy: 'serveur_lecture', cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\Ressource', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
-    private $ressource;
+    private Collection $ressource;
 
     /**
      * @var Collection
      */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'serveur_lecture', cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\User', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
-    private $user;
+    private Collection $user;
 
     /**
      * @var string $desc
@@ -88,7 +93,7 @@ class Serveur
     private $cguUrl;
 
     /**
-     * @var admname
+     * @var string admname
      */
     #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
     #[Groups('serveur_lecture')]
@@ -247,5 +252,59 @@ class Serveur
     public function __toString(): string
     {
         return $this->getNom();
+    }
+
+    /**
+     * The public representation of the user (e.g. a username, an email address, etc.).
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->nom;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_API';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

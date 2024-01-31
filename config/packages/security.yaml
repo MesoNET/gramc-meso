@@ -23,6 +23,10 @@ security:
                     apizen:
                        password: '%env(PASSWORD_APIZEN)%'
                        roles: 'ROLE_ADMIN'
+        api:
+            entity:
+                class: App\Entity\Serveur
+                property: nom
         gramc_provider:
             entity:
                 class: App\Entity\Individu
