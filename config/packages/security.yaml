@@ -26,6 +26,10 @@ security:
                     apiphileas:
                        password: '%env(PASSWORD_APIPHILEAS)%'
                        roles: 'ROLE_ADMIN'
+        api:
+            entity:
+                class: App\Entity\Serveur
+                property: nom
         gramc_provider:
             entity:
                 class: App\Entity\Individu
