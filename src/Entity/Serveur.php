@@ -33,7 +33,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 /**
  * Serveur.
  */
-#[ORM\Table(name: 'serveur_lecture', options: ['collation' => 'utf8mb4_general_ci'])]
+#[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
 #[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
