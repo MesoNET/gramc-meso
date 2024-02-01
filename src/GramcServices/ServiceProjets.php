@@ -178,6 +178,7 @@ class ServiceProjets
         // On supprime la version
         // Du coup la versionDerniere est mise à jour par l'EventListener
         $em->remove($version);
+        $em->persist($version);
         $em->flush();
 
         // Si pas d'autre version, on supprime le projet
