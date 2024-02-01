@@ -12,7 +12,13 @@ services:
         autowire: true
         autoconfigure: true
 
-    #    service_name:
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Command'
+        #    service_name:
     #        class: App\Directory\ClassName
     #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
      
@@ -160,3 +166,12 @@ services:
 
     App\Command\ImporterLaboCommand:
         tags: ["console.command"]
+when@dev:
+    services:
+        _defaults:
+            public: false
+            autowire: true
+            autoconfigure: true
+        App\DataFixtures\:
+            resource: '../src/DataFixtures'
+            tags: [ 'doctrine.fixture.orm' ]
