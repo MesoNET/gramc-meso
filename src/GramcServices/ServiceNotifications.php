@@ -160,7 +160,13 @@ class ServiceNotifications
             ->importance(Notification::IMPORTANCE_LOW);
         foreach ($users as $user) {
             $recipient = new Recipient($user->getMail());
+            $this->em->persist((new \App\Entity\Notification())->setSujet($sujet)
+                ->setDateCreation(new \DateTime())
+                ->setIndividu($user)
+            );
             $this->notifier->send($notification, $recipient);
+            $this->em->flush();
+
         }
     }
 
