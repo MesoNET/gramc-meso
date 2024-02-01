@@ -46,6 +46,8 @@ use App\GramcServices\ServiceSessions;
 use App\GramcServices\ServiceVersions;
 use App\GramcServices\Signal;
 use App\GramcServices\Workflow\Projet4\Projet4Workflow;
+use App\Repository\IndividuRepository;
+use App\Repository\UserRepository;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Snappy\Pdf;
@@ -653,11 +655,16 @@ class VersionController extends AbstractController
                 // Crée une nouvelle expertise
                 $se->newExpertiseIfPossible($version);
 
+
                 // Avance du workflow
                 $rtn = $projetWorkflow->execute(Signal::CLK_VAL_DEM, $projet);
 
                 if (true === $rtn) {
                     $request->getSession()->getFlashbag()->add('flash info', 'Votre projet nous a été envoyé. Vous allez recevoir un courriel de confirmation.');
+                    $this->sn->showNotification('Projet envoyé', 'Le projet '.$version->getPrjTitre().' à été envoyé avec succès', $version->getCollaborateurs(true));
+                    dump($version);
+                    $this->sn->showNotification('Projet à évaluer', 'Le projet '.$version->getPrjTitre().' vous à été envoyé', $this->em->getRepository(Individu::class)->getValideurs());
+
                 } else {
                     $sj->errorMessage(__METHOD__.':'.__LINE__.' Le projet '.$projet->getIdProjet()." n'a pas pu etre envoyé à l'expert correctement.");
                     $request->getSession()->getFlashbag()->add('flash erreur', "Votre projet n'a pas pu être envoyé en validation. Merci de vous rapprocher du support");
