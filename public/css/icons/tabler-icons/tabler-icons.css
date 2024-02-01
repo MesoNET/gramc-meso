@@ -177,6 +177,10 @@
 .ti-alert-circle:before {
   content: "\ea05";
 }
+.ti-alert-circle-red:before {
+  content: "\ea05";
+  color: #f55f5f;
+}
 
 .ti-alert-octagon:before {
   content: "\ecc6";
@@ -11226,6 +11230,11 @@
 
 .ti-trash:before {
   content: "\eb41";
+}
+
+.ti-trash-red:before {
+  content: "\eb41";
+  color: red;
 }
 
 .ti-trash-off:before {
