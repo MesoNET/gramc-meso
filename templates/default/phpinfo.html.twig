@@ -1,7 +1,7 @@
 {% import "default/macros.html.twig" as gramcmacros %} 
 {% import "default/icone.html.twig" as icones %}
 
-
+<link href="{{ absolute_url(asset('css/styles.css')) }}" rel="stylesheet" type="text/css" media="screen"/>
 <p style="text-align: center; font-size:3em"><em>Version de symfony = </em> <span style="font-size: 1.4em"><strong><code><big>{{ sfversion }}</big></code></strong></span></p>
 
 {{ info|raw }}
@@ -36,12 +36,15 @@
                            'donnees',
                            'televersement_generique',
                            'sessions',
+                             'serveurs',
                            'bilan',
                            'formation',
                            'mail',
                            'laboratoire',
                            'rattachement',
                            'thematique',
+                            'ressources',
+                            'serveurs',
                            'statistiques',
                            'publications',
                            'lire_journal',
@@ -74,8 +77,13 @@
                            'recup',
                            'clessh',
                            'cadenas',
-                           'trousseau'
-                           ] %}
+                           'trousseau',
+                           'collaborateur',
+                           'publications',
+                           'nouveau-responsable',
+                           'ressources'
+
+    ] %}
     <div class="center">
     <table style="stroke: black">
     <style>

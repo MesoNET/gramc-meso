@@ -116,6 +116,7 @@ class ServiceMenus
         $menu = [];
 
         $menu['commentaire'] = 'Vous ne pouvez pas créer de nouveau projet dynamique';
+        $menu['icone'] = 'nouveauProjet';
         $menu['name'] = 'nouveau_projet';
         $menu['params'] = ['type' => Projet::PROJET_DYN];
         $menu['lien'] = 'Nouveau projet dynamique';
@@ -458,7 +459,7 @@ class ServiceMenus
         $menu['name'] = 'gerer_serveurs';
         $menu['commentaire'] = 'Gérer la liste des serveurs';
         $menu['lien'] = 'Serveurs';
-        $menu['icone'] = 'indefinit';
+        $menu['icone'] = 'serveurs';
 
         if ($this->ac->isGranted('ROLE_OBS')) {
             $menu['ok'] = true;
@@ -477,7 +478,7 @@ class ServiceMenus
         $menu['name'] = 'gerer_ressources';
         $menu['commentaire'] = 'Gérer la liste des ressources';
         $menu['lien'] = 'Ressources';
-        $menu['icone'] = 'indefinit';
+        $menu['icone'] = 'ressources';
 
         if ($this->ac->isGranted('ROLE_OBS')) {
             $menu['ok'] = true;
@@ -521,6 +522,7 @@ class ServiceMenus
     public function changerResponsable(Version $version, int $priorite = self::HPRIO): array
     {
         $menu['name'] = 'changer_responsable';
+        $menu['icone'] = 'nouveau_responsable';
         $menu['param'] = $version->getIdVersion();
         $menu['lien'] = 'Nouveau responsable';
         $user = $this->token->getUser();
@@ -604,6 +606,7 @@ class ServiceMenus
         $menu['name'] = 'modifier_collaborateurs';
         $menu['param'] = $version->getIdVersion();
         $menu['lien'] = 'Collaborateurs';
+        $menu['icone'] = 'collaborateurs';
         $menu['priorite'] = $priorite;
 
         if ($this->ac->isGranted('ROLE_ADMIN')) {
@@ -729,6 +732,7 @@ class ServiceMenus
     public function gererPublications(Projet $projet, int $priorite = self::HPRIO): array
     {
         $menu['name'] = 'gerer_publications';
+        $menu['icone'] = 'publication';
         $menu['param'] = $projet->getIdProjet();
         $menu['lien'] = 'Publications';
         $menu['priorite'] = $priorite;
