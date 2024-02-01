@@ -36,6 +36,7 @@ use App\GramcServices\ServiceExperts\ServiceExperts;
 use App\GramcServices\ServiceIndividus;
 use App\GramcServices\ServiceJournal;
 use App\GramcServices\ServiceMenus;
+use App\GramcServices\ServiceNotifications;
 use App\GramcServices\ServiceProjets;
 use App\GramcServices\ServiceRessources;
 use App\GramcServices\ServiceServeurs;
@@ -87,6 +88,7 @@ class ProjetController extends AbstractController
         private ServiceRessources $sroc,
         private GramcDate $grdt,
         private ServiceVersions $sv,
+        private ServiceNotifications $sn,
         private ServiceExperts $se,
         private Projet4Workflow $pw4,
         private FormFactoryInterface $ff,
@@ -142,7 +144,7 @@ class ProjetController extends AbstractController
                     $workflow->execute(Signal::CLK_FERM, $projet);
                 }
             }
-
+            $this->sn->showNotification('Projet fermée', 'Le projet '.$projet->getVersionActive()->getPrjTitre().' a été fermée avec succès', $this->token->getUser());
             return $this->redirectToRoute('projet_tous'); // NON - on ne devrait jamais y arriver !
         } else {
             return $this->render(
@@ -446,6 +448,7 @@ class ProjetController extends AbstractController
         // Projet dynamique = SEUL type de projets supporté actuellement
         $projet = $sp->creerProjet(Projet::PROJET_DYN);
         $version = $projet->getVersionDerniere();
+        $this->sn->showNotification('Nouveau projet créé', 'Le projet '.$version->getPrjTitre().' a été créé avec succès', [$this->token->getUser()]);
 
         return $this->redirectToRoute('modifier_version', ['id' => $version->getIdVersion()]);
     }
