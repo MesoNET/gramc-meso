@@ -161,6 +161,8 @@ class VersionController extends AbstractController
 
         $sp->supprimerVersion($version);
 
+        $this->sn->showNotification('Version de ce projet supprimé', 'Le projet '.$version->getPrjTitre().' a été supprimé avec succès', $version->getCollaborateurs(true));
+
         return $this->redirectToRoute('projet_accueil');
     }
 
