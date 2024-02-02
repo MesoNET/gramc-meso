@@ -179,7 +179,6 @@ class GramcSessionController extends AbstractController
             return $this->redirectToRoute('accueil');
         }
         $old_individu = clone $individu;
-
         $form = $this->createForm(IndividuType::class, $individu, ['mail' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -207,7 +206,6 @@ class GramcSessionController extends AbstractController
 
             $em->persist($individu);
             $em->flush();
-
             // On recopie le nouveau profil dans les projets actifs ou en cours d'édition
             $projetRepository = $em->getRepository(Projet::class);
             $cvRepository = $em->getRepository(CollaborateurVersion::class);
@@ -240,7 +238,7 @@ class GramcSessionController extends AbstractController
                 'success',
                 'Vos modifications ont été enregistrées.'
             );
-
+            $this->sn->showNotification('Profil changé', $individu->getNom().' votre profil a été changé avec succes', [$individu]);
             return $this->redirectToRoute('profil');
         } else {
             return $this->render('default/profil.html.twig', ['form' => $form->createView(), 'individu' => $individu]);
