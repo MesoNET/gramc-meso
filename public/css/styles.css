@@ -19289,6 +19289,38 @@ textarea.form-control-lg {
     font-weight: 400
 }
 
+.sous-menu{
+    margin-left: 1em;
+}
+.sous-menu-span{
+    font-size: 10px;
+}
+
+
+.sidebar-nav ul .sidebar-item .sidebar-link-no-active {
+    color: #2A3547;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-size: 14px;
+    white-space: nowrap;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    line-height: 25px;
+    position: relative;
+    margin: 0px 0px 2px;
+    padding: 10px;
+    border-radius: 7px;
+    gap: 15px;
+    font-weight: 400
+}
+
+.sidebar-nav ul .sidebar-item .sidebar-link-no-active:hover {
+    background-color: rgba(93, 135, 255, 0.1);
+    color: #5D87FF
+}
+
 .sidebar-nav ul .sidebar-item .sidebar-link span:first-child {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -19296,6 +19328,12 @@ textarea.form-control-lg {
 }
 
 .sidebar-nav ul .sidebar-item .sidebar-link .ti {
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    font-size: 21px
+}
+
+.sidebar-nav ul .sidebar-item .sidebar-link-no-active .ti {
     -ms-flex-negative: 0;
     flex-shrink: 0;
     font-size: 21px
