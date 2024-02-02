@@ -446,11 +446,15 @@ class ExpertiseController extends AbstractController
 
             // Bouton Confirmer
             // On envoie un signal CLK_VAL_EXP_XXX
+
             if ($expRallonge) {
                 $this->validationForRallonge($rallonge, $expertise);
             } else {
                 $this->validationForVersion($version, $expertise);
             }
+            $recipient = $version->getCollaborateurs(true);
+            array_push($recipient, $version->getExpertise()[0]->getExpert());
+            $this->sn->showNotification('Projet validé', 'Le projet '.$version->getPrjTitre().'à été validé', $recipient);
 
             return $this->redirectToRoute($redirect_to_route);
         }
