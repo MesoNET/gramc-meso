@@ -54,6 +54,8 @@ security:
         main:
             lazy: true
             pattern:    ^/
+            entry_point: App\Security\AuthenticationEntryPoint
+            access_denied_handler: App\Security\AccessDeniedHandler
             custom_authenticators:
                - App\Security\GramcAuthenticator
             provider: gramc_provider
