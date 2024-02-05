@@ -35,7 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ORM\Table(name: 'laboratoire')]
 #[ORM\Entity(repositoryClass: 'App\Repository\LaboratoireRepository')]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Laboratoire
 {
     /**

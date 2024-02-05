@@ -34,7 +34,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'adresseip')]
 #[ORM\UniqueConstraint(name: 'adresseip', columns: ['adresse', 'id_labo'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\AdresseipRepository')]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Adresseip
 {
     /**

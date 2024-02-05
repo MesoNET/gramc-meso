@@ -34,7 +34,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'etablissement')]
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Etablissement
 {
     /**

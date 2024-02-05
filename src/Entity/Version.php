@@ -24,9 +24,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\GramcServices\Etat;
 use App\Interfaces\Demande;
+use App\State\ProjetCollectionProvider;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -49,7 +53,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Index(name: 'prj_id_thematique', columns: ['prj_id_thematique'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\VersionRepository')]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+)
+]
 class Version implements Demande
 {
     /**
@@ -292,9 +299,9 @@ class Version implements Demande
         return $this;
     }
 
-    public function setEtat(?int $etatVersion): self
+    public function setEtat(?int $etat): self
     {
-        return $this->setEtatVersion($etatVersion);
+        return $this->setEtatVersion($etat);
     }
 
     /**
@@ -656,24 +663,6 @@ class Version implements Demande
     }
 
     /**
-     * Set fctStamp.
-     */
-    public function setFctStamp(?\DateTime $fctStamp): self
-    {
-        $this->fctStamp = $fctStamp;
-
-        return $this;
-    }
-
-    /**
-     * Get fctStamp.
-     */
-    public function getFctStamp(): ?\DateTime
-    {
-        return $this->fctStamp;
-    }
-
-    /**
      * Set prjFicheLen.
      */
     public function setPrjFicheLen(?int $prjFicheLen): self
@@ -1017,7 +1006,7 @@ class Version implements Demande
      * @return \App\Entity\Laboratoire
      */
     // TODO - Wrapper vers getPrjLLabo, ne sert à rien !
-    public function getLabo(): Laboratoire
+    public function getLabo(): string
     {
         return $this->getPrjLLabo();
     }
@@ -1059,14 +1048,10 @@ class Version implements Demande
     }
 
     // pour notifications
-    public function getExpertsThematique(): ?Individu
+    public function getExpertsThematique(): ArrayCollection|Collection|null
     {
         $thematique = $this->getPrjThematique();
-        if (null === $thematique) {
-            return null;
-        } else {
-            return $thematique->getExpert();
-        }
+        return $thematique?->getExpert();
     }
 
     // //////////////////////////////////////////////////////////////////

@@ -35,7 +35,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'statut')]
 #[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Statut
 {
     /**
