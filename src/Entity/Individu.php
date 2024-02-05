@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -52,8 +53,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [new GetCollection(
         provider: UtilisateurCollectionProvider::class
-    ),
-    ]
+    )],
+    normalizationContext: ['groups' => ['individu_lecture']]
 )]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
@@ -96,18 +97,21 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var \DateTime
      */
     #[ORM\Column(name: 'creation_stamp', type: 'datetime', nullable: false)]
+    #[Groups('individu_lecture')]
     private $creationStamp;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 50, nullable: true)]
+    #[Groups('individu_lecture')]
     private $nom;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prenom', type: 'string', length: 50, nullable: true)]
+    #[Groups('individu_lecture')]
     private $prenom;
 
     /**
@@ -115,6 +119,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     #[ORM\Column(name: 'mail', type: 'string', length: 200, nullable: false)]
     #[Assert\Email(message: "The email '{{ value }}' is not a valid email.")]
+    #[Groups('individu_lecture')]
     private $mail;
 
     /**
@@ -164,6 +169,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var bool
      */
     #[ORM\Column(name: 'desactive', type: 'boolean', nullable: false)]
+    #[Groups('individu_lecture')]
     private $desactive = false;
 
     /**
@@ -172,6 +178,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     #[ORM\Column(name: 'id_individu', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('individu_lecture')]
     private $idIndividu;
 
     /**
@@ -216,6 +223,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
+    #[Groups('individu_lecture')]
     private $user;
 
     /**

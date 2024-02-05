@@ -28,6 +28,7 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Sso.
@@ -55,6 +56,7 @@ class Clessh
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
+    #[Groups('individu_lecture')]
     private $id;
 
     /**
@@ -76,24 +78,28 @@ class Clessh
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
+    #[Groups('individu_lecture')]
     private $nom;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'pub', type: 'string', length: 5000)]
+    #[Groups('individu_lecture')]
     private $pub;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'emp', type: 'string', length: 100, nullable: false)]
+    #[Groups('individu_lecture')]
     private $emp;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'rvk', type: 'boolean')]
+    #[Groups('individu_lecture')]
     private $rvk = false;
 
     /**
