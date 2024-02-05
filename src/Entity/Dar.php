@@ -34,7 +34,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'dar', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Dar
 {
     /**

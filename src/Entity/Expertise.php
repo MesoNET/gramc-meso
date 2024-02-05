@@ -43,7 +43,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'id_expert', columns: ['id_expert'])]
 #[ORM\UniqueConstraint(name: 'id_version_2', columns: ['id_version', 'id_expert'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\ExpertiseRepository')]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Expertise
 {
     /**

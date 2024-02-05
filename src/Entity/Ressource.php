@@ -36,7 +36,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Index(name: 'nom', columns: ['nom'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+]
 class Ressource
 {
     /**
