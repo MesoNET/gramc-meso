@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
 #[ApiResource(
     operations: []
-]
+)]
 class Ressource
 {
     /**

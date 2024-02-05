@@ -13,10 +13,10 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * Ecrans Formation, permet de déclarer le nombre de personnes intéressées par les formations à venir
  */
-#[ORM\Entity(repositoryClass: FormationRepository::class)(
+#[ORM\Entity(repositoryClass: FormationRepository::class)]
+#[ApiResource(
     operations: []
-]
-#[ApiResource]
+)]
 class Formation
 {
     public function __construct()
