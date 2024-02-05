@@ -28,7 +28,7 @@ final class ProjetCollectionProvider implements ProviderInterface
             $projets = $this->itemProvider->provide($operation, $uriVariables, $context);
 
             return array_filter($projets, function (Projet $projet) {
-                if (Etat::TERMINE != $projet->getEtatProjet()) {
+                if (Etat::RENOUVELABLE == $projet->getEtatProjet()) {
                     $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
 
                     return array_intersect($projet->getUser()->toArray(), $serveur->getUser()->toArray());
