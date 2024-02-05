@@ -1,13 +1,12 @@
 api_platform:
     title: GRAMC-API
     version: 2.0.0
-    formats:
-        jsonld: ['application/ld+json']
     docs_formats:
         jsonld: ['application/ld+json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
+        formats: jsonld
         pagination_enabled: false
         stateless: false
         cache_headers:
@@ -19,3 +18,10 @@ api_platform:
     keep_legacy_inflector: false
     eager_loading:
         max_joins: 100
+    formats:
+        jsonld: [ 'application/ld+json' ]
+        jsonapi: [ 'application/vnd.api+json' ]
+        json: [ 'application/json' ]
+        xml: [ 'application/xml', 'text/xml' ]
+        csv: [ 'text/csv' ]
+        html: [ 'text/html' ]
