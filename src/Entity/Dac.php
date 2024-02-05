@@ -34,10 +34,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
  * Demande, Attribution, consommation
  */
 #[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
-#[ORM\Entity(
+#[ORM\Entity]
+#[ApiResource(
     operations: []
-]
-#[ApiResource]
+)]
 class Dac
 {
     /**

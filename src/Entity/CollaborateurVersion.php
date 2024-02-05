@@ -40,7 +40,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: 'App\Repository\CollaborateurVersionRepository')]
 #[ApiResource(
     operations: []
-]
+)]
 class CollaborateurVersion
 {
     /**
