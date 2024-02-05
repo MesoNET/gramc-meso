@@ -25,6 +25,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\ServeurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,7 +38,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
  */
 #[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
-#[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
+#[ORM\Entity(repositoryClass: ServeurRepository::class)]
 #[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
 class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -66,7 +67,7 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('serveur_lecture')]
     private Collection $ressource;
 
-    #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\User', cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'serveur', targetEntity: '\App\Entity\User', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
     private Collection $user;
 
@@ -255,7 +256,7 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->nom;
+        return (string) $this->admname;
     }
 
     /**
