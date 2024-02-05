@@ -25,6 +25,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * User.
@@ -33,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
 #[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
-#[ApiResource]
+#[ApiResource(operations: [])]
 class User
 {
     /**
@@ -42,12 +43,14 @@ class User
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups('individu_lecture')]
     private $id;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'loginname', nullable: true, type: 'string', length: 20)]
+    #[Groups('individu_lecture')]
     private $loginname;
 
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
@@ -66,6 +69,7 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'login', type: 'boolean', nullable: false, options: ['comment' => 'login sur le serveur lié'])]
+    #[Groups('individu_lecture')]
     private $login = false;
 
     /**
@@ -90,6 +94,7 @@ class User
      * @var \DateTime
      */
     #[ORM\Column(name: 'pass_expiration', type: 'datetime', nullable: true)]
+    #[Groups('individu_lecture')]
     private $passexpir;
 
     /**
@@ -105,12 +110,14 @@ class User
      */
     #[ORM\JoinColumn(name: 'id_clessh', referencedColumnName: 'id')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Clessh', inversedBy: 'user')]
+    #[Groups('individu_lecture')]
     private $clessh;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'deply', type: 'boolean')]
+    #[Groups('individu_lecture')]
     private $deply = false;
 
     public function __toString(): string
