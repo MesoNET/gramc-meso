@@ -166,6 +166,10 @@ services:
 
     App\Command\ImporterLaboCommand:
         tags: ["console.command"]
+    App\State\ProjetCollectionProvider:
+        arguments:
+            $itemProvider: '@api_platform.doctrine.orm.state.collection_provider'
+        tags: [ 'api_platform.state_provider' ]
 when@dev:
     services:
         _defaults:
