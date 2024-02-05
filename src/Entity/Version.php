@@ -70,14 +70,12 @@ class Version implements Demande
      * @var string
      */
     #[ORM\Column(name: 'prj_l_labo', type: 'string', length: 300, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjLLabo = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_titre', type: 'string', length: 500, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjTitre = '';
 
     /**
@@ -90,21 +88,18 @@ class Version implements Demande
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_machines', type: 'string', length: 60, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciMachines = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_centre', type: 'string', length: 60, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciCentre = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_heures', type: 'string', length: 30, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciHeures = '';
 
     /**
