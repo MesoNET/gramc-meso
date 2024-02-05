@@ -27,6 +27,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use App\GramcServices\Etat;
 use App\State\ProjetCollectionProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -40,14 +41,17 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'projet')]
 #[ORM\Index(columns: ['etat_projet'], name: 'etat_projet')]
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
-#[ApiResource(operations: [
-    new Get(),
+#[ApiResource(
+    operations: [
+    new Get(
+        uriVariables: ['id' => new Link(fromClass: Projet::class, toProperty: 'id')],
+        uriTemplate: '/projets/{id}',
+        security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
+    ),
     new GetCollection(
-        paginationEnabled: false,
         provider: ProjetCollectionProvider::class
     ),
 ],
-    //security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
     normalizationContext: ['groups' => ['projet_lecture']])]
 class Projet
 {
@@ -139,7 +143,6 @@ class Projet
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'projet')]
-    #[Groups('projet_lecture')]
     private $version;
 
     /**
@@ -478,7 +481,7 @@ class Projet
         }
     }
 
-        public function getResponsable()
+    public function getResponsable()
     {
         if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getResponsable();
@@ -553,4 +556,4 @@ class Projet
     // return '?';
     // }
     // }
-}
+    }
