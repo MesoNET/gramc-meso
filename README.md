@@ -6,9 +6,9 @@
 Installations de paquets
 -----
 
-- fonctionne en **php 8.0 MINIMUM**, validé avec mariadb 10.3
+- fonctionne en **php 8.2 MINIMUM**, validé avec mariadb 10.3
 
-- Installer apache/php 8.0:
+- Installer apache/php 8.2:
 ```
 apt install ca-certificates apt-transport-https lsb-release wget gnupg2
 wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
@@ -33,6 +33,9 @@ apt install xfonts-75dpi xfonts-base xfonts-utils x11-common libfontenc1 xfonts-
 ```
 - Installer `wkhtmltopd` depuis https://wkhtmltopdf.org (disponible en .deb)
 
+
+_Pour les utilisateurs windows, il est possible d'installer un logiciel tiers qui s'occupe de tout cela, par exemple WampServer, Xampp, etc._
+
 Configuration du mail:
 ----
 
@@ -40,6 +43,8 @@ Configuration du mail:
 
   - Par exemple `Exim4` (le MTA standard sous Debian) fonctionne très bien avec gramc-meso
   - Ou encore `ssmtp`, ` msmtp` (les mails sont envoyés, jamais reçus), ou postfix
+  - Pour modifier la configuration vous pouvez allez dans le fichier mailler.yaml.dist et le renommer en mailler.yaml
+  - Le service de mail est utilisé pour des notifications que vous pouvez gerer dans le fichier src/gramcServices/ServiceNotification.php
 
 ### Configurer le mail pour une version de développement:
 
@@ -110,6 +115,8 @@ Des fichiers `.dist` sont fournis, ils peuvent servir d'exemple *(à ne pas pren
 #### Couleurs:
 
 Vous devez copier le fichier `public/css/colors.css.dist` sur `colors.css` et l'éditer afin de faire correspondre les couleurs de l'application à celles de votre charte graphique:
+
+Le principale du css ce trouve dans le fichier `public/css/style.css` 
 
 ### Fichier parameters.yaml:
 
