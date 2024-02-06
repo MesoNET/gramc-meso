@@ -19289,6 +19289,19 @@ textarea.form-control-lg {
     font-weight: 400
 }
 
+table tr td a {
+    text-decoration:none;
+    color : black;
+}
+
+*[data-href] {
+    cursor: pointer;
+}
+
+*[data-href]:hover {
+    background-color: #e5e5e5 !important;
+}
+
 .sous-menu{
     margin-left: 1em;
 }
