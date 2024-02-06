@@ -79,16 +79,23 @@
                         {% if is_granted('ROLE_DEMANDEUR') %}
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('projet_accueil') }}" aria-expanded="false"
-                                   title="Accéder à l'espace valideur">
+                                   title="Accéder à la dashboard des projets">
                                     <i class="ti ti-layout-dashboard"></i>
                                     <span class="hide-menu">Dashboard</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('projet_accueil') }}" aria-expanded="false"
-                                   title="Accéder à l'espace valideur">
+                                   title="Accéder à la liste des projets">
                                     <i class="ti ti-clipboard"></i>
                                     <span class="hide-menu">Liste des projets</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ path('nouveau_projet',{type:4}) }}" aria-expanded="false"
+                                   title="Crée un nouveau projet">
+                                    <i class="ti ti-clipboard-plus"></i>
+                                    <span class="hide-menu">Nouveau Projet</span>
                                 </a>
                             </li>
                         {% endif %}
