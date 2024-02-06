@@ -122,7 +122,7 @@ class GramcAuthenticator extends AbstractAuthenticator
                 }
                 $individu = $sso->getIndividu();
                 if ($individu instanceof Individu) {
-                    return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
+                    return new SelfValidatingPassport(new UserBadge($individu->getId()),
                         [
                             new GramcBadge($individu, $request, $this->sj),
                         ]);
@@ -165,7 +165,7 @@ class GramcAuthenticator extends AbstractAuthenticator
                 }
                 $individu = $sso->getIndividu();
                 if ($individu instanceof Individu) {
-                    return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
+                    return new SelfValidatingPassport(new UserBadge($individu->getId()),
                         [
                             new GramcBadge($individu, $request, $this->sj),
                         ]);
@@ -200,9 +200,9 @@ class GramcAuthenticator extends AbstractAuthenticator
                 if (isset($form_data['data']) && null != $form_data['data']) {
                     $idIndividu = $form_data['data'];
                     $repository = $this->em->getRepository(Individu::class);
-                    $individu = $repository->findOneBy(['idIndividu' => $idIndividu]);
+                    $individu = $repository->findOneBy(['id' => $idIndividu]);
                     if ($individu instanceof Individu) {
-                        return new SelfValidatingPassport(new UserBadge($individu->getIdIndividu()),
+                        return new SelfValidatingPassport(new UserBadge($individu->getId()),
                             [
                                 new CsrfTokenBadge('form', $form_data['_token']),
                                 new GramcBadge($individu, $request, $this->sj),
