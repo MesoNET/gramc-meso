@@ -271,39 +271,6 @@ passwd
 
         {# ######################################################################### #}
 
-        {% if projets_collab != null %}
-            <section class="section_collaborateur">
-
-                <h3>En tant que collaborateur:</h3>
-                <table class="projet">
-
-                    <thead>
-                    <tr>
-                        <th>État</th>
-                        <th>Accès</th>
-                        <th>Numéro</th>
-                        {% for s in serviceServeurs %}
-                            <th>Id {{ s }}</th>{% endfor %}
-                        <th style="width: 25em">Titre</th>
-                        <th>Fin</th>
-                        <th colspan="2">Consommation</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for item in  projets_collab %}
-                        {{ thismacro.ligne_projet(item) }}
-                    {% endfor %}
-                    </tbody>
-
-                </table>
-                {% for item in  projets_collab %}
-                    {{ thismacro.fenetre_pwd(item) }}
-                {% endfor %}
-            </section>
-
-        {% endif %}
-
         {% if projets_term != null %}
             <section class="section_termine" style="stroke:black;">
 
@@ -327,25 +294,24 @@ passwd
 
                     <thead>
                     <tr>
-                        <th>État</th>
-                        <th>Accès</th>
-                        <th>Numéro</th>
-                        <th>Titre</th>
+                        <th class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">État</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">Numéro</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">Titre</h6>
+                        </th>
                     </tr>
                     </thead>
 
                     <tbody>
                     {% for item in  projets_term %}
-                        <tr>
-                            <td>{{ gramcmacros.metagraph('termine') }}</td>
-                            <td>
-                                <a href="{{ path('consulter_projet', { 'id': item.idProjet }) }}"
-                                   title="Ouvrir le projet {{ item.idProjet }}">
-                                    {{ icones.details }}
-                                </a>
-                            </td>
-                            <td>{{ item.idProjet }}</td>
-                            <td>{{ item.titre }}</td>
+                        <tr data-href="{{ path('consulter_projet', { 'id': item.idProjet }) }}" >
+                            <td class="border-bottom-0" >{{ gramcmacros.metagraph('termine') }}</td>
+                            <td class="border-bottom-0" >{{ item.idProjet }}</td>
+                            <td class="border-bottom-0" >{{ item.titre }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
