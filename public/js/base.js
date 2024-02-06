@@ -24,6 +24,7 @@ $(document).ready(function(){
     });
 });
 
+
 $( document ).ready(function() {
     //Récupérer "En voir plus..." 
     let more_menu = $('.more')

@@ -58,12 +58,6 @@ $.cleanData = ( function( orig ) {
 	};
 } )( $.cleanData );
 
-	$(function(){
-		$('*[data-href]').click(function(){
-			window.location = $(this).data('href');
-			return false;
-		});
-	});
 
 $.widget = function( name, base, prototype ) {
 	var existingConstructor, constructor, basePrototype;
