@@ -16,7 +16,6 @@ web/tmp/*
 *.lock
 /app/config/parameters.yml
 /app/config/parameters.*.yml
-/mesocentres/**/colors.css
 
 /build/
 /phpunit.xml
