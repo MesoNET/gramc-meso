@@ -11,164 +11,187 @@
 {# ################################################# #}
 
 
-{% macro ligne_projet(item) %}
-{#{dump(item.loginnames)}#}
-
-{% if item.cpt_rall + 1 > 1 %}
-    <tr class="rallonge">
+{% macro ligne_projet(item,type=0) %}
+    {# {dump(item.loginnames)} #}
+    {% if type==2 %}
+        {% if item.cpt_rall + 1 > 1 %}
+        <tr class="rallonge bg-light-indigo" data-href='{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}'>
+        {% else %}
+            <tr class="bg-light-indigo" data-href='{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}' >
+        {% endif %}
     {% else %}
-    <tr>
+        {% if item.cpt_rall + 1 > 1 %}
+        <tr class="rallonge" data-href='{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}'>
+        {% else %}
+            <tr data-href='{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}' >
+        {% endif %}
     {% endif %}
-        <td><span title="{{item.meta_etat}}" style="height:16">{{ gramcmacros.metagraph(item.meta_etat) }}</span> </td>
-        
-        <td><a href="{{ path('consulter_projet', { 'id': item.projet.idProjet })}}" title="Ouvrir le projet {{ item.projet.idProjet }}">
-            {{ icones.details }}
-            </a>
-            {% if( item.projet.derniereVersion.isEdited ) %}&nbsp;<a href="{{ path('version_avant_supprimer', { 'id': item.projet.derniereVersion.idVersion })}}" title="Supprimer le projet {{ item.projet.idProjet }}">
+
+    <td>
+        <span title="{{ item.meta_etat }}">{{ gramcmacros.metagraph(item.meta_etat) }}</span>
+        {% if( item.projet.derniereVersion.isEdited ) %}
+            <a href="{{ path('version_avant_supprimer', { 'id': item.projet.derniereVersion.idVersion }) }}"
+               title="Supprimer le projet {{ item.projet.idProjet }}">
                 {{ icones.supprimer }}
             </a>
-            {% endif %}
-        </td>
-
-        <td>{{ item.projet.idProjet }}</td>
-        
-        {% for s in item.loginnames|keys|sort %}
-            <td rowspan="{{ item.cpt_rall + 1 }}">
-                {% if item.loginnames[s]['login'] %}
-                    {% if item.loginnames[s]['nom'] != 'nologin' %}
-                        <tt>{{ item.loginnames[s]['nom'] }}</tt>
+        {% endif %}
+    </td>
+    <td class="border-bottom-0">
+        <h6 class="fw-semibold mb-0">
+            {{ item.projet.idProjet }}
+        </h6>
+    </td>
+    <td class="border-bottom-0">
+    {% for s in item.loginnames|keys|sort %}
+            {% if item.loginnames[s]['login'] %}
+                {% if item.loginnames[s]['nom'] != 'nologin' %}
+                    {{ item.loginnames[s]['nom'] }}
+                {% endif %}
+                {% if item.loginnames[s]['clessh'] != null %}
+                    {{ item.loginnames[s]['clessh'].nom }}
+                    {% if not item.loginnames[s]['clessh']['deploy'] and not item.loginnames[s]['clessh'].rvk %}
+                        <span title="Vous pourrez vous connecter lorsque votre compte sera créé et votre clé déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
                     {% endif %}
-                    - 
-                    {% if item.loginnames[s]['clessh'] != null %}
-                        <tt>{{ item.loginnames[s]['clessh'].nom }}</tt>
-                        {% if not item.loginnames[s]['clessh']['deploy'] and not item.loginnames[s]['clessh'].rvk %}
-                            <span title="Vous pourrez vous connecter lorsque votre compte sera créé et votre clé déployée (il suffit d'attendre)">{{ icones.attention(20,20) }}</span>
-                        {% endif %}
-                        {% if item.loginnames[s]['clessh'].rvk %}
-                            <span title="PROBLEME DE SECURITE - VOTRE CLE A ETE REVOQUEE">{{ icones.attention(20,20) }}</span>
-                        {% endif %}
-                        <span title="Changer de clé ssh"><a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
-                    {% else %}
-                        <span title="Vous devez choisir une clé avant de vous connecter">{{ icones.attention(20,20) }}<a href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
+                    {% if item.loginnames[s]['clessh'].rvk %}
+                        <span title="PROBLEME DE SECURITE - VOTRE CLE A ETE REVOQUEE">{{ icones.attention(20,20) }}</span>
                     {% endif %}
+                    <span title="Changer de clé ssh"><a
+                                href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
                 {% else %}
-                    -
-                {% endif%}
-            </td>
-        {% endfor %}
-        
-        <td rowspan="{{ item.cpt_rall + 1 }}">
-            {% if item.projet.titre != null %}
-                {{ item.projet.titre }}
+                    <span title="Vous devez choisir une clé avant de vous connecter">{{ icones.attention(20,20) }}<a
+                                href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}">{{ icones.clessh(20,20) }}</a></span>
+                {% endif %}
             {% else %}
-                -
             {% endif %}
-        </td>
+    {% endfor %}
+    </td>
 
-        <td rowspan="{{ item.cpt_rall + 1 }}" >
-            {% if item.meta_etat in ['ACCEPTE','NONRENOUVELE' ] %} {{ item.projet.versionactive.limitdate|date('Y-m-d')}}
-            {% elseif item.meta_etat in ['EDITION','EXPERTISE' ] %} ??
-            {% elseif item.meta_etat in ['STANDBY'] %} STANDBY
-            {% else %} TERMINE
-            {% endif %}
-        </td>
- 
-        {% if item.projet.versionactive != null %}
+    <td rowspan="{{ item.cpt_rall + 1 }}" class="border-bottom-0">
+        {% if item.projet.titre != null %}
+            {{ item.projet.titre }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+    <td rowspan="{{ item.cpt_rall + 1 }}" class="border-bottom-0">
+        {% if item.meta_etat in ['ACCEPTE','NONRENOUVELE' ] %} {{ item.projet.versionactive.limitdate|date('Y-m-d') }}
+        {% elseif item.meta_etat in ['EDITION','EXPERTISE' ] %} ??
+        {% elseif item.meta_etat in ['STANDBY'] %} STANDBY
+        {% else %} TERMINE
+        {% endif %}
+    </td>
+
+    {% if item.projet.versionactive != null %}
         {% set dacs = serviceDacs.getDacsByNr(item.projet.versionactive) %}
+        {% set cpTot = 0 %}
+        {% set consoTot = 0 %}
+        {% set consomationTot = 0 %}
+        {% set bug = 0 %}
+        <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0 border-bottom-0">
         {% for nr in dacs|keys|sort %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >
                 {% if serviceDacs.getTodofConsolide(dacs[nr]) %}
-                    <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
-                        {{icones.attention(20,20)}}
-                    </span>
-                {%endif%}
+                    {% set bug = 1 %}
+                {% endif %}
+                {% set consoTot = consoTot + serviceDacs.getAttributionConsolidee(dacs[nr]) %}
+                {% set consomationTot = consomationTot + dacs[nr].consommation %}
                 {% if serviceDacs.getAttributionConsolidee(dacs[nr]) > 0 %}
                     {% set cp = 100 * dacs[nr].getConsommation() / serviceDacs.getAttributionConsolidee(dacs[nr]) %}
                 {% else %}
                     {% set cp = 0 %}
                 {% endif %}
-                {% set ccp='' %}
-                {% if cp > conso_seuil_1 %}
-                    {% set ccp = 'class=conso_seuil_1' %}
-                {% endif %}
-                {% if cp > conso_seuil_2 %}
-                    {% set ccp = 'class=conso_seuil_2' %}
-                {% endif %}
- 
-                <span title="Attribution">{{ serviceDacs.getAttributionConsolidee(dacs[nr])}}</span>&nbsp;-&nbsp;<span title="Consommation"  {{ccp}}>{{ dacs[nr].consommation }}
-                        ({{ cp|number_format(0, ',', ' ') }} %)
-                </span>
-                </td>
+                {% set cpTot= cpTot + cp %}
         {% endfor %}
-        {% else %}
-        {% for r in serviceRessources.getressources %}
-            <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0" >-</td>
-        {% endfor %}
+        {% set ccp='' %}
+        {% if cpTot > conso_seuil_1 %}
+            {% set ccp = 'class=conso_seuil_1' %}
         {% endif %}
+        {% if cpTot > conso_seuil_2 %}
+            {% set ccp = 'class=conso_seuil_2' %}
+        {% endif %}
+        {% if bug>0 %}
+        <span title="Attribution">{{ consoTot }}</span>&nbsp;-&nbsp;<span
+            title="Consommation"  {{ ccp }}>{{ consomationTot }}
+                        ({{ cpTot|number_format(0, ',', ' ') }} %)
+                </span>
+        {% else %}
+        <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
+            {{ icones.attention(20,20) }}
+        </span>
+        {% endif %}
+        </td>
+    {% else %}
+        <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0 border-bottom-0">-</td>
+    {% endif %}
+
     </tr>
 
     {% set num_rallonge = 1 %}
     {% for rallonge in item.rallonges %}
-    <tr>
-        <td>{{ gramcmacros.metagraph(serviceRallonges.getMetaEtat(rallonge)) }}</td>
-        <td>
-            <a href="{{ path('consulter_rallonge', { 'id': rallonge.idRallonge })}}"
-            {% if serviceRallonges.getMetaEtat(rallonge) == 'EDITION' %}
-                title="Consulter cette demande d'extension" >
-                {{ icones.modifier }}
+        <tr>
+            <td class="border-bottom-0">{{ gramcmacros.metagraph(serviceRallonges.getMetaEtat(rallonge)) }}</td>
+            <td class="border-bottom-0">
+                <a href="{{ path('consulter_rallonge', { 'id': rallonge.idRallonge }) }}"
+                        {% if serviceRallonges.getMetaEtat(rallonge) == 'EDITION' %}
+                   title="Consulter cette demande d'extension">
+                    {{ icones.modifier }}
 
 
-            {% else %}
-                title="Consulter cette demande d'extension" >{{icones.details}}
-            {% endif %}
-            </a>
-        </td>
-        <td>
-            {% if num_rallonge == 1 %}
-                <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension</span></strong>
-            {% else %}
-                <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension {{ num_rallonge }}</span></strong>
-            {% endif %}
-        </td>
-        {% set num_rallonge = num_rallonge + 1 %}
-    </tr>
+                    {% else %}
+                        title="Consulter cette demande d'extension" >{{ icones.details }}
+                    {% endif %}
+                </a>
+            </td>
+            <td>
+                {% if num_rallonge == 1 %}
+                    <strong><span title="ou demande au fil de l'eau, ou rallonge">Extension</span></strong>
+                {% else %}
+                    <strong><span
+                                title="ou demande au fil de l'eau, ou rallonge">Extension {{ num_rallonge }}</span></strong>
+                {% endif %}
+            </td>
+            {% set num_rallonge = num_rallonge + 1 %}
+        </tr>
     {% endfor %}
 
 {% endmacro ligne_projet %}
 
 {% macro fenetre_pwd(item) %}
-{% if item.passwd != null %}
-<div id="dialog_{{item.projet}}" class="invisible_if_no_js">
-    <h2>Vos identifiants pour le projet {{item.projet}}</h2>
-    <p>Vos identifiants pour le projet {{item.projet}} figurent ci-dessous:</p>
-    <ul>
-        <li>Nom d'utilisateur: <tt><strong>{{item.login}}</strong></tt></li>
-        <li>Mot de passe: <tt><strong>{{item.passwd}}</strong></tt></li>
-    </ul>
-    
-    <p>Vous devez maintenant vous connecter <strong>avant le {{item.pwd_expir|date('d/m/Y')}}</strong> sur le supercalculateur en utilisant les identifiants ci-dessus, puis <strong>changer votre mot de passe</strong>.
-    Pour cela:
-    <ol>
-        <li>Connectez-vous sur Olympe</li>
-        <li>Tapez:<pre>
+    {% if item.passwd != null %}
+        <div id="dialog_{{ item.projet }}" class="invisible_if_no_js">
+            <h2>Vos identifiants pour le projet {{ item.projet }}</h2>
+            <p>Vos identifiants pour le projet {{ item.projet }} figurent ci-dessous:</p>
+            <ul>
+                <li>Nom d'utilisateur: <tt><strong>{{ item.login }}</strong></tt></li>
+                <li>Mot de passe: <tt><strong>{{ item.passwd }}</strong></tt></li>
+            </ul>
+
+            <p>Vous devez maintenant vous connecter <strong>avant le {{ item.pwd_expir|date('d/m/Y') }}</strong> sur le
+                supercalculateur en utilisant les identifiants ci-dessus, puis <strong>changer votre mot de
+                    passe</strong>.
+                Pour cela:
+            <ol>
+                <li>Connectez-vous sur Olympe</li>
+                <li>Tapez:
+                    <pre>
 ssh olympelogin1
 passwd
 </pre>
-        </li>
-        <li>Une fois le changement effectué, déconnectez-vous</li>
-        <li>Le mot de passe sera mis à jour dans les 10 minutes.</li>
-    </ol>
-    </p>
-</div>
-{% endif %}
+                </li>
+                <li>Une fois le changement effectué, déconnectez-vous</li>
+                <li>Le mot de passe sera mis à jour dans les 10 minutes.</li>
+            </ol>
+            </p>
+        </div>
+    {% endif %}
 {% endmacro fenetre_pwd %}
 
 {# ################################################# #}
 
 
 {% block myjavascripts %}
-<script  type="text/javascript" src="{{ asset('js/canvas_conso.js') }}" ></script>
-<script  type="text/javascript" src="{{ asset('js/projet.js') }}" ></script>
+    <script type="text/javascript" src="{{ asset('js/canvas_conso.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/projet.js') }}"></script>
 {% endblock myjavascripts %}
 
 
@@ -177,152 +200,176 @@ passwd
 
 {% block body %}
 
-<div id="dialog-compta"></div>
+    <div id="dialog-compta"></div>
 
-<section id="section_demandeur" style="stroke:black">
+    <section id="section_demandeur" style="stroke:black">
 
-<h1>Vos projets</h1>
+        <h1>Vos projets</h1>
 
-{{ gramcmacros.menu(menu) }}
-
-
-{# ######################################################################### #}
-
-{% if projets_resp != null %}
-<section class="section_responsable">
-<h3>En tant que responsable:</h3>
-
-<table class="projet">
-
-    <thead>
-        <tr>
-            <th>État</th>
-            <th>Accès</th>
-            <th>Numéro</th>
-            {% for s in serviceServeurs.getserveurs|sort %}<th>Id {{s.nom}}</th>{% endfor %}
-            <th  style="width: 25em">Titre</th>
-            <th>Fin</th>
-            {% if false %}<th colspan="2">Consommation</th>{% endif %}
-            {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
-        </tr>
-    </thead>
-
-    <tbody>
-    {% for item in  projets_resp %}
-         {{ thismacro.ligne_projet(item) }}
-    {% endfor %}
-    
-    </tbody>
-</table>
-
-{% for item in  projets_resp %}
-     {{ thismacro.fenetre_pwd(item) }}
-{% endfor %}
-
-</section>
-{%  endif %}
-
-<input id="conso_seuil_2" value="{{ conso_seuil_2 }}" type="hidden">
-<input id="conso_seuil_1" value="{{ conso_seuil_1 }}" type="hidden">
-
-{# ######################################################################### #}
-
-{% if projets_collab != null %}
-<section class="section_collaborateur">
-
-<h3>En tant que collaborateur:</h3>
-<table class="projet">
-
-    <thead>
-        <tr>
-            <th>État</th>
-            <th>Accès</th>
-            <th>Numéro</th>
-            {% for s in serviceServeurs.getserveurs|sort %}<th>Id {{s}}</th>{% endfor %}
-            <th style="width: 25em">Titre</th>
-            <th>Fin</th>
-            {% if false %}<th colspan="2">Consommation</th>{% endif %}
-            {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
-        </tr>
-    </thead>
-
-    <tbody>
-    {% for item in  projets_collab %}
-         {{ thismacro.ligne_projet(item) }}
-    {% endfor %}
-    </tbody>
-
-</table>
-{% for item in  projets_collab %}
-     {{ thismacro.fenetre_pwd(item) }}
-{% endfor %}
-</section>
-
-{%  endif %}
-
-{% if projets_term != null %}
-<section class="section_termine" style="stroke:black;">
-
-<h3>Projets anciens ou terminés:</h3>
+        {{ gramcmacros.menu(menu) }}
 
 
-<div class="information attention">
-    <h2>Anciens projets</h2>
-Ces projets sont rappelés ici pour mémoire, mais vous ne <strong>pouvez pas</strong> les renouveler soit parce qu'ils sont terminés
-soit parce que vous ne faites plus partie de leurs collaborateurs.
-<br>
-Vous pouvez toutefois les éditer pour <strong>ajouter des publications pour lesquelles vous avez utilisé les heures attribuées.</strong>
-<br>
-Si vous souhaiter demander des ressources, vous devez créer un nouveau projet
-</div>
+        {# ######################################################################### #}
+
+        {% if projets_resp != null %}
+            <section class="section_responsable">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-semibold mb-4">En tant que responsable:</h5>
+                        <div class="table-responsive">
+                            <table class="table text-nowrap mb-0 align-middle">
+                                <thead class="text-dark fs-4">
+                                <tr>
+                                    <th class="border-bottom-0">
+                                        <h6 class="fw-semibold mb-0">État</h6>
+                                    </th>
+                                    <th class="border-bottom-0">
+                                        <h6 class="fw-semibold mb-0">Numéro</h6>
+                                    </th>
+                                        <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Action</h6>
+                                        </th>
+                                    <th class="border-bottom-0">
+                                        <h6 class="fw-semibold mb-0">Titre</h6>
+                                    </th>
+
+                                    <th class="border-bottom-0">
+                                        <h6 class="fw-semibold mb-0">Fin</h6>
+                                    </th>
+                                    {% if false %}
+                                        <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Consommation</h6>
+                                        </th>
+                                    {% endif %}
+                                        <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Resources</h6>
+                                        </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in  projets_resp %}
+                                    {{ thismacro.ligne_projet(item) }}
+                                {% endfor %}
+                                {% for item in  projets_collab %}
+                                    {{ thismacro.ligne_projet(item,2) }}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {% for item in  projets_resp %}
+                    {{ thismacro.fenetre_pwd(item) }}
+                {% endfor %}
+
+            </section>
+        {% endif %}
+
+        <input id="conso_seuil_2" value="{{ conso_seuil_2 }}" type="hidden">
+        <input id="conso_seuil_1" value="{{ conso_seuil_1 }}" type="hidden">
+
+        {# ######################################################################### #}
+
+        {% if projets_collab != null %}
+            <section class="section_collaborateur">
+
+                <h3>En tant que collaborateur:</h3>
+                <table class="projet">
+
+                    <thead>
+                    <tr>
+                        <th>État</th>
+                        <th>Accès</th>
+                        <th>Numéro</th>
+                        {% for s in serviceServeurs %}
+                            <th>Id {{ s }}</th>{% endfor %}
+                        <th style="width: 25em">Titre</th>
+                        <th>Fin</th>
+                        <th colspan="2">Consommation</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for item in  projets_collab %}
+                        {{ thismacro.ligne_projet(item) }}
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% for item in  projets_collab %}
+                    {{ thismacro.fenetre_pwd(item) }}
+                {% endfor %}
+            </section>
+
+        {% endif %}
+
+        {% if projets_term != null %}
+            <section class="section_termine" style="stroke:black;">
+
+                <h3>Projets anciens ou terminés:</h3>
 
 
-<table class="projet">
-
-    <thead>
-        <tr>
-            <th>État</th>
-            <th>Accès</th>
-            <th>Numéro</th>
-            <th>Titre</th>
-        </tr>
-    </thead>
-
-    <tbody>
-    {% for item in  projets_term %}
-        <tr>
-            <td>{{ gramcmacros.metagraph('termine') }}</td>
-            <td>
-                <a href="{{ path('consulter_projet', { 'id': item.idProjet })}}" title="Ouvrir le projet {{ item.idProjet }}">
-                    {{ icones.details }}
-                </a>
-            </td>
-            <td>{{ item.idProjet }}</td>
-            <td>{{ item.titre }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-
-</table>
-</section>
+                <div class="information attention">
+                    <h2>Anciens projets</h2>
+                    Ces projets sont rappelés ici pour mémoire, mais vous ne <strong>pouvez pas</strong> les renouveler
+                    soit parce qu'ils sont terminés
+                    soit parce que vous ne faites plus partie de leurs collaborateurs.
+                    <br>
+                    Vous pouvez toutefois les éditer pour <strong>ajouter des publications pour lesquelles vous avez
+                        utilisé les heures attribuées.</strong>
+                    <br>
+                    Si vous souhaiter demander des ressources, vous devez créer un nouveau projet
+                </div>
 
 
+                <table class="projet">
 
-{%  endif %}
+                    <thead>
+                    <tr>
+                        <th>État</th>
+                        <th>Accès</th>
+                        <th>Numéro</th>
+                        <th>Titre</th>
+                    </tr>
+                    </thead>
 
-{# ######################################################################### #}
+                    <tbody>
+                    {% for item in  projets_term %}
+                        <tr>
+                            <td>{{ gramcmacros.metagraph('termine') }}</td>
+                            <td>
+                                <a href="{{ path('consulter_projet', { 'id': item.idProjet }) }}"
+                                   title="Ouvrir le projet {{ item.idProjet }}">
+                                    {{ icones.details }}
+                                </a>
+                            </td>
+                            <td>{{ item.idProjet }}</td>
+                            <td>{{ item.titre }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+            </section>
 
 
-{% if projets_resp == null and projets_collab == null and projets_term == null %}
-<div class="information ok">
-Les utilisateurs qui ont le droit suffisant pour demander eux-mêmes des ressources sur {{mesoc}}
-peuvent cliquer sur le lien 'Nouveau projet' pour faire une demande d'attributions de ressources.
-<br>
-Les autres utilisateurs doivent se rapprocher de leur équipe de recherche.
-<br>
-Il n'est possible de demander des ressources sur {{mesoc}} que pendant une session d'attribution.
-</div>
-{% endif %}
 
-</section>
+        {% endif %}
+
+        {# ######################################################################### #}
+
+
+        {% if projets_resp == null and projets_collab == null and projets_term == null %}
+            <div class="information ok">
+                Les utilisateurs qui ont le droit suffisant pour demander eux-mêmes des ressources sur {{ mesoc }}
+                peuvent cliquer sur le lien 'Nouveau projet' pour faire une demande d'attributions de ressources.
+                <br>
+                Les autres utilisateurs doivent se rapprocher de leur équipe de recherche.
+                <br>
+                Il n'est possible de demander des ressources sur {{ mesoc }} que pendant une session d'attribution.
+            </div>
+        {% endif %}
+
+    </section>
 {% endblock body %}
