@@ -7,7 +7,6 @@
 *.tar
 *.tgz
 *.lock
-.git.SUPPR/
 var.*
 data/*
 *#
@@ -17,13 +16,7 @@ web/tmp/*
 *.lock
 /app/config/parameters.yml
 /app/config/parameters.*.yml
-/mesocentres/**/colors.css
-templates.AJETER/
-templates/default/mentions.html.twig
-reprise
-MESONET
-VERSION
-mesocentres/
+
 /build/
 /phpunit.xml
 /var/CACHEDIR.TAG
@@ -49,10 +42,6 @@ tools/phpstan/**
 tools/php-cs-fixer/**
 doc/**/*.png
 
-### jpgraph
-jpgraph
-jpgraph-4.3.4/
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -67,28 +56,6 @@ jpgraph-4.3.4/
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
-
-### selenium ###
-selenium/bin/DoRest.py
-selenium/bin/restDateSet.py
-selenium/bin/restProjetsGet.py
-selenium/bin/restSimulConso.py
-selenium/bin/testSimulConso.py
-selenium/doc/
-selenium/gramc-connect.py
-selenium/lib/RestRequest.py
-selenium/selenium_env.bash
-### selenium ###
-/.idea/.gitignore
-/.idea/gramc-meso-clone.iml
-/.idea/material_theme_project_new.xml
-/.idea/modules.xml
-/.idea/php.xml
-/.idea/vcs.xml
-
-###> phpstan/phpstan ###
-phpstan.neon
-###< phpstan/phpstan ###
 
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
