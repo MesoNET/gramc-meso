@@ -30,6 +30,7 @@ use App\Entity\Projet;
 use App\Entity\Sso;
 use App\Entity\User;
 use App\Entity\Version;
+use App\Form\GererProjetType;
 use App\GramcServices\Etat;
 use App\GramcServices\GramcDate;
 use App\GramcServices\ServiceExperts\ServiceExperts;
@@ -454,10 +455,11 @@ class ProjetController extends AbstractController
      * Montre les projets d'un utilisateur.
      */
     #[IsGranted('ROLE_DEMANDEUR')]
-    #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET'])]
+    #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET', 'POST'])]
     public function accueilAction()
     {
         $sm = $this->sm;
+        $ff = $this->ff;
         $ss = $this->ss;
         $sp = $this->sp;
         $su = $this->su;
@@ -471,9 +473,10 @@ class ProjetController extends AbstractController
         $projetRepository = $em->getRepository(Projet::class);
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
         $user_repo = $em->getRepository(User::class);
+        $form = $ff->createNamed('tri_projet', GererProjetType::class, [], []);
 
-        $list_projets_collab = $projetRepository->getProjetsCollab($id_individu, false, true);
-        $list_projets_resp = $projetRepository->getProjetsCollab($id_individu, true, false);
+        $projets = $projetRepository->getProjetsCollab($id_individu, true, true);
+        $projets_collab = $projetRepository->getProjetsCollab($id_individu, false, true);
 
         $projets_term = $projetRepository->get_projets_etat($id_individu, 'TERMINE');
 
@@ -498,8 +501,23 @@ class ProjetController extends AbstractController
 
         // TODO - Hou le vilain copier-coller !
         // projets responsable
-        $projets_resp = [];
-        foreach ($list_projets_resp as $projet) {
+        dump($form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            dump('bhudsfhnkdfwnhjkcwdfhjnkhjnk');
+            $pattern = '/'.$form->getData()['filtre'].'/i';
+            dump($pattern);
+            $projetFiltre = [];
+            foreach ($projets as $projet) {
+                if (preg_match($pattern, $projet->versionActive()->getTitre())) {
+                    $projetFiltre[] = $projet;
+                }
+            }
+        } else {
+            dump('huisdf hjnikcsdfhjnkshjn');
+            $projetFiltre = $projets;
+        }
+        $projetsTot = [];
+        foreach ($projetFiltre as $projet) {
             $versionActive = $sp->versionActive($projet);
             if (null != $versionActive) {
                 $rallonges = $versionActive->getRallonge();
@@ -507,6 +525,11 @@ class ProjetController extends AbstractController
             } else {
                 $rallonges = null;
                 $cpt_rall = 0;
+            }
+            if (in_array($projet, $projets_collab)) {
+                $collab = true;
+            } else {
+                $collab = false;
             }
 
             $passwd = null;
@@ -530,8 +553,8 @@ class ProjetController extends AbstractController
                 // $loginnames = [];
                 $loginnames = $su->collaborateurVersion2LoginNames();
             }
-
-            $projets_resp[] =
+            dump($projet);
+            $projetsTot[] =
             [
                 'projet' => $projet,
                 'rallonges' => $rallonges,
@@ -541,85 +564,19 @@ class ProjetController extends AbstractController
                 'loginnames' => $loginnames,
                 'passwd' => $passwd,
                 'pwd_expir' => $pwd_expir,
+                'collab' => $collab,
             ];
         }
-
-        // projets collaborateurs
-        $projets_collab = [];
-        foreach ($list_projets_collab as $projet) {
-            $versionActive = $sp->versionActive($projet);
-
-            if (null != $versionActive) {
-                $rallonges = $versionActive->getRallonge();
-                $cpt_rall = count($rallonges->toArray());
-            } else {
-                $rallonges = null;
-                $cpt_rall = 0;
-            }
-
-            /*
-            if ($cv != null) {
-                // TODO - Remonter au niveau du ProjetRepository (fonctions get_projet_etats et getProjetsCollab)
-                if ($cv->getDeleted() == true) continue;
-                $login = $cv->getLoginname()==null ? 'nologin' : $cv->getLoginname();
-                $u     = $user_repo->findOneBy(['loginname' => $login]);
-                if ($u==null) {
-                    $passwd = null;
-                    $pwd_expir = null;
-                } else {
-                    $passwd = $u->getPassword();
-                    $passwd = Functions::simpleDecrypt($passwd);
-                    $pwd_expir = $u->getPassexpir();
-                }
-            } else {
-                $login = 'nologin';
-                $passwd= null;
-                $pwd_expir = null;
-            }
-            */
-            $cv = null;
-            if (null != $versionActive) {
-                $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
-                $loginnames = $su->collaborateurVersion2LoginNames($cv);
-
-            /* GESTION DES MOTS DE PASSE SUPPRIMEE
-            $u     = $user_repo->findOneBy(['loginname' => $login]);
-            if ($u==null) {
-                $passwd    = null;
-                $pwd_expir = null;
-            } else {
-                $passwd    = $u->getPassword();
-                $passwd    = Functions::simpleDecrypt($passwd);
-                $pwd_expir = $u->getPassexpir();
-            } */
-            } else {
-                // $loginnames = [];
-                $loginnames = $su->collaborateurVersion2LoginNames();
-            }
-
-            $projets_collab[] =
-                [
-                'projet' => $projet,
-                // 'conso'     => $sp->getConsoCalculP($projet),
-                'rallonges' => $rallonges,
-                'cpt_rall' => $cpt_rall,
-                'cv' => $cv,
-                'meta_etat' => $sp->getMetaEtat($projet),
-                'loginnames' => $loginnames,
-                'passwd' => $passwd,
-                'pwd_expir' => $pwd_expir,
-                ];
-        }
-
+        dump($projetFiltre);
         $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
 
         return $this->render(
             'projet/demandeur.html.twig',
             [
-                'projets_collab' => $projets_collab,
-                'projets_resp' => $projets_resp,
+                'projets_resp' => $projetsTot,
                 'projets_term' => $projets_term,
                 'menu' => $menu,
+                'form' => $form->createView(),
                 ]
         );
     }
