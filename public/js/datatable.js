@@ -45,6 +45,15 @@ $(document).ready(function() { // table utilisateurs
     });
 });
 
+$(document).ready(function() { // table projet
+    $('#projet').DataTable( {
+        "bPaginate": false,
+        "bFilter":     false,
+        "info":         false,
+        "aoColumnDefs": [{bSortable: false,aTargets: [0,1,2,6]}]
+    });
+});
+
 $(document).ready(function() { // table projets par session
     $('#bilan_session').DataTable( {
         "bPaginate": false,

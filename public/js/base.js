@@ -25,6 +25,71 @@ $(document).ready(function(){
 });
 
 
+$(document).ready(function(){
+    let pourcentage = $('*[pourcentage]')
+    var options = {
+        series: [pourcentage.attr('pourcentage')],
+        chart: {
+            type: 'radialBar',
+            height: 125,
+            width: 125,
+            offsetY: -20,
+            sparkline: {
+                enabled: true
+            }
+        },
+        plotOptions: {
+            radialBar: {
+                startAngle: -90,
+                endAngle: 90,
+                track: {
+                    background: "#e7e7e7",
+                    strokeWidth: '97%',
+                    margin: 5, // margin is in pixels
+                    dropShadow: {
+                        enabled: true,
+                        top: 2,
+                        left: 0,
+                        color: '#999',
+                        opacity: 1,
+                        blur: 2
+                    }
+                },
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: -2,
+                        fontSize: '15px'
+                    }
+                }
+            }
+        },
+        grid: {
+            padding: {
+                top: -10
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                shadeIntensity: 0.4,
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 50, 53, 91]
+            },
+        },
+        labels: ['Progression de'+[pourcentage.attr('pourcentage')]],
+    };
+        console.log('options', options)
+        var chart = new ApexCharts(document.querySelector("#progress-bar"), options);
+        chart.render();
+});
+
+
 $( document ).ready(function() {
     //Récupérer "En voir plus..." 
     let more_menu = $('.more')
