@@ -6964,6 +6964,11 @@
   content: "\eac7";
 }
 
+.ti-key-red:before {
+  content: "\eac7";
+  color: red;
+}
+
 .ti-key-off:before {
   content: "\f14b";
 }
