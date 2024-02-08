@@ -49,6 +49,7 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -192,7 +193,7 @@ class AdminuxController extends AbstractController
      * Positionne le loginname du user demandé dans la version active ou EN_ATTENTE du projet demandé
      */
     // exemple: curl --netrc -X POST -d '{ "loginname": "toto@TURPAN", "idIndividu": "6543", "projet": "P1234" }'https://.../adminux/utilisateurs/setloginname
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_API")'))]
     #[Route(path: '/utilisateurs/setloginname', name: 'set_loginname', methods: ['POST'])]
     public function setloginnameAction(Request $request): Response
     {
@@ -1213,7 +1214,7 @@ class AdminuxController extends AbstractController
             if (-1 === $rvk && true === $r_c['rvk']) {
                 continue;
             }
-            $r_c['idindividu'] = $c->getIndividu()->getIdIndividu();
+            $r_c['idindividu'] = $c->getIndividu()->getId();
             $r_c['empreinte'] = $c->getEmp();
 
             $users = $c->getUser();
@@ -1405,7 +1406,7 @@ class AdminuxController extends AbstractController
         if (null === $cle) {
             $error[] = 'No Cle '.$idCle;
         } else {
-            if (null == $cle->getIndividu() || $cle->getIndividu()->getIdIndividu() != $idIndividu) {
+            if (null == $cle->getIndividu() || $cle->getIndividu()->getId() != $idIndividu) {
                 $error[] = "La clé $idCle n'appartient pas à l'individu $idIndividu";
             }
         }

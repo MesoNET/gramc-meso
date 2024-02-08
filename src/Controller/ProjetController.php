@@ -397,7 +397,7 @@ class ProjetController extends AbstractController
         }
 
         $projetRepository = $this->em->getRepository(Projet::class);
-        $id_individu = $token->getUser()->getIdIndividu();
+        $id_individu = $token->getUser()->getId();
         $renouvelables = $projetRepository->getProjetsCollab($id_individu, true, true, true);
 
         if (null == $renouvelables) {
@@ -466,7 +466,7 @@ class ProjetController extends AbstractController
         $sid = $this->sid;
         $em = $this->em;
         $individu = $token->getUser();
-        $id_individu = $individu->getIdIndividu();
+        $id_individu = $individu->getId();
 
         $projetRepository = $em->getRepository(Projet::class);
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
