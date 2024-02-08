@@ -31,7 +31,7 @@ security:
         gramc_provider:
             entity:
                 class: App\Entity\Individu
-                property: idIndividu
+                property: id
     
     # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
     # InMemoryUser: les mots de passe sont hashés - cf .env.dist
