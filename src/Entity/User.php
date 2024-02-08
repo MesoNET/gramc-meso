@@ -24,6 +24,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use App\State\UserProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -34,7 +39,17 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
 #[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
-#[ApiResource(operations: [])]
+#[ApiResource(operations: [
+    new GetCollection(),
+    new Patch(
+        uriTemplate: '/users/{individu}/{projet}',
+        provider: UserProvider::class
+    ),
+    new Patch(),
+    ],
+    normalizationContext: ['groups' => ['user_lecture']],
+    denormalizationContext: ['groups' => ['user_ecriture']],
+)]
 class User
 {
     /**
@@ -43,14 +58,14 @@ class User
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'user_lecture'])]
     private $id;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'loginname', nullable: true, type: 'string', length: 20)]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
     private $loginname;
 
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
@@ -59,17 +74,19 @@ class User
 
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu', onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
+    #[Groups(['user_lecture', 'user_ecriture'])]
     private Individu $individu;
 
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'user')]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
     private Projet $projet;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'login', type: 'boolean', nullable: false, options: ['comment' => 'login sur le serveur lié'])]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
     private $login = false;
 
     /**
@@ -88,13 +105,14 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'expire', type: 'boolean', nullable: true)]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
     private $expire;
 
     /**
      * @var \DateTime
      */
     #[ORM\Column(name: 'pass_expiration', type: 'datetime', nullable: true)]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'user_lecture'])]
     private $passexpir;
 
     /**
@@ -110,14 +128,14 @@ class User
      */
     #[ORM\JoinColumn(name: 'id_clessh', referencedColumnName: 'id')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Clessh', inversedBy: 'user')]
-    #[Groups('individu_lecture')]
+    #[Groups('individu_lecture','user_lecture')]
     private $clessh;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'deply', type: 'boolean')]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
     private $deply = false;
 
     public function __toString(): string
