@@ -65,7 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ],
     normalizationContext: ['groups' => ['individu_lecture']],
     denormalizationContext: ['groups' => ['individu_ecriture']],
-    // provider: IndividuProvider::class
+    provider: IndividuProvider::class
 )]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
