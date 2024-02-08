@@ -8,16 +8,20 @@ use App\Entity\Serveur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final class UtilisateurProvider implements ProviderInterface
+final class IndividuProvider implements ProviderInterface
 {
     public function __construct(
-        // #[Autowire('api_platform.doctrine.orm.state.collection_provider')]
         private ProviderInterface $itemProvider,
         private Security $security,
         private EntityManagerInterface $entityManager,
     ) {
     }
 
+    /**
+     * Fournit l'individu ayant des users sur le serveur connecté.
+     *
+     * @return array|object|object[]|null
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object
     {
         $individu = $this->itemProvider->provide($operation, $uriVariables, $context);

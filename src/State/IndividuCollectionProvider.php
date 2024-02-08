@@ -10,7 +10,7 @@ use App\Entity\Serveur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final class UtilisateurCollectionProvider implements ProviderInterface
+final class IndividuCollectionProvider implements ProviderInterface
 {
     public function __construct(
         // #[Autowire('api_platform.doctrine.orm.state.collection_provider')]
@@ -20,6 +20,13 @@ final class UtilisateurCollectionProvider implements ProviderInterface
     ) {
     }
 
+    /**
+     * Fournit les individus ayant des users sur le serveur connecté.
+     * @param Operation $operation
+     * @param array $uriVariables
+     * @param array $context
+     * @return array|object|object[]|null
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object
     {
         if ($operation instanceof CollectionOperationInterface) {
