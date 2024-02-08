@@ -10,7 +10,6 @@ use App\Entity\Serveur;
 use App\GramcServices\Etat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class ProjetCollectionProvider implements ProviderInterface
 {
@@ -21,6 +20,11 @@ final class ProjetCollectionProvider implements ProviderInterface
     ) {
     }
 
+    /**
+     * Fournit les projets qui ont des users sur le serveur connecté.
+     *
+     * @return array|object|object[]|null
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object
     {
         if ($operation instanceof CollectionOperationInterface) {
