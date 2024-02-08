@@ -8,6 +8,7 @@ api_platform:
     defaults:
         formats: jsonld
         pagination_enabled: false
+        security: "is_granted('ROLE_API')"
         stateless: false
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
