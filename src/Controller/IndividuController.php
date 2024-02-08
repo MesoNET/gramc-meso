@@ -155,7 +155,7 @@ class IndividuController extends AbstractController
                 $em->flush();
             } catch (\Exception $e) {
                 $request->getSession()->getFlashbag()->add('flash erreur', $e->getMessage());
-                $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getIdIndividu().') ne peut être effacé ');
+                $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getId().') ne peut être effacé ');
             }
 
             $request->getSession()->getFlashbag()->add('flash info', $individu.' supprimé');
@@ -178,12 +178,12 @@ class IndividuController extends AbstractController
                     $em->flush();
                 } catch (\Exception $e) {
                     $request->getSession()->getFlashbag()->add('flash erreur', $e->getMessage());
-                    $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getIdIndividu().') ne peut être effacé ');
+                    $sj->warningMessage('Utilisateur '.$individu.' ('.$individu->getId().') ne peut être effacé ');
                 }
 
                 $request->getSession()->getFlashbag()->add('flash info', $individu.' supprimé');
-                $sj->infoMessage('Utilisateur '.$individu.'('.$individu->getIdIndividu()
-                .') fusionné vers '.$new_individu.' ('.$new_individu->getIdIndividu().')');
+                $sj->infoMessage('Utilisateur '.$individu.'('.$individu->getId()
+                .') fusionné vers '.$new_individu.' ('.$new_individu->getId().')');
 
                 return $this->redirectToRoute('individu_gerer');
             } else {
@@ -380,7 +380,7 @@ class IndividuController extends AbstractController
             if ($exc) {
                 $session->set('new_mail', $individu->getMail());
 
-                return $this->redirectToRoute('remplacer_utilisateur', ['id' => $individu->getIdIndividu()]);
+                return $this->redirectToRoute('remplacer_utilisateur', ['id' => $individu->getId()]);
             } else {
                 return $this->redirectToRoute('individu_gerer');
             }
