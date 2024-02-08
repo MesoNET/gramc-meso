@@ -58,6 +58,7 @@ $.cleanData = ( function( orig ) {
 	};
 } )( $.cleanData );
 
+
 $.widget = function( name, base, prototype ) {
 	var existingConstructor, constructor, basePrototype;
 

@@ -18,6 +18,12 @@ $( document ).ready(function() {
     })
 })
 
+$(document).ready(function(){
+    $('*[data-href]').click(function(){
+        window.location = $(this).data('href');
+    });
+});
+
 
 $( document ).ready(function() {
     //Récupérer "En voir plus..." 

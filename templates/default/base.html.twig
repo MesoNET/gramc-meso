@@ -79,16 +79,23 @@
                         {% if is_granted('ROLE_DEMANDEUR') %}
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('projet_accueil') }}" aria-expanded="false"
-                                   title="Accéder à l'espace valideur">
+                                   title="Accéder à la dashboard des projets">
                                     <i class="ti ti-layout-dashboard"></i>
                                     <span class="hide-menu">Dashboard</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('projet_accueil') }}" aria-expanded="false"
-                                   title="Accéder à l'espace valideur">
+                                   title="Accéder à la liste des projets">
                                     <i class="ti ti-clipboard"></i>
                                     <span class="hide-menu">Liste des projets</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ path('nouveau_projet',{type:4}) }}" aria-expanded="false"
+                                   title="Crée un nouveau projet">
+                                    <i class="ti ti-clipboard-plus"></i>
+                                    <span class="hide-menu">Nouveau Projet</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -115,47 +122,148 @@
                                 <span class="hide-menu">ADMIN</span>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('admin_accueil') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
-                                <i class="ti ti-cards"></i>
-                                <span class="hide-menu">tous</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('individu_gerer') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
+                                   title="Utilisateur">
                                     <i class="ti ti-users"></i>
                                     <span class="hide-menu">Utilisateur</span>
                                 </a>
                             </li>
+                            {% if app.request.get('_route') == 'individu_gerer' or app.request.get('_route') == 'invitations'  %}
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('invitations') }}" aria-expanded="false"
+                                       title="Invitation">
+                                        <i class="ti ti-mail"></i>
+                                        <span class="hide-menu sous-menu-span">Invitation</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('connexions') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
-                                    <i class="ti ti-user-exclamation"></i>
-                                    <span class="hide-menu">Personnes connéctés</span>
+                                <a class="sidebar-link" href="{{ path('projet_dynamique') }}" aria-expanded="false"
+                                   title="Projets">
+                                    <i class="ti ti-calendar"></i>
+                                    <span class="hide-menu">Projets</span>
                                 </a>
                             </li>
+                            {% if app.request.get('_route') == 'projet_dynamique' or app.request.get('_route') == 'rallonge_dynamique' or app.request.get('_route') == 'televersement_generique' %}
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('rallonge_dynamique') }}" aria-expanded="false"
+                                       title="Demandes d'extension">
+                                        <i class="ti ti-calendar"></i>
+                                        <span class="hide-menu sous-menu-span"> Extension</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('televersement_generique') }}" aria-expanded="false"
+                                       title="Téléversements">
+                                        <i class="ti ti-file-upload"></i>
+                                        <span class="hide-menu sous-menu-span">Téléversements</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('journal_list') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
-                                    <i class="ti ti-book"></i>
-                                    <span class="hide-menu">Logs</span>
+                                <a class="sidebar-link" href="{{ path('gerer_formations') }}" aria-expanded="false"
+                                   title="Tables de l'application">
+                                    <i class="ti ti-school"></i>
+                                    <span class="hide-menu">Tables de l'application</span>
                                 </a>
                             </li>
+                            {% if app.request.get('_route') == 'gerer_formations' or app.request.get('_route') == 'gerer_laboratoires' or app.request.get('_route') == 'gerer_thematiques' or app.request.get('_route') == 'gerer_serveurs' or app.request.get('_route') == 'gerer_ressources' %}
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('gerer_laboratoires') }}" aria-expanded="false"
+                                       title="Laboratoires">
+                                        <i class="ti ti-microscope"></i>
+                                        <span class="hide-menu sous-menu-span">Laboratoires</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('gerer_thematiques') }}" aria-expanded="false"
+                                       title="Thématiques">
+                                        <i class="ti ti-atom"></i>
+                                        <span class="hide-menu sous-menu-span">Thématiques</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('gerer_serveurs') }}" aria-expanded="false"
+                                       title="Serveurs">
+                                        <i class="ti ti-server"></i>
+                                        <span class="hide-menu sous-menu-span">Serveurs</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('gerer_ressources') }}" aria-expanded="false"
+                                       title="Ressources">
+                                        <i class="ti ti-server-2"></i>
+                                        <span class="hide-menu sous-menu-span">Ressources</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('statistiques_dyn') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
+                                   title="Bilans et statistiques">
                                     <i class="ti ti-graph"></i>
-                                    <span class="hide-menu">Statisitique dynamique</span>
+                                    <span class="hide-menu">Bilans & stats</span>
                                 </a>
                             </li>
+                            {% if app.request.get('_route') == 'statistiques_dyn' or app.request.get('_route') == 'statistiques_formation'or app.request.get('_route') == 'publication_annee'  %}
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('statistiques_formation') }}" aria-expanded="false"
+                                       title="Demande de formation">
+                                        <i class="ti ti-school"></i>
+                                        <span class="hide-menu sous-menu-span">Formation</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('publication_annee') }}" aria-expanded="false"
+                                       title="Publication">
+                                        <i class="ti ti-books"></i>
+                                        <span class="hide-menu sous-menu-span">Publication</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('gerer_laboratoires') }}" aria-expanded="false"
-                                   title="Accéder à l'espace Administrateur">
-                                    <i class="ti ti-microscope"></i>
-                                    <span class="hide-menu">Laboratoires</span>
+                                <a class="sidebar-link" href="{{ path('journal_list') }}" aria-expanded="false"
+                                   title="Maintenance">
+                                    <i class="ti ti-book"></i>
+                                    <span class="hide-menu">Maintenance</span>
                                 </a>
                             </li>
+                            {% if app.request.get('_route') == 'journal_list' or app.request.get('_route') == 'connexions' or app.request.get('_route') == 'param_avancer' or app.request.get('_route') == 'mail_tester' or app.request.get('_route') == 'phpinfo' or app.request.get('_route') == 'rgpd' %}
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link" href="{{ path('connexions') }}" aria-expanded="false"
+                                       title="Personnes connectées">
+                                        <i class="ti ti-user-exclamation"></i>
+                                        <span class="hide-menu sous-menu-span">Personnes connectées</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link" href="{{ path('param_avancer') }}" aria-expanded="false"
+                                       title="Avancer dans le temps">
+                                        <i class="ti ti-clock "></i>
+                                        <span class="hide-menu sous-menu-span">Avancer dans le temps</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('mail_tester') }}" aria-expanded="false"
+                                       title="Tester le système de mail">
+                                        <i class="ti ti-mail"></i>
+                                        <span class="hide-menu sous-menu-span">Tester le mail</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link " href="{{ path('phpinfo') }}" aria-expanded="false"
+                                       title="infos techniques">
+                                        <i class="ti ti-tool"></i>
+                                        <span class="hide-menu sous-menu-span">infos techniques</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item sous-menu">
+                                    <a class="sidebar-link" href="{{ path('rgpd') }}" aria-expanded="false"
+                                       title="Nettoyage pour conformité au RGPD">
+                                        <i class="ti ti-vacuum-cleaner"></i>
+                                        <span class="hide-menu sous-menu-span">Nettoyage RGPD</span>
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
