@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final class ProjetCollectionProvider implements ProviderInterface
 {
     public function __construct(
-        // #[Autowire('api_platform.doctrine.orm.state.collection_provider')]
         private ProviderInterface $itemProvider,
         private Security $security,
         private EntityManagerInterface $entityManager,
