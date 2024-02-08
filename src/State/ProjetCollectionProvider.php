@@ -25,15 +25,14 @@ final class ProjetCollectionProvider implements ProviderInterface
      *
      * @return array|object|object[]|null
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|object|null
     {
         if ($operation instanceof CollectionOperationInterface) {
             $projets = $this->itemProvider->provide($operation, $uriVariables, $context);
+            $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
 
-            return array_filter($projets, function (Projet $projet) {
+            return array_filter($projets, function (Projet $projet) use ($serveur) {
                 if (Etat::RENOUVELABLE == $projet->getEtatProjet()) {
-                    $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
-
                     return array_intersect($projet->getUser()->toArray(), $serveur->getUser()->toArray());
                 } else {
                     return false;
