@@ -25,11 +25,15 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ServeurType extends AbstractType
 {
@@ -40,13 +44,42 @@ class ServeurType extends AbstractType
             ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :'])
             ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :'])
             ->add('admname', TextType::class,
-                ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :']);
-
-        if (true == $options['modifier']) {
+                ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :'])
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'options' => [
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                    ],
+                    'toggle' => true,
+                ],
+                'first_options' => [
+                    'hash_property_path' => 'password',
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Veuillez entrer un mot de passe',
+                        ]),
+                        new Length([
+                            'min' => 6,
+                            'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
+                            // max length allowed by Symfony for security reasons
+                            'max' => 4096,
+                        ]),
+                    ],
+                    'label' => 'Mot de passe API',
+                    'toggle' => true,
+                ],
+                'second_options' => [
+                    'label' => 'Réécrivez le mot de passe',
+                ],
+                'invalid_message' => 'Les champs doivent correspondre.',
+                'mapped' => false,
+            ]);
+        if ($options['modifier']) {
             $builder
                 ->add('submit', SubmitType::class, ['label' => 'modifier'])
                 ->add('reset', ResetType::class, ['label' => 'reset']);
-        } elseif (true == $options['ajouter']) {
+        } elseif ($options['ajouter']) {
             $builder
                 ->add('submit', SubmitType::class, ['label' => 'ajouter'])
                 ->add('reset', ResetType::class, ['label' => 'reset']);

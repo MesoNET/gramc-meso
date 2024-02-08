@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -34,6 +35,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'id_version', columns: ['id_version'])]
 #[ORM\UniqueConstraint(name: 'id_version2', columns: ['id_version', 'id_formation'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\FormationVersionRepository')]
+#[ApiResource(
+    operations: []
+)]
 class FormationVersion
 {
     /**

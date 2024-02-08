@@ -5,14 +5,17 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-xsl": "*",
+        "api-platform/core": "^3.2",
         "composer/package-versions-deprecated": "1.11.99.1",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/lexer": "2.0",
         "doctrine/orm": "^2.8",
-        "ext-xsl": "*",
         "knplabs/knp-snappy-bundle": "^1.8",
+        "nelmio/cors-bundle": "^2.4",
         "phpdocumentor/reflection-docblock": "^5.2",
+        "phpstan/phpdoc-parser": "^1.25",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "7.0.*",
         "symfony/config": "7.0.*",
@@ -20,7 +23,7 @@
         "symfony/dependency-injection": "7.0.*",
         "symfony/dotenv": "7.0.*",
         "symfony/expression-language": "7.0.*",
-        "symfony/flex": "2.0",
+        "symfony/flex": "^2.4",
         "symfony/form": "7.0.*",
         "symfony/framework-bundle": "7.0.*",
         "symfony/http-client": "7.0.*",
@@ -36,6 +39,7 @@
         "symfony/serializer": "7.0.*",
         "symfony/translation": "7.0.*",
         "symfony/twig-bundle": "7.0.*",
+        "symfony/ux-toggle-password": "^2.14",
         "symfony/validator": "7.0.*",
         "symfony/web-link": "7.0.*",
         "symfony/yaml": "7.0.*",
@@ -43,12 +47,15 @@
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/inky-extra": "^3.8",
         "twig/string-extra": "^3.8",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "webonyx/graphql-php": "^15.9"
     },
     "require-dev": {
         "codeception/module-asserts": "^3.0",
         "codeception/module-doctrine2": "^3.0",
+        "codeception/module-phpbrowser": "^3.0",
         "codeception/module-symfony": "^3.3",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
         "friendsofphp/php-cs-fixer": "*",
         "symfony/browser-kit": "^7.0",
         "symfony/css-selector": "^7.0",
@@ -57,7 +64,8 @@
         "symfony/phpunit-bridge": "^7.0",
         "symfony/stopwatch": "^7.0",
         "symfony/var-dumper": "^7.0",
-        "symfony/web-profiler-bundle": "^7.0"
+        "symfony/web-profiler-bundle": "^7.0",
+        "zenstruck/foundry": "^1.36"
     },
     "config": {
         "preferred-install": {
@@ -102,12 +110,14 @@
             "sh reprise/reload-db ./reprise/gramc_reprise.sql",
             "php bin/console doctrine:migrations:migrate --allow-no-migration",
             "php bin/console doctrine:migrations:diff",
-            "php bin/console doctrine:migrations:migrate --allow-no-migration"
+            "php bin/console doctrine:migrations:migrate --allow-no-migration",
+            "php bin/console doctrine:fixtures:load --no-interaction --append"
         ],
         "db:schema": [
             "sh reprise/reload-db ./reprise/schema.sql.dist",
             "php bin/console doctrine:migrations:diff",
-            "php bin/console doctrine:migrations:migrate --allow-no-migration"
+            "php bin/console doctrine:migrations:migrate --allow-no-migration",
+            "php bin/console doctrine:fixtures:load --no-interaction --append"
         ],
         "test:cs": [
             "vendor/bin/php-cs-fixer fix --dry-run"

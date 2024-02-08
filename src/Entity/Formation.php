@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\FormationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Ecrans Formation, permet de déclarer le nombre de personnes intéressées par les formations à venir
  */
 #[ORM\Entity(repositoryClass: FormationRepository::class)]
+#[ApiResource(
+    operations: []
+)]
 class Formation
 {
     public function __construct()

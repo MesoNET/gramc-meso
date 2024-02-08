@@ -24,7 +24,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Dac.
@@ -33,6 +35,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
+#[ApiResource(
+    operations: []
+)]
 class Dac
 {
     /**
@@ -48,18 +53,21 @@ class Dac
      */
     #[ORM\JoinColumn(name: 'id_ressource', referencedColumnName: 'id_ressource')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Ressource', inversedBy: 'dac')]
+    #[Groups('projet_lecture')]
     private $ressource;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'demande', type: 'integer', nullable: false, options: ['comment' => "demande, l'unité est celle de la ressource associée"])]
+    #[Groups('projet_lecture')]
     private $demande = 0;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'attribution', type: 'integer', nullable: false, options: ['comment' => "attribution, l'unité est celle de la ressource associée"])]
+    #[Groups('projet_lecture')]
     private $attribution = 0;
 
     /**
@@ -73,6 +81,7 @@ class Dac
      * @var int
      */
     #[ORM\Column(name: 'consommation', type: 'integer', nullable: false, options: ['comment' => "consommation, l'unité est celle de la ressource associée"])]
+    #[Groups('projet_lecture')]
     private $consommation = 0;
 
     #[ORM\ManyToOne(inversedBy: 'dac')]

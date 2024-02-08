@@ -24,17 +24,23 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\ServeurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Serveur.
  */
 #[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
-#[ORM\Entity(repositoryClass: 'App\Repository\ServeurRepository')]
-class Serveur
+#[ORM\Entity(repositoryClass: ServeurRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
+class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * Constructor.
@@ -45,44 +51,47 @@ class Serveur
         $this->user = new ArrayCollection();
     }
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
-    private $nom;
+    #[Groups('serveur_lecture')]
+    private string $nom;
+
+    #[ORM\Column(type: 'json')]
+    private ?array $roles = [];
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string $password;
+
+    #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\Ressource', cascade: ['persist'])]
+    #[Groups('serveur_lecture')]
+    private Collection $ressource;
+
+    #[ORM\OneToMany(mappedBy: 'serveur', targetEntity: '\App\Entity\User', cascade: ['persist'])]
+    #[Groups('serveur_lecture')]
+    private Collection $user;
 
     /**
-     * @var Collection
-     */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\Ressource', mappedBy: 'serveur', cascade: ['persist'])]
-    private $ressource;
-
-    /**
-     * @var Collection
-     */
-    #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'serveur', cascade: ['persist'])]
-    private $user;
-
-    /**
-     * @var desc
+     * @var string $desc
      *
      * Attention desc est un nom réservé !
      */
     #[ORM\Column(name: 'descr', type: 'string', length: 200, nullable: true, options: ['default' => ''])]
+    #[Groups('serveur_lecture')]
     private $desc;
 
     /**
-     * @var cguUrl
+     * @var string cguUrl
      */
     #[ORM\Column(name: 'cgu_url', type: 'string', nullable: true, length: 200)]
+    #[Groups('serveur_lecture')]
     private $cguUrl;
 
     /**
-     * @var admname
+     * @var string admname
      */
     #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
+    #[Groups('serveur_lecture')]
     private $admname;
 
     /**
@@ -238,5 +247,61 @@ class Serveur
     public function __toString(): string
     {
         return $this->getNom();
+    }
+
+    /**
+     * The public representation of the user (e.g. a username, an email address, etc.).
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->admname;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_API';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(?array $roles): self
+    {
+        if (null != $roles) {
+            $this->roles = $roles;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

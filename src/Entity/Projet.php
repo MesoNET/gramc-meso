@@ -24,17 +24,35 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use App\GramcServices\Etat;
+use App\State\ProjetCollectionProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Projet.
  */
 #[ORM\Table(name: 'projet')]
-#[ORM\Index(name: 'etat_projet', columns: ['etat_projet'])]
+#[ORM\Index(columns: ['etat_projet'], name: 'etat_projet')]
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
+#[ApiResource(
+    operations: [
+    new Get(
+        uriVariables: ['id' => new Link(fromClass: Projet::class, toProperty: 'id')],
+        uriTemplate: '/projets/{id}',
+        security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
+    ),
+    new GetCollection(
+        provider: ProjetCollectionProvider::class
+    ),
+],
+    normalizationContext: ['groups' => ['projet_lecture']])]
 class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
@@ -68,12 +86,14 @@ class Projet
      * @var int
      */
     #[ORM\Column(name: 'etat_projet', type: 'integer', nullable: false)]
+    #[Groups('projet_lecture')]
     private $etatProjet;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'type_projet', type: 'integer', nullable: false)]
+    #[Groups('projet_lecture')]
     private $typeProjet;
 
     /**
@@ -82,6 +102,7 @@ class Projet
     #[ORM\Column(name: 'id_projet', type: 'string', length: 10)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
+    #[Groups('projet_lecture')]
     private $idProjet;
 
     /**
@@ -89,6 +110,7 @@ class Projet
      */
     #[ORM\JoinColumn(name: 'id_veract', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
     #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionActive')]
+    #[Groups('projet_lecture')]
     private $versionActive;
 
     /**
@@ -96,6 +118,7 @@ class Projet
      */
     #[ORM\JoinColumn(name: 'id_verder', referencedColumnName: 'id_version', onDelete: 'SET NULL', nullable: true)]
     #[ORM\OneToOne(targetEntity: 'App\Entity\Version', inversedBy: 'versionDerniere')]
+    #[Groups('projet_lecture')]
     private $versionDerniere;
 
     /**
@@ -103,6 +126,7 @@ class Projet
      *                Date limite, la version n'ira pas au-delà
      */
     #[ORM\Column(name: 'limit_date', type: 'datetime', nullable: true)]
+    #[Groups('projet_lecture')]
     private $limitDate;
 
     /**
@@ -125,6 +149,7 @@ class Projet
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'projet', cascade: ['persist'])]
+    #[Groups('projet_lecture')]
     private $user;
 
     /**
@@ -137,6 +162,7 @@ class Projet
      * @var int
      */
     #[ORM\Column(name: 'tetat_projet', type: 'integer', nullable: true)]
+    #[Groups('projet_lecture')]
     private $tetatProjet;
 
     public function getId(): ?string
@@ -450,15 +476,6 @@ class Projet
     {
         if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getPrjLLabo();
-        } else {
-            return null;
-        }
-    }
-
-    public function derniereSession()
-    {
-        if (null != $this->derniereVersion()) {
-            return $this->derniereVersion()->getSession();
         } else {
             return null;
         }

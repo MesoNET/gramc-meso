@@ -37,7 +37,7 @@ class IndividuRepository extends \Doctrine\ORM\EntityRepository
     public function getActiveUsers()
     {
         $users = $this->getEntityManager()
-                   ->createQuery('SELECT DISTINCT u FROM App:Individu u, App:Sso s WHERE ( u.admin = true OR u.expert = true OR u.president = true OR u.desactive = true OR s.individu = u.idIndividu )')
+                   ->createQuery('SELECT DISTINCT u FROM App:Individu u, App:Sso s WHERE ( u.admin = true OR u.expert = true OR u.president = true OR u.desactive = true OR s.individu = u.id )')
                    ->getResult();
 
         return $users;

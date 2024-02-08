@@ -24,9 +24,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use App\State\ClesshCollectionProvider;
+use App\State\ClesshProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Sso.
@@ -35,6 +42,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'nom_individu', columns: ['id_individu', 'nom'])]
 #[ORM\UniqueConstraint(name: 'pubuniq', columns: ['emp'])]
 #[ORM\Entity]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Patch(),
+        new GetCollection(
+            provider: ClesshCollectionProvider::class
+        ),
+    ],
+    provider: ClesshProvider::class,
+    normalizationContext: ['groups' => ['ssh_lecture']],
+    denormalizationContext: ['groups' => ['ssh_ecriture']],
+)]
 class Clessh
 {
     public function __construct()
@@ -53,6 +72,7 @@ class Clessh
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
+    #[Groups(['individu_lecture','ssh_lecture'])]
     private $id;
 
     /**
@@ -62,36 +82,42 @@ class Clessh
      */
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'Individu', inversedBy: 'clessh')]
+    #[Groups(['individu_lecture','ssh_lecture'])]
     private $individu;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: 'User', mappedBy: 'clessh')]
+    #[Groups(['individu_lecture','ssh_lecture'])]
     private $user;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
+    #[Groups(['individu_lecture','ssh_lecture'])]
     private $nom;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'pub', type: 'string', length: 5000)]
+    #[Groups('individu_lecture','ssh_lecture')]
     private $pub;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'emp', type: 'string', length: 100, nullable: false)]
+    #[Groups('individu_lecture')]
     private $emp;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'rvk', type: 'boolean')]
+    #[Groups(['individu_lecture','ssh_lecture','ssh_ecriture'])]
     private $rvk = false;
 
     /**
@@ -105,7 +131,7 @@ class Clessh
     /**
      * Set individu.
      */
-    public function setIndividu(Individu $individu = null): self
+    public function setIndividu(?Individu $individu = null): self
     {
         $this->individu = $individu;
 

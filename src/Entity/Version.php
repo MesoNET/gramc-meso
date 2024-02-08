@@ -24,12 +24,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\GramcServices\Etat;
 use App\Interfaces\Demande;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /*
  * TODO - Utiliser l'héritage pour faire hériter Version et Rallonge d'une même classe
@@ -47,18 +49,24 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'prj_id_thematique', columns: ['prj_id_thematique'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\VersionRepository')]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    operations: []
+)
+]
 class Version implements Demande
 {
     /**
      * @var int
      */
     #[ORM\Column(name: 'etat_version', type: 'integer', nullable: true)]
+    #[Groups('projet_lecture')]
     private $etatVersion = Etat::EDITION_DEMANDE;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'type_version', type: 'integer', nullable: true, options: ['comment' => 'type du projet associé (le type du projet peut changer)'])]
+    #[Groups('projet_lecture')]
     private $typeVersion;
 
     /**
@@ -252,6 +260,7 @@ class Version implements Demande
     private $versionActive;
 
     #[ORM\OneToMany(mappedBy: 'version', targetEntity: Dac::class)]
+    #[Groups('projet_lecture')]
     private Collection $dac;
 
     // /////////////////////////////////////////////////////////
@@ -286,9 +295,9 @@ class Version implements Demande
         return $this;
     }
 
-    public function setEtat(?int $etatVersion): self
+    public function setEtat(?int $etat): self
     {
-        return $this->setEtatVersion($etatVersion);
+        return $this->setEtatVersion($etat);
     }
 
     /**
@@ -650,24 +659,6 @@ class Version implements Demande
     }
 
     /**
-     * Set fctStamp.
-     */
-    public function setFctStamp(?\DateTime $fctStamp): self
-    {
-        $this->fctStamp = $fctStamp;
-
-        return $this;
-    }
-
-    /**
-     * Get fctStamp.
-     */
-    public function getFctStamp(): ?\DateTime
-    {
-        return $this->fctStamp;
-    }
-
-    /**
      * Set prjFicheLen.
      */
     public function setPrjFicheLen(?int $prjFicheLen): self
@@ -1011,7 +1002,7 @@ class Version implements Demande
      * @return \App\Entity\Laboratoire
      */
     // TODO - Wrapper vers getPrjLLabo, ne sert à rien !
-    public function getLabo(): Laboratoire
+    public function getLabo(): string
     {
         return $this->getPrjLLabo();
     }
@@ -1053,14 +1044,11 @@ class Version implements Demande
     }
 
     // pour notifications
-    public function getExpertsThematique(): ?Individu
+    public function getExpertsThematique(): ArrayCollection|Collection|null
     {
         $thematique = $this->getPrjThematique();
-        if (null === $thematique) {
-            return null;
-        } else {
-            return $thematique->getExpert();
-        }
+
+        return $thematique?->getExpert();
     }
 
     // //////////////////////////////////////////////////////////////////
