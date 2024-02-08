@@ -64,14 +64,14 @@ class Ressource
      */
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'ressource')]
-    //#[Groups('projet_lecture')]
+    // #[Groups('projet_lecture')]
     private $serveur;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'ressource', cascade: ['persist'])]
-    //#[Groups('projet_lecture')]
+    // #[Groups('projet_lecture')]
     private $dac;
 
     /**

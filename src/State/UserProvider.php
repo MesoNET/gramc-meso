@@ -19,11 +19,6 @@ final class UserProvider implements ProviderInterface
 
     /**
      * Renvoie le user associé à l'individu et au projet passés dans l'uritemplate et au serveur actuellement identifié.
-     *
-     * @param Operation $operation
-     * @param array $uriVariables
-     * @param array $context
-     * @return object|null
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|object
     {
