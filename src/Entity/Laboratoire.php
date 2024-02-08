@@ -25,9 +25,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -36,7 +39,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'laboratoire')]
 #[ORM\Entity(repositoryClass: 'App\Repository\LaboratoireRepository')]
 #[ApiResource(
-    operations: []
+    operations: [
+    new Get(),
+    new GetCollection(),
+        ],
+    normalizationContext: ['groups' => ['labo_lecture']],
 )]
 class Laboratoire
 {
@@ -55,6 +62,7 @@ class Laboratoire
      */
     #[ORM\Column(name: 'numero_labo', type: 'integer', nullable: false)]
     #[Assert\NotBlank]
+    #[Groups('labo_lecture')]
     private $numeroLabo = '99999';
 
     /**
@@ -62,6 +70,7 @@ class Laboratoire
      */
     #[ORM\Column(name: 'acro_labo', type: 'string', length: 100, nullable: true)]
     #[Assert\NotBlank]
+    #[Groups('labo_lecture')]
     private $acroLabo = '';
 
     /**
@@ -69,6 +78,7 @@ class Laboratoire
      */
     #[ORM\Column(name: 'nom_labo', type: 'string', length: 255, nullable: false)]
     #[Assert\NotBlank]
+    #[Groups('labo_lecture')]
     private $nomLabo = '';
 
     /**
@@ -77,6 +87,7 @@ class Laboratoire
     #[ORM\Column(name: 'id_labo', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('labo_lecture')]
     private $idLabo;
 
     /**
@@ -95,12 +106,15 @@ class Laboratoire
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Adresseip', mappedBy: 'labo', cascade: ['remove'])]
+    #[Groups('labo_lecture')]
     private $adresseip;
 
     #[ORM\Column(length: 50)]
+    #[Groups('labo_lecture')]
     private ?string $numeroNationalStructure = '';
 
     #[ORM\Column(nullable: false)]
+    #[Groups('labo_lecture')]
     private bool $actif = true;
 
     #[ORM\Column(length: 50, nullable: true)]

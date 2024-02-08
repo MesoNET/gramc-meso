@@ -26,6 +26,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -51,6 +52,7 @@ class Adresseip
      * @var string
      */
     #[ORM\Column(name: 'adresse', type: 'string', length: 45, nullable: false)]
+    #[Groups('labo_lecture')]
     private $adresse;
 
     /**
