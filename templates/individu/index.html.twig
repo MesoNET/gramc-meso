@@ -22,8 +22,7 @@
         </thead>
         <tbody>
         {% for individu in individus %}
-            <tr>
-                <td><a href="{{ path('individu_show', { 'id': individu.idIndividu }) }}">{{ individu.creationStamp|date('Y-m-d H:i:s') }}</a></td>
+            <tr><td><a href="{{ path('individu_show', { 'id': individu.id }) }}">{{ individu.creationStamp|date('Y-m-d H:i:s') }}</a></td>
                 <td>{{ individu.nom }}</td>
                 <td>{{ individu.prenom }}</td>
                 <td>{{ individu.mail }}</td>
