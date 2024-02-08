@@ -456,7 +456,7 @@ class ProjetController extends AbstractController
      */
     #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET', 'POST'])]
-    public function accueilAction()
+    public function accueilAction(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $sm = $this->sm;
         $ff = $this->ff;
@@ -474,6 +474,7 @@ class ProjetController extends AbstractController
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
         $user_repo = $em->getRepository(User::class);
         $form = $ff->createNamed('tri_projet', GererProjetType::class, [], []);
+        $form->handleRequest($request);
 
         $projets = $projetRepository->getProjetsCollab($id_individu, true, true);
         $projets_collab = $projetRepository->getProjetsCollab($id_individu, false, true);
@@ -501,19 +502,17 @@ class ProjetController extends AbstractController
 
         // TODO - Hou le vilain copier-coller !
         // projets responsable
-        dump($form);
         if ($form->isSubmitted() && $form->isValid()) {
-            dump('bhudsfhnkdfwnhjkcwdfhjnkhjnk');
-            $pattern = '/'.$form->getData()['filtre'].'/i';
-            dump($pattern);
+            $pattern = '/'.$form->getData()['filtre'].'/';
             $projetFiltre = [];
             foreach ($projets as $projet) {
-                if (preg_match($pattern, $projet->versionActive()->getTitre())) {
-                    $projetFiltre[] = $projet;
+                if (null != $projet->getVersionActive()) {
+                    if (preg_match($pattern, $projet->getVersionActive()->getPrjTitre())) {
+                        $projetFiltre[] = $projet;
+                    }
                 }
             }
         } else {
-            dump('huisdf hjnikcsdfhjnkshjn');
             $projetFiltre = $projets;
         }
         $projetsTot = [];
@@ -553,7 +552,6 @@ class ProjetController extends AbstractController
                 // $loginnames = [];
                 $loginnames = $su->collaborateurVersion2LoginNames();
             }
-            dump($projet);
             $projetsTot[] =
             [
                 'projet' => $projet,
@@ -567,7 +565,6 @@ class ProjetController extends AbstractController
                 'collab' => $collab,
             ];
         }
-        dump($projetFiltre);
         $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
 
         return $this->render(
