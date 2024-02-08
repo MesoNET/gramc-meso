@@ -24,13 +24,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use App\GramcServices\Etat;
 use App\Interfaces\Demande;
-use App\State\ProjetCollectionProvider;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -1051,6 +1047,7 @@ class Version implements Demande
     public function getExpertsThematique(): ArrayCollection|Collection|null
     {
         $thematique = $this->getPrjThematique();
+
         return $thematique?->getExpert();
     }
 

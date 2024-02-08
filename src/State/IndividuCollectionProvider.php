@@ -22,9 +22,7 @@ final class IndividuCollectionProvider implements ProviderInterface
 
     /**
      * Fournit les individus ayant des users sur le serveur connecté.
-     * @param Operation $operation
-     * @param array $uriVariables
-     * @param array $context
+     *
      * @return array|object|object[]|null
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object

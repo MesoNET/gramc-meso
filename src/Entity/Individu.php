@@ -27,9 +27,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use App\Repository\IndividuRepository;
 use App\State\IndividuCollectionProvider;
 use App\State\IndividuProvider;
@@ -62,12 +60,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
         new Get(),
         new Patch(
-            //uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
-        )
+            // uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
+        ),
 ],
     normalizationContext: ['groups' => ['individu_lecture']],
     denormalizationContext: ['groups' => ['individu_ecriture']],
-    //provider: IndividuProvider::class
+    // provider: IndividuProvider::class
 )]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {

@@ -62,7 +62,8 @@ class DefaultController extends AbstractController
         $em = $this->em;
         $projet = $em->getRepository(Projet::class)->findOneBy(['idProjet' => 'P1440']);
 
-        $query = $em->createQuery('SELECT partial u.{idIndividu,nom} AS individu, partial s.{eppn} AS sso, count(s) AS score FROM App\Entity\Individu u JOIN u.sso s GROUP BY u');$result = $query->getResult();
+        $query = $em->createQuery('SELECT partial u.{idIndividu,nom} AS individu, partial s.{eppn} AS sso, count(s) AS score FROM App\Entity\Individu u JOIN u.sso s GROUP BY u');
+        $result = $query->getResult();
 
         return new Response(get_class($result[0]['individu']));
 

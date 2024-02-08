@@ -20,7 +20,7 @@ class AvailabilityCest
         // $admin = $I->grabEntityFromRepository(Individu::class, ['mail' => 'admin@exemple.com']);
         // $I->amLoggedInAs($admin);
         $I->amOnPage('connexion_dbg');
-        $I->submitForm('form',[]);
+        $I->submitForm('form', []);
         $I->amOnPage($example['url']);
         $I->seeResponseCodeIsSuccessful();
     }
@@ -84,7 +84,7 @@ class AvailabilityCest
             ['url' => 'version/01M22001/televerser_fiche'],
             // ['url' => 'version/01M22001/televerser_fiche_admin'],
             ['url' => 'version/01M22001/responsable'],
-            //['url' => 'version/01M22001/collaborateurs'],
+            // ['url' => 'version/01M22001/collaborateurs'],
             ['url' => 'version/televersement'],
             // ['url' => 'version/01M22001/modifier'],
         ];

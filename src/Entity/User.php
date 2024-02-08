@@ -26,7 +26,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use App\State\UserProvider;
 use Doctrine\ORM\Mapping as ORM;
@@ -128,7 +127,7 @@ class User
      */
     #[ORM\JoinColumn(name: 'id_clessh', referencedColumnName: 'id')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Clessh', inversedBy: 'user')]
-    #[Groups('individu_lecture','user_lecture')]
+    #[Groups('individu_lecture', 'user_lecture')]
     private $clessh;
 
     /**
