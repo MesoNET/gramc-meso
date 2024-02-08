@@ -63,8 +63,8 @@ class ExpertChoiceLoader implements ChoiceLoaderInterface
 
             // Les présidents
             foreach ($em->getRepository(Individu::class)->findBy(['president' => true]) as $expert) {
-                static::$global_choices['Présidents'][$expert->getIdIndividu()] = $expert;
-                $experts[$expert->getIdIndividu()] = $expert;
+                static::$global_choices['Présidents'][$expert->getId()] = $expert;
+                $experts[$expert->getId()] = $expert;
             }
             // Les thématiques avec leurs experts attitrés
             foreach ($em->getRepository(Thematique::class)->findAll() as $thematique) {
@@ -82,8 +82,8 @@ class ExpertChoiceLoader implements ChoiceLoaderInterface
 
             // Les experts sans thématique
             foreach ($em->getRepository(Individu::class)->findBy(['expert' => true]) as $expert) {
-                if (!array_key_exists($expert->getIdIndividu(), $experts)) {
-                    static::$global_choices['Experts hors thématique'][$expert->getIdIndividu()] = $expert;
+                if (!array_key_exists($expert->getId(), $experts)) {
+                    static::$global_choices['Experts hors thématique'][$expert->getId()] = $expert;
                 }
             }
         }

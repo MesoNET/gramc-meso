@@ -156,7 +156,7 @@ class ProjetRepository extends \Doctrine\ORM\EntityRepository
         }
 
         $dql = 'SELECT p FROM App:Projet p, App:CollaborateurVersion cv, App:Version v, App:Individu i ';
-        $dql .= ' WHERE  ( v = p.versionDerniere AND i.idIndividu = :id_individu ';
+        $dql .= ' WHERE  ( v = p.versionDerniere AND i.id = :id_individu ';
 
         // true/true = On ne s'occupe pas de la colonne cv.responsable
         if (!(true === $responsable && true === $collaborateur)) {
@@ -190,7 +190,7 @@ class ProjetRepository extends \Doctrine\ORM\EntityRepository
     public function get_projets_etat($id_individu, $libelle_etat)
     {
         $dql = 'SELECT p FROM App:Projet p, App:CollaborateurVersion cv, App:Version v, App:Individu i ';
-        $dql .= ' WHERE  ( p = v.projet AND i.idIndividu = :id_individu ';
+        $dql .= ' WHERE  ( p = v.projet AND i.id = :id_individu ';
         $dql .= ' AND cv.version =  v AND cv.collaborateur = i ';
         $dql .= ' AND  p.etatProjet = :etat ';
         $dql .= ' ) ORDER BY p.versionDerniere DESC';

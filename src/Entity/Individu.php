@@ -25,8 +25,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\State\UtilisateurCollectionProvider;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Repository\IndividuRepository;
+use App\State\IndividuCollectionProvider;
+use App\State\IndividuProvider;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -48,13 +54,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
 #[ORM\Index(name: 'id_etab', columns: ['id_etab'])]
 #[ORM\UniqueConstraint(name: 'mail', columns: ['mail'])]
-#[ORM\Entity(repositoryClass: 'App\Repository\IndividuRepository')]
+#[ORM\Entity(repositoryClass: IndividuRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     operations: [new GetCollection(
-        provider: UtilisateurCollectionProvider::class
-    )],
-    normalizationContext: ['groups' => ['individu_lecture']]
+        provider: IndividuCollectionProvider::class
+    ),
+        new Get(),
+        new Patch(
+            //uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
+        )
+],
+    normalizationContext: ['groups' => ['individu_lecture']],
+    denormalizationContext: ['groups' => ['individu_ecriture']],
+    //provider: IndividuProvider::class
 )]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
@@ -111,7 +124,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var string
      */
     #[ORM\Column(name: 'prenom', type: 'string', length: 50, nullable: true)]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture'])]
     private $prenom;
 
     /**
@@ -172,14 +185,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     #[Groups('individu_lecture')]
     private $desactive = false;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_individu', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups('individu_lecture')]
-    private $idIndividu;
+    private int $id;
 
     /**
      * @var Laboratoire
@@ -223,7 +233,8 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
-    #[Groups('individu_lecture')]
+    #[Groups(['individu_lecture', 'individu_ecriture',
+        ])]
     private $user;
 
     /**
@@ -270,16 +281,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
             return false;
         }
 
-        if ($this->idIndividu !== $user->getId()) {
+        if ($this->id !== $user->getId()) {
             return false;
         } else {
             return true;
         }
-    }
-
-    public function getId(): ?int
-    {
-        return $this->idIndividu;
     }
 
     // implementation UserInterface
@@ -561,9 +567,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * Get idIndividu.
      */
-    public function getIdIndividu(): ?int
+    public function getId(): ?int
     {
-        return $this->idIndividu;
+        return $this->id;
     }
 
     /**
