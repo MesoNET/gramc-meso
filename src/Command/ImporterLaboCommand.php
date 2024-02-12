@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Laboratoire;
+use App\GramcServices\ServiceNotifications;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,9 +23,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 )]
 class ImporterLaboCommand extends Command
 {
+    public const SUJET = 'Votre laboratoire actuel est inactif, veuillez le changer';
+
     public function __construct(
         private HttpClientInterface $HTTPClient,
         private EntityManagerInterface $entityManager,
+        private ServiceNotifications $notifications,
     ) {
         parent::__construct();
     }
@@ -52,7 +56,7 @@ class ImporterLaboCommand extends Command
             $results = $response->toArray()['results'];
             for ($i = 0; $i < count($results); ++$i) {
                 $ligne = $results[$i];
-                // ajout des labosCorrespondants actifs
+                // ajout des labos actifs
                 $numeroNationalStructure = $ligne['numero_national_de_structure'];
                 $labosCorrespondants = $this->entityManager->getRepository(Laboratoire::class)->findBy([
                     'numeroNationalStructure' => $numeroNationalStructure,
@@ -68,11 +72,12 @@ class ImporterLaboCommand extends Command
                         $this->entityManager->persist($lab);
                         $output->writeln('Ajout du laboratoire '.$ligne['libelle']);
                     }
-                } // Cherche les labosCorrespondants inactifs
+                } // Cherche les labos inactifs et crée une notification pour leurs utilisateurs
                 else {
                     if ($labosCorrespondants) {
                         foreach ($labosCorrespondants as $lab) {
-                            $lab->setActif(false)->setNumeroDeStructureSuccesseur($ligne('numero_de_structure_successeur'));
+                            $lab->setActif(false)->setNumeroDeStructureSuccesseur($ligne['numero_de_structure_successeur']);
+                            $this->notifications->sendNotificationTemplate(self::SUJET, 'mail/labo_inactif.html.twig', [], $lab->getIndividu()->toArray(), 'profil');
                             $output->writeln($lab->getNomLabo().' est devenu inactif');
                         }
                     }
