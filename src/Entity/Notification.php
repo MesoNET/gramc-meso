@@ -24,6 +24,9 @@ class Notification
     #[ORM\JoinColumn(referencedColumnName: 'id_individu', nullable: false)]
     private ?Individu $individu = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $route = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class Notification
     public function setIndividu(?Individu $individu): static
     {
         $this->individu = $individu;
+
+        return $this;
+    }
+
+    public function getRoute(): ?string
+    {
+        return $this->route;
+    }
+
+    public function setRoute(?string $route): static
+    {
+        $this->route = $route;
 
         return $this;
     }

@@ -1,7 +1,7 @@
 
 {% set taille = app.user.notifications|length  %}
 {% for notification in app.user.notifications|slice(taille-10,taille) %}
-    <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+    <a href="{{ path(notification.route??'accueil') }}" class="d-flex align-items-center gap-2 dropdown-item">
         <p class="mb-0 fs-3">{{ notification.sujet }}</p>
     </a>
 {% endfor %}

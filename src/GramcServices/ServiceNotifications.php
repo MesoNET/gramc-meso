@@ -97,11 +97,7 @@ class ServiceNotifications
      *********/
     public function sendNotificationTemplate(string $twig_sujet, string $twig_contenu, ?array $params, array $users = null, string $route = null): void
     {
-        if (null != $route) {
-            $broserSubject = '<a href="'.$this->router->generate($route, $params).'">'.$twig_sujet.'</a>';
-        } else {
             $broserSubject = $twig_sujet;
-        }
         $notification = (new Notification('New Notification'))
             ->content('Un mail vous a été envoyé sur votre adresse mail')
             ->subject($broserSubject)
@@ -117,6 +113,7 @@ class ServiceNotifications
                 $broserSubject)
                 ->setDateCreation(new \DateTime())
                 ->setIndividu($user)
+                ->setRoute($route)
             );
             $this->em->flush();
             $this->mailer->send($mail);
