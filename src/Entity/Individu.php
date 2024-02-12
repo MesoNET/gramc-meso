@@ -25,6 +25,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use App\Repository\IndividuRepository;
+use App\State\IndividuCollectionProvider;
+use App\State\IndividuProvider;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -33,6 +39,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -45,9 +52,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
 #[ORM\Index(name: 'id_etab', columns: ['id_etab'])]
 #[ORM\UniqueConstraint(name: 'mail', columns: ['mail'])]
-#[ORM\Entity(repositoryClass: 'App\Repository\IndividuRepository')]
+#[ORM\Entity(repositoryClass: IndividuRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+    operations: [new GetCollection(
+        provider: IndividuCollectionProvider::class
+    ),
+        new Get(),
+        new Patch(
+            // uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
+        ),
+],
+    normalizationContext: ['groups' => ['individu_lecture']],
+    denormalizationContext: ['groups' => ['individu_ecriture']],
+    provider: IndividuProvider::class
+)]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
     public const INCONNU = 0;
@@ -89,18 +108,21 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var \DateTime
      */
     #[ORM\Column(name: 'creation_stamp', type: 'datetime', nullable: false)]
+    #[Groups('individu_lecture')]
     private $creationStamp;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 50, nullable: true)]
+    #[Groups('individu_lecture')]
     private $nom;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prenom', type: 'string', length: 50, nullable: true)]
+    #[Groups(['individu_lecture'])]
     private $prenom;
 
     /**
@@ -108,6 +130,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      */
     #[ORM\Column(name: 'mail', type: 'string', length: 200, nullable: false)]
     #[Assert\Email(message: "The email '{{ value }}' is not a valid email.")]
+    #[Groups('individu_lecture')]
     private $mail;
 
     /**
@@ -157,15 +180,14 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var bool
      */
     #[ORM\Column(name: 'desactive', type: 'boolean', nullable: false)]
+    #[Groups('individu_lecture')]
     private $desactive = false;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_individu', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $idIndividu;
+    #[Groups('individu_lecture')]
+    private int $id;
 
     /**
      * @var Laboratoire
@@ -209,6 +231,8 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
+    #[Groups(['individu_lecture', 'individu_ecriture',
+        ])]
     private $user;
 
     /**
@@ -255,16 +279,11 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
             return false;
         }
 
-        if ($this->idIndividu !== $user->getId()) {
+        if ($this->id !== $user->getId()) {
             return false;
         } else {
             return true;
         }
-    }
-
-    public function getId(): ?int
-    {
-        return $this->idIndividu;
     }
 
     // implementation UserInterface
@@ -546,9 +565,9 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * Get idIndividu.
      */
-    public function getIdIndividu(): ?int
+    public function getId(): ?int
     {
-        return $this->idIndividu;
+        return $this->id;
     }
 
     /**

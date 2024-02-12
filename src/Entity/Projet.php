@@ -25,7 +25,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use App\GramcServices\Etat;
+use App\State\ProjetCollectionProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,9 +39,20 @@ use Symfony\Component\Serializer\Attribute\Groups;
  * Projet.
  */
 #[ORM\Table(name: 'projet')]
-#[ORM\Index(name: 'etat_projet', columns: ['etat_projet'])]
+#[ORM\Index(columns: ['etat_projet'], name: 'etat_projet')]
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
-#[ApiResource(normalizationContext: ['groups' => ['projet_lecture']])]
+#[ApiResource(
+    operations: [
+    new Get(
+        uriVariables: ['id' => new Link(fromClass: Projet::class, toProperty: 'id')],
+        uriTemplate: '/projets/{id}',
+        security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
+    ),
+    new GetCollection(
+        provider: ProjetCollectionProvider::class
+    ),
+],
+    normalizationContext: ['groups' => ['projet_lecture']])]
 class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
@@ -128,7 +143,6 @@ class Projet
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Version', mappedBy: 'projet')]
-    #[Groups('projet_lecture')]
     private $version;
 
     /**
@@ -462,15 +476,6 @@ class Projet
     {
         if (null != $this->derniereVersion()) {
             return $this->derniereVersion()->getPrjLLabo();
-        } else {
-            return null;
-        }
-    }
-
-    public function derniereSession()
-    {
-        if (null != $this->derniereVersion()) {
-            return $this->derniereVersion()->getSession();
         } else {
             return null;
         }

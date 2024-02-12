@@ -22,8 +22,7 @@
         </thead>
         <tbody>
         {% for individu in individus %}
-            <tr>
-                <td><a href="{{ path('individu_show', { 'id': individu.idIndividu }) }}">{{ individu.creationStamp|date('Y-m-d H:i:s') }}</a></td>
+            <tr><td><a href="{{ path('individu_show', { 'id': individu.id }) }}">{{ individu.creationStamp|date('Y-m-d H:i:s') }}</a></td>
                 <td>{{ individu.nom }}</td>
                 <td>{{ individu.prenom }}</td>
                 <td>{{ individu.mail }}</td>
@@ -33,14 +32,14 @@
                 <td>{% if individu.president %}Yes{% else %}No{% endif %}</td>
                 <td>{% if individu.statut %}Yes{% else %}No{% endif %}</td>
                 <td>{% if individu.desactive %}Yes{% else %}No{% endif %}</td>
-                <td>{{ individu.idIndividu }}</td>
+                <td>{{ individu.id }}</td>
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('individu_show', { 'id': individu.idIndividu }) }}">show</a>
+                            <a href="{{ path('individu_show', { 'id': individu.id }) }}">show</a>
                         </li>
                         <li>
-                            <a href="{{ path('individu_edit', { 'id': individu.idIndividu }) }}">edit</a>
+                            <a href="{{ path('individu_edit', { 'id': individu.id }) }}">edit</a>
                         </li>
                     </ul>
                 </td>

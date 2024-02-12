@@ -35,7 +35,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
  */
 #[ORM\Table(name: 'dac', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+)]
 class Dac
 {
     /**

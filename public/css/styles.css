@@ -6535,6 +6535,13 @@ textarea.form-control-lg {
     box-shadow: var(--bs-progress-box-shadow)
 }
 
+.small-legend{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 0.8em;
+}
+
 .progress-bar {
     display: -webkit-box;
     display: -ms-flexbox;

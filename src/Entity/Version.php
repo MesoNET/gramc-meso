@@ -49,7 +49,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Index(name: 'prj_id_thematique', columns: ['prj_id_thematique'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\VersionRepository')]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+)
+]
 class Version implements Demande
 {
     /**
@@ -70,14 +73,12 @@ class Version implements Demande
      * @var string
      */
     #[ORM\Column(name: 'prj_l_labo', type: 'string', length: 300, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjLLabo = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_titre', type: 'string', length: 500, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjTitre = '';
 
     /**
@@ -90,21 +91,18 @@ class Version implements Demande
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_machines', type: 'string', length: 60, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciMachines = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_centre', type: 'string', length: 60, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciCentre = '';
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'prj_genci_heures', type: 'string', length: 30, nullable: true)]
-    #[Groups('projet_lecture')]
     private $prjGenciHeures = '';
 
     /**
@@ -297,9 +295,9 @@ class Version implements Demande
         return $this;
     }
 
-    public function setEtat(?int $etatVersion): self
+    public function setEtat(?int $etat): self
     {
-        return $this->setEtatVersion($etatVersion);
+        return $this->setEtatVersion($etat);
     }
 
     /**
@@ -661,24 +659,6 @@ class Version implements Demande
     }
 
     /**
-     * Set fctStamp.
-     */
-    public function setFctStamp(?\DateTime $fctStamp): self
-    {
-        $this->fctStamp = $fctStamp;
-
-        return $this;
-    }
-
-    /**
-     * Get fctStamp.
-     */
-    public function getFctStamp(): ?\DateTime
-    {
-        return $this->fctStamp;
-    }
-
-    /**
      * Set prjFicheLen.
      */
     public function setPrjFicheLen(?int $prjFicheLen): self
@@ -1022,7 +1002,7 @@ class Version implements Demande
      * @return \App\Entity\Laboratoire
      */
     // TODO - Wrapper vers getPrjLLabo, ne sert à rien !
-    public function getLabo(): Laboratoire
+    public function getLabo(): string
     {
         return $this->getPrjLLabo();
     }
@@ -1064,14 +1044,11 @@ class Version implements Demande
     }
 
     // pour notifications
-    public function getExpertsThematique(): ?Individu
+    public function getExpertsThematique(): ArrayCollection|Collection|null
     {
         $thematique = $this->getPrjThematique();
-        if (null === $thematique) {
-            return null;
-        } else {
-            return $thematique->getExpert();
-        }
+
+        return $thematique?->getExpert();
     }
 
     // //////////////////////////////////////////////////////////////////

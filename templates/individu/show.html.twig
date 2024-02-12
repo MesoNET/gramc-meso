@@ -43,7 +43,7 @@
             </tr>
             <tr>
                 <th>Idindividu</th>
-                <td>{{ individu.idIndividu }}</td>
+                <td>{{ individu.id }}</td>
             </tr>
         </tbody>
     </table>
@@ -53,7 +53,7 @@
             <a href="{{ path('individu_index') }}">Back to the list</a>
         </li>
         <li>
-            <a href="{{ path('individu_edit', { 'id': individu.idIndividu }) }}">Edit</a>
+            <a href="{{ path('individu_edit', { 'id': individu.id }) }}">Edit</a>
         </li>
         <li>
             {{ form_start(delete_form) }}

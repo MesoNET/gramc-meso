@@ -158,7 +158,7 @@ class LoginController extends AbstractController
         // TODO - Il doit y avoir plus élégant
         $choices = [];
         foreach ($users as $u) {
-            $choices[$u->getPrenom().' '.$u->getnom()] = $u->getIdIndividu();
+            $choices[$u->getPrenom().' '.$u->getnom()] = $u->getId();
         }
         ksort($choices);
 

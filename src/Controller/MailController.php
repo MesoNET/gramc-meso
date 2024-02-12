@@ -110,9 +110,9 @@ class MailController extends AbstractController
             $responsable = $version->getResponsable();
 
             if (null != $responsable) {
-                $responsables[$responsable->getIdIndividu()]['selform'] = $this->getSelForm($responsable)->createView();
-                $responsables[$responsable->getIdIndividu()]['responsable'] = $responsable;
-                $responsables[$responsable->getIdIndividu()]['projets'][$projet->getIdProjet()] = $projet;
+                $responsables[$responsable->getId()]['selform'] = $this->getSelForm($responsable)->createView();
+                $responsables[$responsable->getId()]['responsable'] = $responsable;
+                $responsables[$responsable->getId()]['projets'][$projet->getIdProjet()] = $projet;
             } else {
                 $sj->errorMessage(__METHOD__.':'.__LINE__.' version '.$version." n'a pas de responsable !");
             }
@@ -292,7 +292,7 @@ class MailController extends AbstractController
                 continue;
             }  // On ne garde que les projets avec quota >= 80%
 
-            $ind = $responsable->getIdIndividu();
+            $ind = $responsable->getId();
             $responsables[$ind]['selform'] = $this->getSelForm($responsable)->createView();
             $responsables[$ind]['responsable'] = $responsable;
             $responsables[$ind]['projets'][$projet->getIdProjet()] = $projet;

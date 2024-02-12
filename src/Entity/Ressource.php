@@ -36,7 +36,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'ressource', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\Index(name: 'nom', columns: ['nom'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RessourceRepository')]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+)]
 class Ressource
 {
     /**
@@ -62,14 +64,14 @@ class Ressource
      */
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Serveur', inversedBy: 'ressource')]
-    //#[Groups('projet_lecture')]
+    // #[Groups('projet_lecture')]
     private $serveur;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\Dac', mappedBy: 'ressource', cascade: ['persist'])]
-    //#[Groups('projet_lecture')]
+    // #[Groups('projet_lecture')]
     private $dac;
 
     /**
