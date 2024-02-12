@@ -30,7 +30,7 @@ final class IndividuCollectionProvider implements ProviderInterface
         if ($operation instanceof CollectionOperationInterface) {
             $individus = $this->itemProvider->provide($operation, $uriVariables, $context);
             $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
-            return array_filter($individus, function (Individu $individu) {
+            return array_filter($individus, function (Individu $individu) use($serveur) {
                 return array_intersect($individu->getUser()->toArray(), $serveur->getUser()->toArray());
             });
         }
