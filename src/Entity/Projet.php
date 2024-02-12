@@ -43,11 +43,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
 #[ApiResource(
     operations: [
-    new Get(
-        uriVariables: ['id' => new Link(fromClass: Projet::class, toProperty: 'id')],
-        uriTemplate: '/projets/{id}',
-        security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
-    ),
     new GetCollection(
         provider: ProjetCollectionProvider::class
     ),
