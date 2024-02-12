@@ -22,11 +22,11 @@ final class IndividuProvider implements ProviderInterface
      *
      * @return array|object|object[]|null
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|array|object
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|object|null
     {
         $individu = $this->itemProvider->provide($operation, $uriVariables, $context);
         $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
-        if (array_intersect($individu->getUser()->toArray(), $serveur->getUser()->toArray())) {
+        if ($individu && array_intersect($individu->getUser()->toArray(), $serveur->getUser()->toArray())) {
             return $individu;
         } else {
             return null;

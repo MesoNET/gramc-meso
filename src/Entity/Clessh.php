@@ -82,14 +82,14 @@ class Clessh
      */
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu')]
     #[ORM\ManyToOne(targetEntity: 'Individu', inversedBy: 'clessh')]
-    #[Groups(['individu_lecture','ssh_lecture'])]
+    #[Groups(['ssh_lecture'])]
     private $individu;
 
     /**
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: 'User', mappedBy: 'clessh')]
-    #[Groups(['individu_lecture','ssh_lecture'])]
+    #[Groups(['ssh_lecture'])]
     private $user;
 
     /**
