@@ -18,7 +18,7 @@ api_platform:
     event_listeners_backward_compatibility_layer: false
     keep_legacy_inflector: false
     eager_loading:
-        max_joins: 100
+        max_joins: 1000
     formats:
         jsonld: [ 'application/ld+json' ]
         jsonapi: [ 'application/vnd.api+json' ]
