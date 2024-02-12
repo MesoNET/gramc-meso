@@ -354,6 +354,28 @@
                             <span class="hide-menu">documentation</span>
                         </a>
                     </li>
+                    {% if mentions_legales != null %}
+                    <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-icon" href="{{ asset(mentions_legales) }}" target="_blank"
+                                 title="Lire les mentions légales">
+                            <span>
+                                <i class="ti ti-lock-access"></i>
+                            </span>
+                            <span class="hide-menu">Mentions légales </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if mesoc_cga != null %}
+                        <li class="sidebar-item">
+                        <a href="{{ asset(mesoc_cga) }}" target="_blank" class="sidebar-link sidebar-icon"
+                                     title="Lire les conditions Générales d'Attribution">
+                                <span>
+                                    <i class="ti ti-file"></i>
+                                </span>
+                                <span class="hide-menu">cga</span>
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-icon" href="{{ path('gerer_clessh') }}" title="Gérer vos clés ssh">
@@ -505,21 +527,18 @@
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <span>gramc-meso {{ infos.VERSION }} - design <a
                                 href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a> - <a href="mailto:{{ mailadmin }}"
+                                target='_blank'>Ugo Mariotto</a>  and <a
+                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                                target='_blank'>adminmart</a> - <a href="mailto:{{ mailadmin }}"
                                                                       class="lien_footer">{{ mailadmin }}</a></span>
                 {% else %}
                     <span>gramc-meso {{ infos.VERSION }} - design <a
                                 href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
+                                target='_blank'>Ugo Mariotto</a>  and <a
+                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                                target='_blank'>adminmart</a> - {{ infos.mail_replace(mailadmin) }}</span>
                 {% endif %}
-                {% if mentions_legales != null %}
-                    &nbsp;<a href="{{ asset(mentions_legales) }}" target="_blank" class="lien_footer"
-                             title="Lire les mentions légales"> Mentions légales </a>
-                {% endif %}
-                {% if mesoc_cga != null %}
-                    &nbsp;<a href="{{ asset(mesoc_cga) }}" target="_blank" class="lien_footer"
-                             title="Lire les conditions Générales d'Attribution">cga</a>
-                {% endif %}
+
             </div>
 
         </footer>
