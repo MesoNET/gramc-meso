@@ -85,25 +85,25 @@
 
 <nav id="menu_formulaire">
   {% set numtab=1 %}
-  <ul id="ul_formulaire" >
-    <li >
-        <a href="#tab{{numtab}}">Présentation</a>{% set numtab = numtab + 1 %}
-    </li>
-    <li >
-        <a href="#tab{{numtab}}">La science</a>{% set numtab = numtab + 1 %}
-    </li>
-    <li>
-        <a href="#tab{{numtab}}">La technique</a>{% set numtab = numtab + 1 %}
-    </li>
-    <li>
-        <a href="#tab{{numtab}}">Formation</a>{% set numtab = numtab+1 %}
-    </li>
-    {% for ress_form in ressource_form.children.ressource.children %}
-        <li>
-            <a href="#tab{{numtab}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>{% set numtab = numtab+1 %}
+    <ul id="ul_formulaire" class="onglet_nav_ul" >
+        <li class="onglet_nav_li" >
+            <a href="#tab{{numtab}}">Présentation</a>{% set numtab = numtab + 1 %}
         </li>
-    {% endfor %}
-  </ul>
+        <li class="onglet_nav_li" >
+            <a href="#tab{{numtab}}">La science</a>{% set numtab = numtab + 1 %}
+        </li>
+        <li class="onglet_nav_li">
+            <a href="#tab{{numtab}}">La technique</a>{% set numtab = numtab + 1 %}
+        </li>
+        <li class="onglet_nav_li">
+            <a href="#tab{{numtab}}">Formation</a>{% set numtab = numtab+1 %}
+        </li>
+        {% for ress_form in ressource_form.children.ressource.children %}
+            <li class="onglet_nav_li">
+                <a href="#tab{{numtab}}">{{serviceRessources.getnomcomplet(ress_form.vars.data.ressource)}}</a>{% set numtab = numtab+1 %}
+            </li>
+        {% endfor %}
+    </ul>
 </nav>
 
 {% set numtab=1 %}
