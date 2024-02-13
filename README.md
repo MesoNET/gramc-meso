@@ -6,7 +6,7 @@
 Installations de paquets
 -----
 
-- fonctionne en **php 8.2 MINIMUM**, validé avec mariadb 10.3
+- fonctionne en **php 8.2 MINIMUM**, validé avec mariadb 10.10.2
 
 - Installer apache/php 8.2:
 ```
