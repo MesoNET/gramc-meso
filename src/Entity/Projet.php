@@ -24,6 +24,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -44,6 +45,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     operations: [
         new Get(
+            uriTemplate: 'projets/{id}',
+            uriVariables: [
+                'id' => 'idProjet',
+            ],
             provider: ProjetProvider::class,
         ),
         new GetCollection(
@@ -102,6 +107,7 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[Groups(['projet_lecture'])]
+    #[ApiProperty(identifier: false)]
     private $idProjet;
 
     /**
@@ -164,7 +170,7 @@ class Projet
     #[Groups('projet_lecture')]
     private $tetatProjet;
 
-    public function getId(): ?string
+    public function getId(): string
     {
         return $this->getIdProjet();
     }
@@ -216,6 +222,13 @@ class Projet
     public function setIdProjet(string $idProjet): self
     {
         $this->idProjet = $idProjet;
+
+        return $this;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->idProjet = $id;
 
         return $this;
     }
