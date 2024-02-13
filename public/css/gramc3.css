@@ -623,6 +623,59 @@ nav{
     width: 90%;
     margin: auto;
 }
+
+.onglet_nav_ul{
+    text-align: initial;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.onglet_nav_li{
+    padding: 10px 20px;
+    margin: 0 25px 25px 0;
+    width: 10rem;
+}
+
+.onglet_nav_li:hover{
+    background: var(--first-color-hover);
+    color: white;
+}
+
+.onglet_nav_li:hover a{
+    color: white;
+    stroke: white;
+}
+
+.onglet_nav_li:hover a .fill{
+    fill: white;
+}
+
+/*nav li{
+    padding: 10px 20px;
+    margin: 0 25px 25px 0;
+    width: 10rem;
+}
+*/
+/*nav li:hover{
+    background: var(--first-color-hover);
+    color: white;
+}
+
+nav li:hover a{
+    color: white;
+    stroke: white;
+}
+
+nav li:hover a .fill{
+    fill: white;
+}
+*/
+
 /*
 nav ul{
     text-align: initial;

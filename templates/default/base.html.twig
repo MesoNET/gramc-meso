@@ -60,7 +60,7 @@
     <aside class="left-sidebar">
         <!-- Sidebar scroll-->
         <div class="side">
-            <div class="brand-logo d-flex align-items-center justify-content-between">
+            <div class="brand-logo d-flex align-items-center justify-content-center">
                 <a href="{{ path('accueil') }}" class="text-nowrap logo-img" title="Accueil">
                     <img src="{{ asset('icones/banniere.jpg') }}" width="180" alt="logo"/>
                 </a>
@@ -110,7 +110,7 @@
                                 <a class="sidebar-link" href="{{ path('expertise_liste_dyn') }}" aria-expanded="false"
                                    title="Accéder à l'espace valideur">
                                 <i class="ti ti-clipboard-check"></i>
-                                <span class="hide-menu">projet à valider</span>
+                                <span class="hide-menu">Projet à valider</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -253,7 +253,7 @@
                                     <a class="sidebar-link " href="{{ path('phpinfo') }}" aria-expanded="false"
                                        title="infos techniques">
                                         <i class="ti ti-tool"></i>
-                                        <span class="hide-menu sous-menu-span">infos techniques</span>
+                                        <span class="hide-menu sous-menu-span">Infos techniques</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item sous-menu">
@@ -276,7 +276,7 @@
                                 <a class="sidebar-link" href="{{ path('president_accueil') }}"
                                    title="Accéder à l'espace Président" aria-expanded="false">
                                 <i class="ti ti-crown"></i>
-                                <span class="hide-menu">président</span>
+                                <span class="hide-menu">Président</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -343,7 +343,7 @@
                                 <span>
                                     <i class="ti ti-ticket"></i>
                                 </span>
-                            <span class="hide-menu">ticket</span>
+                            <span class="hide-menu">Ticket</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -351,9 +351,31 @@
                                 <span>
                                     <i class="ti ti-book"></i>
                                 </span>
-                            <span class="hide-menu">documentation</span>
+                            <span class="hide-menu">Documentation</span>
                         </a>
                     </li>
+                    {% if mentions_legales != null %}
+                    <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-icon" href="{{ asset(mentions_legales) }}" target="_blank"
+                                 title="Lire les mentions légales">
+                            <span>
+                                <i class="ti ti-lock-access"></i>
+                            </span>
+                            <span class="hide-menu">Mentions légales </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if mesoc_cga != null %}
+                        <li class="sidebar-item">
+                        <a href="{{ asset(mesoc_cga) }}" target="_blank" class="sidebar-link sidebar-icon"
+                                     title="Lire les conditions Générales d'Attribution">
+                                <span>
+                                    <i class="ti ti-file"></i>
+                                </span>
+                                <span class="hide-menu">CGA</span>
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-icon" href="{{ path('gerer_clessh') }}" title="Gérer vos clés ssh">
@@ -405,7 +427,7 @@
                                     <a href="{{ path('notifications') }}"
                                        class="d-flex align-items-center justify-content-center gap-2 dropdown-item"
                                        title="Voire plus">
-                                        <p class="mb-0 fs-3">Voire plus</p>
+                                        <p class="mb-0 fs-3">Voir plus</p>
                                     </a>
                                 </div>
                             </div>
@@ -505,21 +527,18 @@
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <span>gramc-meso {{ infos.VERSION }} - design <a
                                 href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a> - <a href="mailto:{{ mailadmin }}"
+                                target='_blank'>Ugo Mariotto</a>  and <a
+                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                                target='_blank'>adminmart</a> - <a href="mailto:{{ mailadmin }}"
                                                                       class="lien_footer">{{ mailadmin }}</a></span>
                 {% else %}
                     <span>gramc-meso {{ infos.VERSION }} - design <a
                                 href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a> - {{ infos.mail_replace(mailadmin) }}</span>
+                                target='_blank'>Ugo Mariotto</a>  and <a
+                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                                target='_blank'>adminmart</a> - {{ infos.mail_replace(mailadmin) }}</span>
                 {% endif %}
-                {% if mentions_legales != null %}
-                    &nbsp;<a href="{{ asset(mentions_legales) }}" target="_blank" class="lien_footer"
-                             title="Lire les mentions légales"> Mentions légales </a>
-                {% endif %}
-                {% if mesoc_cga != null %}
-                    &nbsp;<a href="{{ asset(mesoc_cga) }}" target="_blank" class="lien_footer"
-                             title="Lire les conditions Générales d'Attribution">cga</a>
-                {% endif %}
+
             </div>
 
         </footer>
