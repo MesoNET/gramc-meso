@@ -27,11 +27,10 @@ if (2 != $argc) {
 }
 
 $file_name = $argv[1];
-
-echo "Efface la BD\n";
-efface_bd();
-
+//echo "Efface la BD\n";
+//efface_bd();
 echo 'recrée la BD et remplit à partir de '.$file_name."\n";
+creer_database();
 restore_database($file_name);
 
 // Env dev = On ne modifie plus les adresses mail car symfony enverra tout à l'utilisateur
@@ -357,3 +356,27 @@ function efface_bd()
     }
     */
 }
+
+function creer_database($sql = '')
+{
+    if ('' != $sql) {
+        $cmd = "echo $sql | ";
+    } else {
+        $cmd = '';
+    }
+    $cmd .= 'mysql -N -s --user ';
+    $cmd .= DATABASE_USER;
+    $cmd .= ' --password=';
+    $cmd .= '"'.DATABASE_PASSWORD.'"';
+    $cmd .= ' ';
+    $cmd .= ' --host=';
+    $cmd .= '"'.DATABASE_HOST.'"';
+    $cmd .= ' ';
+    $cmd .= ' --port=';
+    $cmd .= '"'.DATABASE_PORT.'"';
+    $cmd .= ' --execute "create database ';
+    $cmd.= DATABASE_NAME;
+    $cmd .= '"';
+    system($cmd);
+}
+
