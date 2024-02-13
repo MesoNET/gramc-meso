@@ -84,7 +84,6 @@ $(document).ready(function(){
         },
         labels: ['Progression de'+[pourcentage.attr('pourcentage')]],
     };
-        console.log('options', options)
         var chart = new ApexCharts(document.querySelector("#progress-bar"), options);
         chart.render();
 });
