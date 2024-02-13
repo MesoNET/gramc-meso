@@ -24,12 +24,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\GramcServices\Etat;
 use App\State\ProjetCollectionProvider;
+use App\State\ProjetProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,16 +44,19 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: 'App\Repository\ProjetRepository')]
 #[ApiResource(
     operations: [
-    new Get(
-        uriVariables: ['id' => new Link(fromClass: Projet::class, toProperty: 'id')],
-        uriTemplate: '/projets/{id}',
-        security: "is_granted('ROLE_API') and object.getVersionActive().responsable.user.serveur == user",
-    ),
-    new GetCollection(
-        provider: ProjetCollectionProvider::class
-    ),
+        new Get(
+            uriTemplate: 'projets/{id}',
+            uriVariables: [
+                'id' => 'idProjet',
+            ],
+            provider: ProjetProvider::class,
+        ),
+        new GetCollection(
+            provider: ProjetCollectionProvider::class
+        ),
 ],
-    normalizationContext: ['groups' => ['projet_lecture']])]
+    normalizationContext: ['groups' => ['projet_lecture']],
+)]
 class Projet
 {
     public const PROJET_SESS = 1;   // Projet créé lors d'une session d'attribution
@@ -102,7 +106,8 @@ class Projet
     #[ORM\Column(name: 'id_projet', type: 'string', length: 10)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
-    #[Groups('projet_lecture')]
+    #[Groups(['projet_lecture'])]
+    #[ApiProperty(identifier: false)]
     private $idProjet;
 
     /**
@@ -165,7 +170,7 @@ class Projet
     #[Groups('projet_lecture')]
     private $tetatProjet;
 
-    public function getId(): ?string
+    public function getId(): string
     {
         return $this->getIdProjet();
     }
@@ -221,6 +226,13 @@ class Projet
         return $this;
     }
 
+    public function setId(string $id): self
+    {
+        $this->idProjet = $id;
+
+        return $this;
+    }
+
     /**
      * Get idProjet.
      */
@@ -232,7 +244,7 @@ class Projet
     /**
      * Set versionActive.
      */
-    public function setVersionActive(Version $version = null): self
+    public function setVersionActive(?Version $version = null): self
     {
         $this->versionActive = $version;
 
@@ -250,7 +262,7 @@ class Projet
     /**
      * Set versionDerniere.
      */
-    public function setVersionDerniere(Version $version = null): self
+    public function setVersionDerniere(?Version $version = null): self
     {
         $this->versionDerniere = $version;
 

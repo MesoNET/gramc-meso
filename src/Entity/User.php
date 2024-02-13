@@ -78,7 +78,7 @@ class User
 
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Projet', inversedBy: 'user')]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
+    #[Groups(['individu_lecture', 'user_lecture', 'user_ecriture'])]
     private Projet $projet;
 
     /**

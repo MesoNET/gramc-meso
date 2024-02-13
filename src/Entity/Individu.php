@@ -104,6 +104,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
         $this->notifications = new ArrayCollection();
     }
 
+    #[ORM\Column(name: 'id_individu', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('individu_lecture')]
+    private int $id;
+
     /**
      * @var \DateTime
      */
@@ -183,12 +189,6 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     #[Groups('individu_lecture')]
     private $desactive = false;
 
-    #[ORM\Column(name: 'id_individu', type: 'integer')]
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups('individu_lecture')]
-    private int $id;
-
     /**
      * @var Laboratoire
      */
@@ -231,8 +231,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
-    #[Groups(['individu_lecture', 'individu_ecriture',
-        ])]
+    #[Groups(['individu_lecture', 'individu_ecriture',])]
     private $user;
 
     /**
