@@ -24,7 +24,9 @@
 
 namespace App\Form;
 
+use App\Entity\Serveur;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -43,8 +45,9 @@ class ServeurType extends AbstractType
             ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:', 'disabled' => $options['modifier']])
             ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :'])
             ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :'])
-            ->add('admname', TextType::class,
-                ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :'])
+            ->add('admname', TextType::class, ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :'])
+            ->add('formatSSH', ChoiceType::class, ['choices' => Serveur::SSH, 'choice_translation_domain' => 'serveur',
+                'multiple' => true, 'expanded' => true, 'required' => true, 'label' => 'format de clé ssh'])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'options' => [
