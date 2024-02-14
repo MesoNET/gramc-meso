@@ -34,7 +34,9 @@
             <td>{% if s.cguurl == "" %}{{icones.refuse}}{% else %}{{icones.valide}} <a href="{{ s.cguurl }}" target="_blank">{{ gramcmacros.tronquer_chaine_2(s.cguurl) }}</a>{% endif %}</td>
             <td>{{ s.admname }}</td>
             {% if s.formatSSh != null %}
-                <td>{{ s.formatSSH }}</td>
+                {% for i in s.formatSSH %}
+                    <td>{{ i }}</td>
+                {% endfor %}
             {% endif %}
         </tr>
     {% endfor %}

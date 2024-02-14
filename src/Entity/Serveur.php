@@ -101,7 +101,7 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('serveur_lecture')]
     private $admname;
 
-    #[ORM\Column(type: Types::ARRAY)]
+    #[ORM\Column]
     private array $formatSSH = [];
 
     /**

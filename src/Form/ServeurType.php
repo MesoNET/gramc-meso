@@ -46,7 +46,7 @@ class ServeurType extends AbstractType
             ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :'])
             ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :'])
             ->add('admname', TextType::class, ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :'])
-            ->add('Format', ChoiceType::class, ['choices' => Serveur::SSH, 'choice_translation_domain' => 'serveur',
+            ->add('formatSSH', ChoiceType::class, ['choices' => Serveur::SSH, 'choice_translation_domain' => 'serveur',
                 'multiple' => true, 'expanded' => true, 'required' => true, 'label' => 'format de clé ssh'])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
