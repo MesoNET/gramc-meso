@@ -28,6 +28,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ServeurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -42,6 +43,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
 class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const SSH = [
+        'ED25519 ' => 'ED25519',
+        'RSA' => 'RSA',
+        'ECDSA' => 'ECDSA',
+    ];
+
     /**
      * Constructor.
      */
@@ -93,6 +100,9 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'admname', type: 'string', length: 20, nullable: true, options: ['comment' => "username symfony pour l'api"])]
     #[Groups('serveur_lecture')]
     private $admname;
+
+    #[ORM\Column(type: Types::ARRAY)]
+    private array $formatSSH = [];
 
     /**
      * Get nom.
@@ -303,5 +313,17 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getFormatSSH(): array
+    {
+        return $this->formatSSH;
+    }
+
+    public function setFormatSSH(array $formatSSH): static
+    {
+        $this->formatSSH = $formatSSH;
+
+        return $this;
     }
 }
