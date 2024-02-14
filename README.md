@@ -147,7 +147,7 @@ Editez ce fichier et éventuellement commentez ou décommentez quelques lignes s
 cp .env.dist .env
 ~~~~
 
-Editer le fichier et inscrivez les paramètres demandés (identifiants de connexion à la base de données notamment). N'oubliez pas de remplacer `serverVersion=mariadb-10.3.29` par la version correcte qui se trouve sur votre serveur
+Editer le fichier et inscrivez les paramètres demandés (identifiants de connexion à la base de données notamment). N'oubliez pas de remplacer `serverVersion=mariadb-10.3.29` par la version correcte qui se trouve sur votre serveur (fonctionnel jusqu'à 10.3)
 
 **ATTENTION** - **tout** doit être renseigné dans ce fichier
 
