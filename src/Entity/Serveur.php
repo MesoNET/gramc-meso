@@ -43,7 +43,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const SSH = [
-        'ED25519 ' => 'ED25519',
+        'DSA' => 'DSA',
+        'ECDSA-SK' => 'ECDSA-SK',
+        'ED25519-SK' => 'ED25519-SK',
         'RSA' => 'RSA',
         'ECDSA' => 'ECDSA',
     ];
