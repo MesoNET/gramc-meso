@@ -49,7 +49,7 @@ class ServiceUsers
      *      $s['TURPAN']['userid] -> le id du user
      *      $s['TURPAN']['deploy'] -> le flag deply (clé déployée ou pas)
      *************************************/
-    public function collaborateurVersion2LoginNames(CollaborateurVersion $cv = null, bool $long = false): array
+    public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv = null, bool $long = false): array
     {
         $em = $this->em;
         $sr = $this->sr;

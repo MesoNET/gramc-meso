@@ -163,7 +163,7 @@ class RapportActivite
      *
      * @return RapportActivite
      */
-    public function setProjet(Projet $projet = null)
+    public function setProjet(?Projet $projet = null)
     {
         $this->projet = $projet;
 

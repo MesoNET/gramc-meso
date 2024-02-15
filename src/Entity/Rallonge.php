@@ -235,7 +235,7 @@ class Rallonge implements Demande
     /**
      * Set version.
      */
-    public function setVersion(Version $version = null): self
+    public function setVersion(?Version $version = null): self
     {
         $this->version = $version;
 
@@ -347,7 +347,7 @@ class Rallonge implements Demande
     /**
      * Set expert.
      */
-    public function setExpert(Individu $expert = null): self
+    public function setExpert(?Individu $expert = null): self
     {
         $this->expert = $expert;
 

@@ -584,7 +584,7 @@ class ProjetController extends AbstractController
     #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{id}/consulter', name: 'consulter_projet', methods: ['GET', 'POST'])]
     #[Route(path: '/{id}/consulter/{version}', name: 'consulter_version', methods: ['GET', 'POST'])]
-    public function consulterAction(Request $request, Projet $projet, Version $version = null)
+    public function consulterAction(Request $request, Projet $projet, ?Version $version = null)
     {
         $em = $this->em;
         $sp = $this->sp;
