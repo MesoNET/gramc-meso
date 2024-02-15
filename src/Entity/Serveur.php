@@ -40,7 +40,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'serveur', options: ['collation' => 'utf8mb4_general_ci'])]
 #[ORM\UniqueConstraint(name: 'admname', columns: ['admname'])]
 #[ORM\Entity(repositoryClass: ServeurRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['serveur_lecture']])]
+#[ApiResource()]
 class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const SSH = [
