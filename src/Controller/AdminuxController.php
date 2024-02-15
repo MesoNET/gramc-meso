@@ -1486,7 +1486,7 @@ class AdminuxController extends AbstractController
 
     // Renvoie un tableau si on trouve un Dac/dar avec un todof à true
     // On ne regarde que les ressources accessibles par le user connecté
-    private function __getTodo(\Doctrine\Common\Collections\Collection $dacdars, Version $v, Rallonge $r = null): array
+    private function __getTodo(\Doctrine\Common\Collections\Collection $dacdars, Version $v, ?Rallonge $r = null): array
     {
         $sroc = $this->sroc;
         $data = [];

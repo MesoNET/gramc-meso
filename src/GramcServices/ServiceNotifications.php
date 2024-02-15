@@ -95,9 +95,9 @@ class ServiceNotifications
      * param $users                     Liste d'utilisateurs à qui envoyer des emails (cf mailUsers)
      *
      *********/
-    public function sendNotificationTemplate(string $twig_sujet, string $twig_contenu, ?array $params, array $users = null, string $route = null): void
+    public function sendNotificationTemplate(string $twig_sujet, string $twig_contenu, ?array $params, ?array $users = null, ?string $route = null): void
     {
-            $broserSubject = $twig_sujet;
+        $broserSubject = $twig_sujet;
         $notification = (new Notification('New Notification'))
             ->content('Un mail vous a été envoyé sur votre adresse mail')
             ->subject($broserSubject)
@@ -181,7 +181,7 @@ class ServiceNotifications
     }
 
     // Bas niveau: Envoi du message
-    private function sendRawMessage($subject, $body, array $users = null): void
+    private function sendRawMessage($subject, $body, ?array $users = null): void
     {
         $message = new Email();
         $message->subject($subject);

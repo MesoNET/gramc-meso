@@ -72,7 +72,7 @@ class Clessh
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[Groups(['individu_lecture','ssh_lecture'])]
+    #[Groups(['individu_lecture', 'ssh_lecture'])]
     private $id;
 
     /**
@@ -96,14 +96,14 @@ class Clessh
      * @var string
      */
     #[ORM\Column(name: 'nom', type: 'string', length: 20)]
-    #[Groups(['individu_lecture','ssh_lecture'])]
+    #[Groups(['individu_lecture', 'ssh_lecture'])]
     private $nom;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'pub', type: 'string', length: 5000)]
-    #[Groups('individu_lecture','ssh_lecture')]
+    #[Groups('individu_lecture', 'ssh_lecture')]
     private $pub;
 
     /**
@@ -117,7 +117,7 @@ class Clessh
      * @var bool
      */
     #[ORM\Column(name: 'rvk', type: 'boolean')]
-    #[Groups(['individu_lecture','ssh_lecture','ssh_ecriture'])]
+    #[Groups(['individu_lecture', 'ssh_lecture', 'ssh_ecriture'])]
     private $rvk = false;
 
     /**

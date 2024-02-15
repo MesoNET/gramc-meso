@@ -50,7 +50,7 @@ class IndividuForm
     protected $etablissement;
     protected $id;
 
-    public function __construct(private array $srv_noms = [], Individu $individu = null)
+    public function __construct(private array $srv_noms = [], ?Individu $individu = null)
     {
         foreach ($srv_noms as $n) {
             $this->logins[$n] = false;

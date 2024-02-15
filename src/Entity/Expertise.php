@@ -201,7 +201,7 @@ class Expertise
     /**
      * Set version.
      */
-    public function setVersion(Version $idVersion = null): self
+    public function setVersion(?Version $idVersion = null): self
     {
         $this->version = $idVersion;
 
@@ -219,7 +219,7 @@ class Expertise
     /**
      * Set rallonge.
      */
-    public function setRallonge(Rallonge $idRallonge = null): self
+    public function setRallonge(?Rallonge $idRallonge = null): self
     {
         $this->rallonge = $idRallonge;
 
@@ -237,7 +237,7 @@ class Expertise
     /**
      * Set expert.
      */
-    public function setExpert(Individu $expert = null): self
+    public function setExpert(?Individu $expert = null): self
     {
         $this->expert = $expert;
 

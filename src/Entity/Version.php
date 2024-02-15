@@ -731,7 +731,7 @@ class Version implements Demande
     /**
      * Set prjThematique.
      */
-    public function setPrjThematique(Thematique $prjThematique = null): self
+    public function setPrjThematique(?Thematique $prjThematique = null): self
     {
         $this->prjThematique = $prjThematique;
 
@@ -769,7 +769,7 @@ class Version implements Demande
     /**
      * Set projet.
      */
-    public function setProjet(Projet $projet = null): self
+    public function setProjet(?Projet $projet = null): self
     {
         $this->projet = $projet;
 
@@ -975,7 +975,7 @@ class Version implements Demande
      * $moi                 === Individu connecté, qui est $moi (utile seulement si $moi_aussi est false)
      *
      ************************************************************/
-    public function getCollaborateurs(bool $moi_aussi = true, bool $seulement_eligibles = false, Individu $moi = null): array
+    public function getCollaborateurs(bool $moi_aussi = true, bool $seulement_eligibles = false, ?Individu $moi = null): array
     {
         $collaborateurs = [];
         foreach ($this->getCollaborateurVersion() as $item) {

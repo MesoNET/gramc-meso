@@ -77,7 +77,7 @@ class FormationVersion
         return $output;
     }
 
-    public function __construct(Formation $formation = null, Version $version = null)
+    public function __construct(?Formation $formation = null, ?Version $version = null)
     {
         if (null != $formation) {
             $this->formation = $formation;
@@ -120,7 +120,7 @@ class FormationVersion
      *
      * @return CollaborateurVersion
      */
-    public function setVersion(Version $version = null): self
+    public function setVersion(?Version $version = null): self
     {
         $this->version = $version;
 
@@ -140,7 +140,7 @@ class FormationVersion
      *
      * @return CollaborateurFormation
      */
-    public function setFormation(Formation $formation = null): self
+    public function setFormation(?Formation $formation = null): self
     {
         $this->formation = $formation;
 
