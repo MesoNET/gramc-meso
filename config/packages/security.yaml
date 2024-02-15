@@ -27,7 +27,7 @@ security:
         api:
             entity:
                 class: App\Entity\Serveur
-                property: nom
+                property: admname
         gramc_provider:
             entity:
                 class: App\Entity\Individu
