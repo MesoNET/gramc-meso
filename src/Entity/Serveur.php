@@ -100,8 +100,8 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('serveur_lecture')]
     private $admname;
 
-    #[ORM\Column]
-    private array $formatSSH = [];
+    #[ORM\Column(name: 'format_ssh', nullable: true, options: ['comment' => 'format ssh autorisé pour ce serveur'])]
+    private ?array $formatSSH = [];
 
     /**
      * Get nom.
@@ -314,12 +314,12 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getFormatSSH(): array
+    public function getFormatSSH(): ?array
     {
         return $this->formatSSH;
     }
 
-    public function setFormatSSH(array $formatSSH): static
+    public function setFormatSSH(?array $formatSSH): static
     {
         $this->formatSSH = $formatSSH;
 
