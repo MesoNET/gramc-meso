@@ -79,7 +79,7 @@ class Sso
      *
      * @return Sso
      */
-    public function setIndividu(Individu $idIndividu = null)
+    public function setIndividu(?Individu $idIndividu = null)
     {
         $this->individu = $idIndividu;
 

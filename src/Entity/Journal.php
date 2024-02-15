@@ -213,7 +213,7 @@ class Journal
     /**
      * Set individu.
      */
-    public function setIndividu(Individu $individu = null): self
+    public function setIndividu(?Individu $individu = null): self
     {
         $this->individu = $individu;
 

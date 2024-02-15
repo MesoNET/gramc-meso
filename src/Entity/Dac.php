@@ -101,7 +101,7 @@ class Dac
         return $this->idDac;
     }
 
-    public function __construct(Ressource $ressource = null, Version $version = null)
+    public function __construct(?Ressource $ressource = null, ?Version $version = null)
     {
         if (null != $ressource) {
             $this->ressource = $ressource;

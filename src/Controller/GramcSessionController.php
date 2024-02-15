@@ -490,7 +490,7 @@ class GramcSessionController extends AbstractController
 
     #[IsGranted('ROLE_DEMANDEUR')]
     #[Route(path: '/{clef}/repinvit', name: 'repinvit', methods: ['GET', 'POST'])]
-    public function repinvitAction(Request $request, Invitation $invitation = null): Response
+    public function repinvitAction(Request $request, ?Invitation $invitation = null): Response
     {
         $em = $this->em;
         $sj = $this->sj;
@@ -531,7 +531,7 @@ class GramcSessionController extends AbstractController
      * Si valide: renvoie true (met ne la supprime pas encore)
      *
      *****************************************************************************/
-    private function validInvit(Request $request, Invitation $invitation = null): bool
+    private function validInvit(Request $request, ?Invitation $invitation = null): bool
     {
         $sj = $this->sj;
         // Invitation supprimée !

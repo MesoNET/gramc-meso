@@ -91,7 +91,7 @@ class Dar
         return $this->idDar;
     }
 
-    public function __construct(Ressource $ressource = null, Rallonge $rallonge = null)
+    public function __construct(?Ressource $ressource = null, ?Rallonge $rallonge = null)
     {
         if (null != $ressource) {
             $this->ressource = $ressource;

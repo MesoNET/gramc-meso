@@ -114,7 +114,7 @@ class CollaborateurVersion
         return $output;
     }
 
-    public function __construct(Individu $individu = null, Version $version = null)
+    public function __construct(?Individu $individu = null, ?Version $version = null)
     {
         $this->responsable = false;
 
@@ -190,7 +190,7 @@ class CollaborateurVersion
     /**
      * Set statut.
      */
-    public function setStatut(Statut $statut = null): self
+    public function setStatut(?Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -208,7 +208,7 @@ class CollaborateurVersion
     /**
      * Set version.
      */
-    public function setVersion(Version $version = null): self
+    public function setVersion(?Version $version = null): self
     {
         $this->version = $version;
 
@@ -226,7 +226,7 @@ class CollaborateurVersion
     /**
      * Set labo.
      */
-    public function setLabo(Laboratoire $labo = null): self
+    public function setLabo(?Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -244,7 +244,7 @@ class CollaborateurVersion
     /**
      * Set etab.
      */
-    public function setEtab(Etablissement $etab = null): self
+    public function setEtab(?Etablissement $etab = null): self
     {
         $this->etab = $etab;
 
@@ -262,7 +262,7 @@ class CollaborateurVersion
     /**
      * Set collaborateur.
      */
-    public function setCollaborateur(Individu $collaborateur = null): self
+    public function setCollaborateur(?Individu $collaborateur = null): self
     {
         $this->collaborateur = $collaborateur;
 

@@ -20,7 +20,7 @@ final class UserProvider implements ProviderInterface
     /**
      * Renvoie le user associé à l'individu et au projet passés dans l'uritemplate et au serveur actuellement identifié.
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): null|object
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|null
     {
         $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
 

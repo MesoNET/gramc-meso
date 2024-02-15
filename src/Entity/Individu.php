@@ -231,7 +231,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      * @var Collection
      */
     #[ORM\OneToMany(targetEntity: '\App\Entity\User', mappedBy: 'individu', cascade: ['persist'])]
-    #[Groups(['individu_lecture', 'individu_ecriture',])]
+    #[Groups(['individu_lecture', 'individu_ecriture'])]
     private $user;
 
     /**
@@ -572,7 +572,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * Set statut.
      */
-    public function setStatut(Statut $statut = null): self
+    public function setStatut(?Statut $statut = null): self
     {
         $this->statut = $statut;
 
@@ -590,7 +590,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * Set labo.
      */
-    public function setLabo(Laboratoire $labo = null): self
+    public function setLabo(?Laboratoire $labo = null): self
     {
         $this->labo = $labo;
 
@@ -610,7 +610,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
      *
      * @return Individu
      */
-    public function setEtab(Etablissement $etab = null)
+    public function setEtab(?Etablissement $etab = null)
     {
         $this->etab = $etab;
 

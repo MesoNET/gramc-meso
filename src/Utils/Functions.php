@@ -81,7 +81,7 @@ class Functions
      *       - Si on est dans une requête ajax: renvoie false, sinon: relance l'exception
      *
      */
-    public static function sauvegarder(object $object, EntityManager $em, LoggerInterface $logger = null): bool
+    public static function sauvegarder(object $object, EntityManager $em, ?LoggerInterface $logger = null): bool
     {
         try {
             if ($em->isOpen()) {
@@ -143,7 +143,7 @@ class Functions
      * TODO - Je n'ai pas réussi à intercepter autre chose que \Exception. du coup je suis sceptique sur
      *        Function::sauvegarder, pas sûr que ça marche...
      */
-    public static function flush(EntityManagerInterface $em, Request $request = null): bool
+    public static function flush(EntityManagerInterface $em, ?Request $request = null): bool
     {
         try {
             $em->flush();
