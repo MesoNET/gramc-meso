@@ -7,7 +7,6 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Projet;
 use App\Entity\Serveur;
-use App\GramcServices\Etat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -32,11 +31,7 @@ final class ProjetCollectionProvider implements ProviderInterface
             $serveur = $this->entityManager->getRepository(Serveur::class)->findOneBy(['admname' => $this->security->getUser()->getUserIdentifier()]);
 
             return array_filter($projets, function (Projet $projet) use ($serveur) {
-                if (Etat::RENOUVELABLE == $projet->getEtatProjet()) {
-                    return array_intersect($projet->getUser()->toArray(), $serveur->getUser()->toArray());
-                } else {
-                    return false;
-                }
+                return array_intersect($projet->getUser()->toArray(), $serveur->getUser()->toArray());
             });
         }
 
