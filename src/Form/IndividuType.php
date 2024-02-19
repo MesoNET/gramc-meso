@@ -32,6 +32,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -46,28 +47,35 @@ class IndividuType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if (true == $options['admin']) {
+        if ($options['admin']) {
             $builder->add('creationStamp');
         }
 
-        if (true == $options['user']) {
+        if ($options['user']) {
             $builder
                 ->add('nom', TextType::class, ['label' => 'Nom:'])
-                ->add('prenom', TextType::class, ['label' => 'Prénom']);
-            if (true == $options['mail']) {
+                ->add('prenom', TextType::class, ['label' => 'Prénom'])
+                ->add('photo', FileType::class,
+                    [
+                        'label' => 'photo',
+                        'required' => false,
+                        'mapped' => false,
+                    ]
+                );
+            if ($options['mail']) {
                 $builder->add('mail', EmailType::class);
             } else {
                 $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
 
-            if (true == $options['mail']) {
+            if ($options['mail']) {
                 $builder->add('mail', EmailType::class);
             } else {
                 $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
         }
 
-        if (true == $options['admin']) {
+        if ($options['admin']) {
             $builder
                 ->add('admin')
                 ->add('expert')
@@ -94,7 +102,7 @@ class IndividuType extends AbstractType
                 );
         }
 
-        if (true == $options['permanent']) {
+        if ($options['permanent']) {
             $builder
                 ->add(
                     'statut',
@@ -139,7 +147,7 @@ class IndividuType extends AbstractType
                     ]
             );
 
-        if (true == $options['thematique']) {
+        if ($options['thematique']) {
             $builder->add(
                 'thematique',
                 EntityType::class,
@@ -151,7 +159,7 @@ class IndividuType extends AbstractType
             );
         }
 
-        if (true == $options['submit']) {
+        if ($options['submit']) {
             $builder
                 ->add(
                     'submit',

@@ -33,9 +33,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 // use Symfony\Component\Form\FormInterface;
@@ -99,7 +101,7 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
             ]
         );
 
-        if (true == $options['text_fields']) {
+        if ($options['text_fields']) {
             $builder->add(
                 'statut',
                 TextType::class,
