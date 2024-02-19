@@ -8,7 +8,12 @@
 
     {% import "default/macros.html.twig" as gramcmacros %}
     {{ gramcmacros.menu(menu) }}
-
+    <div class="formulaire inputrond mb-3">
+        {{ form_start(form) }}
+            {{ form_widget(form.nomLabo) }}
+            {{ form_widget(form.filtrer)}}
+        {{ form_end(form) }}
+    </div>
     <table id="laboratoires" style="stroke: black">
     <thead>
         <tr>
