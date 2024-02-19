@@ -27,6 +27,9 @@ class Notification
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $route = null;
 
+    #[ORM\Column]
+    private ?bool $lu = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +79,18 @@ class Notification
     public function setRoute(?string $route): static
     {
         $this->route = $route;
+
+        return $this;
+    }
+
+    public function isLu(): ?bool
+    {
+        return $this->lu;
+    }
+
+    public function setLu(bool $lu): static
+    {
+        $this->lu = $lu;
 
         return $this;
     }
