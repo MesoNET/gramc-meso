@@ -26,6 +26,7 @@ namespace App\Controller;
 
 use App\Entity\Adresseip;
 use App\Entity\Laboratoire;
+use App\Form\LaboratoireSearchType;
 use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -33,6 +34,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,20 +48,36 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: 'laboratoire')]
 class LaboratoireController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em)
+    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em,private FormFactoryInterface $ff,
+    )
     {
+
     }
 
     /**
      * Liste tous les laboratoires.
      */
     #[IsGranted('ROLE_OBS')]
-    #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET'])]
-    public function gererAction(): Response
+    #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET', 'POST'])]
+    public function gererAction(Request $request): Response
     {
         $ac = $this->ac;
         $em = $this->em;
+        $form = $this->ff->createNamed('tri_projet', LaboratoireSearchType::class, [], []);
+        $form->handleRequest($request);
+        $laboratoires = $em->getRepository(Laboratoire::class)->findBy([], ['numeroLabo' => 'ASC']);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pattern = '/'.$form->getData()['nomLabo'].'/';
+            $laboratoiresFinale = [];
+            foreach ($laboratoires as $laboratoire) {
+                    if (preg_match($pattern, $laboratoire->getNomLabo())) {
+                        $laboratoiresFinale[] = $laboratoire;
+                    }
+            }
+        } else {
+            $laboratoiresFinale = $em->getRepository(Laboratoire::class)->findBy([], ['numeroLabo' => 'ASC']);
+        }
         // Si on n'est pas admin on n'a pas accès au menu
         $menu = ($ac->isGranted('ROLE_ADMIN') or $ac->isGranted('ROLE_VALIDEUR')) ? [['ok' => true, 'name' => 'ajouter_laboratoire', 'lien' => 'Ajouter un laboratoire', 'commentaire' => 'Ajouter un laboratoire']] : [];
 
@@ -67,7 +85,8 @@ class LaboratoireController extends AbstractController
             'laboratoire/liste.html.twig',
             [
             'menu' => $menu,
-            'laboratoires' => $em->getRepository(Laboratoire::class)->findBy([], ['numeroLabo' => 'ASC']),
+            'form' => $form->createView(),
+            'laboratoires' => $laboratoiresFinale,
             ]
         );
     }
