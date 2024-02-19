@@ -34,6 +34,7 @@ use App\State\IndividuProvider;
 use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\EquatableInterface;
@@ -248,6 +249,18 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
 
     #[ORM\OneToMany(mappedBy: 'individu', targetEntity: Notification::class)]
     private Collection $notifications;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mailSecondaire = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $tel = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private $photo = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $urlPerso = null;
 
     // /////////////////////////////////////////
     #[ORM\PrePersist]
@@ -993,6 +1006,54 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
                 $notification->setIndividu(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMailSecondaire(): ?string
+    {
+        return $this->mailSecondaire;
+    }
+
+    public function setMailSecondaire(?string $mailSecondaire): static
+    {
+        $this->mailSecondaire = $mailSecondaire;
+
+        return $this;
+    }
+
+    public function getTel(): ?string
+    {
+        return $this->tel;
+    }
+
+    public function setTel(?string $tel): static
+    {
+        $this->tel = $tel;
+
+        return $this;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getUrlPerso(): ?string
+    {
+        return $this->urlPerso;
+    }
+
+    public function setUrlPerso(?string $urlPerso): static
+    {
+        $this->urlPerso = $urlPerso;
 
         return $this;
     }
