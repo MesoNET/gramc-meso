@@ -670,11 +670,4 @@ class GramcSessionController extends AbstractController
 
         return new Response(json_encode('OK'));
     }
-
-    #[IsGranted('ROLE_DEMANDEUR')]
-    #[Route(path: '/notifications', name: 'notifications', methods: ['GET'])]
-    public function notificationsList(Request $request): Response
-    {
-        return $this->render('notification/notification_list.html.twig');
-    }
 }

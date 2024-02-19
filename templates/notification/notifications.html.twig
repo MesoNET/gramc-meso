@@ -1,6 +1,12 @@
 
-{% set taille = app.user.notifications|length  %}
-{% for notification in app.user.notifications|slice(taille-8,taille) %}
+{% set notifs = [] %}
+{% for notification in app.user.notifications %}
+    {% if notification.lu == false  %}
+        {% set notifs = notifs|merge([notification]) %}
+    {% endif %}
+{% endfor %}
+{% set taille = notifs|length  %}
+{% for notification in notifs|slice(taille-8,taille) %}
     <a href="{{ path(notification.route??'accueil') }}" class="d-flex align-items-center gap-2 dropdown-item">
         <p class="mb-0 fs-3">{{ notification.sujet }}</p>
     </a>

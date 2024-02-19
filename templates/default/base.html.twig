@@ -412,10 +412,17 @@
                                aria-expanded="false"
                                title="Notifications">
                                 <i class="ti ti-bell-ringing"></i>
-                                {% if app.user.notifications|length >0 %}
+                                {% set notifs = [] %}
+                                {% for notification in app.user.notifications %}
+                                    {% if notification.lu == false  %}
+                                        {% set notifs = notifs|merge([notification]) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% set taille = notifs|length  %}
+                                {% if taille >0 %}
                                     <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">{{ app.user.notifications|length }}</span>
                                 {% endif %}
-                                {% if app.user.notifications|length >100 %}
+                                {% if taille >100 %}
                                     <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">99+</span>
                                 {% endif %}
                             </a>
