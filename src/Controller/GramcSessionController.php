@@ -45,6 +45,7 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -204,7 +205,14 @@ class GramcSessionController extends AbstractController
                 $sj->noticeMessage(__METHOD__.':'.__LINE__.' '.$individu.' a changé son laboratoire de '.$old_laboratoire
                 .' vers '.$new_laboratoire);
             }
-
+            // enregistrement de la photo de profil
+            if ($form['photo']) {
+                $directory = Path::join($this->getParameter('kernel.project_dir'), 'var', 'photos');
+                $newFilename = 'avatar'.$individu->getId();
+                $file = $form['photo']->getData();
+                $file->move($directory, $newFilename);
+                $individu->setPhoto($newFilename);
+            }
             $em->persist($individu);
             $em->flush();
 
