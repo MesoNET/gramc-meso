@@ -37,6 +37,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class IndividuType extends AbstractType
 {
@@ -60,7 +61,17 @@ class IndividuType extends AbstractType
                         'label' => 'photo',
                         'required' => false,
                         'mapped' => false,
-                    ]
+                    'constraints' => [
+                new File([
+                    'maxSize' => '12m',
+                    'mimeTypes' => [
+                        'image/png',
+                        'image/jpeg',
+                    ],
+                    'mimeTypesMessage' => 'Veillez sélectionner une image png ou jpeg de moins de 12 MO',
+                ]),
+            ],
+                    ],
                 );
             if ($options['mail']) {
                 $builder->add('mail', EmailType::class);
