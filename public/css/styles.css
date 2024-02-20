@@ -19227,6 +19227,21 @@ textarea.form-control-lg {
 .small-icon{
     font-size:1.5em;
 }
+
+.big-img{
+    width: 5em;
+    height: 5em;
+}
+.medium-img{
+    width: 2em;
+    height: 2em;
+}
+.small-img{
+    width: 1.5em;
+    height: 1.5em;
+}
+
+
 .left-sidebar {
     width: 270px;
     background-color: #fff;
