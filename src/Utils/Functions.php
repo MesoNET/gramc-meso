@@ -22,7 +22,7 @@
  *            Nicolas Renon - Université Paul Sabatier - CALMIP
  **/
 
-namespace App\Utils\Utils;
+namespace App\Utils;
 
 use App\Utils\Entity\Journal;
 use App\Utils\Entity\Session;
