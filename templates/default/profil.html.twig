@@ -43,7 +43,7 @@ vos informations. f
 
 
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-    <img class="petit" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
+    <img class="small-icon" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
