@@ -34,7 +34,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -156,7 +158,21 @@ class IndividuType extends AbstractType
                     'required' => false,
                     'attr' => ['style' => 'width:20em'],
                     ]
-            );
+            )
+            ->add('mailSecondaire',
+                EmailType::class,
+                ['required' => false,
+                    'label' => 'Mail secondaire'])
+            ->add('tel',
+                TelType::class,
+                ['required' => false,
+                    'label' => 'Numéro de téléphone (pour urgences)',
+                ])
+            ->add('urlPerso',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Site personnel',
+                ]);
 
         if ($options['thematique']) {
             $builder->add(

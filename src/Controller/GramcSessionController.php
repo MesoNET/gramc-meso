@@ -206,7 +206,7 @@ class GramcSessionController extends AbstractController
                     .' vers '.$new_laboratoire);
             }
             // enregistrement de la photo de profil
-            if ($form['photo']) {
+            if ($form['photo'] && $form['photo']->getData()) {
                 $directory = Path::join($this->getParameter('kernel.project_dir'), 'var', 'photos');
                 $newFilename = 'avatar'.$individu->getId();
                 $file = $form['photo']->getData();
