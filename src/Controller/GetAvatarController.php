@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Utils\Controller;
+namespace App\Controller;
 
-use Imagine\Gd\Imagine;
-use App\Utils\Entity\Individu;
+use App\Entity\Individu;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,9 +11,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class GetAvatarController extends AbstractController
 {
     #[Route('avatar/{individu}', 'get_avatar')]
-    public function GetAvatarAction(Individu $individu, Imagine $imagine): Response
+    public function GetAvatarAction(Individu $individu): Response
     {
-        $imagine
         if ($individu->getPhoto()) {
             $path = Path::join($this->getParameter('kernel.project_dir'), 'var', 'photos', $individu->getPhoto());
         } else {
