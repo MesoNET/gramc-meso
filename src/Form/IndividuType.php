@@ -99,7 +99,7 @@ class IndividuType extends AbstractType
                 ->add('desactive');
         }
 
-        if (true == $options['user']) {
+        if ($options['user']) {
             $builder
                 ->add(
                     'labo',
@@ -180,10 +180,27 @@ class IndividuType extends AbstractType
                     'required' => false,
                     'attr' => ['placeholder' => '@JohnDoe'],
                     'constraints' => [
-                        new Regex('/^@[A-Za-z0-9_]{1,15}$/'),
+                        new Regex('/^@[A-Za-z0-9_]{1,15}$/',
+                            'Nom d\'utilisateur non valide',
+                        ),
                     ],
                 ],
             )
+            ->add('urlPerso',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Site personnel',
+                ])
+            ->add('urlLinkedIn',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Url LinkedIn',
+                    'constraints' => [
+                        new Regex('/linkedin\.com/',
+                            'Cet^te URL n\'est pas un compte LinkedIn',
+                        ),
+                    ],
+                ])
         ;
 
         if ($options['thematique']) {
