@@ -93,7 +93,6 @@ class Rgpd extends Command
     protected function effacerVersions(Projet $projet, OutputInterface $output)
     {
         $sp = $this->sp;
-        $em = $this->em;
 
         // Effacer les versions
         foreach ($projet->getVersion() as $version) {
@@ -236,7 +235,6 @@ class Rgpd extends Command
         }
 
         $allProjets = $em->getRepository(Projet::class)->findAll();
-        $mauvais_projets = [];
         $projets_annee = $this->buildProjetsByYear($anneeLimite, $allProjets);
 
         // On affiche le tableau $projets_annee

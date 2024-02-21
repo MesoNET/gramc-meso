@@ -150,10 +150,6 @@ class Brouillage extends Command
             $output->writeln('EXECUTION DE LA COMMANDE: brouillage');
             $this->sj->infoMessage('EXECUTION DE LA COMMANDE: brouillage');
         }
-
-        $sd = $this->sd;
-        $sp = $this->sp;
-        $sj = $this->sj;
         $em = $this->em;
 
         // dd($this->brouilleString("é~#è£\$azerty toto"));

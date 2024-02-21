@@ -145,12 +145,8 @@ class GramcSessionController extends AbstractController
     #[Route(path: '/', name: 'accueil', methods: ['GET'])]
     public function accueilAction(): Response
     {
-        $sm = $this->sm;
-        $ss = $this->ss;
         $sid = $this->sid;
         $token = $this->ts->getToken();
-
-        $session = null;
         if (null != $token) {
             $individu = $token->getUser();
             if (!$sid->validerProfil($individu)) {
@@ -445,9 +441,7 @@ class GramcSessionController extends AbstractController
     #[Route(path: '/connexions', name: 'connexions', methods: ['GET'])]
     public function connexionsAction(Request $request): Response
     {
-        $em = $this->em;
         $sps = $this->sps;
-        $sj = $this->sj;
 
         $connexions = $sps->getConnexions();
         // dd($connexions);
@@ -501,7 +495,6 @@ class GramcSessionController extends AbstractController
     public function repinvitAction(Request $request, ?Invitation $invitation = null): Response
     {
         $em = $this->em;
-        $sj = $this->sj;
         $ts = $this->ts;
 
         // Invitation non valide = on déconnecte et on redirige vers la page d'accueil

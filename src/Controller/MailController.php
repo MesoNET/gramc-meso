@@ -59,10 +59,7 @@ class MailController extends AbstractController
     #[Route(path: '/{id}/mail_to_responsables_fiche', name: 'mail_to_responsables_fiche', methods: ['GET', 'POST'])]
     public function mailToResponsablesFicheAction(Request $request, Session $session): Response
     {
-        $em = $this->em;
-        $sn = $this->sn;
         $sj = $this->sj;
-        $ff = $this->ff;
         $sm = $this->sm;
 
         // ACL
@@ -127,7 +124,6 @@ class MailController extends AbstractController
     {
         $sj = $this->sj;
         $sm = $this->sm;
-        $grdt = $this->grdt;
 
         // ACL
         if (false == $sm->mailToResponsablesRallonge()['ok']) {
@@ -181,15 +177,11 @@ class MailController extends AbstractController
         string $body,
         string $template): Response
     {
-        $em = $this->em;
         $sn = $this->sn;
-        $sj = $this->sj;
         $ff = $this->ff;
 
         $nb_msg = 0;
         $nb_projets = 0;
-
-        $sent = false;
         $form = Functions::createFormBuilder($ff)
                     ->add('texte', TextareaType::class, [
                         'label' => ' ',
@@ -252,12 +244,9 @@ class MailController extends AbstractController
     private function getResponsablesActifs(): array
     {
         $sp = $this->sp;
-        $sj = $this->sj;
         $em = $this->em;
 
         $responsables = [];
-        $projets = [];
-        $seuil = 80;
         $all_projets = $em->getRepository(Projet::class)->findAll();
 
         foreach ($all_projets as $projet) {
@@ -330,7 +319,6 @@ class MailController extends AbstractController
     #[Route(path: '/tester', name: 'mail_tester', methods: ['GET', 'POST'])]
     public function testerAction(Request $request): Response
     {
-        $em = $this->em;
         $sn = $this->sn;
         $ff = $this->ff;
 

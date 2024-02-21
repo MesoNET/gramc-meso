@@ -35,7 +35,6 @@ class TempsStdbyCronTask extends CronTaskBase
     {
         $em = $this->em;
         $dyn_duree_post = $this->dyn_duree_post;
-        $sp = $this->sp;
         $grdt = $this->grdt->getNew();
         // echo "date = ".$grdt->format('Y-m-d')."\n";
         $workflow = $this->tp4w;

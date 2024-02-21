@@ -62,7 +62,7 @@ class ExceptionListener
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        $server = $event->getRequest()->server;
+        $event->getRequest()->server;
 
         $exception = $event->getThrowable();
         // dd($exception);

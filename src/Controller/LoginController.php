@@ -131,7 +131,6 @@ class LoginController extends AbstractController
     #[Route(path: '/connexion_dbg', name: 'connexion_dbg', methods: ['GET', 'POST'])]
     public function connexion_dbgAction(Request $request): Response
     {
-        $em = $this->em;
         $ff = $this->ff;
 
         if (false === $this->getParameter('kernel.debug')) {
