@@ -42,6 +42,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class ServiceNotifications
 {
+    private ?\Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token;
+
     public function __construct(
         private $mailfrom,
         private \Twig\Environment $twig,
@@ -53,7 +55,7 @@ class ServiceNotifications
         private NotifierInterface $notifier,
         private UrlGeneratorInterface $router,
     ) {
-        $this->token = $tok->getToken();
+        $this->token = $this->tok->getToken();
     }
 
     /*****
@@ -62,7 +64,7 @@ class ServiceNotifications
      * param $addr  Une adresse mail de destination
      *
      *******************************************/
-    public function sendTestMessage(string $addr)
+    public function sendTestMessage(string $addr): void
     {
         $sujet = "Test d'envoi de mails depuis gramc";
         $contenu = "Bonjour\nSi $addr reçoit ce mail le test est concluant\nBravo\ngramc";
@@ -365,7 +367,7 @@ class ServiceNotifications
         $mail = [];
 
         if (null == $users) {
-            if (true == $warning) {
+            if ($warning) {
                 $this->sj->warningMessage(__METHOD__.':'.__LINE__.' La liste des utilisateurs est vide');
             }
 
