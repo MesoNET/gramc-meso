@@ -354,7 +354,7 @@ class AdminuxController extends AbstractController
 
             return new Response(json_encode(['KO' => $msg]));
         }
-        if (false == $cv) {
+        if (!$cv) {
             $sj->errorMessage(__METHOD__.':'.__FILE__." - No user '$loginname' found in any projet");
 
             return new Response(json_encode(['KO' => "No user '$loginname' found in any projet"]));
@@ -1490,7 +1490,7 @@ class AdminuxController extends AbstractController
     {
         $sroc = $this->sroc;
         $data = [];
-
+        $sj=$this->sj;
         foreach ($dacdars as $d) {
             $ressource = $d->getRessource();
             if (null === $ressource) {

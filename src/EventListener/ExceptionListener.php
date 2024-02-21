@@ -37,7 +37,6 @@ namespace App\EventListener;
 use App\GramcServices\ServiceJournal;
 // use App\Exception\UserException;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
@@ -48,24 +47,20 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
 class ExceptionListener
 {
-    private $router;
-    private $logger;
-
-    public function __construct($kernel_debug, RouterInterface $router, LoggerInterface $logger, ServiceJournal $sj, EntityManagerInterface $em)
-    {
-        $this->kernel_debug = $kernel_debug;
-        $this->router = $router;
-        $this->logger = $logger;
-        $this->sj = $sj;
-        $this->em = $em;
+    public function __construct(
+        private $kernel_debug,
+        private RouterInterface $router,
+        private LoggerInterface $logger,
+        private ServiceJournal $sj,
+        private EntityManagerInterface $em
+    ) {
     }
 
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         $server = $event->getRequest()->server;
 
@@ -74,7 +69,7 @@ class ExceptionListener
 
         // En mode debug, on affiche l'exception
         // Commenter cette ligne pour récupérer le comportement de la prod !
-        if (true == $this->kernel_debug) {
+        if ($this->kernel_debug) {
             return;
         }
 
@@ -110,7 +105,7 @@ class ExceptionListener
             // $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." accès anonyme à la page " . $event->getRequest()->getPathInfo());
 
             // On renvoie sur l'écran de login'
-            if (true == $this->kernel_debug) {
+            if ($this->kernel_debug) {
                 $response = new RedirectResponse($this->router->generate('connexion_dbg'));
             } else {
                 $response = new RedirectResponse($this->router->generate('connexion'));
