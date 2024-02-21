@@ -147,9 +147,7 @@ class VersionController extends AbstractController
     #[Route(path: '/{id}/supprimer', name: 'version_supprimer', methods: ['GET'])]
     public function supprimerAction(Version $version): Response
     {
-        $em = $this->em;
         $sm = $this->sm;
-        $sv = $this->sv;
         $sp = $this->sp;
         $sj = $this->sj;
 
@@ -171,7 +169,6 @@ class VersionController extends AbstractController
     #[Route(path: '/{id}/{filename}/supprimer_fichier', name: 'version_supprimer_fichier', methods: ['GET'])]
     public function supprimerFichierAction(Version $version, string $filename): Response
     {
-        $em = $this->em;
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
@@ -298,7 +295,6 @@ class VersionController extends AbstractController
     #[Route(path: '/{id}/televerser_fiche', name: 'version_televerser_fiche', methods: ['GET', 'POST'])]
     public function televerserFicheAction(Request $request, Version $version): Response
     {
-        $em = $this->em;
         $sm = $this->sm;
         $sj = $this->sj;
 
@@ -347,10 +343,6 @@ class VersionController extends AbstractController
     #[Route(path: '/{id}/televerser_fiche_admin', name: 'version_televerser_fiche_admin', methods: ['GET', 'POST'])]
     public function televerserFicheAdminAction(Request $request, Version $version): Response
     {
-        $em = $this->em;
-        $sm = $this->sm;
-        $sj = $this->sj;
-
         $rtn = $this->televerser($request, $version, 'fiche.pdf');
 
         // Si on récupère un formulaire on l'affiche
@@ -512,7 +504,6 @@ class VersionController extends AbstractController
         $sval = $this->vl;
         $sv = $this->sv;
         $sr = $this->sr;
-        $em = $this->em;
 
         if (false === $sm->modifierCollaborateurs($version)['ok']) {
             $sj->throwException(__METHOD__.':'.__LINE__.' impossible de modifier la liste des collaborateurs de la version '.$version.
@@ -684,10 +675,6 @@ class VersionController extends AbstractController
     public function televersementGeneriqueAction(Request $request): Response
     {
         $em = $this->em;
-        $sd = $this->sd;
-        $ss = $this->ss;
-        $sp = $this->sp;
-        $sj = $this->sj;
 
         // Premier formulaire = téléversement de la fiche projet
         $form = $this
@@ -850,7 +837,6 @@ class VersionController extends AbstractController
     private function televerser(Request $request, Version $version, string $filename): form|string
     {
         $sv = $this->sv;
-        $sf = $this->sf;
         $sj = $this->sj;
 
         // SEULEMENT CERTAINS NOMS !!!!
@@ -965,8 +951,6 @@ class VersionController extends AbstractController
         $sm = $this->sm;
         $sj = $this->sj;
         $sv = $this->sv;
-        $vl = $this->vl;
-        $em = $this->em;
 
         // ACL
         if (false === $sm->modifierVersion($version)['ok']) {
@@ -997,8 +981,6 @@ class VersionController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
-        $twig = $this->tw;
-        $html = [];
 
         // ACL
         if (false === $sm->modifierVersion($version)['ok']) {
@@ -1076,8 +1058,6 @@ class VersionController extends AbstractController
     ): Response {
         $sj = $this->sj;
         $sv = $this->sv;
-        $ss = $this->ss;
-        $sval = $this->vl;
         $em = $this->em;
 
         // formulaire principal
@@ -1147,7 +1127,6 @@ class VersionController extends AbstractController
     /* Les champs de la partie I */
     private function __modifier4PartieI($version, &$form): void
     {
-        $em = $this->em;
         $form
         ->add('prjTitre', TextType::class, ['required' => false])
         ->add(
@@ -1219,11 +1198,7 @@ class VersionController extends AbstractController
         $sm = $this->sm;
         $sv = $this->sv;
         $sj = $this->sj;
-        $sdac = $this->sdac;
-        $sroc = $this->sroc;
         $dyn_duree = $this->dyn_duree;
-        $dyn_duree_post = $this->dyn_duree_post;
-        $projet_workflow = $this->pw4;
         $sd = $this->sd;
         $em = $this->em;
 

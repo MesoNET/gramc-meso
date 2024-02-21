@@ -135,10 +135,7 @@ class ExpertiseController extends AbstractController
     #[Route(path: '/listedyn', name: 'expertise_liste_dyn', methods: ['GET'])]
     public function listeDynAction(): Response
     {
-        $grdt = $this->grdt;
         $sid = $this->sid;
-        $ss = $this->ss;
-        $sp = $this->sp;
         $sj = $this->sj;
         $token = $this->token;
         $em = $this->em;
@@ -155,7 +152,7 @@ class ExpertiseController extends AbstractController
             }
         }
 
-        $mes_thematiques = $moi->getThematique();
+        $moi->getThematique();
         $expertiseRepository = $em->getRepository(Expertise::class);
 
         // Les expertises affectées à cet expert
@@ -218,11 +215,8 @@ class ExpertiseController extends AbstractController
     #[Route(path: '/{id}/modifier', name: 'expertise_modifier', methods: ['GET', 'POST'])]
     public function modifierAction(Request $request, Expertise $expertise): Response
     {
-        $ss = $this->ss;
         $sv = $this->sv;
-        $sp = $this->sp;
         $sj = $this->sj;
-        $ac = $this->ac;
         $grdt = $this->grdt;
         $sval = $this->vl;
         $sexp = $this->sexp;
@@ -298,9 +292,6 @@ class ExpertiseController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->get('annuler')->isClicked()) {
             return $this->redirectToRoute($redirect_to_route);
         }
-
-        // Boutons ENREGISTRER, FERMER ou ENVOYER
-        $erreur = 0;
         $erreurs = [];
         if ($editForm->isSubmitted()) {
             $erreurs = Functions::dataError($sval, $expertise);
@@ -395,14 +386,7 @@ class ExpertiseController extends AbstractController
     #[Route(path: '/{id}/valider', name: 'expertise_validation', methods: ['GET', 'POST'])]
     public function validationAction(Request $request, Expertise $expertise): Response
     {
-        $dyn_duree = $this->dyn_duree;
-        $sn = $this->sn;
         $sj = $this->sj;
-        $ac = $this->ac;
-        $sp = $this->sp;
-        $p4w = $this->p4w;
-        $grdt = $this->grdt;
-        $em = $this->em;
         $token = $this->token;
 
         $redirect_to_route = 'expertise_liste_dyn';

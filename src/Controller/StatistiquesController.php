@@ -84,10 +84,9 @@ class StatistiquesController extends AbstractController
     {
         $sm = $this->sm;
         $ss = $this->ss;
-        $sp = $this->sp;
         $em = $this->em;
-        $prj_rep = $em->getRepository(Projet::class);
-        $ver_rep = $em->getRepository(Version::class);
+        $em->getRepository(Projet::class);
+        $em->getRepository(Version::class);
 
         return $this->render('default/oups.html.twig');
 
@@ -120,8 +119,6 @@ class StatistiquesController extends AbstractController
 
         [$projets, $total] = $this->sp->projetsParAnnee($annee, false, false, $sess_lbl);
 
-        $num_projets = count($projets);
-
         return $this->render(
             'statistiques/index_dyn.html.twig',
             [
@@ -137,12 +134,10 @@ class StatistiquesController extends AbstractController
     #[Route(path: '/dyn', name: 'statistiques_dyn', methods: ['GET', 'POST'])]
     public function indexDynAction(Request $request): Response
     {
-        $sm = $this->sm;
         $ss = $this->ss;
-        $sp = $this->sp;
         $em = $this->em;
-        $prj_rep = $em->getRepository(Projet::class);
-        $ver_rep = $em->getRepository(Version::class);
+        $em->getRepository(Projet::class);
+        $em->getRepository(Version::class);
 
         // return $this->render('default/oups.html.twig');
 
@@ -165,8 +160,6 @@ class StatistiquesController extends AbstractController
 
         [$projets, $total, $repartition] = $this->sp->projetsDynParAnnee($annee);
 
-        $num_projets = count($projets);
-
         return $this->render(
             'statistiques/index_dyn.html.twig',
             [
@@ -183,9 +176,6 @@ class StatistiquesController extends AbstractController
     #[Route(path: '/formation', name: 'statistiques_formation', methods: ['GET'])]
     public function formationAction(Request $request): Response
     {
-        $sm = $this->sm;
-        $ss = $this->ss;
-        $sp = $this->sp;
         $em = $this->em;
 
         $fvstats = $em->getRepository(FormationVersion::class)->findStats();
@@ -198,8 +188,6 @@ class StatistiquesController extends AbstractController
     #[Route(path: '/repartition', name: 'statistiques_repartition', methods: ['GET'])]
     public function repartitionAction(Request $request): Response
     {
-        $sm = $this->sm;
-        $ss = $this->ss;
         $sj = $this->sj;
         $em = $this->em;
 
@@ -291,8 +279,6 @@ class StatistiquesController extends AbstractController
     #[Route(path: '/collaborateur', name: 'statistiques_collaborateur', methods: ['GET'])]
     public function collaborateurAction(Request $request): Response
     {
-        $sm = $this->sm;
-        $ss = $this->ss;
         $em = $this->em;
 
         // Si on trouve les données dans la session, OK. Sinon on redirige sur la page de stats générale
@@ -534,9 +520,6 @@ class StatistiquesController extends AbstractController
     /* Cette fonction est appelée par laboratoireAction, etablissementAction etc. */
     private function parCritere(Request $request, $critere, $titre): Response
     {
-        $sm = $this->sm;
-        $ss = $this->ss;
-
         // Si on trouve les données dans la session, OK. Sinon on redirige sur la page de stats générale
         if ($request->getSession()->has('statistiques_annee')) {
             $annee = $request->getSession()->get('statistiques_annee');
@@ -598,8 +581,6 @@ class StatistiquesController extends AbstractController
     /* Cette fonction est appelée par laboratoireCSVAction, etablissementCSVAction etc. */
     private function parCritereCSV(Request $request, $annee, $critere, $titre): Response
     {
-        $em = $this->em;
-
         // Si on trouve les données dans la session, OK. Sinon on envoie un csv vide
         if ($request->getSession()->has('statistiques_annee')) {
             $annee = $request->getSession()->get('statistiques_annee');
@@ -796,9 +777,7 @@ class StatistiquesController extends AbstractController
         $image_data = ob_get_contents();
         ob_end_clean();
 
-        $image = base64_encode($image_data);
-
-        return $image;
+        return base64_encode($image_data);
     }
 
     // //////////////////////////////////////////////////////////////////////////////
@@ -854,10 +833,6 @@ class StatistiquesController extends AbstractController
             $y[] = $value;
         }
 
-        // $legende = [ '','jan','fév','mar','avr','mai','juin','juil','août','sept','oct','nov','déc' ];
-        $donnees = [1, 3, 4, 3];
-        $legende = [1, 2, 3, 4];
-
         $graph = new \Graph(800, 400);
         $graph->SetScale('textlin');
         $graph->SetMargin(60, 60, 50, 50);
@@ -893,9 +868,7 @@ class StatistiquesController extends AbstractController
         $image_data = ob_get_contents();
         ob_end_clean();
 
-        $image = base64_encode($image_data);
-
-        return $image;
+        return base64_encode($image_data);
 
         // $twig = new \Twig_Environment( new \Twig_Loader_String(), array( 'strict_variables' => false ) );
         // $body = $twig->render( '<img src="data:image/png;base64, {{ EncodedImage }}" />' ,  [ 'EncodedImage' => $image,      ] );

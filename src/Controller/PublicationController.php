@@ -116,7 +116,7 @@ class PublicationController extends AbstractController
                 return new Response('nopubli');
             }
         }
-        $form = $this->createForm(PublicationType::class, $publication, ['csrf_protection' => true]);
+        $this->createForm(PublicationType::class, $publication, ['csrf_protection' => true]);
 
         return new Response(json_encode('no form submitted'));
     }

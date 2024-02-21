@@ -285,15 +285,14 @@ class ComptaRepository extends \Doctrine\ORM\EntityRepository
     public function removeLoginname($loginname, \DateTime $date)
     {
         $em = $this->getEntityManager();
-        $rvl = $em->createQuery(
+
+        return $em->createQuery(
             'DELETE FROM App:Compta c
              WHERE c.loginname = :loginname
              AND c.date < :date')
              ->setParameter('loginname', $loginname)
              ->setParameter('date', $date)
              ->getResult();
-
-        return $rvl;
     }
 
     /***********
@@ -303,12 +302,11 @@ class ComptaRepository extends \Doctrine\ORM\EntityRepository
     public function removeDate(\DateTime $date)
     {
         $em = $this->getEntityManager();
-        $rvl = $em->createQuery(
+
+        return $em->createQuery(
             'DELETE FROM App:Compta c WHERE c.date = :date'
         )
             ->setParameter('date', $date)
             ->getResult();
-
-        return $rvl;
     }
 }

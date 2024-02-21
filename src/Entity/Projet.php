@@ -82,7 +82,6 @@ class Projet
         $this->version = new ArrayCollection();
         $this->rapportActivite = new ArrayCollection();
         $this->user = new ArrayCollection();
-        $this->etatProjet = Etat::EDITION_DEMANDE;
         $this->typeProjet = $type;
     }
 
@@ -91,7 +90,7 @@ class Projet
      */
     #[ORM\Column(name: 'etat_projet', type: 'integer', nullable: false)]
     #[Groups('projet_lecture')]
-    private $etatProjet;
+    private $etatProjet = Etat::EDITION_DEMANDE;
 
     /**
      * @var int

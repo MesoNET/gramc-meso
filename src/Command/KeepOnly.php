@@ -107,7 +107,6 @@ class KeepOnly extends Rgpd
         $output->writeln('======================================================');
 
         $allProjets = $em->getRepository(Projet::class)->findAll();
-        $mauvais_projets = [];
         $projets_annee = $this->buildProjetsByYear($anneeLimite, $allProjets, $a_kept);
 
         // On affiche le tableau $projets_annee

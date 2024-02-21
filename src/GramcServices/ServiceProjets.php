@@ -92,7 +92,7 @@ class ServiceProjets
         $em->flush();
 
         // Création de la première version
-        $version = $sv->creerVersion($projet);
+        $sv->creerVersion($projet);
 
         return $projet;
     }
@@ -209,7 +209,7 @@ class ServiceProjets
     }
 
     // effacer toutes les rallonges d'une version
-    private function __effacerRallonges(Version $version)
+    private function __effacerRallonges(Version $version): void
     {
         $em = $this->em;
 
@@ -259,7 +259,7 @@ class ServiceProjets
     public function getMetaEtat(Projet $p): string
     {
         $etat_projet = $p->getEtatProjet();
-        $type_projet = $p->gettypeProjet();
+        $p->gettypeProjet();
 
         // Projet terminé
         if (Etat::TERMINE === $etat_projet) {
@@ -329,11 +329,6 @@ class ServiceProjets
     {
         $sroc = $this->sroc;
         $sdac = $this->sdac;
-        $em = $this->em;
-
-        // une version dont l'état se retrouve dans ce tableau ne sera pas comptée dans les données consolidées
-        // (nombre de projets, heures demandées etc)
-        $a_filtrer = [Etat::CREE_ATTENTE, Etat::EDITION_DEMANDE, Etat::ANNULE];
 
         // Données consolidées - Projets dynamiques
         $type = 'dyn';
@@ -421,9 +416,6 @@ class ServiceProjets
      ********************/
     public function rallongesDynParAnnee($annee = 0): array
     {
-        $sroc = $this->sroc;
-        $em = $this->em;
-
         // Les versions qui ont été actives une partie de l'année
         // Elles sont triées selon la date de démarrage (les plus récentes en dernier)
         $versions = $this->getVersionsDynParAnnee($annee);
@@ -445,7 +437,6 @@ class ServiceProjets
 
     private function getVersionsDynParAnnee(int $annee): array
     {
-        $em = $this->em;
         $sv = $this->sv;
 
         $ttes_versions = $this->em->getRepository(Version::class)->findBy(['typeVersion' => Projet::PROJET_DYN]);
@@ -690,13 +681,8 @@ class ServiceProjets
                 return true;
             }
         }
-
         // nous vérifions si $user est un expert de la thématique
-        if ($version->isExpertThematique($user)) {
-            return true;
-        }
-
-        return false;
+        return (bool) $version->isExpertThematique($user);
     }
 
     /************************************************
@@ -775,7 +761,7 @@ class ServiceProjets
     public function getVersionsAnnee(Projet $projet, $annee): array
     {
         $subAnnee = substr(strval($annee), -2);
-        $repository = $this->em->getRepository(Version::class);
+        $this->em->getRepository(Version::class);
         $versionA = $this->em->getRepository(Version::class)->findOneBy(['idVersion' => $subAnnee.'A'.$projet->getIdProjet(), 'projet' => $projet]);
         $versionB = $this->em->getRepository(Version::class)->findOneBy(['idVersion' => $subAnnee.'B'.$projet->getIdProjet(), 'projet' => $projet]);
 
@@ -822,10 +808,10 @@ class ServiceProjets
                 continue;
             }
 
-            if (!(null === $repo_cv->findOneBy(['collaborateur' => $individu]))) {
+            if (null !== $repo_cv->findOneBy(['collaborateur' => $individu])) {
                 continue;
             }
-            if (!(null === $repo_exp->findOneBy(['expert' => $individu]))) {
+            if (null !== $repo_exp->findOneBy(['expert' => $individu])) {
                 continue;
             }
 

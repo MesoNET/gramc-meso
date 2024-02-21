@@ -89,7 +89,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sj = $this->sj;
         $sroc = $this->sroc;
-        $su = $this->su;
 
         $content = json_decode($request->getContent(), true);
         if (null === $content) {
@@ -478,7 +477,7 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
-        $token = $this->tok->getToken();
+        $this->tok->getToken();
 
         $content = json_decode($request->getContent(), true);
         if (null === $content) {
@@ -530,10 +529,8 @@ class AdminuxController extends AbstractController
 
     private function __getVersionInfo($v, bool $long): array
     {
-        $sp = $this->sp;
         $sroc = $this->sroc;
         $sdac = $this->sdac;
-        $em = $this->em;
 
         $r = [];
         $r['idProjet'] = $v->getProjet()->getIdProjet();
@@ -626,7 +623,6 @@ class AdminuxController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
-        $grdt = $this->grdt;
         $rep = $em->getRepository(Projet::class);
 
         $content = json_decode($request->getContent(), true);
@@ -728,7 +724,6 @@ class AdminuxController extends AbstractController
     public function versionGetAction(Request $request): Response
     {
         $em = $this->em;
-        $sp = $this->sp;
         $sj = $this->sj;
 
         $versions = [];
@@ -1372,7 +1367,6 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
-        $su = $this->su;
 
         $content = json_decode($request->getContent(), true);
         if (null === $content) {
@@ -1446,9 +1440,6 @@ class AdminuxController extends AbstractController
     public function todoAction(Request $request): Response
     {
         $em = $this->em;
-        $sp = $this->sp;
-        $sroc = $this->sroc;
-        $sj = $this->sj;
         // $grdt = $this->grdt;
         $rep = $em->getRepository(Projet::class);
 
@@ -1533,7 +1524,6 @@ class AdminuxController extends AbstractController
     {
         $em = $this->em;
         $sj = $this->sj;
-        $su = $this->su;
         $sroc = $this->sroc;
 
         $content = json_decode($request->getContent(), true);
@@ -1669,10 +1659,8 @@ class AdminuxController extends AbstractController
     public function adresseipGetAction(Request $request): Response
     {
         $em = $this->em;
-        $sp = $this->sp;
         $sj = $this->sj;
         $token = $this->tok->getToken();
-        $grdt = $this->grdt;
         $labo_rep = $em->getRepository(Laboratoire::class);
 
         $content = json_decode($request->getContent(), true);

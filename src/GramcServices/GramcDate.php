@@ -53,11 +53,9 @@ class GramcDate extends GramcDateTime
     // retourne une nouvelle instance
     public function getNew(): GramcDate
     {
-        $date = new GramcDate(
+        return new GramcDate(
             $this->sp,
             $this->em
         );
-
-        return $date;
     }
 }

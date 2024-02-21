@@ -74,7 +74,6 @@ class ServicePhpSessions
      **********************************************************/
     public function getConnexions(): array
     {
-        $em = $this->em;
         $sj = $this->sj;
 
         $connexions = [];

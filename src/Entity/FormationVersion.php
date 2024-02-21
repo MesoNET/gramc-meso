@@ -72,9 +72,8 @@ class FormationVersion
     {
         $output .= 'version='.$this->getVersion();
         $output .= 'id='.$this->getId().':';
-        $output .= 'formation='.$this->getFormation();
 
-        return $output;
+        return $output . ('formation='.$this->getFormation());
     }
 
     public function __construct(?Formation $formation = null, ?Version $version = null)

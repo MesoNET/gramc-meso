@@ -67,7 +67,7 @@ class ServiceExperts
     }
 
     // Garde en mémoire les demandes
-    public function setDemandes($demandes)
+    public function setDemandes($demandes): void
     {
         $this->demandes = $demandes;
     }
@@ -97,7 +97,7 @@ class ServiceExperts
      * TODO - Intégrer cette fonctionnalité à un controleur !
      *
      **************************************/
-    public function noThematique(Individu $individu)
+    public function noThematique(Individu $individu): void
     {
         // Relations ManyToMany
         foreach ($individu->getThematique() as $thematique) {
@@ -198,7 +198,7 @@ class ServiceExperts
      * Return= rien
      *
      ****/
-    private function remExpertiseFromDemande(Demande $demande)
+    private function remExpertiseFromDemande(Demande $demande): void
     {
         $expertises = $demande->getExpertise()->toArray();
         $em = $this->em;
@@ -343,14 +343,13 @@ class ServiceExperts
             $nbDemHeures += $demande->getDemHeures();
             $nbAttHeures += $demande->getAttrHeures();
         }
-        $stats = ['nbProjets' => $nbProjets,
+
+        return ['nbProjets' => $nbProjets,
                   'nouveau' => $nouveau,
                   'renouvellement' => $renouvellement,
                   'sansexperts' => $sansexperts,
                   'nbDemHeures' => $nbDemHeures,
                   'nbAttHeures' => $nbAttHeures];
-
-        return $stats;
     }
 
     /*************************************************************************
@@ -460,7 +459,6 @@ class ServiceExperts
 
         // Liste d'exclusion = Les collaborateurs + les experts choisis par ailleurs
         $exclus = $em->getRepository(CollaborateurVersion::class)->getCollaborateurs($demande->getProjet());
-        $experts = [];
         foreach ($expertises as $expertise) {
             $expert = $expertise->getExpert();
             if (null != $expert) {

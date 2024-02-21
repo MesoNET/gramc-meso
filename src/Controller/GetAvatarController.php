@@ -18,12 +18,11 @@ class GetAvatarController extends AbstractController
         } else {
             $path = Path::join($this->getParameter('kernel.project_dir'), 'public', 'icones', 'individu.png');
         }
-        $response = new Response(
+
+        return new Response(
             file_get_contents($path, -1, null),
             Response::HTTP_OK,
             ['content-type' => 'image/png']
         );
-
-        return $response;
     }
 }

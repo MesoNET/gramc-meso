@@ -45,7 +45,7 @@ class ClesshValidator extends ConstraintValidator
     {
     }
 
-    public function validate($pub, Constraint $constraint)
+    public function validate($pub, Constraint $constraint): void
     {
         $sj = $this->sj;
 
