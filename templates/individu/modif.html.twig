@@ -163,6 +163,13 @@
 
     <a class="lien_actif" href="{{ path('invitation', { 'id': individu.id }) }}"
     title="Envoyer une invitation à {{individu.prenom}} {{individu.nom}}">Inviter {{individu.prenom}} {{individu.nom}}</a>
-    
     {% endif %}
+    <ul class="bottom-menu">
+        <li class="bottom-menu-item">
+            <a href="{{ path('individu_gerer') }}">Back to the list</a>
+        </li>
+        <li class="bottom-menu-item">
+            <a href="{{ path('individu_show', { 'id': individu.id }) }}">Projet</a>
+        </li>
+    </ul>
 {% endblock %}
