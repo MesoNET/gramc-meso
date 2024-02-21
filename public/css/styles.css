@@ -19241,6 +19241,16 @@ textarea.form-control-lg {
     height: 1.5em;
 }
 
+.bottom-menu{
+    margin-left: 4em;
+    margin-top: 2em ;
+    display: flex;
+    flex-direction: row;
+}
+
+.bottom-menu-item{
+    margin-right: 2em;
+}
 
 .left-sidebar {
     width: 270px;
