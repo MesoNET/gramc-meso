@@ -24,8 +24,8 @@
 
 namespace App\Utils;
 
-use App\Entity\Journal;
-use App\Entity\Session;
+use App\Utils\Entity\Journal;
+use App\Utils\Entity\Session;
 use Doctrine\Common\Util\Debug;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;

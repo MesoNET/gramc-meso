@@ -36,13 +36,14 @@
     <p class="centrage"><strong>Gestion de vos clés ssh:</strong> <a href="{{ path('gerer_clessh') }}">{{ icones.trousseau(40,40)}}</a></p>
 
 <div class="information attention"><p class="centrage">Veuillez s'il vous plaît vérifier et si nécessaire mettre à jour
-vos informations. <br><strong>Tous les champs doivent être renseignés.</strong><br>
+vos informations. f
+        <br><strong>Tous les champs doivent être renseignés.</strong><br>
 <strong>NOTE</strong> - Pour changer l'adresse de courriel, veuillez vous adresser à {{ mailsupport}}
 </p></div>
 
 
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-
+    <img class="big-img mx-5" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}

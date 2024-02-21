@@ -32,10 +32,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class IndividuType extends AbstractType
 {
@@ -46,28 +50,45 @@ class IndividuType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if (true == $options['admin']) {
+        if ($options['admin']) {
             $builder->add('creationStamp');
         }
 
-        if (true == $options['user']) {
+        if ($options['user']) {
             $builder
                 ->add('nom', TextType::class, ['label' => 'Nom:'])
-                ->add('prenom', TextType::class, ['label' => 'Prénom']);
-            if (true == $options['mail']) {
+                ->add('prenom', TextType::class, ['label' => 'Prénom'])
+                ->add('photo', FileType::class,
+                    [
+                        'label' => 'photo',
+                        'required' => false,
+                        'mapped' => false,
+                    'constraints' => [
+                new File([
+                    'maxSize' => '12m',
+                    'mimeTypes' => [
+                        'image/png',
+                        'image/jpeg',
+                    ],
+                    'mimeTypesMessage' => 'Veillez sélectionner une image png ou jpeg de moins de 12 MO',
+                ]),
+            ],
+                    ],
+                );
+            if ($options['mail']) {
                 $builder->add('mail', EmailType::class);
             } else {
                 $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
 
-            if (true == $options['mail']) {
+            if ($options['mail']) {
                 $builder->add('mail', EmailType::class);
             } else {
                 $builder->add('mail', EmailType::class, ['disabled' => true]);
             }
         }
 
-        if (true == $options['admin']) {
+        if ($options['admin']) {
             $builder
                 ->add('admin')
                 ->add('expert')
@@ -94,7 +115,7 @@ class IndividuType extends AbstractType
                 );
         }
 
-        if (true == $options['permanent']) {
+        if ($options['permanent']) {
             $builder
                 ->add(
                     'statut',
@@ -137,9 +158,23 @@ class IndividuType extends AbstractType
                     'required' => false,
                     'attr' => ['style' => 'width:20em'],
                     ]
-            );
+            )
+            ->add('mailSecondaire',
+                EmailType::class,
+                ['required' => false,
+                    'label' => 'Mail secondaire'])
+            ->add('tel',
+                TelType::class,
+                ['required' => false,
+                    'label' => 'Numéro de téléphone (pour urgences)',
+                ])
+            ->add('urlPerso',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Site personnel',
+                ]);
 
-        if (true == $options['thematique']) {
+        if ($options['thematique']) {
             $builder->add(
                 'thematique',
                 EntityType::class,
@@ -151,7 +186,7 @@ class IndividuType extends AbstractType
             );
         }
 
-        if (true == $options['submit']) {
+        if ($options['submit']) {
             $builder
                 ->add(
                     'submit',

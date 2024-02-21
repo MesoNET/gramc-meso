@@ -45,6 +45,7 @@ use App\Utils\Functions;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -129,10 +130,10 @@ class GramcSessionController extends AbstractController
         $menu6[] = $sm->nettoyerRgpd();
 
         return $this->render('default/accueil_admin.html.twig', ['menu1' => $menu1,
-                                                                'menu3' => $menu3,
-                                                                'menu4' => $menu4,
-                                                                'menu5' => $menu5,
-                                                                'menu6' => $menu6]);
+            'menu3' => $menu3,
+            'menu4' => $menu4,
+            'menu5' => $menu5,
+            'menu6' => $menu6]);
     }
 
     #[Route(path: '/aide', name: 'aide', methods: ['GET'])]
@@ -195,16 +196,23 @@ class GramcSessionController extends AbstractController
             $old_statut = $old_individu->getStatut();
             if ($new_statut != $old_statut) {
                 $sj->noticeMessage(__METHOD__.':'.__LINE__.' '.$individu.' a changé son statut de '.$old_statut
-                .' vers '.$new_statut);
+                    .' vers '.$new_statut);
             }
 
             $new_laboratoire = $individu->getLabo();
             $old_laboratoire = $old_individu->getLabo();
             if ($new_laboratoire != $old_laboratoire) {
                 $sj->noticeMessage(__METHOD__.':'.__LINE__.' '.$individu.' a changé son laboratoire de '.$old_laboratoire
-                .' vers '.$new_laboratoire);
+                    .' vers '.$new_laboratoire);
             }
-
+            // enregistrement de la photo de profil
+            if ($form['photo'] && $form['photo']->getData()) {
+                $directory = Path::join($this->getParameter('kernel.project_dir'), 'var', 'photos');
+                $newFilename = 'avatar'.$individu->getId();
+                $file = $form['photo']->getData();
+                $file->move($directory, $newFilename);
+                $individu->setPhoto($newFilename);
+            }
             $em->persist($individu);
             $em->flush();
 
@@ -292,8 +300,8 @@ class GramcSessionController extends AbstractController
         }
 
         $form = Functions::createFormBuilder($ff)
-        ->add('save', SubmitType::class, ['label' => 'Continuer'])
-        ->getForm();
+            ->add('save', SubmitType::class, ['label' => 'Continuer'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -577,20 +585,20 @@ class GramcSessionController extends AbstractController
         $mail_connected = $connected->getMail();
         $mail_invited = $invitation->getInvited()->getMail();
         $form = Functions::createFormBuilder($ff)
-                    ->add('mail',
-                        ChoiceType::class,
-                        [
-                            'required' => true,
-                            'label' => '',
-                            'expanded' => true,
-                            'multiple' => false,
-                            'choices' => [$mail_connected => $mail_connected, $mail_invited => $mail_invited],
-                            'placeholder' => false,
-                            'label' => ' ',
-                        ]
-                    )
-                ->add('OK', SubmitType::class, ['label' => 'OK'])
-                ->getForm();
+            ->add('mail',
+                ChoiceType::class,
+                [
+                    'required' => true,
+                    'label' => '',
+                    'expanded' => true,
+                    'multiple' => false,
+                    'choices' => [$mail_connected => $mail_connected, $mail_invited => $mail_invited],
+                    'placeholder' => false,
+                    'label' => ' ',
+                ]
+            )
+            ->add('OK', SubmitType::class, ['label' => 'OK'])
+            ->getForm();
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -625,8 +633,8 @@ class GramcSessionController extends AbstractController
 
         return $this->render('individu/repinvit.html.twig',
             ['invitation' => $invitation,
-             'connected' => $connected,
-             'form' => $form->createView(),
+                'connected' => $connected,
+                'form' => $form->createView(),
             ]);
     }
 

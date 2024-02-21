@@ -442,13 +442,13 @@
                             <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
                                aria-expanded="false"
                                title="Utilisateur">
-                                <i class="ti ti-user"></i>
+                                <img class="small-img" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                  aria-labelledby="drop2">
                                 <div class="message-body">
                                     <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon profile">
-                                        <i class="ti ti-user fs-6"></i>
+                                        <img class="small-img" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
                                         <p class="mb-0 fs-3">Mon profile</p>
                                     </a>
                                     <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon compte">
