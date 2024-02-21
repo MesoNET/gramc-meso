@@ -1,4 +1,6 @@
 {% extends 'default/base.html.twig' %}
+{% import "default/icone.html.twig" as icones %}
+
 
 {% form_theme formInd with ['form_table_layout.html.twig', _self] %}
 
@@ -42,6 +44,86 @@
     {{ form_start(formInd) }}
     <fieldset>{{ form_widget(formInd) }}</fieldset>
     {{ form_end(formInd) }}
+    </div>
+    <div class="flex-column">
+        <h2>Roles</h2>
+        <div class="roles">
+        {% if( individu.valideur) == true %}
+            <div class="role-choose role">
+                <a class="admin " href="{{ path('plus_valideur',  { 'id': individu.id }) }}?" title="Retirer les droits de valideur">
+                    {{icones.valideur(20,20)}}
+                </a>
+                <span>Retirer les droits de valideur</span>
+
+            </div>
+        {% else %}
+            <div class=" role">
+                <a class="admin " href="{{ path('devenir_valideur',  { 'id': individu.id }) }}?" title="Devenir valideur">
+                    {{icones.valideur(20,20)}}
+                    </a>
+                <span>Devenir valideur</span>
+
+            </div>
+        {% endif %}
+
+        {# ################################################################################################# #}
+
+        {% if( individu.admin) == true %}
+            <div class="role-choose role">
+                <a class="admin " href="{{ path('plus_admin',  { 'id': individu.id }) }}?" title="Retirer les droits admin">
+                    {{icones.admin(20,20)}}
+                </a>
+                <span>Retirer les droits admin</span>
+
+            </div>
+        {% else %}
+        <div class=" role">
+                <a class="admin " href="{{ path('devenir_admin',  { 'id': individu.id }) }}?" title="Devenir admin">
+                    {{icones.admin(20,20)}}
+                </a>
+            <span>Devenir admin</span>
+
+        </div>
+        {% endif %}
+
+        {# ################################################################################################# #}
+
+        {% if( individu.obs) == true %}
+            <div class="role-choose role">
+                <a class="obs " href="{{ path('plus_obs',  { 'id': individu.id }) }}?" title="Retirer les droits obs">
+                    {{icones.obs(20,20)}}
+                </a>
+                <span>Retirer les droits obs</span>
+
+            </div>
+        {% else %}
+            <div class="role">
+                <a class="obs " href="{{ path('devenir_obs',  { 'id': individu.id }) }}?" title="Devenir obs">
+                    {{icones.obs(20,20)}}
+                </a>
+                <span>Devenir obs</span>
+
+            </div>
+        {% endif %}
+
+        {# ################################################################################################# #}
+
+        {% if( individu.sysadmin) == true %}
+            <div class="role-choose role">
+            <a class="sysadmin " href="{{ path('plus_sysadmin',  { 'id': individu.id }) }}?" title="Retirer les droits sysadmin">
+                {{icones.sysadmin(20,20)}}
+            </a>
+                <span>Retirer les droits sysadmin</span>
+        </div>
+        {% else %}
+            <div class=" role">
+            <a class="sysadmin" href="{{ path('devenir_sysadmin',  { 'id': individu.id }) }}?" title="Devenir sysadmin">
+                {{icones.sysadmin(20,20)}}
+            </a>
+                <span>Devenir sysadmin</span>
+            </div>
+        {% endif %}
+        </div>
     </div>
 
     {% if ajout %}

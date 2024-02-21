@@ -19248,6 +19248,29 @@ textarea.form-control-lg {
     flex-direction: row;
 }
 
+.roles{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3em ;
+}
+
+.role{
+    border: black 1px solid;
+    padding: 0.5em;
+    border-radius: 1em;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin-left: 2em ;
+    margin-right: 2em ;
+    flex-direction: column;
+}
+
+.role-choose{
+    background-color: #eeeeee;
+}
+
 .bottom-menu-item{
     margin-right: 2em;
 }
