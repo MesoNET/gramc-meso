@@ -40,6 +40,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class IndividuType extends AbstractType
 {
@@ -172,7 +173,18 @@ class IndividuType extends AbstractType
                 UrlType::class,
                 ['required' => false,
                     'label' => 'Site personnel',
-                ]);
+                ])
+            ->add('nomTwitter', TextType::class,
+                [
+                    'label' => '@ Twitter',
+                    'required' => false,
+                    'attr' => ['placeholder' => '@JohnDoe'],
+                    'constraints' => [
+                        new Regex('/^@[A-Za-z0-9_]{1,15}$/'),
+                    ],
+                ],
+            )
+        ;
 
         if ($options['thematique']) {
             $builder->add(
