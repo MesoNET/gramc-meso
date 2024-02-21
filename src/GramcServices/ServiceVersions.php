@@ -543,7 +543,6 @@ class ServiceVersions
     public function getSigneDir(Version $version): string
     {
         $dir = $this->signature_directory.'/'.$version->getProjet();
-        dump($dir);
         if (!is_dir($dir)) {
             if (file_exists($dir) && is_file($dir)) {
                 unlink($dir);
