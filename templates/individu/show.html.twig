@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'default/base.html.twig' %}
 
 {% block body %}
     <h1>Individu</h1>
-
+    <img class="big-img mx-5" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
     <table>
         <tbody>
             <tr>
@@ -20,6 +20,18 @@
             <tr>
                 <th>Mail</th>
                 <td>{{ individu.mail }}</td>
+            </tr>
+            <tr>
+                <th>Mail secondaire</th>
+                <td>{{ individu.mailSecondaire }}</td>
+            </tr>
+            <tr>
+                <th>téléphone</th>
+                <td>{{ individu.tel }}</td>
+            </tr>
+            <tr>
+                <th>urlPerso</th>
+                <td>{{ individu.urlPerso }}</td>
             </tr>
             <tr>
                 <th>Admin</th>
@@ -48,14 +60,14 @@
         </tbody>
     </table>
 
-    <ul>
-        <li>
+    <ul class="bottom-menu">
+        <li class="bottom-menu-item">
             <a href="{{ path('individu_index') }}">Back to the list</a>
         </li>
-        <li>
+        <li class="bottom-menu-item">
             <a href="{{ path('individu_edit', { 'id': individu.id }) }}">Edit</a>
         </li>
-        <li>
+        <li class="bottom-menu-item">
             {{ form_start(delete_form) }}
                 <input type="submit" value="Delete">
             {{ form_end(delete_form) }}
