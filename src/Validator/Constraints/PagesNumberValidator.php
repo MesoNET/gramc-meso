@@ -45,7 +45,7 @@ class PagesNumberValidator extends ConstraintValidator
         $this->sj = $sj;
     }
 
-    public function validate($path, Constraint $constraint)
+    public function validate($path, Constraint $constraint): void
     {
         $max_page_nb = $this->max_page_nb;
 

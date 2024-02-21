@@ -282,7 +282,6 @@ class Version implements Demande
         $this->dac = new ArrayCollection();
         $this->expertise = new ArrayCollection();
         $this->formationVersion = new ArrayCollection();
-        $this->etatVersion = Etat::EDITION_DEMANDE;
     }
 
     /**

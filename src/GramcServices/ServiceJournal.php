@@ -117,7 +117,7 @@ class ServiceJournal
         return $this->journalMessage($message, Journal::EMERGENCY);
     }
 
-    public function alertMessage($message)
+    public function alertMessage($message): void
     {
         $this->log->alert($message);
         $this->journalMessage($message, Journal::ALERT);
@@ -171,7 +171,7 @@ class ServiceJournal
      * L'exception n'est pas la même suivant qu'on est authentifié ou pas
      *
      **************************************/
-    public function throwException($text = null)
+    public function throwException($text = null): void
     {
         if (null !== $text) {
             $this->warningMessage('EXCEPTION '.$text);

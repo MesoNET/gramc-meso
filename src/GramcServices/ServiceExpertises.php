@@ -48,7 +48,6 @@ class ServiceExpertises
      ********************************************************************/
     public function getRessourceFormForVersion(Version $version): FormInterface
     {
-        $ff = $this->ff;
         $sv = $this->sv;
 
         $data = $sv->prepareRessources($version);
@@ -67,7 +66,7 @@ class ServiceExpertises
             }
         }
 
-        $form = $this->ff
+        return $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, ['ressource' => $data])
                    ->add('ressource', CollectionType::class, [
                        'entry_type' => DacType::class,
@@ -75,8 +74,6 @@ class ServiceExpertises
                        'entry_options' => ['attribution' => true],
                    ])
                    ->getForm();
-
-        return $form;
     }
 
     /********************************************************************
@@ -84,7 +81,6 @@ class ServiceExpertises
      ********************************************************************/
     public function getRessourceFormForRallonge(Rallonge $rallonge): FormInterface
     {
-        $ff = $this->ff;
         $srg = $this->srg;
 
         $data = $srg->prepareRessources($rallonge);
@@ -103,7 +99,7 @@ class ServiceExpertises
             }
         }
 
-        $form = $this->ff
+        return $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, ['ressource' => $data])
                    ->add('ressource', CollectionType::class, [
                        'entry_type' => DarType::class,
@@ -111,7 +107,5 @@ class ServiceExpertises
                        'entry_options' => ['attribution' => true],
                    ])
                    ->getForm();
-
-        return $form;
     }
 }

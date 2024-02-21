@@ -65,7 +65,7 @@ class ServiceIndividus
         $Journal = $em->getRepository(Journal::class)->findBy(['individu' => $individu]);
         $Rallonge = $em->getRepository(Rallonge::class)->findBy(['expert' => $individu]);
         $Sso = $em->getRepository(Sso::class)->findBy(['individu' => $individu]);
-        $Thematique = $individu->getThematique();
+        $individu->getThematique();
 
         // Supprimer les thématiques dont $individu est expert
         // Attention, $new_individu ne reprend pas ces thématiques
@@ -92,7 +92,7 @@ class ServiceIndividus
         }
 
         // On fait reprendre les Sso par le nouvel individu
-        $sso_de_new = $new_individu->getSso();
+        $new_individu->getSso();
         $array_eppn = [];
         foreach ($new_individu->getSso() as $item) {
             $array_eppn[] = $item->getEppn();
@@ -133,7 +133,7 @@ class ServiceIndividus
      *     1/ Ne copie que les champs nom/prénom/statut/laboratoire/établissement
      *     2/ A CONDITION que le champ de $new_individu soit VIDE !
      **************************************/
-    private function copierProfil(Individu $individu, Individu $new_individu)
+    private function copierProfil(Individu $individu, Individu $new_individu): void
     {
         $em = $this->em;
 

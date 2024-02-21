@@ -53,7 +53,6 @@ class ClesshController extends AbstractController
     public function gererAction(): Response
     {
         $token = $this->tok->getToken();
-        $em = $this->em;
 
         $moi = $token->getUser();
         $menu = [];
@@ -87,7 +86,6 @@ class ClesshController extends AbstractController
     public function gererActionAll(): Response
     {
         $token = $this->tok->getToken();
-        $em = $this->em;
 
         $moi = $token->getUser();
         $menu = [];
