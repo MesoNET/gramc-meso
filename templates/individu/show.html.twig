@@ -57,24 +57,18 @@
                 <th>Desactive</th>
                 <td>{% if individu.desactive %}Yes{% else %}No{% endif %}</td>
             </tr>
-            <tr>
-                <th>Idindividu</th>
-                <td>{{ individu.id }}</td>
-            </tr>
         </tbody>
     </table>
 
     <ul class="bottom-menu">
         <li class="bottom-menu-item">
-            <a href="{{ path('individu_index') }}">Back to the list</a>
+            <a href="{{ path('individu_gerer') }}">Back to the list</a>
         </li>
         <li class="bottom-menu-item">
-            <a href="{{ path('individu_edit', { 'id': individu.id }) }}">Edit</a>
+            <a href="{{ path('individu_modify', { 'id': individu.id }) }}">Edit</a>
         </li>
         <li class="bottom-menu-item">
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
+            <a href="{{ path('projet_admin', { 'id': individu.id }) }}">projets</a>
         </li>
     </ul>
 {% endblock %}
