@@ -40,6 +40,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class IndividuType extends AbstractType
 {
@@ -98,7 +99,7 @@ class IndividuType extends AbstractType
                 ->add('desactive');
         }
 
-        if (true == $options['user']) {
+        if ($options['user']) {
             $builder
                 ->add(
                     'labo',
@@ -172,7 +173,35 @@ class IndividuType extends AbstractType
                 UrlType::class,
                 ['required' => false,
                     'label' => 'Site personnel',
-                ]);
+                ])
+            ->add('nomTwitter', TextType::class,
+                [
+                    'label' => '@ Twitter',
+                    'required' => false,
+                    'attr' => ['placeholder' => '@JohnDoe'],
+                    'constraints' => [
+                        new Regex('/^@[A-Za-z0-9_]{1,15}$/',
+                            'Nom d\'utilisateur non valide',
+                        ),
+                    ],
+                ],
+            )
+            ->add('urlPerso',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Site personnel',
+                ])
+            ->add('urlLinkedIn',
+                UrlType::class,
+                ['required' => false,
+                    'label' => 'Url LinkedIn',
+                    'constraints' => [
+                        new Regex('/linkedin\.com/',
+                            'Cet^te URL n\'est pas un compte LinkedIn',
+                        ),
+                    ],
+                ])
+        ;
 
         if ($options['thematique']) {
             $builder->add(

@@ -262,6 +262,12 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $urlPerso = null;
 
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $nomTwitter = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $urlLinkedIn = null;
+
     // /////////////////////////////////////////
     #[ORM\PrePersist]
     public function setInitialMajStamp(): void
@@ -1054,6 +1060,30 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     public function setUrlPerso(?string $urlPerso): static
     {
         $this->urlPerso = $urlPerso;
+
+        return $this;
+    }
+
+    public function getNomTwitter(): ?string
+    {
+        return $this->nomTwitter;
+    }
+
+    public function setNomTwitter(?string $nomTwitter): static
+    {
+        $this->nomTwitter = $nomTwitter;
+
+        return $this;
+    }
+
+    public function getUrlLinkedIn(): ?string
+    {
+        return $this->urlLinkedIn;
+    }
+
+    public function setUrlLinkedIn(?string $urlLinkedIn): static
+    {
+        $this->urlLinkedIn = $urlLinkedIn;
 
         return $this;
     }
