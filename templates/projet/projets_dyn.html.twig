@@ -69,7 +69,6 @@
                         {# <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th> #}
                         <th class="sorting_asc" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 30px;" aria-sort="ascending" aria-label=": activate to sort column descending"></th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 69px;" aria-label="Numéro: activate to sort column ascending">N°</th>
-                        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;" aria-label=""></th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Etat: activate to sort column ascending" title="Etat" >E</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Titre: activate to sort column ascending">Titre</th>
                         <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Thématique: activate to sort column ascending">Thématique</th>
@@ -88,7 +87,7 @@
     
                 <tbody>
                     {% for item in data %}
-                    <tr role="row" class="odd" style="stroke:black">
+                    <tr role="row" class="odd" style="stroke:black" data-href='{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}'>
     
                         {# Sans doute à virer si on adopte un fonctionnement entièrement automatique des suppressions de projets et comptes
                         <td class="sorting_1">
@@ -121,11 +120,6 @@
                             {%endif%}
                             {{ item.projet.idProjet }}
                         </td>
-                        <td>
-                            <a href="{{ path('consulter_projet', { 'id': item.projet.idProjet }) }}" title="Consulter le projet">
-                                {{icones.details}}
-                            </a>
-                        </td>
     
                             <td class="{{ item.metaetat|lower }}">
                                 {{ gramcmacros.metagraph(item.metaetat) }}
@@ -150,7 +144,9 @@
                             <a href="mailto:{{ item.responsable.mail }}" title="Envoyer un courriel au responsable à l'adresse {{ item.responsable.mail }}">
                                 {{icones.mail_send}}
                             </a>
+                                <a href="{{ path('individu_show', { 'id': item.responsable.id }) }}">
                             {{ item.responsable.prenom }} {{ item.responsable.nom }}
+                                </a>
                             {% endif %}
                         </td>
                         <td>
