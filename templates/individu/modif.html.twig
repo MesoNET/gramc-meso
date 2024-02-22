@@ -41,10 +41,11 @@
     <p class="centrage"><em>Veuillez s'il vous plait renseigner tous les champs</em></p>
 
     <div id="profil">
-    {{ form_start(formInd) }}
+        {{ form_start(formInd) }}
     <fieldset>{{ form_widget(formInd) }}</fieldset>
-    {{ form_end(formInd) }}
+        {{ form_end(formInd) }}
     </div>
+    {% if ajout == false %}
     <div class="flex-column">
         <h2>Roles</h2>
         <div class="roles">
@@ -125,6 +126,7 @@
         {% endif %}
         </div>
     </div>
+    {% endif %}
 
     {% if ajout %}
     <p class="centrage"><em>Un courriel d'invitation sera envoyé à l'adresse de l'utilisateur que vous venez d'ajouter</em></p>
@@ -164,6 +166,9 @@
     <a class="lien_actif" href="{{ path('invitation', { 'id': individu.id }) }}"
     title="Envoyer une invitation à {{individu.prenom}} {{individu.nom}}">Inviter {{individu.prenom}} {{individu.nom}}</a>
     {% endif %}
+
+    {% if ajout==false %}
+
     <ul class="bottom-menu">
         <li class="bottom-menu-item">
             <a href="{{ path('individu_gerer') }}">Back to the list</a>
@@ -172,4 +177,6 @@
             <a href="{{ path('individu_show', { 'id': individu.id }) }}">utilisateur</a>
         </li>
     </ul>
+    {% endif %}
+
 {% endblock %}

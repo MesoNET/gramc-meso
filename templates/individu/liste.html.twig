@@ -20,9 +20,15 @@
         <strong>On peut restreindre l'affichage</strong> en entrant un filtre sur les adresses mail/nom/prénom
     </div>
 
-    <nav><ul><li>
-        <a id="ajout" class="lien_actif" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">{{ icones.nouveauUser()}}Nouvel utilisateur</a>
-    </li></ul></nav>
+    <nav>
+        <ul>
+            <li>
+                <a id="ajout" class="lien_actif-left" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">
+                    {{ icones.nouveauUser()}}Nouvel utilisateur
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <div class="formulaire inputrond">
     {# VIEUX
