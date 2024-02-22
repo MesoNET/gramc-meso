@@ -90,14 +90,14 @@ class IndividuType extends AbstractType
             }
         }
 
-        if ($options['admin']) {
+        if ($options['admin'] or $options['create']) {
             $builder
                 ->add('admin')
+                ->add('sysadmin')
+                ->add('obs')
                 ->add('expert')
-                ->add('responsable')
-                ->add('collaborateur')
-                ->add('president')
-                ->add('desactive');
+                ->add('valideur')
+                ->add('president');
         }
 
         if ($options['user']) {
@@ -235,6 +235,7 @@ class IndividuType extends AbstractType
             [
             'data_class' => 'App\Entity\Individu',
             'admin' => false,
+            'create' => false,
             'user' => true,
             'submit' => true,
             'thematique' => false,
