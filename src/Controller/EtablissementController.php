@@ -49,7 +49,7 @@ class EtablissementController extends AbstractController
     /**
      * Lists all etablissement entities.
      */
-    #[Route(path: '/', name: 'etablissement_index', methods: ['GET'])]
+    #[Route(path: '/', name: 'gerer_etablissements', methods: ['GET'])]
     public function indexAction(): Response
     {
         $em = $this->em;
