@@ -77,7 +77,7 @@ class IndividuForm
         }
         $output .= $this->getMail().':'.$this->getPrenom().':'.$this->getNom().':'.$this->getStatut().':';
 
-        return $output . ($this->getLaboratoire().':'.$this->getEtablissement().':'.$this->getId());
+        return $output.($this->getLaboratoire().':'.$this->getEtablissement().':'.$this->getId());
     }
 
     public function getLogins(): array

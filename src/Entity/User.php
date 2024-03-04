@@ -92,7 +92,7 @@ class User
      * @var string
      */
     #[ORM\Column(name: 'password', type: 'string', nullable: true, length: 200)]
-    private $password = null;
+    private $password;
 
     /**
      * @var string
@@ -112,7 +112,7 @@ class User
      */
     #[ORM\Column(name: 'pass_expiration', type: 'datetime', nullable: true)]
     #[Groups(['individu_lecture', 'user_lecture'])]
-    private $passexpir = null;
+    private $passexpir;
 
     /**
      * @var bool
@@ -141,7 +141,7 @@ class User
     {
         $output = '{';
 
-        return $output . ('loginname='.$this->getLoginname().'}');
+        return $output.('loginname='.$this->getLoginname().'}');
     }
 
     public function __construct()

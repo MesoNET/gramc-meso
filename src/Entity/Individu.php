@@ -213,7 +213,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /**
      * @var Collection
      */
-    #[ORM\OneToMany(mappedBy: 'individu', targetEntity: '\App\Entity\Sso')]
+    #[ORM\OneToMany(mappedBy: 'individu', targetEntity: '\App\Entity\Sso', orphanRemoval: true)]
     private $sso;
 
     /**
@@ -257,7 +257,7 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     private ?string $tel = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
-    private $photo = null;
+    private $photo;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $urlPerso = null;
