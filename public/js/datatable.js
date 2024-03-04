@@ -121,8 +121,18 @@ $(document).ready(function() { // table laboratoires
         "bPaginate": false,
         "bFilter":     false,
         "info":         false,
-        "aoColumnDefs": [{bSortable: false,aTargets: [ 0 ]}]
+        "aoColumnDefs": [{bSortable: false,aTargets: [ 1 ]}]
     });
 });
+
+$(document).ready(function() { // table laboratoires
+    $('#etablissement').DataTable( {
+        "bPaginate": false,
+        "bFilter":     false,
+        "info":         false,
+        "aoColumnDefs": [{bSortable: false,aTargets: [ 2 ]}]
+    });
+});
+
 
 

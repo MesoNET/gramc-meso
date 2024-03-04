@@ -27,8 +27,10 @@ namespace App\Controller;
 use App\Entity\CollaborateurVersion;
 use App\Entity\Etablissement;
 use App\Entity\Individu;
+use App\Form\EtablissementSearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -42,22 +44,38 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EtablissementController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em, private FormFactoryInterface $ff
     ) {
     }
 
     /**
      * Lists all etablissement entities.
      */
-    #[Route(path: '/', name: 'gerer_etablissements', methods: ['GET'])]
-    public function indexAction(): Response
+    #[Route(path: '/', name: 'gerer_etablissements', methods: ['GET', 'POST'])]
+    public function indexAction(Request $request): Response
     {
         $em = $this->em;
 
+        $form = $this->ff->createNamed('tri_projet', EtablissementSearchType::class, [], []);
+        $form->handleRequest($request);
         $etablissements = $em->getRepository(Etablissement::class)->findAll();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pattern = '/'.$form->getData()['nomEtablissement'].'/';
+            $etablissementsFinale = [];
+            foreach ($etablissements as $etablissement) {
+                if (preg_match($pattern, $etablissement->getLibelleEtab())) {
+                    $etablissementsFinale[] = $etablissement;
+                }
+            }
+        } else {
+            $etablissementsFinale = $em->getRepository(Etablissement::class)->findAll();
+        }
 
         return $this->render('etablissement/index.html.twig', [
-            'etablissements' => $etablissements,
+            'etablissements' => $etablissementsFinale,
+            'form' => $form->createView(),
+
+
         ]);
     }
 
