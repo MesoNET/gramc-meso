@@ -7,15 +7,14 @@
         {{ form_widget(edit_form) }}
         <input type="submit" value="Edit" />
     {{ form_end(edit_form) }}
-
     <ul>
         <li>
-            <a href="{{ path('etablissement_index') }}">Back to the list</a>
+            {{ include('default/_delete.html.twig',{id:etablissement.id, route:'etablissement_delete_cascade_null',print:
+                'Supprimer (en gardant les données associées)'
+            }) }}
         </li>
         <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
+            <a href="{{ path('etablissement_index') }}">Back to the list</a>
         </li>
     </ul>
 {% endblock %}

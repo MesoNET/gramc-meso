@@ -1,13 +1,17 @@
-{% extends 'base.html.twig' %}
-
+{% extends 'default/base.html.twig' %}
+{% import "default/icone.html.twig" as icones %}
 {% block body %}
-    <h1>Etablissements list</h1>
-
-    <table>
+    <section id="section_bilans_listes" style="stroke: black">
+    <h1>Etablissements</h1>
+        <nav><ul><li>
+                    <a id="ajout" class="lien_actif" href="{{ path('etablissement_new') }}?" title="Créer un établissement">{{ icones.nouveauUser()}}Nouvel établissement</a>
+                </li></ul></nav>
+        <div class="liste">
+        <table>
         <thead>
             <tr>
-                <th>Libelleetab</th>
-                <th>Idetab</th>
+                <th>nom</th>
+                <th>Id</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -17,23 +21,18 @@
                 <td><a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">{{ etablissement.libelleEtab }}</a></td>
                 <td>{{ etablissement.idEtab }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('etablissement_edit', { 'id': etablissement.idEtab }) }}">edit</a>
-                        </li>
-                    </ul>
+                    {{  include('etablissement/_actions.html.twig',{etablissement:etablissement}) }}
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+        </div>
 
     <ul>
         <li>
             <a href="{{ path('etablissement_new') }}">Create a new etablissement</a>
         </li>
     </ul>
+    </section>
 {% endblock %}
