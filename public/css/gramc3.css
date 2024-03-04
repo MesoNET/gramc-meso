@@ -462,6 +462,9 @@ table#profil_horiz tr td.suppr {
 .role_admin_reduit p{
     display: none;
 }
+.display-flex{
+    display: flex;
+}
 
 /* ===== FOOTER ===== */
 .footer{
