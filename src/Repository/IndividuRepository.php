@@ -41,6 +41,16 @@ class IndividuRepository extends \Doctrine\ORM\EntityRepository
                    ->getResult();
     }
 
+
+    public function getNonActiveUsers()
+    {
+        $users = $this->getEntityManager()
+            ->createQuery('SELECT DISTINCT u FROM App:Individu u, App:Sso s WHERE ( s.individu IS NULL)')
+            ->getResult();
+
+        return $users;
+    }
+
     public function getPresidentiables()
     {
         return $this->getEntityManager()

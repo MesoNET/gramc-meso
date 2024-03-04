@@ -1,12 +1,15 @@
 {% extends 'default/base.html.twig' %}
 
-{% import "default/macros.html.twig" as gramcmacros %} 
+{% import "default/macros.html.twig" as gramcmacros %}
 
-       
+{# ######################################################################### #}
+{#                         CONTENU DU TEMPLATE                               #}
 {# ######################################################################### #}
 
 {% block body %}
+
 <section id="section_administrateur">
+
     <h2>Menu</h2>
     <div>
         <h3>Les utilisateurs</h3>
@@ -34,5 +37,9 @@
         <h3>Maintenance</h3>
         {{ gramcmacros.menu(menu6) }}
     </div>
+    {% for item in users %}
+        <p>{{ item.username }}</p>
+    {% endfor %}
 </section>
+
 {% endblock body %}

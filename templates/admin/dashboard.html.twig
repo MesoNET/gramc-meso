@@ -1,0 +1,75 @@
+{% extends 'default/base.html.twig' %}
+{% block body %}
+    <div class="row justify-content-sm-around">
+        <div class="col-lg">
+            <div class="row justify-content-sm-around">
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <a href="{{ path('individu_gerer') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-users big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Users</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ users|length }}</h4>
+                    </a>
+                    <a href="{{ path('projet_dynamique') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-calendar big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Projets</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ projet|length }}</h4>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <a href="{{ path('gerer_laboratoires') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-microscope big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Laboratoires</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ laboratoire|length }}</h4>
+                    </a>
+                    <a href="{{ path('gerer_formations') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-school big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Formations</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ formations|length }}</h4>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <a href="{{ path('gerer_serveurs') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-server big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Serveur</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ serveurs|length }}</h4>
+                    </a>
+                    <a href="{{ path('expertise_liste_dyn') }}"
+                       class="p-4 text-center bg-primary-subtle card shadow-none rounded-2">
+                        <i class="ti ti-clipboard-check big-icon"></i>
+                        <p class="fw-semibold text-primary mb-1">Expertise</p>
+                        <h4 class="fw-semibold text-primary mb-0">{{ expertises|length }}</h4>
+                    </a>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="card-body">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card w-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold mb-7">Mise à jour récente</h5>
+                    <ul class="timeline-widget mb-0 position-relative mb-n5">
+                        {% for projet in lastVersion|slice(lastVersion|length-8,lastVersion|length)|reverse %}
+                            <li class="timeline-item d-flex position-relative overflow-hidden">
+                                <div class="timeline-time text-dark flex-shrink-0 text-end">{{ projet.majStamp|date("m/d/Y h:m:s") }}</div>
+                                <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                                    <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
+                                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                                </div>
+                                <div class="timeline-desc fs-3 text-dark mt-n1">{{ projet.prjTitre }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
