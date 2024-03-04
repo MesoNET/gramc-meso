@@ -362,7 +362,7 @@ class IndividuController extends AbstractController
     public function modifyAction(Request $request, Individu $individu): Response
     {
         $em = $this->em;
-        $repos = $em->getRepository(Individu::class);
+        $em->getRepository(Individu::class);
 
         $formInd = $this->createForm('App\Form\IndividuType', $individu);
         $session = $request->getSession();
@@ -739,7 +739,6 @@ class IndividuController extends AbstractController
     public function plusValideurAction(Request $request, Individu $individu): Response
     {
         $em = $this->em;
-        $se = $this->se;
 
         $individu->setValideur(false);
         $em->persist($individu);
@@ -805,7 +804,6 @@ class IndividuController extends AbstractController
     #[Route(path: '/mail_autocomplete', name: 'mail_autocomplete', methods: ['GET', 'POST'])]
     public function mailAutocompleteAction(Request $request): Response
     {
-        $sj = $this->sj;
         $ff = $this->ff;
         $em = $this->em;
         $form = $ff

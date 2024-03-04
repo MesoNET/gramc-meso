@@ -67,10 +67,8 @@ class ServiceRallonges
 
     public function creerRallonge(Version $version): Rallonge
     {
-        $su = $this->su;
-        $sr = $this->sr;
         $sroc = $this->sroc;
-        $token = $this->tok->getToken();
+        $this->tok->getToken();
         $em = $this->em;
 
         $rallonge = new Rallonge();
@@ -177,19 +175,13 @@ class ServiceRallonges
      ********************************************************************/
     public function getRessourceForm(Rallonge $rallonge): FormInterface
     {
-        $sj = $this->sj;
-        $em = $this->em;
-        $sval = $this->vl;
-
-        $form = $this->ff
+        return $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, ['ressource' => $this->prepareRessources($rallonge)])
                    ->add('ressource', CollectionType::class, [
                        'entry_type' => DarType::class,
                        'label' => true,
                    ])
                    ->getForm();
-
-        return $form;
     }
 
     /*********************************

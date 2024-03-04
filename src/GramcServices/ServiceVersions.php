@@ -674,7 +674,6 @@ class ServiceVersions
     {
         $em = $this->em;
         $su = $this->su;
-        $sj = $this->sj;
 
         foreach ($em->getRepository(Serveur::class)->findAll() as $s) {
             $u = $su->getUser($individu, $projet, $s);
@@ -747,14 +746,9 @@ class ServiceVersions
             if ($s >= $j1 && $s <= $d31) {
                 return true;
             }
-            if ($e >= $j1 && $e <= $d31) {
-                return true;
-            }
-
             // if ($version->getIdVersion() === '02M23017') {dd($version->getIdVersion(),$s,$e,$j1,$d31);};
-
             // Sinon on renvoie false
-            return false;
+            return $e >= $j1 && $e <= $d31;
         } else {
             return $version->getFullAnnee() == strval($annee);
         }
@@ -929,10 +923,6 @@ class ServiceVersions
      ********************************************************************/
     public function getFormationForm(Version $version): FormInterface
     {
-        $sj = $this->sj;
-        $em = $this->em;
-        $sval = $this->vl;
-
         $text_fields = true;
         if ($this->resp_peut_modif_collabs) {
             $text_fields = false;
@@ -976,8 +966,6 @@ class ServiceVersions
     public function handleFormationForms(array $formation_forms, Version $version): void
     {
         $em = $this->em;
-        $sj = $this->sj;
-        $sval = $this->vl;
 
         // dd($formation_forms);
         // On fait la modification sur la version passée en paramètre
@@ -1049,11 +1037,7 @@ class ServiceVersions
      ********************************************************************************************/
     public function getRessourceForm(Version $version, bool $attribution = false): FormInterface
     {
-        $sj = $this->sj;
-        $em = $this->em;
-        $sval = $this->vl;
-
-        $form = $this->ff
+        return $this->ff
                    ->createNamedBuilder('form_ressource', FormType::class, ['ressource' => $this->prepareRessources($version)])
                    ->add('ressource', CollectionType::class, [
                        'entry_type' => DacType::class,
@@ -1061,8 +1045,6 @@ class ServiceVersions
                        'label' => true,
                    ])
                    ->getForm();
-
-        return $form;
     }
 
     /*********************************
@@ -1225,7 +1207,7 @@ class ServiceVersions
         //    - Version active
         //    - Dernière version
         $projet = $vers->getProjet();
-        $verder = $projet->getVersionDerniere();
+        $projet->getVersionDerniere();
         $versions = [];
         if (null != $projet->getVersionActive()) {
             $versions[] = $projet->getVersionActive();
@@ -1358,7 +1340,6 @@ class ServiceVersions
     public function getCollaborateurForm(Version $version): FormInterface
     {
         $sj = $this->sj;
-        $em = $this->em;
         $sr = $this->sr;
         $sval = $this->vl;
 
@@ -1402,8 +1383,6 @@ class ServiceVersions
      **/
     public function validateVersion(Version $version): array
     {
-        $em = $this->em;
-
         $todo = [];
         if (null == $version->getPrjTitre()) {
             $todo[] = 'prj_titre';

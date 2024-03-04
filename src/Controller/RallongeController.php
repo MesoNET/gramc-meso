@@ -82,8 +82,6 @@ class RallongeController extends AbstractController
     #[Route(path: '/dynamiques', name: 'rallonge_dynamique', methods: ['GET'])]
     public function rallongesDynamiquesAction(): Response
     {
-        $em = $this->em;
-        $sj = $this->sj;
         $sp = $this->sp;
         $sroc = $this->sroc;
 
@@ -119,7 +117,6 @@ class RallongeController extends AbstractController
     {
         $version = $rallonge->getVersion();
         $projet = null;
-        $session = null;
         if (null != $version) {
             $projet = $version->getProjet();
         } else {
@@ -137,12 +134,10 @@ class RallongeController extends AbstractController
     public function creationAction(Request $request, Projet $projet, LoggerInterface $lg): Response
     {
         $sm = $this->sm;
-        $ss = $this->ss;
         $sp = $this->sp;
 
         $sj = $this->sj;
         $srg = $this->srg;
-        $em = $this->em;
 
         // ACL
         if (false == $sm->nouvelleRallonge($projet)['ok']) {

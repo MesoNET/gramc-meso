@@ -51,7 +51,6 @@ class ServiceUsers
      *************************************/
     public function collaborateurVersion2LoginNames(?CollaborateurVersion $cv = null, bool $long = false): array
     {
-        $em = $this->em;
         $sr = $this->sr;
 
         $serveurs = $sr->getServeurs();

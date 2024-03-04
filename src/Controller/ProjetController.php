@@ -162,7 +162,6 @@ class ProjetController extends AbstractController
     #[Route(path: '/{id}/back', name: 'back_version', methods: ['GET', 'POST'])]
     public function backAction(Projet $projet, Request $request): Response
     {
-        $se = $this->se;
         $em = $this->em;
 
         // On travaille sur la DERNIERE version du projet, sinon rien !
@@ -215,7 +214,6 @@ class ProjetController extends AbstractController
     public function forwardAction(Projet $projet, Request $request, LoggerInterface $lg): Response
     {
         $se = $this->se;
-        $em = $this->em;
 
         // On travaille sur la DERNIERE version du projet, sinon rien !
         $version = $projet->getVersionDerniere();
@@ -332,7 +330,7 @@ class ProjetController extends AbstractController
 
         $data = [];
         $collaborateurVersionRepository = $em->getRepository(CollaborateurVersion::class);
-        $versionRepository = $em->getRepository(Version::class);
+        $em->getRepository(Version::class);
         $projetRepository = $em->getRepository(Projet::class);
 
         foreach ($projets_data as $projet_data) {
@@ -390,7 +388,6 @@ class ProjetController extends AbstractController
     {
         $sm = $this->sm;
         $sj = $this->sj;
-        $ss = $this->ss;
         $token = $this->tok->getToken();
 
         if (false == $sm->nouveauProjet($type)['ok']) {
@@ -423,16 +420,9 @@ class ProjetController extends AbstractController
     {
         $grdt = $this->grdt;
         $sm = $this->sm;
-        $ss = $this->ss;
         $sp = $this->sp;
-        $sv = $this->sv;
         $sj = $this->sj;
-        $sr = $this->sr;
-        $sroc = $this->sroc;
-        $su = $this->su;
-        $grdt = $this->grdt;
-        $token = $this->tok->getToken();
-        $em = $this->em;
+        $this->tok->getToken();
 
         // contournement d'un problème lié à Doctrine (???))
         $request->getSession()->remove('SessionCourante'); // remove cache
@@ -458,12 +448,9 @@ class ProjetController extends AbstractController
     #[Route(path: '/accueil', name: 'projet_accueil', methods: ['GET', 'POST'])]
     public function accueilAction(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
-        $sm = $this->sm;
         $ff = $this->ff;
-        $ss = $this->ss;
         $sp = $this->sp;
         $su = $this->su;
-        $sr = $this->sr;
         $token = $this->token;
         $sid = $this->sid;
         $em = $this->em;
@@ -472,7 +459,7 @@ class ProjetController extends AbstractController
 
         $projetRepository = $em->getRepository(Projet::class);
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
-        $user_repo = $em->getRepository(User::class);
+        $em->getRepository(User::class);
         $form = $ff->createNamed('tri_projet', GererProjetType::class, [], []);
         $form->handleRequest($request);
 
@@ -589,9 +576,7 @@ class ProjetController extends AbstractController
         $em = $this->em;
         $sp = $this->sp;
         $sj = $this->sj;
-        $su = $this->su;
-        $coll_vers_repo = $em->getRepository(CollaborateurVersion::class);
-        $token = $this->token;
+        $em->getRepository(CollaborateurVersion::class);
 
         // choix de la version
         if (null == $version) {
@@ -624,11 +609,8 @@ class ProjetController extends AbstractController
         $em = $this->em;
         $sm = $this->sm;
         $sp = $this->sp;
-        $ac = $this->ac;
         $sv = $this->sv;
-        $sj = $this->sj;
         $ff = $this->ff;
-        $ss = $this->ss;
         $token = $this->token;
         $moi = $token->getUser();
 

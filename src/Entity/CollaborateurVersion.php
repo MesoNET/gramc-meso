@@ -47,7 +47,7 @@ class CollaborateurVersion
      * @var bool
      */
     #[ORM\Column(name: 'responsable', type: 'boolean', nullable: false)]
-    private $responsable;
+    private $responsable = false;
 
     /**
      * @var bool
@@ -109,15 +109,12 @@ class CollaborateurVersion
         $output .= 'statut='.$this->getStatut().':';
         $output .= 'labo='.$this->getLabo().':';
         $output .= 'etab='.$this->getEtab().':';
-        $output .= 'collab='.$this->getCollaborateur().'}';
 
-        return $output;
+        return $output . ('collab='.$this->getCollaborateur().'}');
     }
 
     public function __construct(?Individu $individu = null, ?Version $version = null)
     {
-        $this->responsable = false;
-
         if (null != $individu) {
             $this->statut = $individu->getStatut();
             $this->labo = $individu->getLabo();

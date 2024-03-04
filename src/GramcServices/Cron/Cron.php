@@ -33,7 +33,7 @@ class Cron
         $this->taches[] = $ict;
     }
 
-    public function execute()
+    public function execute(): void
     {
         foreach ($this->taches as $t) {
             $t->cronExecute();

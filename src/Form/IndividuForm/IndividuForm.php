@@ -38,8 +38,8 @@ class IndividuForm
 {
     // Un tableau associatif, indexé par les noms de serveurs
     protected $logins = [];
-    protected $deleted;
-    protected $responsable;
+    protected $deleted = false;
+    protected $responsable = false;
 
     protected $mail;
     protected $prenom;
@@ -55,8 +55,6 @@ class IndividuForm
         foreach ($srv_noms as $n) {
             $this->logins[$n] = false;
         }
-        $this->deleted = false;
-        $this->responsable = false;
         if (null != $individu) {
             $this->mail = $individu->getMail();
             $this->prenom = $individu->getPrenom();
@@ -78,9 +76,8 @@ class IndividuForm
             $output .= 'RESPONSABLE:';
         }
         $output .= $this->getMail().':'.$this->getPrenom().':'.$this->getNom().':'.$this->getStatut().':';
-        $output .= $this->getLaboratoire().':'.$this->getEtablissement().':'.$this->getId();
 
-        return $output;
+        return $output . ($this->getLaboratoire().':'.$this->getEtablissement().':'.$this->getId());
     }
 
     public function getLogins(): array

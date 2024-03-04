@@ -238,7 +238,7 @@ class GramcAuthenticator extends AbstractAuthenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $individu = $token->getUser();
+        $token->getUser();
         $this->sj->infoMessage($token->getUser()." vient de s'authentifier");
         // $request->getSession()->getFlashbag()->add("flash info","Vous êtes authentifié");
 

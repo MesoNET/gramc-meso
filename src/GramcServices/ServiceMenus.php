@@ -825,7 +825,7 @@ class ServiceMenus
     // Envoyer en expertise pour un projet de type 4
     private function __envoyerVersion4(Version $version, int $priorite): array
     {
-        $projet = $version->getProjet();
+        $version->getProjet();
         $user = $this->token->getUser();
 
         $menu['name'] = 'envoyer_en_expertise';
@@ -1014,8 +1014,6 @@ class ServiceMenus
 
     public function nouvelleRallonge(Projet $projet, int $priorite = self::HPRIO): array
     {
-        $sp = $this->sp;
-
         $menu['lien'] = 'Extension';
         $menu['commentaire'] = 'Vous ne pouvez pas créer une nouvelle extension';
         $menu['ok'] = false;
