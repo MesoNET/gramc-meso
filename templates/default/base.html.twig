@@ -12,7 +12,7 @@
     <link rel="icon" href="{{ absolute_url(asset('icones/favicon.ico')) }}"/>
 
     {% block stylesheets %}
-
+        <link rel="stylesheet" href="{{ (asset("libs/owl.carousel/dist/assets/owl.carousel.min.css")) }}"/>
         <link href="{{ absolute_url(asset('js/jquery-ui/jquery-ui.css')) }}" rel="stylesheet" type="text/css"
               media="screen"/>
         <link href="{{ absolute_url(asset('js/jquery-upload-file-master/css/uploadfile.css') ) }}" rel="stylesheet"
@@ -29,6 +29,8 @@
 
     {% block javascripts %}
         <script src="{{ absolute_url(asset('js/jquery-3.6.0.min.js') ) }}"></script>
+        <script src="{{ absolute_url(asset('libs/jquery/dist/jquery.min.js') ) }}"></script>
+
         <script src="{{ absolute_url(asset('js/jquery-ui/jquery-ui.js') ) }}"></script>
         <script src="{{ absolute_url(asset('js/header_fixe.js') ) }}"></script>
         <script src="{{ absolute_url(asset('js/base.js') ) }}"></script>
@@ -36,8 +38,12 @@
         <script src="{{ absolute_url(asset("js/sidebarmenu.js")) }}"></script>
         <script src="{{ absolute_url(asset("js/app.min.js")) }}"></script>
         <script src="{{ absolute_url(asset("libs/apexcharts/dist/apexcharts.min.js")) }}"></script>
-        <script src="{{ absolute_url(asset("libs/simplebar/dist/simplebar.js")) }}"></script>
+        <script src="{{ absolute_url(asset("libs/simplebar/dist/simplebar.min.js")) }}"></script>
         <script src="{{ absolute_url(asset("js/dashboard.js")) }}"></script>
+        <script src="{{ absolute_url(asset("libs/owl.carousel/dist/owl.carousel.min.js")) }}"></script>
+        <script src="{{ absolute_url(asset("js/app.init.js")) }}"></script>
+
+
     {% endblock javascripts %}
 
     {% block myjavascripts %}
@@ -53,7 +59,7 @@
 <body>
 {% block header %}
 {% if not app.request.xmlhttprequest %}
-<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+<div id="main-wrapper" class="page-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
      data-sidebar-position="fixed" data-header-position="fixed">
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
@@ -91,7 +97,8 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('nouveau_projet',{type:4}) }}" aria-expanded="false"
+                                <a class="sidebar-link" href="{{ path('nouveau_projet',{type:4}) }}"
+                                   aria-expanded="false"
                                    title="Crée un nouveau projet">
                                     <i class="ti ti-clipboard-plus"></i>
                                     <span class="hide-menu">Nouveau Projet</span>
@@ -108,8 +115,8 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('expertise_liste_dyn') }}" aria-expanded="false"
                                    title="Accéder à l'espace valideur">
-                                <i class="ti ti-clipboard-check"></i>
-                                <span class="hide-menu">Projet à valider</span>
+                                    <i class="ti ti-clipboard-check"></i>
+                                    <span class="hide-menu">Projet à valider</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -127,7 +134,7 @@
                                     <span class="hide-menu">Utilisateur</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'individu_gerer' or app.request.get('_route') == 'invitations'  %}
+                            {% if app.request.get('_route') == 'individu_gerer' or app.request.get('_route') == 'invitations' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link " href="{{ path('invitations') }}" aria-expanded="false"
                                        title="Invitation">
@@ -145,14 +152,16 @@
                             </li>
                             {% if app.request.get('_route') == 'projet_dynamique' or app.request.get('_route') == 'rallonge_dynamique' or app.request.get('_route') == 'televersement_generique' %}
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('rallonge_dynamique') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('rallonge_dynamique') }}"
+                                       aria-expanded="false"
                                        title="Demandes d'extension">
                                         <i class="ti ti-calendar"></i>
                                         <span class="hide-menu sous-menu-span"> Extension</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('televersement_generique') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('televersement_generique') }}"
+                                       aria-expanded="false"
                                        title="Téléversements">
                                         <i class="ti ti-file-upload"></i>
                                         <span class="hide-menu sous-menu-span">Téléversements</span>
@@ -168,14 +177,16 @@
                             </li>
                             {% if app.request.get('_route') == 'gerer_formations' or app.request.get('_route') == 'gerer_laboratoires' or app.request.get('_route') == 'gerer_thematiques' or app.request.get('_route') == 'gerer_serveurs' or app.request.get('_route') == 'gerer_ressources' %}
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_laboratoires') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('gerer_laboratoires') }}"
+                                       aria-expanded="false"
                                        title="Laboratoires">
                                         <i class="ti ti-microscope"></i>
                                         <span class="hide-menu sous-menu-span">Laboratoires</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_thematiques') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('gerer_thematiques') }}"
+                                       aria-expanded="false"
                                        title="Thématiques">
                                         <i class="ti ti-atom"></i>
                                         <span class="hide-menu sous-menu-span">Thématiques</span>
@@ -203,16 +214,18 @@
                                     <span class="hide-menu">Bilans & stats</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'statistiques_dyn' or app.request.get('_route') == 'statistiques_formation'or app.request.get('_route') == 'publication_annee'  %}
+                            {% if app.request.get('_route') == 'statistiques_dyn' or app.request.get('_route') == 'statistiques_formation'or app.request.get('_route') == 'publication_annee' %}
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('statistiques_formation') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('statistiques_formation') }}"
+                                       aria-expanded="false"
                                        title="Demande de formation">
                                         <i class="ti ti-school"></i>
                                         <span class="hide-menu sous-menu-span">Formation</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('publication_annee') }}" aria-expanded="false"
+                                    <a class="sidebar-link " href="{{ path('publication_annee') }}"
+                                       aria-expanded="false"
                                        title="Publication">
                                         <i class="ti ti-books"></i>
                                         <span class="hide-menu sous-menu-span">Publication</span>
@@ -274,8 +287,8 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="{{ path('president_accueil') }}"
                                    title="Accéder à l'espace Président" aria-expanded="false">
-                                <i class="ti ti-crown"></i>
-                                <span class="hide-menu">Président</span>
+                                    <i class="ti ti-crown"></i>
+                                    <span class="hide-menu">Président</span>
                                 </a>
                             </li>
                         {% endif %}
@@ -286,7 +299,8 @@
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ path('deconnexion') }}" aria-expanded="false" title="Déconnexion">
+                            <a class="sidebar-link" href="{{ path('deconnexion') }}" aria-expanded="false"
+                               title="Déconnexion">
                                             <span>
                                               <i class="ti ti-login"></i>
                                             </span>
@@ -296,7 +310,8 @@
                     {% else %}
                         {% if mode_auth == 'saml2' %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('connexion') }}" aria-expanded="false" title="Connexion">
+                                <a class="sidebar-link" href=" {{ path('connexion') }}" aria-expanded="false"
+                                   title="Connexion">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
@@ -306,7 +321,8 @@
                         {% endif %}
                         {% if mode_auth == 'openid' %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('remlogin') }}" aria-expanded="false" title="Connexion">
+                                <a class="sidebar-link" href=" {{ path('remlogin') }}" aria-expanded="false"
+                                   title="Connexion">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
@@ -316,7 +332,8 @@
                         {% endif %}
                         {% if app.debug %}
                             <li class="sidebar-item">
-                                <a class="sidebar-link" href=" {{ path('connexion_dbg') }}" aria-expanded="false" title="Connexion (DBG)">
+                                <a class="sidebar-link" href=" {{ path('connexion_dbg') }}" aria-expanded="false"
+                                   title="Connexion (DBG)">
                                                 <span>
                                                   <i class="ti ti-login"></i>
                                                 </span>
@@ -346,7 +363,8 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link sidebar-icon" href="https://www.mesonet.fr/documentation/user-documentation/" title="Documentation">
+                        <a class="sidebar-link sidebar-icon"
+                           href="https://www.mesonet.fr/documentation/user-documentation/" title="Documentation">
                                 <span>
                                     <i class="ti ti-book"></i>
                                 </span>
@@ -354,20 +372,20 @@
                         </a>
                     </li>
                     {% if mentions_legales != null %}
-                    <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-icon" href="{{ asset(mentions_legales) }}" target="_blank"
-                                 title="Lire les mentions légales">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-icon" href="{{ asset(mentions_legales) }}" target="_blank"
+                               title="Lire les mentions légales">
                             <span>
                                 <i class="ti ti-lock-access"></i>
                             </span>
-                            <span class="hide-menu">Mentions légales </span>
-                        </a>
-                    </li>
+                                <span class="hide-menu">Mentions légales </span>
+                            </a>
+                        </li>
                     {% endif %}
                     {% if mesoc_cga != null %}
                         <li class="sidebar-item">
-                        <a href="{{ asset(mesoc_cga) }}" target="_blank" class="sidebar-link sidebar-icon"
-                                     title="Lire les conditions Générales d'Attribution">
+                            <a href="{{ asset(mesoc_cga) }}" target="_blank" class="sidebar-link sidebar-icon"
+                               title="Lire les conditions Générales d'Attribution">
                                 <span>
                                     <i class="ti ti-file"></i>
                                 </span>
@@ -377,7 +395,8 @@
                     {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-icon" href="{{ path('gerer_clessh') }}" title="Gérer vos clés ssh">
+                            <a class="sidebar-link sidebar-icon" href="{{ path('gerer_clessh') }}"
+                               title="Gérer vos clés ssh">
                                 <span>
                                     <i class="ti ti-key"></i>
                                 </span>
@@ -405,65 +424,73 @@
                     </li>
                 </ul>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-                    <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
-                               aria-expanded="false"
-                               title="Notifications">
-                                <i class="ti ti-bell-ringing"></i>
-                                {% set notifs = [] %}
-                                {% for notification in app.user.notifications %}
-                                    {% if notification.lu == false  %}
-                                        {% set notifs = notifs|merge([notification]) %}
+                    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
+                                   aria-expanded="false"
+                                   title="Notifications">
+                                    <i class="ti ti-bell-ringing"></i>
+                                    {% set notifs = [] %}
+                                    {% for notification in app.user.notifications %}
+                                        {% if notification.lu == false %}
+                                            {% set notifs = notifs|merge([notification]) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% set taille = notifs|length %}
+                                    {% if taille >0 %}
+                                        <span class="badge rounded-pill badge-notification bg-danger"
+                                              title="nombres de notifications">{{ app.user.notifications|length }}</span>
                                     {% endif %}
-                                {% endfor %}
-                                {% set taille = notifs|length  %}
-                                {% if taille >0 %}
-                                    <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">{{ app.user.notifications|length }}</span>
-                                {% endif %}
-                                {% if taille >100 %}
-                                    <span class="badge rounded-pill badge-notification bg-danger" title="nombres de notifications">99+</span>
-                                {% endif %}
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
-                                 aria-labelledby="drop2">
-                                <div class="message-body justify-content-center">
-                                    {% include "notification/notifications.html.twig" %}
-                                    <a href="{{ path('notifications') }}"
-                                       class="d-flex align-items-center justify-content-center gap-2 dropdown-item"
-                                       title="Voire plus">
-                                        <p class="mb-0 fs-3">Voir plus</p>
-                                    </a>
+                                    {% if taille >100 %}
+                                        <span class="badge rounded-pill badge-notification bg-danger"
+                                              title="nombres de notifications">99+</span>
+                                    {% endif %}
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                     aria-labelledby="drop2">
+                                    <div class="message-body justify-content-center">
+                                        {% include "notification/notifications.html.twig" %}
+                                        <a href="{{ path('notifications') }}"
+                                           class="d-flex align-items-center justify-content-center gap-2 dropdown-item"
+                                           title="Voire plus">
+                                            <p class="mb-0 fs-3">Voir plus</p>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
-                               aria-expanded="false"
-                               title="Utilisateur">
-                                <img class="small-img" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
-                                 aria-labelledby="drop2">
-                                <div class="message-body">
-                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon profile">
-                                        <img class="small-img" src="{{ path('get_avatar', {individu: app.user.id}) }}" alt="Photo de profil"/>
-                                        <p class="mb-0 fs-3">Mon profile</p>
-                                    </a>
-                                    <a href="{{ path('profil')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon compte">
-                                        <i class="ti ti-mail fs-6"></i>
-                                        <p class="mb-0 fs-3">Mon compte</p>
-                                    </a>
-                                    <a href="{{ path('notifications')}}" class="d-flex align-items-center gap-2 dropdown-item" title="Mon tâches">
-                                        <i class="ti ti-list-check fs-6"></i>
-                                        <p class="mb-0 fs-3">Mes tâches</p>
-                                    </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-icon-hover" href="" id="drop2" data-bs-toggle="dropdown"
+                                   aria-expanded="false"
+                                   title="Utilisateur">
+                                    <img class="small-img" src="{{ path('get_avatar', {individu: app.user.id}) }}"
+                                         alt="Photo de profil"/>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                     aria-labelledby="drop2">
+                                    <div class="message-body">
+                                        <a href="{{ path('profil') }}"
+                                           class="d-flex align-items-center gap-2 dropdown-item" title="Mon profile">
+                                            <img class="small-img"
+                                                 src="{{ path('get_avatar', {individu: app.user.id}) }}"
+                                                 alt="Photo de profil"/>
+                                            <p class="mb-0 fs-3">Mon profile</p>
+                                        </a>
+                                        <a href="{{ path('profil') }}"
+                                           class="d-flex align-items-center gap-2 dropdown-item" title="Mon compte">
+                                            <i class="ti ti-mail fs-6"></i>
+                                            <p class="mb-0 fs-3">Mon compte</p>
+                                        </a>
+                                        <a href="{{ path('notifications') }}"
+                                           class="d-flex align-items-center gap-2 dropdown-item" title="Mon tâches">
+                                            <i class="ti ti-list-check fs-6"></i>
+                                            <p class="mb-0 fs-3">Mes tâches</p>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                            </li>
+                        </ul>
+                    </div>
                 {% endif %}
             </nav>
         </header>
@@ -509,48 +536,50 @@
 
         {# ###################################################################### #}
         <div class="container-fluid">
-                    {% block menu %}
-                    {% endblock menu %}
+            {% block menu %}
+            {% endblock menu %}
 
-                    {% block before_body %}
-                    {% endblock before_body %}
+            {% block before_body %}
+            {% endblock before_body %}
 
-                    {% block body %}
-                    {% endblock body %}
+            {% block body %}
+            {% endblock body %}
 
-                    {% block after_body %}
-                    {% endblock after_body %}
+            {% block after_body %}
+            {% endblock after_body %}
         </div>
+        <br><br>
     </div>
-    <br><br>
-    {% block footer %}
-        {# footer #}
-        <footer class="footer">
-            <div>
-                {{ infos.gramc_date('Y-m-d') }}
-            </div>
-            <div class="liens_importants_footer">
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <span>gramc-meso {{ infos.VERSION }} - design <a
-                                href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a>  and <a
-                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
-                                target='_blank'>adminmart</a> - <a href="mailto:{{ mailadmin }}"
-                                                                      class="lien_footer">{{ mailadmin }}</a></span>
-                {% else %}
-                    <span>gramc-meso {{ infos.VERSION }} - design <a
-                                href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
-                                target='_blank'>Ugo Mariotto</a>  and <a
-                                href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
-                                target='_blank'>adminmart</a> - {{ infos.mail_replace(mailadmin) }}</span>
-                {% endif %}
 
-            </div>
-
-        </footer>
-
-    {% endblock footer %}
 </div>
+
+{% block footer %}
+    {# footer #}
+    <footer class="footer">
+        <div>
+            {{ infos.gramc_date('Y-m-d') }}
+        </div>
+        <div class="liens_importants_footer">
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <span>gramc-meso {{ infos.VERSION }} - design <a
+                            href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
+                            target='_blank'>Ugo Mariotto</a>  and <a
+                            href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                            target='_blank'>adminmart</a> - <a href="mailto:{{ mailadmin }}"
+                                                               class="lien_footer">{{ mailadmin }}</a></span>
+            {% else %}
+                <span>gramc-meso {{ infos.VERSION }} - design <a
+                            href="https://fr.linkedin.com/in/ugo-mariotto-952aa21b8"
+                            target='_blank'>Ugo Mariotto</a>  and <a
+                            href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/"
+                            target='_blank'>adminmart</a> - {{ infos.mail_replace(mailadmin) }}</span>
+            {% endif %}
+
+        </div>
+
+    </footer>
+
+{% endblock footer %}
 </body>
 
 </html>
