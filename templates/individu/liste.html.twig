@@ -20,9 +20,15 @@
         <strong>On peut restreindre l'affichage</strong> en entrant un filtre sur les adresses mail/nom/prénom
     </div>
 
-    <nav><ul><li>
-        <a id="ajout" class="lien_actif" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">{{ icones.nouveauUser()}}Nouvel utilisateur</a>
-    </li></ul></nav>
+    <nav>
+        <ul>
+            <li>
+                <a id="ajout" class="lien_actif-left" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">
+                    {{ icones.nouveauUser()}}Nouvel utilisateur
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <div class="formulaire inputrond">
     {# VIEUX
@@ -74,10 +80,6 @@
                         <th>&nbsp;</th>
                         <th>&nbsp;</th>
                         <th>Activé</th>
-                        <th><span title="Valideur">V</span></th>
-                        <th><span title="Admin">A</span></th>
-                        <th><span title="Observateur">O</span></th>
-                        <th><span title="Admin sys">AS</span></th>
                         <th>Prénom</th>
                         <th>Nom</th>
                         <th>Courriel</th>
@@ -87,7 +89,7 @@
                 </thead>
                 <tbody>
                     {% for individu in individus %}
-                    <tr>
+                    <tr data-href='{{ path('individu_show', { 'id': individu.id }) }}'>
                        {% include 'individu/ligne.html.twig' %}
                     </tr>
                     {% endfor %}
