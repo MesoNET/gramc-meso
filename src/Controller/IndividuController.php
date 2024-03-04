@@ -331,7 +331,7 @@ class IndividuController extends AbstractController
     {
         $em = $this->em;
         $individu = new Individu();
-        $editForm = $this->createForm('App\Form\IndividuType', $individu);
+        $editForm = $this->createForm('App\Form\IndividuType', $individu, ['create' => true]);
 
         $editForm->handleRequest($request);
 

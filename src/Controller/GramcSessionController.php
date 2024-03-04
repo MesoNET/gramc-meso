@@ -25,9 +25,13 @@
 namespace App\Controller;
 
 use App\Entity\CollaborateurVersion;
+use App\Entity\Expertise;
+use App\Entity\Formation;
 use App\Entity\Individu;
 use App\Entity\Invitation;
+use App\Entity\Laboratoire;
 use App\Entity\Projet;
+use App\Entity\Serveur;
 use App\Entity\Sso;
 use App\Entity\Version;
 use App\Form\IndividuType;
@@ -88,12 +92,52 @@ class GramcSessionController extends AbstractController
     ) {
     }
 
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route(path: '/admin/dashboard', name: 'admin_dashboard', methods: ['GET'])]
+    public function adminDashboard(): Response
+    {
+        $em = $this->em;
+        $users = $em->getRepository(Individu::class)->findAll();
+        $laboratoire = $em->getRepository(Laboratoire::class)->findAll();
+        $serveurs = $em->getRepository(Serveur::class)->findAll();
+        $version = $em->getRepository(Version::class)->findAll();
+        $projet = $em->getRepository(Projet::class)->findAll();
+        $formations = $em->getRepository(Formation::class)->findAll();
+        $expertises = $em->getRepository(Expertise::class)->findExpertisesDyn();
+        $lastVersion = [];
+        foreach ($version as $v) {
+            if (null != $v->getMajStamp()) {
+                $lastVersion[] = $v;
+            }
+        }
+        date_default_timezone_set('Europe/Paris');
+        $currentDateTime = new \DateTime();
+
+        usort($lastVersion,
+            fn ($a, $b) => (
+                $a->getMajStamp()->getTimestamp() - $currentDateTime->getTimestamp()
+                > $b->getMajStamp()->getTimestamp() - $currentDateTime->getTimestamp()
+            )
+        );
+
+        return $this->render('admin/dashboard.html.twig',
+            ['users' => $users,
+                'laboratoire' => $laboratoire,
+                'serveurs' => $serveurs,
+                'lastVersion' => $lastVersion,
+                'projet' => $projet,
+                'formations' => $formations,
+                'expertises' => $expertises, ]);
+    }
+
     #[IsGranted('ROLE_OBS')]
     #[Route(path: '/admin/accueil', name: 'admin_accueil', methods: ['GET'])]
     public function adminAccueilAction(): Response
     {
         $sm = $this->sm;
         $sid = $this->sid;
+        $em = $this->em;
+
         $token = $this->ts->getToken();
 
         if (null != $token) {
@@ -102,6 +146,7 @@ class GramcSessionController extends AbstractController
                 return $this->redirectToRoute('profil');
             }
         }
+        $users = $em->getRepository(Individu::class)->findAll();
 
         $menu1[] = $sm->gererIndividu();
         $menu1[] = $sm->gererInvitations();
@@ -128,12 +173,14 @@ class GramcSessionController extends AbstractController
         $menu6[] = $sm->testerMail();
         $menu6[] = $sm->phpInfo();
         $menu6[] = $sm->nettoyerRgpd();
+        dump($users);
 
         return $this->render('default/accueil_admin.html.twig', ['menu1' => $menu1,
             'menu3' => $menu3,
             'menu4' => $menu4,
             'menu5' => $menu5,
-            'menu6' => $menu6]);
+            'menu6' => $menu6,
+            'users' => $users]);
     }
 
     #[Route(path: '/aide', name: 'aide', methods: ['GET'])]

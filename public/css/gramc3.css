@@ -720,6 +720,18 @@ nav li:hover a .fill{
     font-weight: bold;
 }
 
+.lien_actif-left{
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    background: none;
+    padding: 0.5em;
+    margin: 0;
+    display: flex;
+    color: black;
+    stroke: black;
+}
+
 .lien_actif{
     color: black;
     stroke: black;

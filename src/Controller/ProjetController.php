@@ -566,6 +566,133 @@ class ProjetController extends AbstractController
     }
 
     /**
+     * Montre les projets d'un utilisateur donnée.
+     */
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route(path: '/admin/{id}', name: 'projet_admin', methods: ['GET', 'POST'])]
+    public function AdminProjetAction(Request $request, int $id): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    {
+        $sm = $this->sm;
+        $ff = $this->ff;
+        $ss = $this->ss;
+        $sp = $this->sp;
+        $su = $this->su;
+        $sr = $this->sr;
+        $token = $this->token;
+        $sid = $this->sid;
+        $em = $this->em;
+        $individu = $token->getUser();
+        $id_individu = $id;
+
+        $projetRepository = $em->getRepository(Projet::class);
+        $cv_repo = $em->getRepository(CollaborateurVersion::class);
+        $user_repo = $em->getRepository(User::class);
+        $form = $ff->createNamed('tri_projet', GererProjetType::class, [], []);
+        $form->handleRequest($request);
+
+        $projets = $projetRepository->getProjetsCollab($id_individu, true, true);
+        $projets_collab = $projetRepository->getProjetsCollab($id_individu, false, true);
+
+        $projets_term = $projetRepository->get_projets_etat($id_individu, 'TERMINE');
+
+        $passwd = null;
+        $pwd_expir = null;
+
+        // Vérifier le profil
+        if (null != $token) {
+            $individu = $token->getUser();
+            if (!$sid->validerProfil($individu)) {
+                return $this->redirectToRoute('profil');
+            }
+        }
+
+        // TODO - Faire en sorte pour que les erreurs soient proprement affichées dans l'API
+        // En attendant ce qui suit permet de se dépanner mais c'est franchement dégueu
+        // echo '<pre>'.strlen($_SERVER['CLE_DE_CHIFFREMENT'])."\n";
+        // echo SODIUM_CRYPTO_SECRETBOX_KEYBYTES.'</pre>';
+        // $enc = Functions::simpleEncrypt("coucou");
+        // $dec = Functions::simpleDecrypt($enc);
+        // echo "$dec\n";
+
+        // TODO - Hou le vilain copier-coller !
+        // projets responsable
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pattern = '/'.$form->getData()['filtre'].'/';
+            $projetFiltre = [];
+            foreach ($projets as $projet) {
+                if (null != $projet->getVersionActive()) {
+                    if (preg_match($pattern, $projet->getVersionActive()->getPrjTitre())) {
+                        $projetFiltre[] = $projet;
+                    }
+                }
+            }
+        } else {
+            $projetFiltre = $projets;
+        }
+        $projetsTot = [];
+        foreach ($projetFiltre as $projet) {
+            $versionActive = $sp->versionActive($projet);
+            if (null != $versionActive) {
+                $rallonges = $versionActive->getRallonge();
+                $cpt_rall = count($rallonges->toArray());
+            } else {
+                $rallonges = null;
+                $cpt_rall = 0;
+            }
+            if (in_array($projet, $projets_collab)) {
+                $collab = true;
+            } else {
+                $collab = false;
+            }
+
+            $passwd = null;
+            $pwd_expir = null;
+            $cv = null;
+            if (null != $versionActive) {
+                $cv = $cv_repo->findOneBy(['version' => $versionActive, 'collaborateur' => $individu]);
+                $loginnames = $su->collaborateurVersion2LoginNames($cv);
+
+            /* GESTION DES MOTS DE PASSE SUPPRIMEE
+            $u     = $user_repo->findOneBy(['loginname' => $login]);
+            if ($u==null) {
+                $passwd    = null;
+                $pwd_expir = null;
+            } else {
+                $passwd    = $u->getPassword();
+                $passwd    = Functions::simpleDecrypt($passwd);
+                $pwd_expir = $u->getPassexpir();
+            } */
+            } else {
+                // $loginnames = [];
+                $loginnames = $su->collaborateurVersion2LoginNames();
+            }
+            $projetsTot[] =
+                [
+                    'projet' => $projet,
+                    'rallonges' => $rallonges,
+                    'cpt_rall' => $cpt_rall,
+                    'meta_etat' => $sp->getMetaEtat($projet),
+                    'cv' => $cv,
+                    'loginnames' => $loginnames,
+                    'passwd' => $passwd,
+                    'pwd_expir' => $pwd_expir,
+                    'collab' => $collab,
+                ];
+        }
+        $menu[] = $this->sm->nouveauProjet(Projet::PROJET_DYN, ServiceMenus::HPRIO);
+
+        return $this->render(
+            'projet/demandeur.html.twig',
+            [
+                'projets_resp' => $projetsTot,
+                'projets_term' => $projets_term,
+                'menu' => $menu,
+                'form' => $form->createView(),
+            ]
+        );
+    }
+
+    /**
      * Affiche un projet avec un menu pour choisir la version.
      */
     #[IsGranted('ROLE_DEMANDEUR')]

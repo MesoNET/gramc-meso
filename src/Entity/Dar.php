@@ -48,7 +48,6 @@ class Dar
     private $idDar;
 
     #[ORM\JoinColumn(name: 'id_rallonge', referencedColumnName: 'id_rallonge')]
-    #[ORM\Column(name: 'id_rallonge', type: 'string', length: 15)]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Rallonge', inversedBy: 'dar')]
     private $rallonge;
 

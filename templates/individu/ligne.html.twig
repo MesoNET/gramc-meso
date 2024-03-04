@@ -72,91 +72,19 @@
 
 {# ################################################################################################# #}
 
-{% if( individu.valideur) == true %}
 
-<td style="text-align:right; background-color:#eeeeee;">
-    <a class="admin" href="{{ path('plus_valideur',  { 'id': individu.id }) }}?" title="Retirer les droits de valideur">
-        {{icones.valideur(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
-{% else %}
-
-<td style="text-align:left">
-    <a class="admin" href="{{ path('devenir_valideur',  { 'id': individu.id }) }}?" title="Devenir valideur">
-        {{icones.valideur(20,20)}}
-    </a>
-    <span style="display:none">0</span>
-</td>
-
-{% endif %}
 
 {# ################################################################################################# #}
 
-{% if( individu.admin) == true %}
 
-<td style="text-align:right; background-color:#eeeeee;">
-    <a class="admin" href="{{ path('plus_admin',  { 'id': individu.id }) }}?" title="Retirer les droits admin">
-        {{icones.president(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
-{% else %}
-
-<td style="text-align:left">
-    <a class="admin" href="{{ path('devenir_admin',  { 'id': individu.id }) }}?" title="Devenir admin">
-        {{icones.president(20,20)}}
-    </a>
-    <span style="display:none">0</span>
-</td>
-
-{% endif %}
 
 {# ################################################################################################# #}
 
-{% if( individu.obs) == true %}
 
-<td style="text-align:right; background-color:#eeeeee;">
-    <a class="obs" href="{{ path('plus_obs',  { 'id': individu.id }) }}?" title="Retirer les droits obs">
-        {{icones.obs(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
-{% else %}
-
-<td style="text-align:left">
-    <a class="obs" href="{{ path('devenir_obs',  { 'id': individu.id }) }}?" title="Devenir obs">
-        {{icones.obs(20,20)}}
-    </a>
-    <span style="display:none">0</span>
-</td>
-
-{% endif %}
 
 {# ################################################################################################# #}
 
-{% if( individu.sysadmin) == true %}
 
-<td style="text-align:right; background-color:#eeeeee;">
-    <a class="sysadmin" href="{{ path('plus_sysadmin',  { 'id': individu.id }) }}?" title="Retirer les droits sysadmin">
-        {{icones.sysadmin(20,20)}}
-    </a>
-    <span style="display:none">1</span>
-</td>
-
-{% else %}
-
-<td style="text-align:left">
-    <a class="sysadmin" href="{{ path('devenir_sysadmin',  { 'id': individu.id }) }}?" title="Devenir sysadmin">
-        {{icones.sysadmin(20,20)}}
-    </a>
-    <span style="display:none">0</span>
-</td>
-
-{% endif %}
 
 {# ################################################################################################# #}
 
