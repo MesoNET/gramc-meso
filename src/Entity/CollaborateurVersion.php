@@ -110,7 +110,7 @@ class CollaborateurVersion
         $output .= 'labo='.$this->getLabo().':';
         $output .= 'etab='.$this->getEtab().':';
 
-        return $output . ('collab='.$this->getCollaborateur().'}');
+        return $output.('collab='.$this->getCollaborateur().'}');
     }
 
     public function __construct(?Individu $individu = null, ?Version $version = null)

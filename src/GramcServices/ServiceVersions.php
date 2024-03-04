@@ -745,6 +745,7 @@ class ServiceVersions
             if ($s >= $j1 && $s <= $d31) {
                 return true;
             }
+
             // if ($version->getIdVersion() === '02M23017') {dd($version->getIdVersion(),$s,$e,$j1,$d31);};
             // Sinon on renvoie false
             return $e >= $j1 && $e <= $d31;

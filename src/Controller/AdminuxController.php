@@ -1481,7 +1481,7 @@ class AdminuxController extends AbstractController
     {
         $sroc = $this->sroc;
         $data = [];
-        $sj=$this->sj;
+        $sj = $this->sj;
         foreach ($dacdars as $d) {
             $ressource = $d->getRessource();
             if (null === $ressource) {

@@ -56,7 +56,7 @@ class Etat
     public const J_7 = 807;
     public const J_1 = 801;
 
-    public const   LIBELLE_ETAT =
+    public const LIBELLE_ETAT =
         [
             self::INVALIDE => 'INVALIDE',
             self::CREE_ATTENTE => 'CREE_ATTENTE',
