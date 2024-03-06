@@ -1,0 +1,6 @@
+<form action="{{ path(route,{id:id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer?');">
+    {% if print is not defined %}
+        {% set print = 'Supprimer' %}
+    {%  endif %}
+    <input type="submit" value="{{ print }}"/>
+</form>

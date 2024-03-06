@@ -681,6 +681,7 @@ class ServiceProjets
                 return true;
             }
         }
+
         // nous vérifions si $user est un expert de la thématique
         return (bool) $version->isExpertThematique($user);
     }

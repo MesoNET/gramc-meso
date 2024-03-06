@@ -28,7 +28,7 @@ A JETER
                             <a href="{{ path('laboratoire_show', { 'id': laboratoire.idLabo }) }}">show</a>
                         </li>
                         <li>
-                            <a href="{{ path('laboratoire_edit', { 'id': laboratoire.idLabo }) }}">edit</a>
+                            <a href="{{ path('modifier_laboratoire', { 'id': laboratoire.idLabo }) }}">edit</a>
                         </li>
                     </ul>
                 </td>
@@ -39,7 +39,7 @@ A JETER
 
     <ul>
         <li>
-            <a href="{{ path('laboratoire_new') }}">Create a new laboratoire</a>
+            <a href="{{ path('ajouter_laboratoire') }}">Create a new laboratoire</a>
         </li>
     </ul>
 {% endblock %}

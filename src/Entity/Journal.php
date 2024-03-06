@@ -257,7 +257,7 @@ class Journal
     public const INFO = 70;
     public const DEBUG = 80;
 
-    public const   LIBELLE =
+    public const LIBELLE =
             [
                 self::EMERGENCY => 'EMERGENCY',
                 self::ALERT => 'ALERT',
