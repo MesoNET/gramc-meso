@@ -63,7 +63,7 @@ class Signal
     public const CLK_AFFECTER = 50;
     public const CLK_DESAFFECTER = 51;
 
-    public const   LIBELLE_SIGNAL =
+    public const LIBELLE_SIGNAL =
     [
         self::INCONNU => 'INCONNU',
         self::CLK_DEMANDE => 'CLK_DEMANDE',

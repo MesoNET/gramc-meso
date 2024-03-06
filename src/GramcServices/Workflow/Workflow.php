@@ -125,7 +125,7 @@ abstract class Workflow
      *
      * Return: le $state ou null s'il n'existe pas
      *************************************************/
-    public function getState(int $stateConstant): State|null
+    public function getState(int $stateConstant): ?State
     {
         if (isset($this->states[$stateConstant])) {
             return $this->states[$stateConstant];

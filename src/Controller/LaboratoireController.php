@@ -48,10 +48,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: 'laboratoire')]
 class LaboratoireController extends AbstractController
 {
-    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em,private FormFactoryInterface $ff,
-    )
-    {
-
+    public function __construct(private AuthorizationCheckerInterface $ac, private EntityManagerInterface $em, private FormFactoryInterface $ff,
+    ) {
     }
 
     /**
@@ -71,9 +69,9 @@ class LaboratoireController extends AbstractController
             $pattern = '/'.$form->getData()['nomLabo'].'/';
             $laboratoiresFinale = [];
             foreach ($laboratoires as $laboratoire) {
-                    if (preg_match($pattern, $laboratoire->getNomLabo())) {
-                        $laboratoiresFinale[] = $laboratoire;
-                    }
+                if (preg_match($pattern, $laboratoire->getNomLabo())) {
+                    $laboratoiresFinale[] = $laboratoire;
+                }
             }
         } else {
             $laboratoiresFinale = $em->getRepository(Laboratoire::class)->findBy([], ['numeroLabo' => 'ASC']);

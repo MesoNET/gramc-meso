@@ -1,39 +1,39 @@
-{% extends 'base.html.twig' %}
-
+{% extends 'default/base.html.twig' %}
+{% import "default/icone.html.twig" as icones %}
 {% block body %}
-    <h1>Etablissements list</h1>
-
-    <table>
-        <thead>
+    <section>
+    <h1>Etablissements</h1>
+            <ul class="display-flex align-center justify-content-end">
+                <li class="justify-content-end">
+                    <a href="{{ path('etablissement_new') }}?" title="Créer un établissement">{{ icones.nouveauUser()}}Nouvel établissement</a>
+                </li>
+            </ul>
+        <div class="formulaire inputrond mb-3">
+            {{ form_start(form) }}
+            {{ form_widget(form.nomEtablissement) }}
+            {{ form_widget(form.filtrer)}}
+            {{ form_end(form) }}
+        </div>
+        <table id="etablissement" style="stroke: black">
+            <thead>
             <tr>
-                <th>Libelleetab</th>
-                <th>Idetab</th>
+                <th>Id</th>
+                <th>Nom</th>
                 <th>Actions</th>
             </tr>
-        </thead>
-        <tbody>
-        {% for etablissement in etablissements %}
-            <tr>
-                <td><a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">{{ etablissement.libelleEtab }}</a></td>
-                <td>{{ etablissement.idEtab }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('etablissement_edit', { 'id': etablissement.idEtab }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for etablissement in etablissements %}
+                <tr>
+                    <td>{{ etablissement.idEtab }}</td>
+                    <td><a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">{{ etablissement.libelleEtab }}</a></td>
 
-    <ul>
-        <li>
-            <a href="{{ path('etablissement_new') }}">Create a new etablissement</a>
-        </li>
-    </ul>
+                    <td>
+                        {{  include('etablissement/_actions.html.twig',{etablissement:etablissement}) }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

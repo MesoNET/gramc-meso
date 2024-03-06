@@ -8,13 +8,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class LaboratoireSearchType extends AbstractType
+class EtablissementSearchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
-                'nomLabo',
+                'nomEtablissement',
                 TextType::class,
                 [
                     'label' => 'Filtre:',

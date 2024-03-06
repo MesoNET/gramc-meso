@@ -24,10 +24,13 @@
 
 namespace App\Controller;
 
+use App\Entity\CollaborateurVersion;
 use App\Entity\Etablissement;
+use App\Entity\Individu;
+use App\Form\EtablissementSearchType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -41,22 +44,38 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EtablissementController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em, private FormFactoryInterface $ff
     ) {
     }
 
     /**
      * Lists all etablissement entities.
      */
-    #[Route(path: '/', name: 'etablissement_index', methods: ['GET'])]
-    public function indexAction(): Response
+    #[Route(path: '/', name: 'gerer_etablissements', methods: ['GET', 'POST'])]
+    public function indexAction(Request $request): Response
     {
         $em = $this->em;
 
+        $form = $this->ff->createNamed('tri_projet', EtablissementSearchType::class, [], []);
+        $form->handleRequest($request);
         $etablissements = $em->getRepository(Etablissement::class)->findAll();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pattern = '/'.$form->getData()['nomEtablissement'].'/';
+            $etablissementsFinale = [];
+            foreach ($etablissements as $etablissement) {
+                if (preg_match($pattern, $etablissement->getLibelleEtab())) {
+                    $etablissementsFinale[] = $etablissement;
+                }
+            }
+        } else {
+            $etablissementsFinale = $em->getRepository(Etablissement::class)->findAll();
+        }
 
         return $this->render('etablissement/index.html.twig', [
-            'etablissements' => $etablissements,
+            'etablissements' => $etablissementsFinale,
+            'form' => $form->createView(),
+
+
         ]);
     }
 
@@ -90,11 +109,8 @@ class EtablissementController extends AbstractController
     #[Route(path: '/{id}', name: 'etablissement_show', methods: ['GET'])]
     public function showAction(Etablissement $etablissement): Response
     {
-        $deleteForm = $this->createDeleteForm($etablissement);
-
         return $this->render('etablissement/show.html.twig', [
             'etablissement' => $etablissement,
-            'delete_form' => $deleteForm,
         ]);
     }
 
@@ -104,7 +120,6 @@ class EtablissementController extends AbstractController
     #[Route(path: '/{id}/edit', name: 'etablissement_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Etablissement $etablissement): Response
     {
-        $deleteForm = $this->createDeleteForm($etablissement);
         $editForm = $this->createForm('App\Form\EtablissementType', $etablissement);
         $editForm->handleRequest($request);
 
@@ -117,41 +132,28 @@ class EtablissementController extends AbstractController
         return $this->render('etablissement/edit.html.twig', [
             'etablissement' => $etablissement,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm,
         ]);
     }
 
     /**
      * Deletes a etablissement entity.
      */
-    #[Route(path: '/{id}', name: 'etablissement_delete', methods: ['DELETE'])]
-    public function deleteAction(Request $request, Etablissement $etablissement): Response
+    #[Route(path: '/{id}/delete_cascade_null', name: 'etablissement_delete_cascade_null')]
+    public function deleteCascadeAction(Request $request, Etablissement $etablissement, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createDeleteForm($etablissement);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->em;
-            $em->remove($etablissement);
-            $em->flush($etablissement);
+        foreach ($etablissement->getIndividu() as $individu) {
+            if ($individu instanceof Individu) {
+                $individu->setEtab();
+            }
         }
+        foreach ($etablissement->getCollaborateurVersion() as $collab) {
+            if ($collab instanceof CollaborateurVersion) {
+                $collab->setEtab();
+            }
+        }
+        $entityManager->remove($etablissement);
+        $entityManager->flush();
 
         return $this->redirectToRoute('etablissement_index');
-    }
-
-    /**
-     * Creates a form to delete a etablissement entity.
-     *
-     * @param Etablissement $etablissement The etablissement entity
-     *
-     * @return FormInterface The form
-     */
-    private function createDeleteForm(Etablissement $etablissement): FormInterface
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('etablissement_delete', ['id' => $etablissement->getId()]))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
     }
 }
