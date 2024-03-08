@@ -483,12 +483,22 @@ table#profil_horiz tr td.suppr {
     z-index: 2;
 }
 
+.footer-date{
+    margin-left: 0px;
+}
+@media (min-width: 1300px) {
+    .footer-date {
+        margin-left: 280px;
+    }
+}
+
 .liens_importants_footer{
     /*width: 30%;*/
     font-size: 0.75rem;
     display: flex;
     justify-content: space-around;
     flex-direction: row-reverse;
+    margin-right: 2em;
 }
 
 .lien_footer{
