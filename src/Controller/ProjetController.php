@@ -442,6 +442,17 @@ class ProjetController extends AbstractController
     }
 
     /**
+     * Montre la dashboard d'un utilisateur.
+     */
+    #[IsGranted('ROLE_DEMANDEUR')]
+    #[Route(path: '/dashboard', name: 'projet_dashboard', methods: ['GET', 'POST'])]
+    public function dashboardAction(): Response
+    {
+        return $this->render(
+            'projet/dashboard.html.twig');
+    }
+
+    /**
      * Montre les projets d'un utilisateur.
      */
     #[IsGranted('ROLE_DEMANDEUR')]
