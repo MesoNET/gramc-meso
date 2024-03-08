@@ -14,8 +14,10 @@ data/*
 tests_fonctionnels/sql/*
 web/tmp/*
 *.lock
+/app/config/parameters.yaml
+/app/config/parameters.*.yaml
 /app/config/parameters.yml
-/app/config/parameters.*.yml
+/app/config/address.txt
 
 /build/
 /phpunit.xml
