@@ -437,6 +437,22 @@ table#profil_horiz tr td.suppr {
     transition: 0.3s;
 }
 
+.roles{
+    display: flex;
+    justify-content: center;
+}
+.role{
+    padding-left: 1em;
+    padding-right: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.role-choose{
+
+}
+
 .role_admin_reduit{
     position: fixed;
     z-index: 5;
