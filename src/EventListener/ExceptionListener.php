@@ -37,10 +37,8 @@ namespace App\EventListener;
 use App\GramcServices\ServiceJournal;
 // use App\Exception\UserException;
 
-use \Doctrine\DBAL\Exception\ConnectionException;
-use Doctrine\DBAL\Driver\PDO\PDOException;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +73,7 @@ class ExceptionListener
         // nous captons des erreurs de la page d'accueil
         if ('/' == $event->getRequest()->getPathInfo()) {
             // ne pas écrire dans le journal quand il y a une exception de Doctrine
-            if (!$exception instanceof ORMException && !$exception instanceof \InvalidArgumentException && !$exception instanceof DBALException) {
+            if (!$exception instanceof \PDOException && !$exception instanceof \InvalidArgumentException && !$exception instanceof ConnectionException) {
                 $this->sj->errorMessage(__METHOD__.':'.__LINE__.' erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
             } else {
                 $this->logger->error(__METHOD__.':'.__LINE__.'erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
@@ -86,11 +84,13 @@ class ExceptionListener
             return;
         }
 
+        // on fait une redirection quand il y a une exception de Doctrine
+        if ($exception instanceof \PDOException || $exception instanceof \InvalidArgumentException || $exception instanceof ConnectionException) {
+            if ('/maintenance' != $event->getRequest()->getPathInfo()) {
+                $response = new RedirectResponse($this->router->generate('maintenance'));
+                $event->setResponse($response);
+            }
 
-        // on ne fait rien quand il y a une exception de Doctrine
-        if ($exception instanceof \PDOException || $exception instanceof \InvalidArgumentException || $exception instanceof ConnectionException || $exception->getPrevious() instanceof ConnectionException) {
-            $response = new RedirectResponse($this->router->generate('maintenance'));
-            $event->setResponse($response);
         }
 
         // Erreur 404
