@@ -55,9 +55,8 @@ $request = Request::createFromGlobals();
 
 // Cette ligne est importnte si vous êtes derrière un reverse proxy
 // Sinon, commentez-là !
-// cf. https://symfony.com/doc/5.4/deployment/proxies.html
-Request::setTrustedProxies(['10.0.0.0/8'], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PREFIX);
-
+// cf. https://symfony.com/doc/5.4/deployment/proxies.html)
+Request::setTrustedProxies(explode(',', $_ENV['TRUSTED_PROXIES']), Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PREFIX);
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
