@@ -3,47 +3,48 @@
 
 
 {% block body %}
-<section>
-    <h1>Laboratoires enregistrés dans gramc</h1>
+    <section>
+        <h1>Laboratoires enregistrés dans gramc</h1>
 
-    {% import "default/macros.html.twig" as gramcmacros %}
-    {{ gramcmacros.menu(menu) }}
-    <div class="formulaire inputrond mb-3">
-        {{ form_start(form) }}
-            {{ form_widget(form.nomLabo) }}
-            {{ form_widget(form.filtrer)}}
-        {{ form_end(form) }}
-    </div>
-    <table id="laboratoires" style="stroke: black">
-    <thead>
-        <tr>
-            {% if is_granted('ROLE_ADMIN')  or is_granted('ROLE_VALIDEUR') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for labo in laboratoires %}
-        <tr>
-            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_VALIDEUR') %}
-            <td>
-                <a class="suppression" href="{{ path('supprimer_laboratoire',{'id' : labo.idLabo }) }}" title="Supprimer">
-                {{ icones.supprimer() }}</a>
-            </td>
-            <td>
-                <a class="modification" href="{{ path('modifier_laboratoire',{'id' : labo.idLabo }) }}" title="Modifier le libellé">
-                    {{ icones.modifier() }}
-                    {% if labo.adresseip | length == 0 %}
-                        <span title="Ce laboratoire n'est pas associé à une plage d'adresses IP">{{icones.attention(20,20)}}</span>
-                    {% endif %}
-                </a>
-            </td>
-            {% endif %}
-            <td>{{ labo.numeroLabo }}</td>
-            <td> {{ labo.acroLabo }}</td>
-            <td>{{ labo.nomLabo }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-</section>
+        {% import "default/macros.html.twig" as gramcmacros %}
+        {{ gramcmacros.menu(menu) }}
 
-{% endblock body  %}
+        <table id="datatable" class="display">
+            <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Acronyme</th>
+                <th>Libellé</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for labo in laboratoires %}
+                <tr>
+                        <td >
+                            <a class="suppression" href="{{ path('supprimer_laboratoire',{'id' : labo.idLabo }) }}"
+                               title="Supprimer">
+                                {{ icones.supprimer() }}</a>
+                            <a class="modification" href="{{ path('modifier_laboratoire',{'id' : labo.idLabo }) }}"
+                               title="Modifier le libellé">
+                                {{ icones.modifier() }}
+                                {% if labo.adresseip | length == 0 %}
+                                    <span title="Ce laboratoire n'est pas associé à une plage d'adresses IP">{{ icones.attention(20,20) }}</span>
+                                {% endif %}
+                            </a>
+                        </td>
+                    <td> {{ labo.acroLabo }}</td>
+                    <td>{{ labo.nomLabo }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Acronyme</th>
+                <th>Libellé</th>
+            </tr>
+            </tfoot>
+        </table>
+    </section>
+
+{% endblock body %}
