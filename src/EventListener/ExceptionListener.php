@@ -45,6 +45,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
+use Twig\Environment;
 
 class ExceptionListener
 {
@@ -53,7 +54,8 @@ class ExceptionListener
         private RouterInterface $router,
         private LoggerInterface $logger,
         private ServiceJournal $sj,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private Environment $twig,
     ) {
     }
 
@@ -65,10 +67,10 @@ class ExceptionListener
         // dd($exception);
 
         // En mode debug, on affiche l'exception symfony
-        //        // Commenter cette ligne pour récupérer le comportement de la prod en mode prod !
-        //        if ($this->kernel_debug) {
-        //            return;
-        //        }
+        // Commenter cette ligne pour récupérer le comportement de la prod en mode prod !
+        if ($this->kernel_debug) {
+            return;
+        }
 
         // nous captons des erreurs de la page d'accueil
         if ('/' == $event->getRequest()->getPathInfo()) {
@@ -86,11 +88,13 @@ class ExceptionListener
 
         // on fait une redirection quand il y a une exception de Doctrine
         if ($exception instanceof \PDOException || $exception instanceof \InvalidArgumentException || $exception instanceof ConnectionException) {
+            $response = new RedirectResponse($this->router->generate('maintenance'));
             if ('/maintenance' != $event->getRequest()->getPathInfo()) {
-                $response = new RedirectResponse($this->router->generate('maintenance'));
                 $event->setResponse($response);
+            } else {
+                $htmlContent = $this->twig->render('default/maintenance.html.twig');
+                $event->setResponse(new Response($htmlContent));
             }
-
         }
 
         // Erreur 404
