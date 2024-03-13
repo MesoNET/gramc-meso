@@ -8,39 +8,51 @@
 
     {{ gramcmacros.menu(menu) }}
     
-    <table id="serveurs" >
+    <table id="datatable" class="display">
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Nom</th><th>Description</th><th>CGU</th><th>Nom API</th><th>Formats</th>
+            <th>&nbsp;</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>CGU</th>
+            <th>Nom API</th>
+            <th>Formats</th>
         </tr>
     </thead>
     <tbody>
     {% for s in serveurs %}
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}
             <td>
                 <a class="suppression" href="{{ path('supprimer_serveur',{'id' : s.nom }) }}" title="Supprimer">
                 {{ icones.supprimer }}
                 </a>
-            </td>
-            <td>
                 <a class="modification" href="{{ path('modifier_serveur',{'id' : s.nom }) }}" title="Modifier le serveur">
-                {{ icones.modifier }}
+                    {{ icones.modifier }}
                 </a>
             </td>
-            {% endif %}
             <td>{{ s.nom }}
             <td> {{ s.desc }}</td>
             <td>{% if s.cguurl == "" %}{{icones.refuse}}{% else %}{{icones.valide}} <a href="{{ s.cguurl }}" target="_blank">{{ gramcmacros.tronquer_chaine_2(s.cguurl) }}</a>{% endif %}</td>
             <td>{{ s.admname }}</td>
-            {% if s.formatSSh != null %}
+            <td>
                 {% for i in s.formatSSH %}
-                    <td>{{ i }}</td>
+                    &nbsp;{{ i }}
                 {% endfor %}
-            {% endif %}
+            </td>
+
         </tr>
     {% endfor %}
     </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>CGU</th>
+                <th>Nom API</th>
+                <th>Formats</th>
+            </tr>
+        </tfoot>
     </table>
 </section>
 
