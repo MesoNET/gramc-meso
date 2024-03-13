@@ -134,5 +134,65 @@ $(document).ready(function() { // table laboratoires
     });
 });
 
+$(document).ready(function() {
+    $('#datatable').DataTable({
+        initComplete: function () {
+            this.api()
+                .columns()
+                .every(function () {
+                    let column = this;
+                    let title = column.footer().textContent;
+
+                    // Create input element
+                    let input = document.createElement('input');
+                    input.placeholder = title;
+                    if (title !=='\xa0'){
+                        column.footer().replaceChildren(input);
+                    }
+                    $('#datatable tfoot tr').appendTo('#datatable thead');
+                    // Event listener for user input
+                    input.addEventListener('keyup', () => {
+                        if (column.search() !== this.value) {
+                            column.search(input.value).draw();
+                        }
+                    });
+                });
+        }
+    })
+});
+
+
+
+
+
+// $(document).ready(function() {
+//     $('#example').DataTable({
+//         initComplete: function () {
+//         this.api()
+//             .columns()
+//             .eq(0)
+//             .each(function(colIdx) {
+//                 let column = this;
+//                 $('#example thead th').each(function() {
+//                     var title = $('#example thead th').eq($(this).index()).text();
+//                     $(this).html('&lt;input type=&quot;text&quot; placeholder=&quot;Search ' + title + '&quot; /&gt;');
+//                     console.log('bhsfdhu')
+//                 });
+//
+//             $('input', column.column(colIdx).header()).on('keyup change', function() {
+//                 column
+//                     .column(colIdx)
+//                     .search(this.value)
+//                     .draw();
+//             });
+//
+//             $('input', column.column(colIdx).header()).on('click', function(e) {
+//                 e.stopPropagation();
+//             });
+//         });
+//     }
+//     }
+//     );
+// })
 
 
