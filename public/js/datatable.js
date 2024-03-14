@@ -134,6 +134,7 @@ $(document).ready(function() { // table laboratoires
     });
 });
 
+
 $(document).ready(function() {
     $('#datatable').DataTable({
         initComplete: function () {
@@ -142,10 +143,12 @@ $(document).ready(function() {
                 .every(function () {
                     let column = this;
                     let title = column.footer().textContent;
-
                     // Create input element
                     let input = document.createElement('input');
                     input.placeholder = title;
+                    input.attributes['size'] = input.placeholder.length;
+                    let taille = input.placeholder.length*20-input.placeholder.length*7;
+                    input.style.width = taille.toString() + 'px';
                     if (title !=='\xa0'){
                         column.footer().replaceChildren(input);
                     }
