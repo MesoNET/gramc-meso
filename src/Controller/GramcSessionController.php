@@ -189,6 +189,18 @@ class GramcSessionController extends AbstractController
         return $this->render('default/aide.html.twig');
     }
 
+    #[Route(path: '/error', name: 'error', methods: ['GET'])]
+    public function errorAction(): Response
+    {
+        return $this->render('default/error404.html.twig');
+    }
+
+    #[Route(path: '/maintenance', name: 'maintenance', methods: ['GET'])]
+    public function maintenanceAction(): Response
+    {
+        return $this->render('default/maintenance.html.twig');
+    }
+
     #[Route(path: '/', name: 'accueil', methods: ['GET'])]
     public function accueilAction(): Response
     {

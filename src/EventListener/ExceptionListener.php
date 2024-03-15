@@ -37,17 +37,15 @@ namespace App\EventListener;
 use App\GramcServices\ServiceJournal;
 // use App\Exception\UserException;
 
+use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+use Twig\Environment;
 
 class ExceptionListener
 {
@@ -56,19 +54,20 @@ class ExceptionListener
         private RouterInterface $router,
         private LoggerInterface $logger,
         private ServiceJournal $sj,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private Environment $twig,
     ) {
     }
 
-    public function onKernelException(ExceptionEvent $event): void
+    public function __invoke(ExceptionEvent $event): void
     {
         $event->getRequest()->server;
 
         $exception = $event->getThrowable();
         // dd($exception);
 
-        // En mode debug, on affiche l'exception
-        // Commenter cette ligne pour récupérer le comportement de la prod !
+        // En mode debug, on affiche l'exception symfony
+        // Commenter cette ligne pour récupérer le comportement de la prod en mode prod !
         if ($this->kernel_debug) {
             return;
         }
@@ -76,7 +75,7 @@ class ExceptionListener
         // nous captons des erreurs de la page d'accueil
         if ('/' == $event->getRequest()->getPathInfo()) {
             // ne pas écrire dans le journal quand il y a une exception de Doctrine
-            if (!$exception instanceof ORMException && !$exception instanceof \InvalidArgumentException && !$exception instanceof DBALException) {
+            if (!$exception instanceof \PDOException && !$exception instanceof \InvalidArgumentException && !$exception instanceof ConnectionException) {
                 $this->sj->errorMessage(__METHOD__.':'.__LINE__.' erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
             } else {
                 $this->logger->error(__METHOD__.':'.__LINE__.'erreur dans la page / depuis '.$event->getRequest()->headers->get('referer'));
@@ -87,46 +86,21 @@ class ExceptionListener
             return;
         }
 
-        // on ne fait rien quand il y a une exception de Doctrine
-        if ($exception instanceof ORMException || $exception instanceof \InvalidArgumentException || $exception instanceof DBALException) {
-            if (method_exists($this->em, 'isOpen') && $this->em->isOpen()) {
-                $this->logger->error(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().'  À partir de URL : '.$event->getRequest()->getPathInfo());
+        // on fait une redirection quand il y a une exception de Doctrine
+        if ($exception instanceof \PDOException || $exception instanceof \InvalidArgumentException || $exception instanceof ConnectionException) {
+            $response = new RedirectResponse($this->router->generate('maintenance'));
+            if ('/maintenance' != $event->getRequest()->getPathInfo()) {
+                $event->setResponse($response);
             } else {
-                $this->logger->error(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().'  À partir de URL : '.$event->getRequest()->getPathInfo().' Entity manager closed');
+                $htmlContent = $this->twig->render('default/maintenance.html.twig');
+                $event->setResponse(new Response($htmlContent));
             }
-        }
-
-        // On essaie d'aller voir une url sans être authentifié
-        elseif ($exception instanceof HttpException && $exception->getPrevious() instanceof InsufficientAuthenticationException) {
-            // On garde l'url de destination dans la session
-            $event->getRequest()->getSession()->set('url', $event->getRequest()->getUri());
-
-            // Pas la peine d'encombrer les logs
-            // $this->sj->warningMessage(__METHOD__ . ":" . __LINE__ ." accès anonyme à la page " . $event->getRequest()->getPathInfo());
-
-            // On renvoie sur l'écran de login'
-            if ($this->kernel_debug) {
-                $response = new RedirectResponse($this->router->generate('connexion_dbg'));
-            } else {
-                $response = new RedirectResponse($this->router->generate('connexion'));
-            }
-
-            $event->setResponse($response);
-        }
-
-        //   AccessDeniedHttpException
-        //   problème avec access_control dans security.yml (IP par exemple) ou un mauvais rôle
-        elseif ($exception instanceof AccessDeniedHttpException /* or $exception instanceof AccessDeniedException */) {
-            // dd($exception);
-            $this->sj->warningMessage(__METHOD__.':'.__LINE__.' accès à la page '.$event->getRequest()->getPathInfo().' non autorisé');
-            $response = new RedirectResponse($this->router->generate('accueil'));
-            $event->setResponse($response);
         }
 
         // Erreur 404
         elseif ($exception instanceof NotFoundHttpException) {
             // Nous redirigeons vers la page 'accueil' - pas de log
-            $response = new RedirectResponse($this->router->generate('accueil'));
+            $response = new RedirectResponse($this->router->generate('error'));
             $event->setResponse($response);
         }
 
