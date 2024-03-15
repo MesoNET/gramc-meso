@@ -148,6 +148,9 @@ $(document).ready(function() {
                     input.placeholder = title;
                     input.attributes['size'] = input.placeholder.length;
                     let taille = input.placeholder.length*20-input.placeholder.length*7;
+                    if (input.placeholder.length>20){
+                        taille = input.placeholder.length*20-input.placeholder.length*12;
+                    }
                     input.style.width = taille.toString() + 'px';
                     if (title !=='\xa0'){
                         column.footer().replaceChildren(input);
