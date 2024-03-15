@@ -59,20 +59,9 @@ class EtablissementController extends AbstractController
         $form = $this->ff->createNamed('tri_projet', EtablissementSearchType::class, [], []);
         $form->handleRequest($request);
         $etablissements = $em->getRepository(Etablissement::class)->findAll();
-        if ($form->isSubmitted() && $form->isValid()) {
-            $pattern = '/'.$form->getData()['nomEtablissement'].'/';
-            $etablissementsFinale = [];
-            foreach ($etablissements as $etablissement) {
-                if (preg_match($pattern, $etablissement->getLibelleEtab())) {
-                    $etablissementsFinale[] = $etablissement;
-                }
-            }
-        } else {
-            $etablissementsFinale = $em->getRepository(Etablissement::class)->findAll();
-        }
 
         return $this->render('etablissement/index.html.twig', [
-            'etablissements' => $etablissementsFinale,
+            'etablissements' => $etablissements,
             'form' => $form->createView(),
 
 
@@ -138,7 +127,7 @@ class EtablissementController extends AbstractController
     /**
      * Deletes a etablissement entity.
      */
-    #[Route(path: '/{id}/delete_cascade_null', name: 'etablissement_delete_cascade_null')]
+    #[Route(path: '/{id}/delete', name: 'etablissement_delete')]
     public function deleteCascadeAction(Request $request, Etablissement $etablissement, EntityManagerInterface $entityManager): Response
     {
         foreach ($etablissement->getIndividu() as $individu) {
@@ -154,6 +143,6 @@ class EtablissementController extends AbstractController
         $entityManager->remove($etablissement);
         $entityManager->flush();
 
-        return $this->redirectToRoute('etablissement_index');
+        return $this->redirectToRoute('gerer_etablissements');
     }
 }
