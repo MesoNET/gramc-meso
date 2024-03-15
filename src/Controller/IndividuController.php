@@ -900,35 +900,11 @@ class IndividuController extends AbstractController
         $ff = $this->ff;
         $em = $this->em;
 
-        $form = $ff->createNamedBuilder('tri', GererUtilisateurType::class, [], [])->getform();
         // $form = Functions::getFormBuilder($ff, 'tri', GererUtilisateurType::class, [])->getForm();
-        $form->handleRequest($request);
+        $individus = $em->getRepository(Individu::class)->findAll();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->getData()['all']) {
-                $users = $em->getRepository(Individu::class)->findAll();
-            } else {
-                $users = $em->getRepository(Individu::class)->getActiveUsers();
-            }
-
-            $pattern = '/'.$form->getData()['filtre'].'/i';
-
-            $individus = [];
-            foreach ($users as $individu) {
-                if (preg_match($pattern, $individu->getMail())) {
-                    $individus[] = $individu;
-                } elseif (preg_match($pattern, $individu->getNom())) {
-                    $individus[] = $individu;
-                } elseif (preg_match($pattern, $individu->getPrenom())) {
-                    $individus[] = $individu;
-                }
-            }
-        } else {
-            $individus = $em->getRepository(Individu::class)->getActiveUsers();
-        }
 
         // statistiques
-        $total = $em->getRepository(Individu::class)->countAll();
         $actifs = 0;
         $idps = [];
         foreach ($individus as $individu) {
@@ -959,9 +935,7 @@ class IndividuController extends AbstractController
             'individu/liste.html.twig',
             [
             'idps' => $idps,
-            'total' => $total,
             'actifs' => $actifs,
-            'form' => $form->createView(),
             'individus' => $individus,
             ]
         );
