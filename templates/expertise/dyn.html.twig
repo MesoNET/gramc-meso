@@ -7,7 +7,7 @@
 <section id="section_expert" style="stroke:black">
     {% if expertises|length > 0 %}
     <h2>Projets dynamiques en attente de validation</h2>
-    <table id="HORS_THEM" class="projet">
+    <table id="datatable" class="display">
     <thead>
             <tr>
                 <th>Demande <br><small>(initiale ou extension)</small></th>
@@ -44,6 +44,16 @@
                 </tr>
         {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Demande <br><small>(initiale ou extension)</small></th>
+                <th>&nbsp;</th>
+                <th>Thématique</th>
+                <th>Titre</th>
+                <th>Responsable</th>
+                <th>Valideur en cours</th>
+            </tr>
+        </tfoot>
     </table>
     {% else %}
     <div class="information attention">
