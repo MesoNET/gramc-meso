@@ -1,4 +1,4 @@
-{% extends 'default/base.html.twig' %}
+    {% extends 'default/base.html.twig' %}
 {% import "default/icone.html.twig" as icones %}
 {% block body %}
     <section>
@@ -8,32 +8,37 @@
                     <a href="{{ path('etablissement_new') }}?" title="Créer un établissement">{{ icones.nouveauUser()}}Nouvel établissement</a>
                 </li>
             </ul>
-        <div class="formulaire inputrond mb-3">
-            {{ form_start(form) }}
-            {{ form_widget(form.nomEtablissement) }}
-            {{ form_widget(form.filtrer)}}
-            {{ form_end(form) }}
-        </div>
-        <table id="etablissement" style="stroke: black">
+        <table id="datatable" class="display">
             <thead>
             <tr>
+                <th>&nbsp;</th>
                 <th>Id</th>
                 <th>Nom</th>
-                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for etablissement in etablissements %}
                 <tr>
+                    <td>
+                        <a class="suppression" href="{{ path('etablissement_delete',{'id' : etablissement.id }) }}" title="Supprimer">
+                            {{ icones.supprimer }}
+                        </a>
+                        <a class="modification" href="{{ path('etablissement_edit',{'id' : etablissement.id }) }}" title="Modifier la ressource">
+                            {{ icones.modifier }}
+                        </a>
+                    </td>
                     <td>{{ etablissement.idEtab }}</td>
                     <td><a href="{{ path('etablissement_show', { 'id': etablissement.idEtab }) }}">{{ etablissement.libelleEtab }}</a></td>
-
-                    <td>
-                        {{  include('etablissement/_actions.html.twig',{etablissement:etablissement}) }}
-                    </td>
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Id</th>
+                <th>Nom</th>
+            </tr>
+            </tfoot>
         </table>
     </section>
 {% endblock %}
