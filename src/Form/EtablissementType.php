@@ -32,7 +32,7 @@ class EtablissementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('libelleEtab')->add('individu');
+        $builder->add('libelleEtab');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
