@@ -7,7 +7,6 @@
 
 <h1>{{ publications|length}} publications déclarées pour l'année {{ annee }}</h1>
 
-<section>
 
 {% import "default/macros.html.twig" as gramcmacros %}
 
@@ -27,7 +26,7 @@
 calcul de {{ mesoc }} ont été utilisées</div>
 
 <div>
-    <table id="publis_projet" >
+    <table id="datatable" class="display">
     <thead>
         <tr>
             <th>Réference</th>
@@ -54,7 +53,14 @@ calcul de {{ mesoc }} ont été utilisées</div>
         </tr>
     {% endfor %}
     </tbody>
-    
+    <tfoot>
+        <tr>
+            <th>Réference</th>
+            <th>doi</th>
+            <th>URL pour accès ouvert</th>
+            <th>Projets</th>
+        </tr>
+    </tfoot>
     </table>
 </div>
     
