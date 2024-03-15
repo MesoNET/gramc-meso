@@ -8,7 +8,7 @@
         {{ form_end(form) }}
     </div>
     
-    <table id="jnl">
+    <table id="datatable" class="display">
         <thead>
             <tr>
                 <th>Utilisateur</th>
@@ -41,5 +41,15 @@
             </tr>
         {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Id</th>
+                <th>Adresse Ip</th>
+                <th>Horodatage</th>
+                <th>Niveau</th>
+                <th>Message</th>
+            </tr>
+        </tfoot>
     </table>
 {% endblock %}
