@@ -13,19 +13,30 @@
 
     <h2>Nombre de demandes pour chaque formation</h2>
 
-    <table>
+    <table id="datatable" class="display">
         <thead>
             <tr>
-                <th>Code</th><th>Nom</th><th>Demandes</th>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>Demandes</th>
             </tr>
         </thead>
         <tbody>
             {% for fv in fvstats %}
             <tr>
-                <td>{{ fv[0].formation.acroform}}</td><td>{{fv[0].formation.nomform}}</td><td>{{fv.nb}}</td>
+                <td>{{ fv[0].formation.acroform}}</td>
+                <td>{{fv[0].formation.nomform}}</td>
+                <td>{{fv.nb}}</td>
             </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>Demandes</th>
+            </tr>
+        </tfoot>
     </table>
     
 </section>

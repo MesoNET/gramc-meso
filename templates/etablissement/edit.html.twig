@@ -9,11 +9,6 @@
     {{ form_end(edit_form) }}
     <ul>
         <li>
-            {{ include('default/_delete.html.twig',{id:etablissement.id, route:'etablissement_delete_cascade_null',print:
-                'Supprimer (en gardant les données associées)'
-            }) }}
-        </li>
-        <li>
             <a href="{{ path('gerer_etablissements') }}">Retour à la liste</a>
         </li>
     </ul>

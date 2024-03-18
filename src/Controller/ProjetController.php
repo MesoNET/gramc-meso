@@ -471,8 +471,6 @@ class ProjetController extends AbstractController
         $projetRepository = $em->getRepository(Projet::class);
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
         $em->getRepository(User::class);
-        $form = $ff->createNamed('tri_projet', GererProjetType::class, [], []);
-        $form->handleRequest($request);
 
         $projets = $projetRepository->getProjetsCollab($id_individu, true, true);
         $projets_collab = $projetRepository->getProjetsCollab($id_individu, false, true);
@@ -500,19 +498,7 @@ class ProjetController extends AbstractController
 
         // TODO - Hou le vilain copier-coller !
         // projets responsable
-        if ($form->isSubmitted() && $form->isValid()) {
-            $pattern = '/'.$form->getData()['filtre'].'/';
-            $projetFiltre = [];
-            foreach ($projets as $projet) {
-                if (null != $projet->getVersionActive()) {
-                    if (preg_match($pattern, $projet->getVersionActive()->getPrjTitre())) {
-                        $projetFiltre[] = $projet;
-                    }
-                }
-            }
-        } else {
-            $projetFiltre = $projets;
-        }
+        $projetFiltre = $projets;
         $projetsTot = [];
         foreach ($projetFiltre as $projet) {
             $versionActive = $sp->versionActive($projet);
@@ -571,7 +557,6 @@ class ProjetController extends AbstractController
                 'projets_resp' => $projetsTot,
                 'projets_term' => $projets_term,
                 'menu' => $menu,
-                'form' => $form->createView(),
                 ]
         );
     }

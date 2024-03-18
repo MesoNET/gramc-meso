@@ -37,43 +37,9 @@
     {{ form_row(form.filtre) }}{{ form_row(form.filtrer) }}
     {{ form_end(form) }}
     #}
-    {{ form_start(form) }}
-    {{ form_widget(form.filtre) }}{{ form_widget(form.filtrer)}} {{form_widget(form.all)}} sur tous les utilisateurs
-    {{ form_end(form) }}
     </div>
     <hr class="separateur">
-    <div class="tableaux">
-        <div class="bilan_legende">
-            <div class="bilan">
-                <table>
-                    <tr>
-                        <th colspan="2">Utilisateurs</th>
-                    </tr>
-                    <tr>
-                        <th>Total</th>
-                        <td>{{ total }}</td>
-                    </tr>
-                    <tr>
-                        <th>Actifs</th>
-                        <td>{{ actifs }}</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th colspan="2">Fournisseurs d'identité</th>
-                    </tr>
-                    {% for key,value in idps %}
-                        <tr>
-                        <th>{{ key }}</th>
-                        <td>{{ value }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </div>
-
-        <div class="liste">
-            <table id="utilisateurs">
+            <table id="datatable" class="display">
                 <thead>
                     <tr>
                         <th>&nbsp;</th>
@@ -94,9 +60,20 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>Activé</th>
+                        <th>Prénom</th>
+                        <th>Nom</th>
+                        <th>Courriel</th>
+                        <th>Idp</th>
+                        <th>Date</th>
+                    </tr>
+                </tfoot>
             </table>
-        </div>
-    </div> {# tableaux #}
     <div id="formulaire_profil"></div>
     <div id="formulaire_thematiques"></div>
 

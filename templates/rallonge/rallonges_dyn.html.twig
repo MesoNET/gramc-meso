@@ -20,27 +20,20 @@
         </form>
     </div>
     #}
-    
-    <div class="tableaux">
-        <div class="bilan_legende">
-            &nbsp;
-        </div>
-        <div class="liste">
-        <div id="projets_tous_wrapper" class="dataTables_wrapper no-footer">
-            <table id="projets_tous" class="dataTable no-footer" role="grid">
+            <table id="datatable" class="display">
                 <thead>
                     <tr role="row">
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" style="width: 69px;" aria-label="Numéro: activate to sort column ascending">N°</th>
-                        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 0px;" aria-label=""></th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Etat: activate to sort column ascending" title="Etat" >E</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Titre: activate to sort column ascending">Titre</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Thématique: activate to sort column ascending">Thématique</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Responsable: activate to sort column ascending">Responsable</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Laboratoire: activate to sort column ascending">Laboratoire</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">Début</th>
-                        <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Date de fin: activate to sort column ascending">fin</th>
+                        <th>&nbsp;</th>
+                        <th>N°</th>
+                        <th>E</th>
+                        <th>Titre</th>
+                        <th>Thématique</th>
+                        <th>Responsable</th>
+                        <th>Laboratoire</th>
+                        <th>Début</th>
+                        <th>fin</th>
                         {% for r in serviceRessources.getNoms %}
-                            <th class="sorting" tabindex="0" aria-controls="projets_tous" rowspan="1" colspan="1" aria-label="Attr {{r}}: activate to sort column ascending" title="Heures attribuées sur {{r}}">{{r}}</th>
+                            <th>{{r}}</th>
                         {% endfor %}
 
                     </tr>
@@ -49,12 +42,12 @@
                 <tbody>
                     {% for item in data %}
                     <tr role="row" class="odd" style="stroke:black">
-                        <td>{{ item.rallonge }}</td>
                         <td>
                             <a href="{{ path('consulter_rallonge', { 'id': item.rallonge.idrallonge }) }}" title="Consulter la rallonge">
                                 {{icones.details}}
                             </a>
                         </td>
+                        <td>{{ item.rallonge }}</td>
                         <td class="{{ serviceRallonges.getmetaetat(item.rallonge)|lower }}">
                             {{ gramcmacros.metagraph(serviceRallonges.getmetaetat(item.rallonge)) }}
                         </td>
@@ -91,11 +84,23 @@
                     </tr>
                     {% endfor %}
                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>N°</th>
+                        <th>E</th>
+                        <th>Titre</th>
+                        <th>Thématique</th>
+                        <th>Responsable</th>
+                        <th>Laboratoire</th>
+                        <th>Début</th>
+                        <th>fin</th>
+                        {% for r in serviceRessources.getNoms %}
+                            <th>&nbsp;</th>
+                        {% endfor %}
+                    </tr>
+                </tfoot>
             </table>
-        </div>
-        </div>
-
-    </div>
     <div id="formulaire_confirmation"></div>
 </section>
 {% endblock %}
