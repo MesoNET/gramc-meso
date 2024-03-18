@@ -441,6 +441,18 @@ table#profil_horiz tr td.suppr {
     display: flex;
     justify-content: center;
 }
+tfoot input {
+    width: 100%;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+
+
+tfoot {
+    display: table-row-group;
+}
+
 .role{
     padding-left: 1em;
     padding-right: 1em;

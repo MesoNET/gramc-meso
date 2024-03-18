@@ -13,29 +13,34 @@
 
     {{ gramcmacros.menu(menu) }}
 
-    <table id="general" >
+    <table id="datatable" class="display">
     <thead>
     <tr>
-        {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Libellé</th>
+        <th>&nbsp;</th>
+        <th>Libellé</th>
     </tr>
     </thead>
     <tbody>
     {% for thema in thematiques %}
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}
             <td>
                 <a class="suppression" href="{{ path('supprimer_thematique',{'id' : thema.idThematique }) }}" title="Supprimer">
-                {{ icones.supprimer }}
-            </td>
-            <td>
+                    {{ icones.supprimer }}
+                </a>
                 <a class="modification" href="{{ path('modifier_thematique',{'id' : thema.idThematique }) }}" title="Modifier le libellé">
-                {{ icones.modifier }}
+                    {{ icones.modifier }}
+                </a>
             </td>
-            {% endif %}
             <td>{{ thema.libelleThematique }}</td>
         </tr>
     {% endfor %}
     </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Libellé</th>
+            </tr>
+        </tfoot>
     </table>
 </section>
 

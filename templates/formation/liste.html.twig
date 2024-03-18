@@ -17,27 +17,29 @@
 
     {{ gramcmacros.menu(menu) }}
     
-    <table id="formations" >
+    <table id="datatable" class="display">
     <thead>
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}<th colspan="2">&nbsp;</th>{% endif %}<th>Numéro d'ordre</th><th>Acronyme</th><th>Libellé</th><th>Pas avant</th><th>Pas après</th>
+            <th>&nbsp;</th>
+            <th>Numéro d'ordre</th>
+            <th>Acronyme</th>
+            <th>Libellé</th>
+            <th>Pas avant</th>
+            <th>Pas après</th>
         </tr>
     </thead>
     <tbody>
     {% for form in formations %}
         <tr>
-            {% if is_granted('ROLE_ADMIN') %}
+
             <td>
                 <a class="suppression" href="{{ path('supprimer_formation',{'id' : form.id }) }}" title="Supprimer">
                 {{ icones.supprimer }}
                 </a>
-            </td>
-            <td>
                 <a class="modification" href="{{ path('modifier_formation',{'id' : form.id }) }}" title="Modifier le libellé">
-                {{ icones.modifier }}
+                    {{ icones.modifier }}
                 </a>
             </td>
-            {% endif %}
             <td>{{ form.numeroform }}</td>
             <td> {{ form.acroform }}</td>
             <td>{{ form.nomform }}</td>
@@ -46,6 +48,16 @@
         </tr>
     {% endfor %}
     </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Numéro d'ordre</th>
+                <th>Acronyme</th>
+                <th>Libellé</th>
+                <th>Pas avant</th>
+                <th>Pas après</th>
+            </tr>
+        </tfoot>
     </table>
 </section>
 
