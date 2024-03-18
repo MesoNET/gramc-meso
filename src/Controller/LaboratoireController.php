@@ -57,12 +57,24 @@ class LaboratoireController extends AbstractController
      */
     #[IsGranted('ROLE_OBS')]
     #[Route(path: '/gerer', name: 'gerer_laboratoires', methods: ['GET', 'POST'])]
-    public function gererAction(): Response
+    public function gererAction(Request $request): Response
     {
         $ac = $this->ac;
         $em = $this->em;
+        $laboratoires = $em->getRepository(Laboratoire::class)->findAllSortedOnlyUsed();
         $form = $this->ff->createNamed('tri_projet', LaboratoireSearchType::class, [], []);
-        $laboratoires = $em->getRepository(Laboratoire::class)->findBy([], ['numeroLabo' => 'ASC']);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pattern = '/'.$form->getData()['nomLabo'].'/';
+            $laboratoiresFinale = [];
+            foreach ($laboratoires as $laboratoire) {
+                if (preg_match($pattern, $laboratoire->getNomLabo())) {
+                    $laboratoiresFinale[] = $laboratoire;
+                }
+            }
+        } else {
+            $laboratoiresFinale = $laboratoires;
+        }
         // Si on n'est pas admin on n'a pas accès au menu
         $menu = ($ac->isGranted('ROLE_ADMIN') or $ac->isGranted('ROLE_VALIDEUR')) ? [['ok' => true, 'name' => 'ajouter_laboratoire', 'lien' => 'Ajouter un laboratoire', 'commentaire' => 'Ajouter un laboratoire']] : [];
         return $this->render(
