@@ -148,6 +148,12 @@ $(document).ready(function() {
                     input.placeholder = title;
                     input.attributes['size'] = input.placeholder.length;
                     let taille = input.placeholder.length*20-input.placeholder.length*7;
+                    if (input.placeholder.length===1){
+                        taille = input.placeholder.length*20-input.placeholder.length*1;
+                    }
+                    if (input.placeholder.length>10){
+                        taille = input.placeholder.length*20-input.placeholder.length*11;
+                    }
                     if (input.placeholder.length>20){
                         taille = input.placeholder.length*20-input.placeholder.length*12;
                     }
