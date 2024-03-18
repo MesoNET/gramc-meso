@@ -29,7 +29,6 @@
 
     <td>
         <span title="{{ item.meta_etat }}">{{ gramcmacros.metagraph(item.meta_etat) }}</span>
-
     </td>
     <td class="border-bottom-0">
         <h6 class="fw-semibold mb-0">
@@ -51,7 +50,7 @@
                         <span title="PROBLEME DE SECURITE - VOTRE CLE A ETE REVOQUEE">{{ icones.attention(20,20) }}</span>
                     {% endif %}
                     <span title="Changer de clé ssh"><a
-                                href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}"><i class="ti ti-key-red medium-icon"></i></span>
+                                href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}"><i class="ti ti-key-red medium-icon"></i></a></span>
                 {% else %}
                     <span title="Vous devez choisir une clé avant de vous connecter"><a
                                 href="{{ path('user_modif', { 'id': item.loginnames[s]['userid'] }) }}"><i class="ti ti-key-red medium-icon"></i></a></span>
@@ -77,13 +76,15 @@
         {% endif %}
     </td>
 
+
+
+    <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0 border-bottom-0">
     {% if item.projet.versionactive != null %}
         {% set dacs = serviceDacs.getDacsByNr(item.projet.versionactive) %}
         {% set cpTot = 0 %}
         {% set consoTot = 0 %}
         {% set consomationTot = 0 %}
         {% set bug = 0 %}
-        <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0 border-bottom-0">
             {% for nr in dacs|keys|sort %}
                 {% if serviceDacs.getTodofConsolide(dacs[nr]) %}
                     {% set bug = 1 %}
@@ -114,25 +115,27 @@
             {{ icones.attention(20,20) }}
         </span>
             {% endif %}
-        </td>
     {% else %}
-        <td rowspan="{{ item.cpt_rall + 1 }}" class="consommation seuil_0 border-bottom-0">-</td>
+        -
     {% endif %}
+    </td>
+
+
+    <td>
     {% if( item.projet.derniereVersion.isEdited ) %}
-
-        <td>
-            <a href="{{ path('version_avant_supprimer', { 'id': item.projet.derniereVersion.idVersion }) }}"
-               title="Supprimer le projet {{ item.projet.idProjet }}">
-                {{ icones.supprimer }}
-            </a>
-        </td>
+        <a href="{{ path('version_avant_supprimer', { 'id': item.projet.derniereVersion.idVersion }) }}"
+           title="Supprimer le projet {{ item.projet.idProjet }}">
+            {{ icones.supprimer }}
+        </a>
     {% else %}
-        <td>
-
-        </td>
+        &nbsp;
     {% endif %}
+    </td>
 
     </tr>
+
+
+
 
     {% set num_rallonge = 1 %}
     {% for rallonge in item.rallonges %}
@@ -224,42 +227,24 @@ passwd
             <section class="section_responsable">
                 <div class="card">
                     <div class="card-body p-4">
-                        <div class="formulaire inputrond mb-3">
-                        <div class="formulaire inputrond mb-3">
-                            {{ form_start(form) }}
-                            {{ form_widget(form.filtre) }}
-                            {{ form_widget(form.filtrer)}}
-                            {{ form_end(form) }}
-                        </div>
                         <h5 class="card-title fw-semibold mb-4">En tant que responsable:</h5>
                         <div class="table-responsive">
-                            <table class="text-nowrap mb-0 align-middle" id="projet">
+                            <table id="datatable" class="display">
                                 <thead class="text-dark fs-4">
                                 <tr>
-                                    <th class="border-bottom-0">
-                                        <h6 class="fw-semibold mb-0">État</h6>
-                                    </th>
-                                    <th class="border-bottom-0">
-                                        <h6 class="fw-semibold mb-0">Numéro</h6>
-                                    </th>
-                                    <th class="border-bottom-0 ">
-                                        <h6 class="fw-semibold mb-0">Action</h6>
-                                    </th>
-                                    <th class="border-bottom-0 ">
-                                        <h6 class="fw-semibold mb-0">Titre</h6>
-                                    </th>
+                                    <th>État</th>
+                                    <th>Numéro</th>
+                                    <th>Action</th>
+                                    <th >Titre</th>
 
-                                    <th class="border-bottom-0 ">
-                                        <h6 class="fw-semibold mb-0">Fin</h6>
-                                    </th>
-                                    {% if false %}
-                                        <th class="border-bottom-0 ">
-                                            <h6 class="fw-semibold mb-0">Consommation</h6>
-                                        </th>
-                                    {% endif %}
-                                    <th class="border-bottom-0 ">
-                                        <h6 class="fw-semibold mb-0">Resources</h6>
-                                    </th>
+                                    <th >Fin</th>
+{#                                    {% if false %}#}
+{#                                        <th class="border-bottom-0 ">#}
+{#                                            <h6 class="fw-semibold mb-0">Consommation</h6>#}
+{#                                        </th>#}
+{#                                    {% endif %}#}
+                                    <th>Resources</th>
+                                    <th>&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -267,9 +252,26 @@ passwd
                                     {{ thismacro.ligne_projet(item) }}
                                 {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>État</th>
+                                        <th>Numéro</th>
+                                        <th>Action</th>
+                                        <th>Titre</th>
+                                        <th>Fin</th>
+                                        {#                                    {% if false %}#}
+                                        {#                                        <th class="border-bottom-0 ">#}
+                                        {#                                            <h6 class="fw-semibold mb-0">Consommation</h6>#}
+                                        {#                                        </th>#}
+                                        {#                                    {% endif %}#}
+                                        <th>Resources</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 {% for item in  projets_resp %}
@@ -328,6 +330,35 @@ passwd
                         </tr>
                     {% endfor %}
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">État</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                            <h6 class="fw-semibold mb-0">Numéro</h6>
+                        </th>
+                        <th class="border-bottom-0 ">
+                            <h6 class="fw-semibold mb-0">Action</h6>
+                        </th>
+                        <th class="border-bottom-0 ">
+                            <h6 class="fw-semibold mb-0">Titre</h6>
+                        </th>
+
+                        <th class="border-bottom-0 ">
+                            <h6 class="fw-semibold mb-0">Fin</h6>
+                        </th>
+                        {% if false %}
+                            <th class="border-bottom-0 ">
+                                <h6 class="fw-semibold mb-0">Consommation</h6>
+                            </th>
+                        {% endif %}
+                        <th class="border-bottom-0 ">
+                            <h6 class="fw-semibold mb-0">Resources</h6>
+                        </th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </tfoot>
 
                 </table>
             </section>
