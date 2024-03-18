@@ -40,6 +40,17 @@ class LaboratoireRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    // Retourne uniquement les labos avec des individus
+    public function findAllSortedOnlyUsed()
+    {
+        $dql = 'SELECT l, i
+            FROM App\Entity\Laboratoire l
+            INNER JOIN l.individu i
+            ORDER BY l.numeroLabo,l.acroLabo';
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
     /**************************
      *
      * Renvoie tous les laboratoires pour lesquels on  au moins un user demandant un login sur un serveur géré par $admname
