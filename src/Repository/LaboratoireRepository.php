@@ -48,6 +48,7 @@ class LaboratoireRepository extends \Doctrine\ORM\EntityRepository
             INNER JOIN l.individu i
             ORDER BY l.numeroLabo,l.acroLabo';
         $query = $this->getEntityManager()->createQuery($dql);
+
         return $query->getResult();
     }
 
