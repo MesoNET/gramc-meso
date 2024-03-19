@@ -9,5 +9,8 @@
 {% for notification in notifs|slice(taille-8,taille) %}
     <a href="{{ path(notification.route??'accueil') }}" class="d-flex align-items-center gap-2 dropdown-item">
         <p class="mb-0 fs-3">{{ notification.sujet }}</p>
+        {%  if notification.content %}
+        <p>{{ notification.sujet }}</p>
+        {%  endif %}
     </a>
 {% endfor %}
