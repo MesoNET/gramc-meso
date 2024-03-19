@@ -77,6 +77,7 @@ class LaboratoireController extends AbstractController
         }
         // Si on n'est pas admin on n'a pas accès au menu
         $menu = ($ac->isGranted('ROLE_ADMIN') or $ac->isGranted('ROLE_VALIDEUR')) ? [['ok' => true, 'name' => 'ajouter_laboratoire', 'lien' => 'Ajouter un laboratoire', 'commentaire' => 'Ajouter un laboratoire']] : [];
+
         return $this->render(
             'laboratoire/liste.html.twig',
             [
