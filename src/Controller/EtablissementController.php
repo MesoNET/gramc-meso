@@ -63,8 +63,6 @@ class EtablissementController extends AbstractController
         return $this->render('etablissement/index.html.twig', [
             'etablissements' => $etablissements,
             'form' => $form->createView(),
-
-
         ]);
     }
 

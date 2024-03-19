@@ -903,7 +903,6 @@ class IndividuController extends AbstractController
         // $form = Functions::getFormBuilder($ff, 'tri', GererUtilisateurType::class, [])->getForm();
         $individus = $em->getRepository(Individu::class)->findAll();
 
-
         // statistiques
         $actifs = 0;
         $idps = [];
