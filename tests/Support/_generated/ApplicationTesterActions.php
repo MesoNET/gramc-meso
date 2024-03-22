@@ -1,4 +1,4 @@
-<?php  //[STAMP] cfad5f08ca40a034aa827aa9cf0c7672
+<?php  //[STAMP] 741f280c49b835474216df6a1e2c1ad2
 // phpcs:ignoreFile
 namespace App\Tests\Support\_generated;
 
@@ -5664,7 +5664,7 @@ trait ApplicationTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * HOOK to be executed when config changes with `_reconfigure`.
-     * @see \Codeception\Module\Doctrine2::onReconfigure()
+     * @see \Codeception\Module\Doctrine::onReconfigure()
      */
     public function onReconfigure(): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('onReconfigure', func_get_args()));
@@ -5675,7 +5675,7 @@ trait ApplicationTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Performs $em->flush();
-     * @see \Codeception\Module\Doctrine2::flushToDatabase()
+     * @see \Codeception\Module\Doctrine::flushToDatabase()
      */
     public function flushToDatabase(): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('flushToDatabase', func_get_args()));
@@ -5696,7 +5696,7 @@ trait ApplicationTesterActions
      * external (relative to entity manager used in tests) changes.
      *
      * @param object|object[] $entities
-     * @see \Codeception\Module\Doctrine2::refreshEntities()
+     * @see \Codeception\Module\Doctrine::refreshEntities()
      */
     public function refreshEntities($entities): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('refreshEntities', func_get_args()));
@@ -5711,7 +5711,7 @@ trait ApplicationTesterActions
      * ``` php
      * $I->clearEntityManager();
      * ```
-     * @see \Codeception\Module\Doctrine2::clearEntityManager()
+     * @see \Codeception\Module\Doctrine::clearEntityManager()
      */
     public function clearEntityManager(): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('clearEntityManager', func_get_args()));
@@ -5740,7 +5740,7 @@ trait ApplicationTesterActions
      *
      * @param class-string $className
      * @param array<string, callable> $methods
-     * @see \Codeception\Module\Doctrine2::haveFakeRepository()
+     * @see \Codeception\Module\Doctrine::haveFakeRepository()
      */
     public function haveFakeRepository(string $className, array $methods = []): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('haveFakeRepository', func_get_args()));
@@ -5809,7 +5809,7 @@ trait ApplicationTesterActions
      * @param class-string<T>|T $classNameOrInstance
      * @param array $data
      * @return mixed
-     * @see \Codeception\Module\Doctrine2::haveInRepository()
+     * @see \Codeception\Module\Doctrine::haveInRepository()
      */
     public function haveInRepository($classNameOrInstance, array $data = []) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveInRepository', func_get_args()));
@@ -5843,7 +5843,7 @@ trait ApplicationTesterActions
      * @param bool $append
      * @throws ModuleException
      * @throws ModuleRequireException
-     * @see \Codeception\Module\Doctrine2::loadFixtures()
+     * @see \Codeception\Module\Doctrine::loadFixtures()
      */
     public function loadFixtures($fixtures, bool $append = true): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('loadFixtures', func_get_args()));
@@ -5870,7 +5870,7 @@ trait ApplicationTesterActions
      * @param class-string $entity
      * @param array $params
      * @return void
-     * @see \Codeception\Module\Doctrine2::seeInRepository()
+     * @see \Codeception\Module\Doctrine::seeInRepository()
      */
     public function seeInRepository(string $entity, array $params = []): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInRepository', func_get_args()));
@@ -5896,7 +5896,7 @@ trait ApplicationTesterActions
      * @param class-string $entity
      * @param array $params
      * @return void
-     * @see \Codeception\Module\Doctrine2::seeInRepository()
+     * @see \Codeception\Module\Doctrine::seeInRepository()
      */
     public function canSeeInRepository(string $entity, array $params = []): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInRepository', func_get_args()));
@@ -5911,7 +5911,7 @@ trait ApplicationTesterActions
      * @param class-string $entity
      * @param array $params
      * @return void
-     * @see \Codeception\Module\Doctrine2::dontSeeInRepository()
+     * @see \Codeception\Module\Doctrine::dontSeeInRepository()
      */
     public function dontSeeInRepository(string $entity, array $params = []): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInRepository', func_get_args()));
@@ -5925,7 +5925,7 @@ trait ApplicationTesterActions
      * @param class-string $entity
      * @param array $params
      * @return void
-     * @see \Codeception\Module\Doctrine2::dontSeeInRepository()
+     * @see \Codeception\Module\Doctrine::dontSeeInRepository()
      */
     public function cantSeeInRepository(string $entity, array $params = []): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInRepository', func_get_args()));
@@ -5951,7 +5951,7 @@ trait ApplicationTesterActions
      * @param string $field
      * @param array $params
      * @return mixed
-     * @see \Codeception\Module\Doctrine2::grabFromRepository()
+     * @see \Codeception\Module\Doctrine::grabFromRepository()
      */
     public function grabFromRepository(string $entity, string $field, array $params = []) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabFromRepository', func_get_args()));
@@ -5977,7 +5977,7 @@ trait ApplicationTesterActions
      * @param class-string<T> $entity
      * @param array $params . For `IS NULL`, use `['field' => null]`
      * @return list<T>
-     * @see \Codeception\Module\Doctrine2::grabEntitiesFromRepository()
+     * @see \Codeception\Module\Doctrine::grabEntitiesFromRepository()
      */
     public function grabEntitiesFromRepository(string $entity, array $params = []): array {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabEntitiesFromRepository', func_get_args()));
@@ -6004,7 +6004,7 @@ trait ApplicationTesterActions
      * @param array $params . For `IS NULL`, use `['field' => null]`
      * @return T
      * @version 1.1
-     * @see \Codeception\Module\Doctrine2::grabEntityFromRepository()
+     * @see \Codeception\Module\Doctrine::grabEntityFromRepository()
      */
     public function grabEntityFromRepository(string $entity, array $params = []) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabEntityFromRepository', func_get_args()));

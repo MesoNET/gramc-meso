@@ -41,7 +41,6 @@ class IndividuRepository extends \Doctrine\ORM\EntityRepository
                    ->getResult();
     }
 
-
     public function getNonActiveUsers()
     {
         $users = $this->getEntityManager()
