@@ -162,7 +162,7 @@ class ServiceRallonges
             if (array_key_exists($r->getId(), $dars)) {
                 $dar = $dars[$r->getId()];
             } else {
-                $dar = new Dar($r, $version);
+                $dar = new Dar($r, $rallonge);
             }
             $data[] = $dar;
         }
