@@ -54,6 +54,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(
             provider: ProjetCollectionProvider::class
         ),
+        new Get(
+            uriTemplate: 'externe/projets/{id}',
+            uriVariables: [
+                'id' => 'idProjet',
+            ],
+        ),
+        new GetCollection(
+            uriTemplate: 'externe/projets'
+        )
 ],
     normalizationContext: ['groups' => ['projet_lecture']],
 )]
