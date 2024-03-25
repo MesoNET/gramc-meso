@@ -1,10 +1,11 @@
 security:
     # https://symfony.com/doc/current/security/experimental_authenticators.html
     password_hashers:
-      App\Entity\Individu: plaintext
-      App\Entity\Serveur: 'auto'
-      Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
-    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+        App\Entity\ServiceExterne:
+            algorithm: auto
+        App\Entity\Serveur:
+            algorithm: auto
+  # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:
     #
     # php -r "echo password_hash('ThePassword', PASSWORD_BCRYPT, ['cost' => 13]) . PHP_EOL;"
@@ -32,6 +33,11 @@ security:
             entity:
                 class: App\Entity\Individu
                 property: id
+        # used to reload user from session & other features (e.g. switch_user)
+        api_service_externe:
+            entity:
+                class: App\Entity\ServiceExterne
+                property: username
     
     # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
     # InMemoryUser: les mots de passe sont hashés - cf .env.dist
@@ -60,6 +66,10 @@ security:
             pattern:   ^/api
             http_basic:
               provider: api
+        api_service_externe:
+          pattern: ^/api
+          http_basic:
+            provider: api_service_externe
 
         main:
             lazy: true

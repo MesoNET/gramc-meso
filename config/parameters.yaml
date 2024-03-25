@@ -1,0 +1,123 @@
+---
+
+# Learn more about services, parameters and containers at
+# https://symfony.com/doc/current/service_container.html
+parameters:
+    # parameter_name: value
+
+    # Identifications diverses du mésocentre et de la documentation
+    mesoc: MESONET
+    mesoc_web: 'https://www.mesonet.fr'
+    mesoc_cga: 'cga.pdf'
+    mentions_legales: 'mentions_legales.pdf'
+    mesoc_visu: 'https://www.mesonet.fr'
+    mesoc_attrib: 'https://www.mesonet.fr'
+    mesoc_merci: 'https://www.mesonet.fr'
+    mesoc_formation: 'https://www.mesonet.fr'
+    mesoc_address: 'MESONET - GENCI - 6 bis rue Auguste Vitu 75015 PARIS'
+
+    # Types de cles ssh autorises
+    clessh_algos:
+       - RSA-2048
+       - ED25519-256
+
+    # PARAMETRES PAS UTILISES ACTUELLEMENT
+    # ====================================
+
+    # En %attribution, permet d'indiquer les projets qui ont bientôt épuisé les quotas (écran projets par année)
+    conso_seuil_1: 70
+    conso_seuil_2: 90
+    
+    # ===============================
+    # FIN DES PARAMETRES PAS UTILISES
+    # format max des figures associées à une description de projet
+    max_fig_width: 800
+    max_fig_height: 400
+    
+    # ATTENTION - Il faut choisir: rapport d'activité OU fichier attaché, PAS les deux !
+    #             C'est redondant et si on a les deux à true ça va entraîner des dysfonctionnements
+    #             Les deux à false, pas de pb
+    #             Si mis à true, rapport d'activité (annuel) demandé à la fin de l'année
+    rapport_dactivite: false
+
+    # Si mis à true, propose de téléverser un fichier attaché à chaque version
+    fichier_attache: false
+       
+    # nb de pages max pour un rapport d'activité ou un fichier attaché
+    max_page_nb: 5
+    
+    # taille max du fichier de rapport d'activité ou fichier attaché
+    # ATTENTION - Doit être en cohérence avec le paramètre post_max_size défini dans php.ini !
+    #             Et peut-être aussi avec le paramètre équivalent si on est derrière un proxy !
+    #             Unité = Mo
+    max_size_doc: 10
+    
+    # Si true, le resp de projet peut modifier le profil de ses collaborateurs
+    resp_peut_modif_collabs: false
+
+    # Nombre max de rallonges par projet et par version
+    max_rall: 2
+    
+    # Préfixe associé au nom du projet, dépend du type de projet
+    # Seuls les projets de type 4 sont utilisés actuellement
+    prj_prefix:
+        4: M
+
+    # La durée du projet dynamique
+    dyn_duree: P365D
+    
+    # Lorsque la version est à duree_dyn_actif_r de limitDate, on passe à l'état ACTIF_R
+    # P30D = 30 jours (avant !)
+    dyn_duree_actif_r: P30D
+
+    # Lorsqu'on a dépassé la limitDate du projet de plus de duree_dyn_post jours, on FERME le projet
+    dyn_duree_post: P365D
+    
+    # Répertoires de données
+    signature_directory: '%kernel.project_dir%/data/fiches'
+    rapport_directory: '%kernel.project_dir%/data/rapports'
+    fig_directory: '%kernel.project_dir%/data/figures'
+    dfct_directory: '%kernel.project_dir%/data/dfct'
+    
+    # Différents mails
+    mailadmin: admin.calmip@univ-toulouse.fr
+    mailsupport: support.calmip@univ-toulouse.fr
+    mailfrom: ne-pas-repondre@calmip.univ-toulouse.fr
+    
+    # Utilisé pour le nettoyage du journal et aussi des projets (pour le respect du rgpd)
+    # En années
+    old_journal: 10
+    
+    # Durée de vie du mot de passe temporaire géré par gramc
+    # (pas utilisé dans gramc-meso)
+    pwd_duree: P30D
+
+    # La durée de vie d'une invitation
+    invit_duree: P15D
+    
+    # AUTHENTIFICATION
+    #
+    # Actuellement deux authentifications supportées:
+    #
+    #    - SAML2 (Fédération d'identité/Renater)
+    #    - OPENID (Indigo-Iam)
+
+    #mode_auth: ''
+    #mode_auth: 'saml2'
+    mode_auth: 'openid'
+
+    # Utile SEULEMENT si SAML2/Fédération Renater
+    # ===========================================
+    #
+    #        Les IDP les plus importants - Sur la fédération de dev on se limite aux comptes CRU on sait qu'ils fonctionnent
+    
+    # Les IDP les plus importants - Sur la fédération de dev on se limite aux comptes CRU on sait qu'ils fonctionnent
+#    IDPprod:
+#        CNRS: 'https://janus.cnrs.fr/idp'
+#        'Université de Toulouse 3 Paul Sabatier': 'https://shibboleth.ups-tlse.fr/idp/shibboleth'
+#        'Comptes CRU': 'urn:mace:cru.fr:federation:sac'
+#        'INPT - Institut National Polytechnique de Toulouse': 'https://idp.inp-toulouse.fr/idp/shibboleth'
+#        AUTRE: WAYF
+
+    # Pour crypter les cookies
+    secret: '%env(APP_SECRET)%'
