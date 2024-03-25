@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new GetCollection(),
     ],
+    security: "is_granted('ROLE_API')",
     normalizationContext: ['groups' => ['labo_lecture']],
 )]
 class Laboratoire
