@@ -44,9 +44,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity]
 #[ApiResource(
     operations: [
-        new Get(    provider: ClesshProvider::class,
+        new Get(provider: ClesshProvider::class,
         ),
-        new Patch(    provider: ClesshProvider::class,
+        new Patch(provider: ClesshProvider::class,
         ),
         new GetCollection(
             provider: ClesshCollectionProvider::class
@@ -59,7 +59,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Patch(
             uriTemplate: 'externe/clesshes/{id}',
-        )
+        ),
     ],
     normalizationContext: ['groups' => ['ssh_lecture']],
     denormalizationContext: ['groups' => ['ssh_ecriture']],

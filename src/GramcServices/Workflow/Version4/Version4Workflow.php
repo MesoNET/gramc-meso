@@ -51,63 +51,63 @@ class Version4Workflow extends Workflow
             ->addState(
                 Etat::EDITION_DEMANDE,
                 [
-                Signal::CLK_VAL_DEM => new Version4Transition(
-                    Etat::EDITION_EXPERTISE,
-                    Signal::CLK_VAL_DEM,
-                    ['R' => 'depot_pour_demandeur',
-                      'V' => 'depot_pour_valideurs']
-                ),
-                Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                    Signal::CLK_VAL_DEM => new Version4Transition(
+                        Etat::EDITION_EXPERTISE,
+                        Signal::CLK_VAL_DEM,
+                        ['R' => 'depot_pour_demandeur',
+                            'V' => 'depot_pour_valideurs']
+                    ),
+                    Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::EDITION_EXPERTISE,
                 [
-                Signal::CLK_VAL_EXP_OK => new Version4Transition(
-                    Etat::ACTIF,
-                    Signal::CLK_VAL_EXP_OK,
-                    ['R' => 'validation4',
-                      'V' => 'validation_pour_valideur',
-                      'A' => 'validation_pour_admin']
-                ),
-                Signal::CLK_VAL_EXP_KO => new Version4Transition(
-                    Etat::REFUSE,
-                    Signal::CLK_VAL_EXP_KO,
-                    ['V' => 'validation_refusee']
-                ),
-                Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
-                Signal::CLK_ARR => new Version4Transition(Etat::EDITION_DEMANDE, Signal::CLK_ARR),
+                    Signal::CLK_VAL_EXP_OK => new Version4Transition(
+                        Etat::ACTIF,
+                        Signal::CLK_VAL_EXP_OK,
+                        ['R' => 'validation4',
+                            'V' => 'validation_pour_valideur',
+                            'A' => 'validation_pour_admin']
+                    ),
+                    Signal::CLK_VAL_EXP_KO => new Version4Transition(
+                        Etat::REFUSE,
+                        Signal::CLK_VAL_EXP_KO,
+                        ['V' => 'validation_refusee']
+                    ),
+                    Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                    Signal::CLK_ARR => new Version4Transition(Etat::EDITION_DEMANDE, Signal::CLK_ARR),
                 ]
             )
             ->addState(
                 Etat::ACTIF,
                 [
-                Signal::DAT_ACTR => new Version4Transition(Etat::ACTIF_R, Signal::DAT_ACTR, ['R' => 'version_a_renouveler']),
-                Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
-                Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
-                Signal::CLK_ARR => new NoTransition(0, 0),
-                Signal::CLK_VAL_DEM => new NoTransition(0, 0),
-                Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                    Signal::DAT_ACTR => new Version4Transition(Etat::ACTIF_R, Signal::DAT_ACTR, ['R' => 'version_a_renouveler']),
+                    Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
+                    Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
+                    Signal::CLK_ARR => new NoTransition(0, 0),
+                    Signal::CLK_VAL_DEM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::ACTIF_R,
                 [
-                Signal::DAT_ACTR => new NoTransition(0, 0),
-                Signal::CLK_ARR => new NoTransition(0, 0),
-                Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
-                Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
-                Signal::CLK_VAL_DEM => new NoTransition(0, 0),
-                Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                    Signal::DAT_ACTR => new NoTransition(0, 0),
+                    Signal::CLK_ARR => new NoTransition(0, 0),
+                    Signal::CLK_VAL_EXP_OK => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_OK),
+                    Signal::CLK_VAL_EXP_KO => new Version4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO),
+                    Signal::CLK_VAL_DEM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new Version4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )
              ->addState(
                  Etat::TERMINE,
                  [
-                Signal::CLK_SESS_DEB => new NoTransition(0, 0),
-                Signal::CLK_SESS_FIN => new NoTransition(0, 0),
-                Signal::CLK_FERM => new NoTransition(0, 0),
-                ]
+                     Signal::CLK_SESS_DEB => new NoTransition(0, 0),
+                     Signal::CLK_SESS_FIN => new NoTransition(0, 0),
+                     Signal::CLK_FERM => new NoTransition(0, 0),
+                 ]
              );
     }
 }

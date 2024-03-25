@@ -40,9 +40,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: 'App\Repository\LaboratoireRepository')]
 #[ApiResource(
     operations: [
-    new Get(),
-    new GetCollection(),
-        ],
+        new Get(),
+        new GetCollection(),
+    ],
     normalizationContext: ['groups' => ['labo_lecture']],
 )]
 class Laboratoire

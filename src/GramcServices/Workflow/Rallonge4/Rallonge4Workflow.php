@@ -52,56 +52,56 @@ class Rallonge4Workflow extends Workflow
             ->addState(
                 Etat::EDITION_DEMANDE,
                 [
-                Signal::CLK_VAL_DEM => new Rallonge4Transition(
-                    Etat::EDITION_EXPERTISE,
-                    Signal::CLK_VAL_DEM,
-                    ['R' => 'depot_rallonge_pour_demandeur',
-                      'A' => 'depot_rallonge_pour_admin']
-                ),
-                Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
+                    Signal::CLK_VAL_DEM => new Rallonge4Transition(
+                        Etat::EDITION_EXPERTISE,
+                        Signal::CLK_VAL_DEM,
+                        ['R' => 'depot_rallonge_pour_demandeur',
+                            'A' => 'depot_rallonge_pour_admin']
+                    ),
+                    Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::EDITION_EXPERTISE,
                 [
-                Signal::CLK_VAL_EXP_OK => new Rallonge4Transition(
-                    Etat::ACTIF,
-                    Signal::CLK_VAL_EXP_OK,
-                    ['R' => 'rallonge_validation4',
-                      'V' => 'rallonge_validation_pour_valideur',
-                      'A' => 'rallonge_validation_pour_admin']
-                ),
-                Signal::CLK_VAL_EXP_KO => new Rallonge4Transition(
-                    Etat::REFUSE,
-                    Signal::CLK_VAL_EXP_KO,
-                    ['V' => 'rallonge_validation_refusee',
-                      'A' => 'rallonge_validation_pour_admin']
-                ),
-                Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
+                    Signal::CLK_VAL_EXP_OK => new Rallonge4Transition(
+                        Etat::ACTIF,
+                        Signal::CLK_VAL_EXP_OK,
+                        ['R' => 'rallonge_validation4',
+                            'V' => 'rallonge_validation_pour_valideur',
+                            'A' => 'rallonge_validation_pour_admin']
+                    ),
+                    Signal::CLK_VAL_EXP_KO => new Rallonge4Transition(
+                        Etat::REFUSE,
+                        Signal::CLK_VAL_EXP_KO,
+                        ['V' => 'rallonge_validation_refusee',
+                            'A' => 'rallonge_validation_pour_admin']
+                    ),
+                    Signal::CLK_FERM => new Rallonge4Transition(Etat::ANNULE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::ACTIF,
                 [
-                Signal::CLK_FERM => new Rallonge4Transition(Etat::TERMINE, Signal::CLK_FERM),
+                    Signal::CLK_FERM => new Rallonge4Transition(Etat::TERMINE, Signal::CLK_FERM),
                 ]
             )
             ->addState(
                 Etat::TERMINE,
                 [
-                Signal::CLK_FERM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             )
             ->addState(
                 Etat::ANNULE,
                 [
-                Signal::CLK_FERM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             )
             ->addState(
                 Etat::REFUSE,
                 [
-                Signal::CLK_FERM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             );
     }

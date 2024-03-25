@@ -62,8 +62,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new GetCollection(
             uriTemplate: 'externe/projets'
-        )
-],
+        ),
+    ],
     normalizationContext: ['groups' => ['projet_lecture']],
 )]
 class Projet
@@ -75,12 +75,12 @@ class Projet
     // il dure 1 an et est indépendant des sessions
 
     public const LIBELLE_TYPE =
-    [
-        self::PROJET_SESS => 'S',
-        self::PROJET_TEST => 'T',
-        self::PROJET_FIL => 'F',
-        self::PROJET_DYN => 'D',
-    ];
+        [
+            self::PROJET_SESS => 'S',
+            self::PROJET_TEST => 'T',
+            self::PROJET_FIL => 'F',
+            self::PROJET_DYN => 'D',
+        ];
 
     /**
      * Constructor.

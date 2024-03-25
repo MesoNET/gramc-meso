@@ -60,9 +60,9 @@ class JournalController extends AbstractController
         return $this->render(
             'journal/list.html.twig',
             [
-            'journals' => $data['journals'],
-            'form' => $data['form']->createView(),
-        ]
+                'journals' => $data['journals'],
+                'form' => $data['form']->createView(),
+            ]
         );
     }
 
@@ -78,9 +78,9 @@ class JournalController extends AbstractController
         return self::render(
             'journal/index.html.twig',
             [
-            'journals' => $data['journals'],
-            'form' => $data['form']->createView(),
-        ]
+                'journals' => $data['journals'],
+                'form' => $data['form']->createView(),
+            ]
         );
     }
 

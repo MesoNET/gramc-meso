@@ -64,16 +64,16 @@ class IndividuType extends AbstractType
                         'label' => 'photo',
                         'required' => false,
                         'mapped' => false,
-                    'constraints' => [
-                new File([
-                    'maxSize' => '12m',
-                    'mimeTypes' => [
-                        'image/png',
-                        'image/jpeg',
-                    ],
-                    'mimeTypesMessage' => 'Veillez sélectionner une image png ou jpeg de moins de 12 MO',
-                ]),
-            ],
+                        'constraints' => [
+                            new File([
+                                'maxSize' => '12m',
+                                'mimeTypes' => [
+                                    'image/png',
+                                    'image/jpeg',
+                                ],
+                                'mimeTypesMessage' => 'Veillez sélectionner une image png ou jpeg de moins de 12 MO',
+                            ]),
+                        ],
                     ],
                 );
             if ($options['mail']) {
@@ -105,13 +105,13 @@ class IndividuType extends AbstractType
                     'labo',
                     EntityType::class,
                     [
-                    'label' => 'Laboratoire:',
-                    'class' => Laboratoire::class,
-                    'multiple' => false,
-                    'placeholder' => '-- Indiquez le laboratoire',
-                    'required' => false,
-                    'choices' => $this->em->getRepository(Laboratoire::class)->findAllSorted(),
-                    'attr' => ['style' => 'width:20em'],
+                        'label' => 'Laboratoire:',
+                        'class' => Laboratoire::class,
+                        'multiple' => false,
+                        'placeholder' => '-- Indiquez le laboratoire',
+                        'required' => false,
+                        'choices' => $this->em->getRepository(Laboratoire::class)->findAllSorted(),
+                        'attr' => ['style' => 'width:20em'],
                     ]
                 );
         }
@@ -122,13 +122,13 @@ class IndividuType extends AbstractType
                     'statut',
                     EntityType::class,
                     [
-                    'placeholder' => '-- Indiquez votre statut',
-                    'label' => 'Statut:',
-                    'class' => Statut::class,
-                    'multiple' => false,
-                    'required' => false,
-                    'choices' => $this->em->getRepository(Statut::class)->findBy(['permanent' => true]),
-                    'attr' => ['style' => 'width:20em'],
+                        'placeholder' => '-- Indiquez votre statut',
+                        'label' => 'Statut:',
+                        'class' => Statut::class,
+                        'multiple' => false,
+                        'required' => false,
+                        'choices' => $this->em->getRepository(Statut::class)->findBy(['permanent' => true]),
+                        'attr' => ['style' => 'width:20em'],
                     ]
                 );
         } else {
@@ -137,12 +137,12 @@ class IndividuType extends AbstractType
                     'statut',
                     EntityType::class,
                     [
-                    'placeholder' => '-- Indiquez votre statut',
-                    'label' => 'Statut:',
-                    'class' => Statut::class,
-                    'multiple' => false,
-                    'required' => false,
-                    'attr' => ['style' => 'width:20em'],
+                        'placeholder' => '-- Indiquez votre statut',
+                        'label' => 'Statut:',
+                        'class' => Statut::class,
+                        'multiple' => false,
+                        'required' => false,
+                        'attr' => ['style' => 'width:20em'],
                     ]
                 );
         }
@@ -158,7 +158,7 @@ class IndividuType extends AbstractType
                     'multiple' => false,
                     'required' => false,
                     'attr' => ['style' => 'width:20em'],
-                    ]
+                ]
             )
             ->add('mailSecondaire',
                 EmailType::class,
@@ -208,9 +208,9 @@ class IndividuType extends AbstractType
                 'thematique',
                 EntityType::class,
                 [
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Thematique::class,
+                    'multiple' => true,
+                    'expanded' => true,
+                    'class' => Thematique::class,
                 ]
             );
         }
@@ -221,8 +221,8 @@ class IndividuType extends AbstractType
                     'submit',
                     SubmitType::class,
                     [
-                    'label' => 'Valider',
-                    'attr' => ['style' => 'width:10em'],
+                        'label' => 'Valider',
+                        'attr' => ['style' => 'width:10em'],
                     ]
                 );
         }
@@ -232,14 +232,14 @@ class IndividuType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Individu',
-            'admin' => false,
-            'create' => false,
-            'user' => true,
-            'submit' => true,
-            'thematique' => false,
-            'permanent' => false,
-            'mail' => true,
+                'data_class' => 'App\Entity\Individu',
+                'admin' => false,
+                'create' => false,
+                'user' => true,
+                'submit' => true,
+                'thematique' => false,
+                'permanent' => false,
+                'mail' => true,
             ]
         );
     }

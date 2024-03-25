@@ -60,6 +60,7 @@ class ServiceExterne implements UserInterface, PasswordAuthenticatedUserInterfac
 
     /**
      * @see UserInterface
+     *
      * @return list<string>
      */
     public function getRoles(): array

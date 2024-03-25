@@ -59,8 +59,8 @@ class RessourceController extends AbstractController
         return $this->render(
             'ressource/liste.html.twig',
             [
-            'menu' => $menu,
-            'ressources' => $em->getRepository(Ressource::class)->findBy([], ['nom' => 'ASC']),
+                'menu' => $menu,
+                'ressources' => $em->getRepository(Ressource::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
@@ -105,14 +105,14 @@ class RessourceController extends AbstractController
         return $this->render(
             'ressource/ajouter.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_ressources',
-                        'lien' => 'Retour vers la liste des ressources',
-                        'commentaire' => 'Retour vers la liste des ressources',
-                        ]],
-            'ressource' => $ressource,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_ressources',
+                    'lien' => 'Retour vers la liste des ressources',
+                    'commentaire' => 'Retour vers la liste des ressources',
+                ]],
+                'ressource' => $ressource,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -136,14 +136,14 @@ class RessourceController extends AbstractController
         return $this->render(
             'ressource/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_ressources',
-                        'lien' => 'Retour vers la liste des ressources',
-                        'commentaire' => 'Retour vers la liste des ressources',
-                        ]],
-            'ressource' => $ressource,
-            'edit_form' => $editForm->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_ressources',
+                    'lien' => 'Retour vers la liste des ressources',
+                    'commentaire' => 'Retour vers la liste des ressources',
+                ]],
+                'ressource' => $ressource,
+                'edit_form' => $editForm->createView(),
             ]
         );
     }

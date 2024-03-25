@@ -191,9 +191,9 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
     {
         $resolver->setDefaults(
             [
-            'data_class' => IndividuForm::class,
-            'text_fields' => false,
-            'srv_noms' => [],
+                'data_class' => IndividuForm::class,
+                'text_fields' => false,
+                'srv_noms' => [],
             ]
         );
     }

@@ -46,10 +46,10 @@ class TempsStdbyCronTask extends CronTaskBase
         // Envoie des signaux différents suivant le nombre de jours restant avant la fin du projet
         // Tableau indexé par le nombre de jours
         $signaux = [1 => Signal::DAT_CAL_0,
-                     7 => Signal::DAT_CAL_1,
-                     15 => Signal::DAT_CAL_7,
-                     30 => Signal::DAT_CAL_15,
-                     99 => Signal::DAT_CAL_30];
+            7 => Signal::DAT_CAL_1,
+            15 => Signal::DAT_CAL_7,
+            30 => Signal::DAT_CAL_15,
+            99 => Signal::DAT_CAL_30];
 
         // Recherche les projets dont la dernière version est en standby
         foreach ($projets as $p) {

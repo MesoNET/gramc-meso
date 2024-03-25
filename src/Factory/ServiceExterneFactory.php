@@ -12,21 +12,21 @@ use Zenstruck\Foundry\RepositoryProxy;
 /**
  * @extends ModelFactory<ServiceExterne>
  *
- * @method        ServiceExterne|Proxy create(array|callable $attributes = [])
- * @method static ServiceExterne|Proxy createOne(array $attributes = [])
- * @method static ServiceExterne|Proxy find(object|array|mixed $criteria)
- * @method static ServiceExterne|Proxy findOrCreate(array $attributes)
- * @method static ServiceExterne|Proxy first(string $sortedField = 'id')
- * @method static ServiceExterne|Proxy last(string $sortedField = 'id')
- * @method static ServiceExterne|Proxy random(array $attributes = [])
- * @method static ServiceExterne|Proxy randomOrCreate(array $attributes = [])
+ * @method        ServiceExterne|Proxy                     create(array|callable $attributes = [])
+ * @method static ServiceExterne|Proxy                     createOne(array $attributes = [])
+ * @method static ServiceExterne|Proxy                     find(object|array|mixed $criteria)
+ * @method static ServiceExterne|Proxy                     findOrCreate(array $attributes)
+ * @method static ServiceExterne|Proxy                     first(string $sortedField = 'id')
+ * @method static ServiceExterne|Proxy                     last(string $sortedField = 'id')
+ * @method static ServiceExterne|Proxy                     random(array $attributes = [])
+ * @method static ServiceExterne|Proxy                     randomOrCreate(array $attributes = [])
  * @method static ServiceExterneRepository|RepositoryProxy repository()
- * @method static ServiceExterne[]|Proxy[] all()
- * @method static ServiceExterne[]|Proxy[] createMany(int $number, array|callable $attributes = [])
- * @method static ServiceExterne[]|Proxy[] createSequence(iterable|callable $sequence)
- * @method static ServiceExterne[]|Proxy[] findBy(array $attributes)
- * @method static ServiceExterne[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
- * @method static ServiceExterne[]|Proxy[] randomSet(int $number, array $attributes = [])
+ * @method static ServiceExterne[]|Proxy[]                 all()
+ * @method static ServiceExterne[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
+ * @method static ServiceExterne[]|Proxy[]                 createSequence(iterable|callable $sequence)
+ * @method static ServiceExterne[]|Proxy[]                 findBy(array $attributes)
+ * @method static ServiceExterne[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
+ * @method static ServiceExterne[]|Proxy[]                 randomSet(int $number, array $attributes = [])
  *
  * @phpstan-method        Proxy<ServiceExterne> create(array|callable $attributes = [])
  * @phpstan-method static Proxy<ServiceExterne> createOne(array $attributes = [])
@@ -53,8 +53,7 @@ final class ServiceExterneFactory extends ModelFactory
      */
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher,
-    )
-    {
+    ) {
         parent::__construct();
     }
 

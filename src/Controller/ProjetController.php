@@ -149,8 +149,8 @@ class ProjetController extends AbstractController
             return $this->render(
                 'projet/dialog_fermer.html.twig',
                 [
-            'projet' => $projet,
-            ]
+                    'projet' => $projet,
+                ]
             );
         }
     }
@@ -246,8 +246,8 @@ class ProjetController extends AbstractController
             return $this->render(
                 'projet/dialog_fwd.html.twig',
                 [
-            'version' => $version,
-            ]
+                    'version' => $version,
+                ]
             );
         }
     }
@@ -355,14 +355,14 @@ class ProjetController extends AbstractController
                 $dacs[$sroc->getNomComplet($d->getRessource())] = $d;
             }
             $data[] = [
-                    'projet' => $projet,
-                    'renouvelable' => Etat::RENOUVELABLE == $projet->getEtatProjet(),
-                    'metaetat' => $metaetat,
-                    'version' => $version,
-                    'dacs' => $dacs,
-                    'etat_version' => (null != $version) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
-                    'count' => $count,
-                    'responsable' => $collaborateurVersionRepository->getResponsable($projet),
+                'projet' => $projet,
+                'renouvelable' => Etat::RENOUVELABLE == $projet->getEtatProjet(),
+                'metaetat' => $metaetat,
+                'version' => $version,
+                'dacs' => $dacs,
+                'etat_version' => (null != $version) ? Etat::getLibelle($version->getEtatVersion()) : 'SANS_VERSION',
+                'count' => $count,
+                'responsable' => $collaborateurVersionRepository->getResponsable($projet),
             ];
         }
 
@@ -371,10 +371,10 @@ class ProjetController extends AbstractController
         return $this->render(
             'projet/projets_dyn.html.twig',
             [
-            'form' => $selectAnneeData['form']->createView(), // formulaire de hoix de l'année
-            'etat_projet' => $etat_projet,
-            'data' => $data,
-            'total' => $total,
+                'form' => $selectAnneeData['form']->createView(), // formulaire de hoix de l'année
+                'etat_projet' => $etat_projet,
+                'data' => $data,
+                'total' => $total,
             ]
         );
     }
@@ -405,8 +405,8 @@ class ProjetController extends AbstractController
         return $this->render(
             'projet/avant_nouveau_projet.html.twig',
             [
-            'renouvelables' => $renouvelables,
-            'type' => $type,
+                'renouvelables' => $renouvelables,
+                'type' => $type,
             ]
         );
     }
@@ -557,7 +557,7 @@ class ProjetController extends AbstractController
                 'projets_resp' => $projetsTot,
                 'projets_term' => $projets_term,
                 'menu' => $menu,
-                ]
+            ]
         );
     }
 

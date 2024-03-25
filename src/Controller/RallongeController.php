@@ -96,15 +96,15 @@ class RallongeController extends AbstractController
                 $dars[$sroc->getNomComplet($d->getRessource())] = $d;
             }
             $data[] = [
-                        'rallonge' => $r,
-                        'dars' => $dars,
+                'rallonge' => $r,
+                'dars' => $dars,
             ];
         }
 
         return $this->render(
             'rallonge/rallonges_dyn.html.twig',
             [
-            'data' => $data,
+                'data' => $data,
             ]
         );
     }
@@ -177,10 +177,10 @@ class RallongeController extends AbstractController
         return $this->render(
             'rallonge/consulter.html.twig',
             [
-            'rallonge' => $rallonge,
-            'projet' => $projet,
-            'version' => $version,
-            'menu' => $menu,
+                'rallonge' => $rallonge,
+                'projet' => $projet,
+                'version' => $version,
+                'menu' => $menu,
             ]
         );
     }
@@ -245,12 +245,12 @@ class RallongeController extends AbstractController
         return $this->render(
             'rallonge/modifier.html.twig',
             [
-            'rallonge' => $rallonge,
-            'projet' => $projet,
-            'edit_form' => $editForm->createView(),
-            'ressource_form' => $ressource_form->createView(),
-            'erreurs' => $erreurs,
-        ]
+                'rallonge' => $rallonge,
+                'projet' => $projet,
+                'edit_form' => $editForm->createView(),
+                'ressource_form' => $ressource_form->createView(),
+                'erreurs' => $erreurs,
+            ]
         );
     }
 
@@ -278,9 +278,9 @@ class RallongeController extends AbstractController
         return $this->render(
             'rallonge/avant_envoyer.html.twig',
             [
-            'rallonge' => $rallonge,
-            'projet' => $projet,
-            'erreurs' => $erreurs,
+                'rallonge' => $rallonge,
+                'projet' => $projet,
+                'erreurs' => $erreurs,
             ]
         );
     }
@@ -334,9 +334,9 @@ class RallongeController extends AbstractController
         return $this->render(
             'rallonge/envoyer.html.twig',
             [
-            'rallonge' => $rallonge,
-            'projet' => $projet,
-        ]
+                'rallonge' => $rallonge,
+                'projet' => $projet,
+            ]
         );
     }
 }

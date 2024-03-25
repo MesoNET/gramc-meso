@@ -72,8 +72,8 @@ class ClesshController extends AbstractController
         return $this->render(
             'clessh/liste.html.twig',
             [
-            'menu' => $menu,
-            'clessh' => $clessh,
+                'menu' => $menu,
+                'clessh' => $clessh,
             ]
         );
     }
@@ -98,8 +98,8 @@ class ClesshController extends AbstractController
         return $this->render(
             'clessh/liste.html.twig',
             [
-            'menu' => $menu,
-            'clessh' => $clessh_all,
+                'menu' => $menu,
+                'clessh' => $clessh_all,
             ]
         );
     }
@@ -188,14 +188,14 @@ class ClesshController extends AbstractController
         return $this->render(
             'clessh/ajouter.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_clessh',
-                        'lien' => 'Clés ssh',
-                        'commentaire' => 'Retour vers la liste des clé ssh',
-                        ]],
-            'laboratoire' => $clessh,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_clessh',
+                    'lien' => 'Clés ssh',
+                    'commentaire' => 'Retour vers la liste des clé ssh',
+                ]],
+                'laboratoire' => $clessh,
+                'form' => $form->createView(),
             ]
         );
     }

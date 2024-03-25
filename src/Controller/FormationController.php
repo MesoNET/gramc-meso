@@ -58,8 +58,8 @@ class FormationController extends AbstractController
         return $this->render(
             'formation/liste.html.twig',
             [
-            'menu' => $menu,
-            'formations' => $em->getRepository(Formation::class)->findBy([], ['numeroForm' => 'ASC']),
+                'menu' => $menu,
+                'formations' => $em->getRepository(Formation::class)->findBy([], ['numeroForm' => 'ASC']),
             ]
         );
     }
@@ -86,14 +86,14 @@ class FormationController extends AbstractController
         return $this->render(
             'formation/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_formations',
-                        'lien' => 'Retour vers la liste des formations',
-                        'commentaire' => 'Retour vers la liste des formations',
-                        ]],
-            'formation' => $formation,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_formations',
+                    'lien' => 'Retour vers la liste des formations',
+                    'commentaire' => 'Retour vers la liste des formations',
+                ]],
+                'formation' => $formation,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -117,14 +117,14 @@ class FormationController extends AbstractController
         return $this->render(
             'formation/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_formations',
-                        'lien' => 'Retour vers la liste des formations',
-                        'commentaire' => 'Retour vers la liste des formations',
-                        ]],
-            'formation' => $formation,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_formations',
+                    'lien' => 'Retour vers la liste des formations',
+                    'commentaire' => 'Retour vers la liste des formations',
+                ]],
+                'formation' => $formation,
+                'form' => $form->createView(),
             ]
         );
     }

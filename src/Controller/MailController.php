@@ -207,8 +207,8 @@ class MailController extends AbstractController
                     $sujet,
                     $body,
                     ['session' => $session,
-                      'projets' => $item['projets'],
-                      'responsable' => $item['responsable']],
+                        'projets' => $item['projets'],
+                        'responsable' => $item['responsable']],
                     [$item['responsable']]
                 );
                 ++$nb_msg;
@@ -354,8 +354,8 @@ class MailController extends AbstractController
         return $this->render(
             'mail/tester.html.twig',
             [
-            'form' => $form->createView(),
-        ]
+                'form' => $form->createView(),
+            ]
         );
     }
 }

@@ -81,9 +81,9 @@ class LaboratoireController extends AbstractController
         return $this->render(
             'laboratoire/liste.html.twig',
             [
-            'menu' => $menu,
-            'form' => $form->createView(),
-            'laboratoires' => $laboratoires,
+                'menu' => $menu,
+                'form' => $form->createView(),
+                'laboratoires' => $laboratoires,
             ]
         );
     }
@@ -110,14 +110,14 @@ class LaboratoireController extends AbstractController
         return $this->render(
             'laboratoire/ajouter.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_laboratoires',
-                        'lien' => 'Retour vers la liste des laboratoires',
-                        'commentaire' => 'Retour vers la liste des laboratoires',
-                        ]],
-            'laboratoire' => $laboratoire,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_laboratoires',
+                    'lien' => 'Retour vers la liste des laboratoires',
+                    'commentaire' => 'Retour vers la liste des laboratoires',
+                ]],
+                'laboratoire' => $laboratoire,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -154,16 +154,16 @@ class LaboratoireController extends AbstractController
         return $this->render(
             'laboratoire/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_laboratoires',
-                        'lien' => 'Retour vers la liste des laboratoires',
-                        'commentaire' => 'Retour vers la liste des laboratoires',
-                        ]],
-            'laboratoire' => $laboratoire,
-            'form' => $editForm->createView(),
-            'formAdr' => $formAdr->createView(),
-            'formSadr' => $formSadr->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_laboratoires',
+                    'lien' => 'Retour vers la liste des laboratoires',
+                    'commentaire' => 'Retour vers la liste des laboratoires',
+                ]],
+                'laboratoire' => $laboratoire,
+                'form' => $editForm->createView(),
+                'formAdr' => $formAdr->createView(),
+                'formSadr' => $formSadr->createView(),
             ]
         );
     }
@@ -215,12 +215,12 @@ class LaboratoireController extends AbstractController
                 'Adresseip',
                 EntityType::class,
                 [
-                'label' => 'Les plages IP de ce laboratoire: ',
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Adresseip::class,
-                'choices' => $laboratoire->getAdresseip(),
-                'choice_label' => function ($s) { return $s->getAdresse(); },
+                    'label' => 'Les plages IP de ce laboratoire: ',
+                    'multiple' => true,
+                    'expanded' => true,
+                    'class' => Adresseip::class,
+                    'choices' => $laboratoire->getAdresseip(),
+                    'choice_label' => function ($s) { return $s->getAdresse(); },
                 ]
             )
             ->add('submit', SubmitType::class, ['label' => 'Supprimer'])

@@ -53,7 +53,7 @@ class PublicationType extends AbstractType
                 'annee',
                 ChoiceType::class,
                 [
-                'choices' => Functions::choicesYear(new \DateTime('2000-01-01'), $this->grdt, 0),
+                    'choices' => Functions::choicesYear(new \DateTime('2000-01-01'), $this->grdt, 0),
                 ]
             );
 
@@ -66,8 +66,8 @@ class PublicationType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Publication',
-            'projet' => false,
+                'data_class' => 'App\Entity\Publication',
+                'projet' => false,
             ]
         );
     }

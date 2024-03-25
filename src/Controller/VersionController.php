@@ -232,15 +232,15 @@ class VersionController extends AbstractController
         $html4pdf = $this->render(
             'version/pdf.html.twig',
             [
-            'warn_type' => false,
-            'projet' => $projet,
-            'pdf' => true,
-            'version' => $version,
-            'menu' => null,
-            'img_expose' => $img_expose,
-            'img_justif_renou' => $img_justif_renou,
-            'rapport_1' => null,
-            'rapport' => null,
+                'warn_type' => false,
+                'projet' => $projet,
+                'pdf' => true,
+                'version' => $version,
+                'menu' => null,
+                'img_expose' => $img_expose,
+                'img_justif_renou' => $img_justif_renou,
+                'rapport_1' => null,
+                'rapport' => null,
             ]
         );
 
@@ -277,7 +277,7 @@ class VersionController extends AbstractController
             [
                 'projet' => $projet,
                 'version' => $version,
-                ]
+            ]
         );
         // return $html4pdf;
         // $html4pdf->prepare($request);
@@ -451,10 +451,10 @@ class VersionController extends AbstractController
                 $sv->changerResponsable($version, $nouveau_responsable);
 
                 $params = [
-                            'ancien' => $ancien_responsable,
-                            'nouveau' => $nouveau_responsable,
-                            'version' => $version,
-                           ];
+                    'ancien' => $ancien_responsable,
+                    'nouveau' => $nouveau_responsable,
+                    'version' => $version,
+                ];
 
                 // envoyer une notification à l'ancien et au nouveau responsable
                 $sn->sendNotificationTemplate(
@@ -533,12 +533,12 @@ class VersionController extends AbstractController
                                        // 'prototype_options' =>['text_fields' => $text_fields,'srv_noms' => $srv_noms],
                                    ])
                                    ->add('submit', SubmitType::class, [
-                                        'label' => 'Sauvegarder',
-                                        'attr' => ['title' => 'Sauvegarder et revenir au projet'],
+                                       'label' => 'Sauvegarder',
+                                       'attr' => ['title' => 'Sauvegarder et revenir au projet'],
                                    ])
                                    ->add('annuler', SubmitType::class, [
-                                        'label' => 'Annuler',
-                                        'attr' => ['title' => 'Annuler et revenir au projet'],
+                                       'label' => 'Annuler',
+                                       'attr' => ['title' => 'Annuler et revenir au projet'],
                                    ])
                                    ->getForm();
 
@@ -577,10 +577,10 @@ class VersionController extends AbstractController
         return $this->render(
             'version/collaborateurs.html.twig',
             [
-             'projet' => $idProjet,
-             'collaborateur_form' => $collaborateur_form->createView(),
-             'version' => $version,
-         ]
+                'projet' => $idProjet,
+                'collaborateur_form' => $collaborateur_form->createView(),
+                'version' => $version,
+            ]
         );
     }
 
@@ -662,7 +662,7 @@ class VersionController extends AbstractController
         return $this->render(
             'version/envoyer_en_expertise.html.twig',
             ['projet' => $projet,
-              'form' => $form->createView(),
+                'form' => $form->createView(),
             ]
         );
     }
@@ -685,13 +685,13 @@ class VersionController extends AbstractController
                'type',
                ChoiceType::class,
                [
-                'required' => true,
-                'choices' => [
-                                'Fiche projet' => 'f',
-                                "Rapport d'activité" => 'r',
-                              ],
-                'label' => '',
-            ]
+                   'required' => true,
+                   'choices' => [
+                       'Fiche projet' => 'f',
+                       "Rapport d'activité" => 'r',
+                   ],
+                   'label' => '',
+               ]
            )
            ->add('televerser', SubmitType::class)
            ->add('attribution', SubmitType::class, ['label' => "Changer l'attribution"])
@@ -743,10 +743,10 @@ class VersionController extends AbstractController
         return $this->render(
             'version/televersement_generique.html.twig',
             [
-            'form' => $form->createView(),
-            'erreurs' => $erreurs,
-            'resultat' => $resultat,
-        ]
+                'form' => $form->createView(),
+                'erreurs' => $erreurs,
+                'resultat' => $resultat,
+            ]
         );
     }
 
@@ -795,10 +795,10 @@ class VersionController extends AbstractController
         return $this->render(
             'version/attribution.html.twig',
             [
-            'version' => $version,
-            'edit_form' => $editForm->createView(),
-            'ressource_form' => $ressource_form->createView(),
-            'erreurs' => $erreurs,
+                'version' => $version,
+                'edit_form' => $editForm->createView(),
+                'ressource_form' => $ressource_form->createView(),
+                'erreurs' => $erreurs,
             ]);
     }
 
@@ -841,14 +841,14 @@ class VersionController extends AbstractController
 
         // SEULEMENT CERTAINS NOMS !!!!
         $valid_filenames = ['document.pdf',
-                            'rapport.pdf',
-                            'fiche.pdf',
-                            'img_expose_1',
-                            'img_expose_2',
-                            'img_expose_3',
-                            'img_justif_renou_1',
-                            'img_justif_renou_2',
-                            'img_justif_renou_3'];
+            'rapport.pdf',
+            'fiche.pdf',
+            'img_expose_1',
+            'img_expose_2',
+            'img_expose_3',
+            'img_justif_renou_1',
+            'img_justif_renou_2',
+            'img_justif_renou_3'];
 
         if (!in_array($filename, $valid_filenames)) {
             $sj->throwException(__METHOD__.':'.__LINE__." Erreur interne - $filename pas un nom autorisé");
@@ -925,9 +925,9 @@ class VersionController extends AbstractController
         // création de la table RapportActivite
         $rapportActivite = $em->getRepository(RapportActivite::class)->findOneBy(
             [
-            'projet' => $projet,
-            'annee' => $annee,
-        ]
+                'projet' => $projet,
+                'annee' => $annee,
+            ]
         );
         if (null === $rapportActivite) {
             $rapportActivite = new RapportActivite($projet, $annee);
@@ -961,7 +961,7 @@ class VersionController extends AbstractController
             return $this->render(
                 'version/avant_modifier.html.twig',
                 [
-                'version' => $version,
+                    'version' => $version,
                 ]);
         } else {
             return $this->redirectToRoute('envoyer_en_expertise', ['id' => $version->getIdVersion()]);
@@ -1101,12 +1101,12 @@ class VersionController extends AbstractController
         }
 
         $img_expose = [$sv->imageProperties('img_expose_1', 'Figure 1', $version),
-                       $sv->imageProperties('img_expose_2', 'Figure 2', $version),
-                       $sv->imageProperties('img_expose_3', 'Figure 3', $version)];
+            $sv->imageProperties('img_expose_2', 'Figure 2', $version),
+            $sv->imageProperties('img_expose_3', 'Figure 3', $version)];
 
         $img_justif_renou = [$sv->imageProperties('img_justif_renou_1', 'Figure 1', $version),
-                             $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
-                             $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)];
+            $sv->imageProperties('img_justif_renou_2', 'Figure 2', $version),
+            $sv->imageProperties('img_justif_renou_3', 'Figure 3', $version)];
 
         return $this->render(
             'version/modifier_projet4.html.twig',
@@ -1133,11 +1133,11 @@ class VersionController extends AbstractController
             'prjThematique',
             EntityType::class,
             [
-            'required' => false,
-            'multiple' => false,
-            'class' => Thematique::class,
-            'label' => '',
-            'placeholder' => '-- Indiquez la thématique',
+                'required' => false,
+                'multiple' => false,
+                'class' => Thematique::class,
+                'label' => '',
+                'placeholder' => '-- Indiquez la thématique',
             ]
         );
 
