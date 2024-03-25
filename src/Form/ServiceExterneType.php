@@ -25,8 +25,8 @@
 namespace App\Form;
 
 use App\Entity\Serveur;
+use App\Entity\ServiceExterne;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -37,17 +37,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ServeurType extends AbstractType
+class ServiceExterneType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom', TextType::class, ['required' => true, 'label' => 'nom du serveur *:', 'disabled' => $options['modifier']])
-            ->add('desc', TextType::class, ['required' => false, 'label' => 'Description :'])
-            ->add('cguUrl', TextType::class, ['required' => false, 'label' => 'Url des CGU :'])
-            ->add('admname', TextType::class, ['required' => false, 'label' => 'Nom d\'utilisateur pour l\'API :'])
-            ->add('formatSSH', ChoiceType::class, ['choices' => Serveur::SSH, 'choice_translation_domain' => 'serveur',
-                'multiple' => true, 'expanded' => true, 'required' => true, 'label' => 'format de clé ssh'])
+            ->add('username', TextType::class, ['required' => true, 'label' => 'Login du servie *:', 'disabled' => $options['modifier']])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'options' => [
@@ -93,7 +88,7 @@ class ServeurType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'App\Entity\Serveur',
+                'data_class' => ServiceExterne::class,
                 'modifier' => false,
                 'ajouter' => false,
             ]
