@@ -26,6 +26,9 @@ security:
                        password: '%env(PASSWORD_APIZEN)%'
                        roles: 'ROLE_ADMIN'
         api:
+          chain:
+            provider: ['api_serveur','api_service_externe']']
+        api_serveur:
             entity:
                 class: App\Entity\Serveur
                 property: admname
@@ -66,11 +69,6 @@ security:
             pattern:   ^/api
             http_basic:
               provider: api
-        api_service_externe:
-          pattern: ^/api
-          http_basic:
-            provider: api_service_externe
-
         main:
             lazy: true
             pattern:    ^/
@@ -95,7 +93,6 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api, roles: ROLE_API}
         # - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
