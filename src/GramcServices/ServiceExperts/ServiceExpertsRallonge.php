@@ -60,15 +60,15 @@ class ServiceExpertsRallonge extends ServiceExperts
                             'expert',
                             ChoiceType::class,
                             [
-                            'multiple' => false,
-                            'required' => false,
-                            // 'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
-                            'choice_loader' => $choice, // nécessaire pour contourner le bogue de symfony
-                            'data' => $expert,
-                            // 'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
-                            'choice_label' => function ($individu) {
-                                return $individu->__toString();
-                            },
+                                'multiple' => false,
+                                'required' => false,
+                                // 'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
+                                'choice_loader' => $choice, // nécessaire pour contourner le bogue de symfony
+                                'data' => $expert,
+                                // 'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
+                                'choice_label' => function ($individu) {
+                                    return $individu->__toString();
+                                },
                             ]
                         )
                         ->getForm();

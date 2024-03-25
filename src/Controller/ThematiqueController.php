@@ -74,8 +74,8 @@ class ThematiqueController extends AbstractController
         return $this->render(
             'thematique/liste.html.twig',
             [
-            'menu' => $menu,
-            'thematiques' => $em->getRepository(Thematique::class)->findBy([], ['libelleThematique' => 'ASC']),
+                'menu' => $menu,
+                'thematiques' => $em->getRepository(Thematique::class)->findBy([], ['libelleThematique' => 'ASC']),
             ]
         );
     }
@@ -94,8 +94,8 @@ class ThematiqueController extends AbstractController
             'App\Form\ThematiqueType',
             $thematique,
             [
-            'ajouter' => true,
-            'experts' => $em->getRepository(Individu::class)->findBy(['expert' => true]),
+                'ajouter' => true,
+                'experts' => $em->getRepository(Individu::class)->findBy(['expert' => true]),
             ]
         );
         $form->handleRequest($request);
@@ -111,14 +111,14 @@ class ThematiqueController extends AbstractController
         return $this->render(
             'thematique/ajouter.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_thematiques',
-                        'lien' => 'Retour vers la liste des thématiques',
-                        'commentaire' => 'Retour vers la liste des thématiques',
-                        ]],
-            'thematique' => $thematique,
-            'edit_form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_thematiques',
+                    'lien' => 'Retour vers la liste des thématiques',
+                    'commentaire' => 'Retour vers la liste des thématiques',
+                ]],
+                'thematique' => $thematique,
+                'edit_form' => $form->createView(),
             ]
         );
     }
@@ -153,8 +153,8 @@ class ThematiqueController extends AbstractController
             'App\Form\ThematiqueType',
             $thematique,
             [
-            'modifier' => true,
-            'experts' => $em->getRepository(Individu::class)->findBy(['expert' => true]),
+                'modifier' => true,
+                'experts' => $em->getRepository(Individu::class)->findBy(['expert' => true]),
             ]
         );
         $editForm->handleRequest($request);
@@ -168,14 +168,14 @@ class ThematiqueController extends AbstractController
         return $this->render(
             'thematique/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_thematiques',
-                        'lien' => 'Retour vers la liste des thématiques',
-                        'commentaire' => 'Retour vers la liste des thématiques',
-                        ]],
-            'thematique' => $thematique,
-            'edit_form' => $editForm->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_thematiques',
+                    'lien' => 'Retour vers la liste des thématiques',
+                    'commentaire' => 'Retour vers la liste des thématiques',
+                ]],
+                'thematique' => $thematique,
+                'edit_form' => $editForm->createView(),
             ]
         );
     }

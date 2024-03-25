@@ -41,20 +41,20 @@ class SelectJournalType extends AbstractType
             'dateDebut',
             DateTimeType::class,
             [
-                    'data' => $options['from'], // valeur par défaut
-                    'label' => 'Heure de début d\'affichage',
-                    'with_seconds' => true,
-                    'years' => Functions::years($options['from'], new \DateTime()),
-                    ]
+                'data' => $options['from'], // valeur par défaut
+                'label' => 'Heure de début d\'affichage',
+                'with_seconds' => true,
+                'years' => Functions::years($options['from'], new \DateTime()),
+            ]
         )
                 ->add(
                     'dateFin',
                     DateTimeType::class,
                     [
-                    'data' => $options['untill'],
-                    'label' => 'Heure de fin d\'affichage',
-                    'with_seconds' => true,
-                    'years' => Functions::years($options['untill'], new \DateTime()),
+                        'data' => $options['untill'],
+                        'label' => 'Heure de fin d\'affichage',
+                        'with_seconds' => true,
+                        'years' => Functions::years($options['untill'], new \DateTime()),
                     ]
                 )
                 ->add(
@@ -85,6 +85,6 @@ class SelectJournalType extends AbstractType
         $resolver->setDefaults([
             'from' => $from,
             'untill' => $until,
-            ]);
+        ]);
     }
 }

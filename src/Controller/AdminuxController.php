@@ -1008,12 +1008,12 @@ class AdminuxController extends AbstractController
                         $mail = $collaborateur->getMail();
                         $loginnames = $su->collaborateurVersion2LoginNames($cv, true);
                         $output[] = [
-                                'idIndividu' => $idIndividu,
-                                'idProjet' => $idProjet,
-                                'mail' => $mail,
-                                'prenom' => $prenom,
-                                'nom' => $nom,
-                                'loginnames' => $loginnames,
+                            'idIndividu' => $idIndividu,
+                            'idProjet' => $idProjet,
+                            'mail' => $mail,
+                            'prenom' => $prenom,
+                            'nom' => $nom,
+                            'loginnames' => $loginnames,
                         ];
                     }
                 }

@@ -108,8 +108,8 @@ class ExceptionListener
         else {
             $this->logger->warning('Error to '.$event->getRequest()->getRequestUri(),
                 [
-                'exception' => $exception,
-                'request' => $event->getRequest(),
+                    'exception' => $exception,
+                    'request' => $event->getRequest(),
                 ]);
 
             $this->sj->warningMessage(__METHOD__.':'.__LINE__.' Exception '.get_class($exception).' : '.$exception->getMessage().

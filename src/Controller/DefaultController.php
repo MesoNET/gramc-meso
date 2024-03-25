@@ -135,8 +135,8 @@ class DefaultController extends AbstractController
         return $this->render(
             'version/test_form.html.twig',
             [
-            'form' => $form->createView(),
-            'print' => print_r($_POST, true),
+                'form' => $form->createView(),
+                'print' => print_r($_POST, true),
             ]
         );
     }

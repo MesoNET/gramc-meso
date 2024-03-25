@@ -49,7 +49,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     new Post(
         uriTemplate: 'externe/users'
     ),
-    ],
+],
     normalizationContext: ['groups' => ['user_lecture']],
     denormalizationContext: ['groups' => ['user_ecriture']],
 )]

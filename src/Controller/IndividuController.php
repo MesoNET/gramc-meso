@@ -106,8 +106,8 @@ class IndividuController extends AbstractController
                 'submit',
                 SubmitType::class,
                 [
-                 'label' => 'Le nouvel utilisateur',
-                 ]
+                    'label' => 'Le nouvel utilisateur',
+                ]
             )
             ->getForm();
 
@@ -117,7 +117,7 @@ class IndividuController extends AbstractController
                 'mail',
                 TextType::class,
                 [
-                'required' => false, 'csrf_protection' => false, 'attr' => ['value' => $session->get('new_mail')],
+                    'required' => false, 'csrf_protection' => false, 'attr' => ['value' => $session->get('new_mail')],
                 ]
             );
             $session->remove('new_mail');
@@ -126,7 +126,7 @@ class IndividuController extends AbstractController
                 'mail',
                 TextType::class,
                 [
-                'required' => false, 'csrf_protection' => false,
+                    'required' => false, 'csrf_protection' => false,
                 ]
             );
         }
@@ -346,10 +346,10 @@ class IndividuController extends AbstractController
         return $this->render(
             'individu/modif.html.twig',
             [
-            'individu' => $individu,
-            'formInd' => $editForm->createView(),
-            'formSso' => null,
-            'formEppn' => null,
+                'individu' => $individu,
+                'formInd' => $editForm->createView(),
+                'formSso' => null,
+                'formEppn' => null,
             ]
         );
     }
@@ -400,13 +400,13 @@ class IndividuController extends AbstractController
                 'Sso',
                 EntityType::class,
                 [
-                'label' => 'Les eppn de cet individu: ',
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Sso::class,
-                'choices' => $individu->getSso(),
-                'choice_label' => function ($s) { return $s->getEppn(); },
-                'choice_value' => function ($t) { return $t; },
+                    'label' => 'Les eppn de cet individu: ',
+                    'multiple' => true,
+                    'expanded' => true,
+                    'class' => Sso::class,
+                    'choices' => $individu->getSso(),
+                    'choice_label' => function ($s) { return $s->getEppn(); },
+                    'choice_value' => function ($t) { return $t; },
                 ]
             )
             ->add('submit', SubmitType::class, ['label' => 'modifier'])
@@ -429,10 +429,10 @@ class IndividuController extends AbstractController
         return $this->render(
             'individu/modif.html.twig',
             [
-            'individu' => $individu,
-            'formInd' => $formInd->createView(),
-            'formEppn' => $formEppn->createView(),
-            'formSso' => $formSso->createView(),
+                'individu' => $individu,
+                'formInd' => $formInd->createView(),
+                'formEppn' => $formEppn->createView(),
+                'formSso' => $formSso->createView(),
             ]
         );
     }
@@ -933,9 +933,9 @@ class IndividuController extends AbstractController
         return $this->render(
             'individu/liste.html.twig',
             [
-            'idps' => $idps,
-            'actifs' => $actifs,
-            'individus' => $individus,
+                'idps' => $idps,
+                'actifs' => $actifs,
+                'individus' => $individus,
             ]
         );
     }

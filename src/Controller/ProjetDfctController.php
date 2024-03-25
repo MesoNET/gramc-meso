@@ -229,14 +229,14 @@ class ProjetDfctController extends AbstractController
         $html4pdf = $this->render(
             'projetfct/dfctpdf.html.twig',
             [
-            'projet' => $projet,
-            'annee' => $annee,
-            'numero' => $numero,
-            'debut_periode' => $debut_periode,
-            'fin_periode' => $fin_periode,
-            'conso' => $conso,
-            'dessin_periode' => $image_conso_p,
-            'dessin_annee' => $image_conso_a,
+                'projet' => $projet,
+                'annee' => $annee,
+                'numero' => $numero,
+                'debut_periode' => $debut_periode,
+                'fin_periode' => $fin_periode,
+                'conso' => $conso,
+                'dessin_periode' => $image_conso_p,
+                'dessin_annee' => $image_conso_a,
             ]
         );
 

@@ -345,11 +345,11 @@ class ServiceExperts
         }
 
         return ['nbProjets' => $nbProjets,
-                  'nouveau' => $nouveau,
-                  'renouvellement' => $renouvellement,
-                  'sansexperts' => $sansexperts,
-                  'nbDemHeures' => $nbDemHeures,
-                  'nbAttHeures' => $nbAttHeures];
+            'nouveau' => $nouveau,
+            'renouvellement' => $renouvellement,
+            'sansexperts' => $sansexperts,
+            'nbDemHeures' => $nbDemHeures,
+            'nbAttHeures' => $nbAttHeures];
     }
 
     /*************************************************************************
@@ -497,15 +497,15 @@ class ServiceExperts
                                 'expert',
                                 ChoiceType::class,
                                 [
-                                'multiple' => false,
-                                'required' => false,
-                                // 'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
-                                'choice_loader' => $choice, // nécessaire pour contourner le bogue de symfony
-                                'data' => $expert,
-                                // 'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
-                                'choice_label' => function ($individu) {
-                                    return $individu->__toString();
-                                },
+                                    'multiple' => false,
+                                    'required' => false,
+                                    // 'choices'       => $choices, // cela ne marche pas à cause d'un bogue de symfony
+                                    'choice_loader' => $choice, // nécessaire pour contourner le bogue de symfony
+                                    'data' => $expert,
+                                    // 'choice_value' => function (Individu $entity = null) { return $entity->getIdIndividu(); },
+                                    'choice_label' => function ($individu) {
+                                        return $individu->__toString();
+                                    },
                                 ]
                             )
                             ->getForm();

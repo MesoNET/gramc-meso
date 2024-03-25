@@ -61,21 +61,21 @@ class Projet4Workflow extends Workflow
             ->addState(
                 Etat::RENOUVELABLE,
                 [
-                // Utile seulement pour propagation aux versions
-                Signal::CLK_VAL_DEM => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_DEM, [], true),
-                Signal::CLK_ARR => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_ARR, [], true),
-                Signal::CLK_VAL_EXP_OK => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_EXP_OK, [], true),
+                    // Utile seulement pour propagation aux versions
+                    Signal::CLK_VAL_DEM => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_DEM, [], true),
+                    Signal::CLK_ARR => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_ARR, [], true),
+                    Signal::CLK_VAL_EXP_OK => new Projet4Transition(Etat::RENOUVELABLE, Signal::CLK_VAL_EXP_OK, [], true),
 
-                Signal::DAT_ACTR => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_ACTR, [], true),
+                    Signal::DAT_ACTR => new Projet4Transition(Etat::RENOUVELABLE, Signal::DAT_ACTR, [], true),
 
-                Signal::CLK_VAL_EXP_KO => new Projet4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO, [], true),
-                Signal::CLK_FERM => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM, ['R' => 'projet_ferme']),
+                    Signal::CLK_VAL_EXP_KO => new Projet4Transition(Etat::TERMINE, Signal::CLK_VAL_EXP_KO, [], true),
+                    Signal::CLK_FERM => new Projet4Transition(Etat::TERMINE, Signal::CLK_FERM, ['R' => 'projet_ferme']),
                 ]
             )
             ->addState(
                 Etat::TERMINE,
                 [
-                Signal::CLK_FERM => new NoTransition(0, 0),
+                    Signal::CLK_FERM => new NoTransition(0, 0),
                 ]
             );
     }

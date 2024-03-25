@@ -63,9 +63,9 @@ class FormationType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Formation',
-            'modifier' => false,
-            'ajouter' => false,
+                'data_class' => 'App\Entity\Formation',
+                'modifier' => false,
+                'ajouter' => false,
             ]
         );
     }

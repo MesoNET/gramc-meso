@@ -443,10 +443,10 @@ class ExpertiseController extends AbstractController
         return $this->render(
             $twig,
             [
-            'expertise' => $expertise,
-            'rallonge' => $rallonge,
-            'version' => $version,
-            'edit_form' => $editForm->createView(),
+                'expertise' => $expertise,
+                'rallonge' => $rallonge,
+                'version' => $version,
+                'edit_form' => $editForm->createView(),
             ]
         );
     }

@@ -169,8 +169,8 @@ class ParamController extends AbstractController
             return $this->render(
                 'param/avancer.html.twig',
                 [
-                'edit_form' => $editForm->createView(),
-            ]
+                    'edit_form' => $editForm->createView(),
+                ]
             );
         }
     }

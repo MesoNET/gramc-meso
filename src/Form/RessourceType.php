@@ -48,13 +48,13 @@ class RessourceType extends AbstractType
         $builder
             ->add('serveur', EntityType::class,
                 [
-                'label' => 'Serveur:',
-                'class' => Serveur::class,
-                'multiple' => false,
-                'placeholder' => '-- Serveur',
-                'required' => true,
-                'choices' => $this->em->getRepository(Serveur::class)->findAllSorted(),
-                'attr' => ['style' => 'width:20em'],
+                    'label' => 'Serveur:',
+                    'class' => Serveur::class,
+                    'multiple' => false,
+                    'placeholder' => '-- Serveur',
+                    'required' => true,
+                    'choices' => $this->em->getRepository(Serveur::class)->findAllSorted(),
+                    'attr' => ['style' => 'width:20em'],
                 ]
             )
             ->add('nom', TextType::class, ['required' => false, 'label' => 'nom de la ressource (optionnel, 8 char max):', 'attr' => ['maxlength' => 8]])
@@ -79,9 +79,9 @@ class RessourceType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Ressource',
-            'modifier' => false,
-            'ajouter' => false,
+                'data_class' => 'App\Entity\Ressource',
+                'modifier' => false,
+                'ajouter' => false,
             ]
         );
     }
