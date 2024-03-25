@@ -46,7 +46,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
         provider: UserProvider::class
     ),
     new Patch(),
-    new Post(),
+    new Post(
+        uriTemplate: 'externe/users'
+    ),
     ],
     normalizationContext: ['groups' => ['user_lecture']],
     denormalizationContext: ['groups' => ['user_ecriture']],
