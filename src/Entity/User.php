@@ -27,6 +27,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\State\UserProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -45,6 +46,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         provider: UserProvider::class
     ),
     new Patch(),
+    new Post(),
     ],
     normalizationContext: ['groups' => ['user_lecture']],
     denormalizationContext: ['groups' => ['user_ecriture']],
