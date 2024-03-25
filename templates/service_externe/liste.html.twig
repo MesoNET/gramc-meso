@@ -1,0 +1,46 @@
+{% extends 'default/base.html.twig' %}
+{% import "default/macros.html.twig" as gramcmacros %}
+{% import "default/icone.html.twig" as icones %}
+
+{% block body %}
+<section style="stroke:black">
+    <h1>Services externes enregistrés dans gramc</h1>
+
+    {{ gramcmacros.menu(menu) }}
+    
+    <table id="datatable" class="display">
+    <thead>
+        <tr>
+            <th>&nbsp;</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>CGU</th>
+            <th>Nom API</th>
+            <th>Formats</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in service_externes %}
+        <tr>
+            <td>
+                <a class="suppression" href="{{ path('supprimer_service_externe',{'id' : s.id }) }}" title="Supprimer">
+                {{ icones.supprimer }}
+                </a>
+                <a class="modification" href="{{ path('modifier_service_externe',{'id' : s.id }) }}" title="Modifier le service externe">
+                    {{ icones.modifier }}
+                </a>
+            </td>
+            <td>{{ s.username }}
+        </tr>
+    {% endfor %}
+    </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Nom</th>
+            </tr>
+        </tfoot>
+    </table>
+</section>
+
+{% endblock body  %}
