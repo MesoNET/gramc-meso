@@ -64,6 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             // uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
         ),
     ],
+    security: "is_granted('ROLE_API')",
     normalizationContext: ['groups' => ['individu_lecture']],
     denormalizationContext: ['groups' => ['individu_ecriture']],
     provider: IndividuProvider::class

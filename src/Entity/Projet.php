@@ -50,18 +50,22 @@ use Symfony\Component\Serializer\Attribute\Groups;
                 'id' => 'idProjet',
             ],
             provider: ProjetProvider::class,
+            security: "is_granted('ROLE_API')"
         ),
         new GetCollection(
-            provider: ProjetCollectionProvider::class
+            provider: ProjetCollectionProvider::class,
+            security: "is_granted('ROLE_API')"
         ),
         new Get(
             uriTemplate: 'externe/projets/{id}',
             uriVariables: [
                 'id' => 'idProjet',
             ],
+            security: "is_granted('ROLE_API_SERVICE')"
         ),
         new GetCollection(
-            uriTemplate: 'externe/projets'
+            uriTemplate: 'externe/projets',
+            security: "is_granted('ROLE_API_SERVICE')"
         ),
     ],
     normalizationContext: ['groups' => ['projet_lecture']],
