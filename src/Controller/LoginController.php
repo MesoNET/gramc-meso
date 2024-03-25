@@ -99,8 +99,8 @@ class LoginController extends AbstractController
                         'data',
                         ChoiceType::class,
                         [
-                     'choices' => $this->getParameter('IDPprod'),
-                     ]
+                            'choices' => $this->getParameter('IDPprod'),
+                        ]
                     )
                 ->add('connect', SubmitType::class, ['label' => 'Connexion *'])
                 ->getForm();
@@ -166,8 +166,8 @@ class LoginController extends AbstractController
                 'data',
                 ChoiceType::class,
                 [
-             'choices' => $choices,
-             ]
+                    'choices' => $choices,
+                ]
             )
             ->add('connect', SubmitType::class, ['label' => 'Connexion'])
             ->getForm();

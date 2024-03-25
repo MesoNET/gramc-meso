@@ -47,8 +47,8 @@ class NotificationController extends AbstractController
         return $this->render(
             'notification/notification_list.html.twig',
             [
-            'form' => $form->createView(),
-            'notifications' => $notifications,
+                'form' => $form->createView(),
+                'notifications' => $notifications,
             ]
         );
     }

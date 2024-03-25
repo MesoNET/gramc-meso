@@ -262,16 +262,16 @@ class StatistiquesController extends AbstractController
         return $this->render(
             'statistiques/repartition.html.twig',
             [
-            // 'histogram_collaborateurs' => $this->histogram("Collaborateurs par projet pour l'année " + $annee, $collaborateurs),
-            // 'histogram_comptes' => $this->histogram("Comptes par projet pour l'année " + $annee, $comptes),
-            'histogram_comptes' => $histo_comptes,
-            'histogram_collaborateurs' => $histo_coll,
-            'collaborateurs' => $count_collaborateurs,
-            'comptes' => $count_comptes,
-            'projets_sans_compte' => $comptes[0],
-            'annee' => $annee,
-            'sess_lbl' => $sess_lbl,
-        ]
+                // 'histogram_collaborateurs' => $this->histogram("Collaborateurs par projet pour l'année " + $annee, $collaborateurs),
+                // 'histogram_comptes' => $this->histogram("Comptes par projet pour l'année " + $annee, $comptes),
+                'histogram_comptes' => $histo_comptes,
+                'histogram_collaborateurs' => $histo_coll,
+                'collaborateurs' => $count_collaborateurs,
+                'comptes' => $count_comptes,
+                'projets_sans_compte' => $comptes[0],
+                'annee' => $annee,
+                'sess_lbl' => $sess_lbl,
+            ]
         );
     }
 
@@ -333,11 +333,11 @@ class StatistiquesController extends AbstractController
 
                 $individus[$individu->getIdIndividu()][$collaborateurVersion->getId()] =
                         [
-                        'statut' => $statut,
-                        'laboratoire' => $laboratoire,
-                        'etablissement' => $etablissement,
-                        'version' => $version,
-                        'individu' => $individu,
+                            'statut' => $statut,
+                            'laboratoire' => $laboratoire,
+                            'etablissement' => $etablissement,
+                            'version' => $version,
+                            'individu' => $individu,
                         ];
             }
         }
@@ -368,60 +368,60 @@ class StatistiquesController extends AbstractController
                     if ($key1 < $key2 && $statut1 != $statut2) {
                         if ($version1->typeSession() == $version2->typeSession()) {
                             $anomaliesStatut[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'statut1' => $statut1,
-                                            'statut2' => $statut2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'statut1' => $statut1,
+                                'statut2' => $statut2,
+                            ];
                         } else {
                             $changementStatut[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'statut1' => $statut1,
-                                            'statut2' => $statut2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'statut1' => $statut1,
+                                'statut2' => $statut2,
+                            ];
                         }
                     }
 
                     if ($key1 < $key2 && $laboratoire1 != $laboratoire2) {
                         if ($version1->typeSession() == $version2->typeSession()) {
                             $anomaliesLaboratoire[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'laboratoire1' => $laboratoire1,
-                                            'laboratoire2' => $laboratoire2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'laboratoire1' => $laboratoire1,
+                                'laboratoire2' => $laboratoire2,
+                            ];
                         } else {
                             $changementLaboratoire[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'laboratoire1' => $laboratoire1,
-                                            'laboratoire2' => $laboratoire2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'laboratoire1' => $laboratoire1,
+                                'laboratoire2' => $laboratoire2,
+                            ];
                         }
                     }
 
                     if ($key1 < $key2 && $etablissement1 != $etablissement2) {
                         if ($version1->typeSession() == $version2->typeSession()) {
                             $anomaliesEtablissement[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'etablissement1' => $etablissement1,
-                                            'etablissement2' => $etablissement2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'etablissement1' => $etablissement1,
+                                'etablissement2' => $etablissement2,
+                            ];
                         } else {
                             $changementEtablissement[] = [
-                                            'version1' => $version1,
-                                            'version2' => $version2,
-                                            'individu' => $array1['individu'],
-                                            'etablissement1' => $etablissement1,
-                                            'etablissement2' => $etablissement2,
-                                            ];
+                                'version1' => $version1,
+                                'version2' => $version2,
+                                'individu' => $array1['individu'],
+                                'etablissement1' => $etablissement1,
+                                'etablissement2' => $etablissement2,
+                            ];
                         }
                     }
                 }
@@ -495,24 +495,24 @@ class StatistiquesController extends AbstractController
         return $this->render(
             'statistiques/collaborateur.html.twig',
             [
-            'annee' => $annee,
-            'sess_lbl' => $sess_lbl,
-            'statuts' => $statuts,
-            'laboratoires' => $laboratoires,
-            'etablissements' => $etablissements,
-            'statuts_total' => $statuts_total,
-            'laboratoires_total' => $laboratoires_total,
-            'etablissements_total' => $etablissements_total,
-            'image_statuts' => $image_statuts,
-            'image_laboratoires' => $image_laboratoires,
-            'image_etablissements' => $image_etablissements,
-            'individusIncomplets' => $individusIncomplets,
-            'anomaliesStatut' => $anomaliesStatut,
-            'anomaliesLaboratoire' => $anomaliesLaboratoire,
-            'anomaliesEtablissement' => $anomaliesEtablissement,
-            'countChangementStatut' => count($changementStatut),
-            'countChangementLaboratoire' => count($changementLaboratoire),
-            'countChangementEtablissement' => count($changementEtablissement),
+                'annee' => $annee,
+                'sess_lbl' => $sess_lbl,
+                'statuts' => $statuts,
+                'laboratoires' => $laboratoires,
+                'etablissements' => $etablissements,
+                'statuts_total' => $statuts_total,
+                'laboratoires_total' => $laboratoires_total,
+                'etablissements_total' => $etablissements_total,
+                'image_statuts' => $image_statuts,
+                'image_laboratoires' => $image_laboratoires,
+                'image_etablissements' => $image_etablissements,
+                'individusIncomplets' => $individusIncomplets,
+                'anomaliesStatut' => $anomaliesStatut,
+                'anomaliesLaboratoire' => $anomaliesLaboratoire,
+                'anomaliesEtablissement' => $anomaliesEtablissement,
+                'countChangementStatut' => count($changementStatut),
+                'countChangementLaboratoire' => count($changementLaboratoire),
+                'countChangementEtablissement' => count($changementEtablissement),
             ]
         );
     }
@@ -538,21 +538,21 @@ class StatistiquesController extends AbstractController
         return $this->render(
             'statistiques/parcritere.html.twig',
             [
-            'titre' => $titre,
-            'annee' => $annee,
-            'sess_lbl' => $sess_lbl,
-            'acros' => $stats['acros'],
-            'num_projets' => $stats['num_projets'],
-            'dem_heures' => $stats['dem_heures'],
-            'attr_heures' => $stats['attr_heures'],
-            'conso' => $stats['conso'],
-            'conso_gpu' => $stats['conso_gpu'],
-            'image_projets' => $stats['image_projets'],
-            'image_dem' => $stats['image_dem'],
-            'image_attr' => $stats['image_attr'],
-            'image_conso' => $stats['image_conso'],
-            'num_projets_n' => $stats['num_projets_n'],
-            'num_projets_r' => $stats['num_projets_r'],
+                'titre' => $titre,
+                'annee' => $annee,
+                'sess_lbl' => $sess_lbl,
+                'acros' => $stats['acros'],
+                'num_projets' => $stats['num_projets'],
+                'dem_heures' => $stats['dem_heures'],
+                'attr_heures' => $stats['attr_heures'],
+                'conso' => $stats['conso'],
+                'conso_gpu' => $stats['conso_gpu'],
+                'image_projets' => $stats['image_projets'],
+                'image_dem' => $stats['image_dem'],
+                'image_attr' => $stats['image_attr'],
+                'image_conso' => $stats['image_conso'],
+                'num_projets_n' => $stats['num_projets_n'],
+                'num_projets_r' => $stats['num_projets_r'],
             ]
         );
     }
@@ -690,18 +690,18 @@ class StatistiquesController extends AbstractController
         $image_conso = $this->camembert($image_data, $acros, 'Consommation par '.$titre);
 
         return ['acros' => $acros,
-                'num_projets' => $num_projets,
-                'dem_heures' => $dem_heures,
-                'attr_heures' => $attr_heures,
-                'conso' => $conso,
-                'conso_gpu' => $conso_gpu,
-                'image_projets' => $image_projets,
-                'image_dem' => $image_dem,
-                'image_attr' => $image_attr,
-                'image_conso' => $image_conso,
-                'num_projets_n' => $num_projets_n,
-                'num_projets_r' => $num_projets_r,
-                ];
+            'num_projets' => $num_projets,
+            'dem_heures' => $dem_heures,
+            'attr_heures' => $attr_heures,
+            'conso' => $conso,
+            'conso_gpu' => $conso_gpu,
+            'image_projets' => $image_projets,
+            'image_dem' => $image_dem,
+            'image_attr' => $image_attr,
+            'image_conso' => $image_conso,
+            'num_projets_n' => $num_projets_n,
+            'num_projets_r' => $num_projets_r,
+        ];
     }
 
     // /////////////////////////////////////////

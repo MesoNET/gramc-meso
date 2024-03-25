@@ -63,8 +63,8 @@ class ServeurController extends AbstractController
         return $this->render(
             'serveur/liste.html.twig',
             [
-            'menu' => $menu,
-            'serveurs' => $em->getRepository(Serveur::class)->findBy([], ['nom' => 'ASC']),
+                'menu' => $menu,
+                'serveurs' => $em->getRepository(Serveur::class)->findBy([], ['nom' => 'ASC']),
             ]
         );
     }
@@ -119,14 +119,14 @@ class ServeurController extends AbstractController
         return $this->render(
             'serveur/ajouter.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_serveurs',
-                        'lien' => 'Retour vers la liste des serveurs',
-                        'commentaire' => 'Retour vers la liste des serveurs',
-                        ]],
-            'serveur' => $serveur,
-            'form' => $form->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_serveurs',
+                    'lien' => 'Retour vers la liste des serveurs',
+                    'commentaire' => 'Retour vers la liste des serveurs',
+                ]],
+                'serveur' => $serveur,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -155,14 +155,14 @@ class ServeurController extends AbstractController
         return $this->render(
             'serveur/modif.html.twig',
             [
-            'menu' => [[
-                        'ok' => true,
-                        'name' => 'gerer_serveurs',
-                        'lien' => 'Retour vers la liste des serveurs',
-                        'commentaire' => 'Retour vers la liste des serveurs',
-                        ]],
-            'serveur' => $serveur,
-            'edit_form' => $editForm->createView(),
+                'menu' => [[
+                    'ok' => true,
+                    'name' => 'gerer_serveurs',
+                    'lien' => 'Retour vers la liste des serveurs',
+                    'commentaire' => 'Retour vers la liste des serveurs',
+                ]],
+                'serveur' => $serveur,
+                'edit_form' => $editForm->createView(),
             ]
         );
     }

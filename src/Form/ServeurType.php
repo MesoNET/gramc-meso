@@ -93,9 +93,9 @@ class ServeurType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Serveur',
-            'modifier' => false,
-            'ajouter' => false,
+                'data_class' => 'App\Entity\Serveur',
+                'modifier' => false,
+                'ajouter' => false,
             ]
         );
     }

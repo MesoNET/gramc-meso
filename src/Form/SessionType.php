@@ -69,7 +69,7 @@ class SessionType extends AbstractType
                     // 'data'          => $options['from'], // valeur par défaut
                     'label' => 'Date de début des saisies:',
                     'years' => Functions::years(new \DateTime(), $this->grdt->getNew()),
-                    ]
+                ]
             )
             ->add(
                 'dateFinSession',
@@ -78,7 +78,7 @@ class SessionType extends AbstractType
                     // 'data'          => $options['from'], // valeur par défaut
                     'label' => 'Date de fin des saisies:',
                     'years' => Functions::years(new \DateTime(), $this->grdt->getNew()),
-                    ]
+                ]
             )
             ->add(
                 'hParAnnee',
@@ -86,7 +86,7 @@ class SessionType extends AbstractType
                 [
                     // 'data'          => $options['from'], // valeur par défaut
                     'label' => 'Heures disponibles (par année):',
-                    ]
+                ]
             );
         // ->add('president',  EntityType::class,
         //            [
@@ -102,16 +102,16 @@ class SessionType extends AbstractType
                 'etatSession',
                 ChoiceType::class,
                 [
-                        'choices' => [
-                                            'CREE_ATTENTE' => Etat::CREE_ATTENTE,
-                                            'EDITION_DEMANDE' => Etat::EDITION_DEMANDE,
-                                            'EDITION_EXPERTISE' => Etat::EDITION_EXPERTISE,
-                                            'EN_ATTENTE' => Etat::EN_ATTENTE,
-                                            'ACTIF' => Etat::ACTIF,
-                                            'TERMINE' => Etat::TERMINE,
-                                            ],
-                        'label' => 'Etat',
-                    ]
+                    'choices' => [
+                        'CREE_ATTENTE' => Etat::CREE_ATTENTE,
+                        'EDITION_DEMANDE' => Etat::EDITION_DEMANDE,
+                        'EDITION_EXPERTISE' => Etat::EDITION_EXPERTISE,
+                        'EN_ATTENTE' => Etat::EN_ATTENTE,
+                        'ACTIF' => Etat::ACTIF,
+                        'TERMINE' => Etat::TERMINE,
+                    ],
+                    'label' => 'Etat',
+                ]
             )
                     ->add('idSession');
         }
@@ -127,11 +127,11 @@ class SessionType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Session',
-            'all' => false,
-            'buttons' => false,
-            'submit_label' => 'modifier',
-            'commentaire' => false,
+                'data_class' => 'App\Entity\Session',
+                'all' => false,
+                'buttons' => false,
+                'submit_label' => 'modifier',
+                'commentaire' => false,
             ]
         );
     }

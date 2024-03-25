@@ -789,12 +789,12 @@ class ServiceVersions
         $img_dir = $this->imageDir($version);
 
         $fichiers = ['img_expose_1',
-                      'img_expose_2',
-                      'img_expose_3',
-                      'img_justif_renou_1',
-                      'img_justif_renou_2',
-                      'img_justif_renou_3',
-                    ];
+            'img_expose_2',
+            'img_expose_3',
+            'img_justif_renou_1',
+            'img_justif_renou_2',
+            'img_justif_renou_3',
+        ];
 
         if (in_array($filename, $fichiers)) {
             $path = $img_dir.'/'.$filename;
@@ -933,7 +933,7 @@ class ServiceVersions
                    ->add('formation', CollectionType::class, [
                        'entry_type' => FormationVersionType::class,
                        'label' => true,
-                    ])
+                   ])
                     ->getForm();
     }
 

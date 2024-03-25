@@ -61,9 +61,9 @@ class LaboratoireType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Laboratoire',
-            'modifier' => false,
-            'ajouter' => false,
+                'data_class' => 'App\Entity\Laboratoire',
+                'modifier' => false,
+                'ajouter' => false,
             ]
         );
     }

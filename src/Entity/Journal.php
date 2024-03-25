@@ -258,14 +258,14 @@ class Journal
     public const DEBUG = 80;
 
     public const LIBELLE =
-            [
-                self::EMERGENCY => 'EMERGENCY',
-                self::ALERT => 'ALERT',
-                self::CRITICAL => 'CRITICAL',
-                self::ERROR => 'ERROR',
-                self::WARNING => 'WARNING',
-                self::NOTICE => 'NOTICE',
-                self::INFO => 'INFO',
-                self::DEBUG => 'DEBUG',
-            ];
+        [
+            self::EMERGENCY => 'EMERGENCY',
+            self::ALERT => 'ALERT',
+            self::CRITICAL => 'CRITICAL',
+            self::ERROR => 'ERROR',
+            self::WARNING => 'WARNING',
+            self::NOTICE => 'NOTICE',
+            self::INFO => 'INFO',
+            self::DEBUG => 'DEBUG',
+        ];
 }
