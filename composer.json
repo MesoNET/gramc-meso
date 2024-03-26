@@ -118,6 +118,7 @@
             "php bin/console doctrine:fixtures:load --no-interaction --append"
         ],
         "db:schema": [
+            "php bin/console doctrine:database:drop --if-exists --force",
             "sh reprise/reload-db ./reprise/schema.sql.dist",
             "php bin/console doctrine:schema:update --force"
         ],
