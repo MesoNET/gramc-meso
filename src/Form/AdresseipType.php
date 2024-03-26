@@ -37,7 +37,7 @@ class AdresseipType extends AbstractType
     {
         $builder->add('adresse', TextType::class,
             ['required' => true,
-             'label' => "Plage d'adresses IP (CIDR):", 'attr' => ['placeholder' => '1.2.3.4/32']])
+                'label' => "Plage d'adresses IP (CIDR):", 'attr' => ['placeholder' => '1.2.3.4/32']])
                 ->add('submit', SubmitType::class, ['label' => 'nouvelle IP (CIDR)'])
                 ->add('reset', ResetType::class, ['label' => 'Annuler']);
 

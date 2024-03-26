@@ -1,10 +1,11 @@
 security:
     # https://symfony.com/doc/current/security/experimental_authenticators.html
     password_hashers:
-      App\Entity\Individu: plaintext
-      App\Entity\Serveur: 'auto'
-      Symfony\Component\Security\Core\User\InMemoryUser: bcrypt
-    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+        App\Entity\ServiceExterne:
+            algorithm: auto
+        App\Entity\Serveur:
+            algorithm: auto
+  # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:
     #
     # php -r "echo password_hash('ThePassword', PASSWORD_BCRYPT, ['cost' => 13]) . PHP_EOL;"
@@ -25,6 +26,9 @@ security:
                        password: '%env(PASSWORD_APIZEN)%'
                        roles: 'ROLE_ADMIN'
         api:
+          chain:
+            provider: ['api_serveur','api_service_externe']']
+        api_serveur:
             entity:
                 class: App\Entity\Serveur
                 property: admname
@@ -32,6 +36,11 @@ security:
             entity:
                 class: App\Entity\Individu
                 property: id
+        # used to reload user from session & other features (e.g. switch_user)
+        api_service_externe:
+            entity:
+                class: App\Entity\ServiceExterne
+                property: username
     
     # User: pas de hasher car pas de password on utilise saml ou openid pour se connecter
     # InMemoryUser: les mots de passe sont hashés - cf .env.dist
@@ -60,7 +69,6 @@ security:
             pattern:   ^/api
             http_basic:
               provider: api
-
         main:
             lazy: true
             pattern:    ^/
@@ -85,7 +93,6 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api, roles: ROLE_API}
         # - { path: ^/gramc3/login, roles: PUBLIC_ACCESS}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

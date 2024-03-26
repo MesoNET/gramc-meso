@@ -720,9 +720,9 @@ class ServiceProjets
     {
         $rapportActivite = $this->em->getRepository(RapportActivite::class)->findOneBy(
             [
-                                'projet' => $projet,
-                                'annee' => $annee,
-                                ]
+                'projet' => $projet,
+                'annee' => $annee,
+            ]
         );
 
         if (null === $rapportActivite) {
@@ -744,9 +744,9 @@ class ServiceProjets
     {
         $rapportActivite = $this->em->getRepository(RapportActivite::class)->findOneBy(
             [
-                                'projet' => $projet,
-                                'annee' => $annee,
-                                ]
+                'projet' => $projet,
+                'annee' => $annee,
+            ]
         );
 
         if (null !== $rapportActivite) {

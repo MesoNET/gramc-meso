@@ -57,8 +57,8 @@ class GererUtilisateurType extends AbstractType
                      'filtrer',
                      SubmitType::class,
                      [
-                        'label' => 'Filtrer',
-                    ]
+                         'label' => 'Filtrer',
+                     ]
                  )
                 /*
                 ->add('active',     SubmitType::class,

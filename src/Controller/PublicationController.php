@@ -187,10 +187,10 @@ class PublicationController extends AbstractController
         return $this->render(
             'publication/liste.html.twig',
             [
-            'publications' => $projet->getPubli(),
-            'form' => $form->createView(),
-            'projet' => $projet,
-        ]
+                'publications' => $projet->getPubli(),
+                'form' => $form->createView(),
+                'projet' => $projet,
+            ]
         );
     }
 
@@ -201,8 +201,8 @@ class PublicationController extends AbstractController
         return $this->render(
             'publication/consulter.html.twig',
             [
-            'publications' => $projet->getPubli(),
-            'projet' => $projet,
+                'publications' => $projet->getPubli(),
+                'projet' => $projet,
             ]
         );
     }
@@ -220,9 +220,9 @@ class PublicationController extends AbstractController
         return $this->render(
             'publication/annee.html.twig',
             [
-            'form' => $data['form']->createView(), // formulaire
-            'annee' => $annee,
-            'publications' => $publications,
+                'form' => $data['form']->createView(), // formulaire
+                'annee' => $annee,
+                'publications' => $publications,
             ]
         );
     }
@@ -235,12 +235,12 @@ class PublicationController extends AbstractController
         $publications = $em->getRepository(Publication::class)->findBy(['annee' => $annee]);
 
         $header = [
-                    'Référence',
-                    'annee',
-                    'doi',
-                    'URL',
-                    'Projets',
-                    ];
+            'Référence',
+            'annee',
+            'doi',
+            'URL',
+            'Projets',
+        ];
 
         $sortie = join("\t", $header)."\n";
         foreach ($publications as $publi) {

@@ -44,13 +44,29 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity]
 #[ApiResource(
     operations: [
-        new Get(),
-        new Patch(),
+        new Get(provider: ClesshProvider::class,
+            security: "is_granted('ROLE_API')"
+        ),
+        new Patch(provider: ClesshProvider::class,
+            security: "is_granted('ROLE_API')"
+        ),
         new GetCollection(
-            provider: ClesshCollectionProvider::class
+            provider: ClesshCollectionProvider::class,
+            security: "is_granted('ROLE_API')"
+        ),
+        new Get(
+            uriTemplate: 'externe/clesshes/{id}',
+            security: "is_granted('ROLE_API_SERVICE')"
+        ),
+        new GetCollection(
+            uriTemplate: 'externe/clesshes',
+            security: "is_granted('ROLE_API_SERVICE')"
+        ),
+        new Patch(
+            uriTemplate: 'externe/clesshes/{id}',
+            security: "is_granted('ROLE_API_SERVICE')"
         ),
     ],
-    provider: ClesshProvider::class,
     normalizationContext: ['groups' => ['ssh_lecture']],
     denormalizationContext: ['groups' => ['ssh_ecriture']],
 )]

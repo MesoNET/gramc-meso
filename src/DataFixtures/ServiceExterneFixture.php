@@ -2,17 +2,16 @@
 
 namespace App\DataFixtures;
 
-use App\Factory\ServeurFactory;
+use App\Factory\ServiceExterneFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class ServeurFixtures extends Fixture
+class ServiceExterneFixture extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        ServeurFactory::createOne([
-            'nom' => 'test',
-            'admname' => 'test',
+        ServiceExterneFactory::createOne([
+            'username' => 'testexterne',
             'password' => 'test',
         ]);
     }

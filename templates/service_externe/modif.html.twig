@@ -1,0 +1,27 @@
+{% extends 'default/base.html.twig' %}
+
+{% block body %}
+<section>
+<h2>Modification d'un service externe</h2>
+    {% import "default/macros.html.twig" as gramcmacros %}
+
+    {{ form_start(edit_form) }}
+    <table>
+        <tr>
+            <th>{{ form_label(edit_form.username) }}</th>
+            <td>{{ form_widget(edit_form.username) }}</td>
+        </tr>
+        <tr>
+            <td>{{ form_widget(edit_form.plainPassword) }}</td>
+        </tr>
+        <tr>
+            <th></th>
+e        </tr>
+    </table>
+    {{ form_end(edit_form) }}
+
+    {{ gramcmacros.menu(menu) }}
+
+</section>
+
+{% endblock body %}

@@ -63,7 +63,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Patch(
             // uriTemplate: '/setloginname/{individu}/{projet}/{user}/{loginname}',
         ),
-],
+    ],
+    security: "is_granted('ROLE_API')",
     normalizationContext: ['groups' => ['individu_lecture']],
     denormalizationContext: ['groups' => ['individu_ecriture']],
     provider: IndividuProvider::class
@@ -81,13 +82,13 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
     /* LIBELLE DES STATUTS */
     public const LIBELLE_STATUT =
         [
-        self::INCONNU => 'INCONNU',
-        self::POSTDOC => 'Post-doctorant',
-        self::ATER => 'ATER',
-        self::DOCTORANT => 'Doctorant',
-        self::ENSEIGNANT => 'Enseignant',
-        self::CHERCHEUR => 'Chercheur',
-        self::INGENIEUR => 'Ingénieur',
+            self::INCONNU => 'INCONNU',
+            self::POSTDOC => 'Post-doctorant',
+            self::ATER => 'ATER',
+            self::DOCTORANT => 'Doctorant',
+            self::ENSEIGNANT => 'Enseignant',
+            self::CHERCHEUR => 'Chercheur',
+            self::INGENIEUR => 'Ingénieur',
         ];
 
     /**

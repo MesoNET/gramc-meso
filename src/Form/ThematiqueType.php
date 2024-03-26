@@ -52,10 +52,10 @@ class ThematiqueType extends AbstractType
                 'expert',
                 EntityType::class,
                 [
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Individu::class,
-                'choices' => $options['experts'],
+                    'multiple' => true,
+                    'expanded' => true,
+                    'class' => Individu::class,
+                    'choices' => $options['experts'],
                 ]
             );
 
@@ -74,10 +74,10 @@ class ThematiqueType extends AbstractType
     {
         $resolver->setDefaults(
             [
-            'data_class' => 'App\Entity\Thematique',
-            'modifier' => false,
-            'ajouter' => false,
-            'experts' => $this->em->getRepository(Individu::class)->findAll(),
+                'data_class' => 'App\Entity\Thematique',
+                'modifier' => false,
+                'ajouter' => false,
+                'experts' => $this->em->getRepository(Individu::class)->findAll(),
             ]
         );
     }

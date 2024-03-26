@@ -27,6 +27,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\State\UserProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -39,13 +40,18 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
 #[ApiResource(operations: [
-    new GetCollection(),
+    new GetCollection(security: "is_granted('ROLE_API')"),
     new Patch(
         uriTemplate: '/users/{individu}/{projet}',
-        provider: UserProvider::class
+        provider: UserProvider::class,
+        security: "is_granted('ROLE_API')"
     ),
-    new Patch(),
-    ],
+    new Patch(security: "is_granted('ROLE_API')"),
+    new Post(
+        uriTemplate: 'externe/users',
+        security: "is_granted('ROLE_API_SERVICE')"
+    ),
+],
     normalizationContext: ['groups' => ['user_lecture']],
     denormalizationContext: ['groups' => ['user_ecriture']],
 )]
@@ -57,14 +63,14 @@ class User
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[Groups(['individu_lecture', 'user_lecture'])]
+    #[Groups(['individu_lecture', 'user_lecture', 'projet_lecture'])]
     private $id;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'loginname', nullable: true, type: 'string', length: 20)]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture', 'projet_lecture'])]
     private $loginname;
 
     #[ORM\JoinColumn(name: 'id_serveur', referencedColumnName: 'nom')]
@@ -73,7 +79,7 @@ class User
 
     #[ORM\JoinColumn(name: 'id_individu', referencedColumnName: 'id_individu', onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Individu', inversedBy: 'user')]
-    #[Groups(['user_lecture', 'user_ecriture'])]
+    #[Groups(['user_lecture', 'user_ecriture', 'projet_lecture'])]
     private Individu $individu;
 
     #[ORM\JoinColumn(name: 'id_projet', referencedColumnName: 'id_projet')]
@@ -85,7 +91,7 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'login', type: 'boolean', nullable: false, options: ['comment' => 'login sur le serveur lié'])]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture', 'projet_lecture'])]
     private $login = false;
 
     /**
@@ -104,14 +110,14 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'expire', type: 'boolean', nullable: true)]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture', 'projet_lecture'])]
     private $expire;
 
     /**
      * @var \DateTime
      */
     #[ORM\Column(name: 'pass_expiration', type: 'datetime', nullable: true)]
-    #[Groups(['individu_lecture', 'user_lecture'])]
+    #[Groups(['individu_lecture', 'user_lecture', 'projet_lecture'])]
     private $passexpir;
 
     /**
@@ -134,7 +140,7 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'deply', type: 'boolean')]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture'])]
+    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture', 'projet_lecture'])]
     private $deply = false;
 
     public function __toString(): string

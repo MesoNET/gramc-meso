@@ -50,11 +50,24 @@ use Symfony\Component\Serializer\Attribute\Groups;
                 'id' => 'idProjet',
             ],
             provider: ProjetProvider::class,
+            security: "is_granted('ROLE_API')"
         ),
         new GetCollection(
-            provider: ProjetCollectionProvider::class
+            provider: ProjetCollectionProvider::class,
+            security: "is_granted('ROLE_API')"
         ),
-],
+        new Get(
+            uriTemplate: 'externe/projets/{id}',
+            uriVariables: [
+                'id' => 'idProjet',
+            ],
+            security: "is_granted('ROLE_API_SERVICE')"
+        ),
+        new GetCollection(
+            uriTemplate: 'externe/projets',
+            security: "is_granted('ROLE_API_SERVICE')"
+        ),
+    ],
     normalizationContext: ['groups' => ['projet_lecture']],
 )]
 class Projet
@@ -66,12 +79,12 @@ class Projet
     // il dure 1 an et est indépendant des sessions
 
     public const LIBELLE_TYPE =
-    [
-        self::PROJET_SESS => 'S',
-        self::PROJET_TEST => 'T',
-        self::PROJET_FIL => 'F',
-        self::PROJET_DYN => 'D',
-    ];
+        [
+            self::PROJET_SESS => 'S',
+            self::PROJET_TEST => 'T',
+            self::PROJET_FIL => 'F',
+            self::PROJET_DYN => 'D',
+        ];
 
     /**
      * Constructor.

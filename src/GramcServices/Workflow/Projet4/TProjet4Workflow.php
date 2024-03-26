@@ -68,7 +68,7 @@ class TProjet4Workflow extends Workflow
                     Signal::DAT_CAL_7 => new TProjet4Transition(Etat::J_7, Signal::DAT_CAL_7, ['R' => 'alerte_pour_demandeur']),
                     Signal::DAT_CAL_1 => new TProjet4Transition(Etat::J_1, Signal::DAT_CAL_1, ['R' => 'alerte_pour_demandeur']),
                     Signal::DAT_CAL_0 => new TProjet4Transition(Etat::TERMINE, Signal::DAT_CAL_0),
-               ]
+                ]
             )
             ->addState(
                 Etat::J_99,

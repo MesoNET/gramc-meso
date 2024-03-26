@@ -48,7 +48,7 @@ class GererProjetType extends AbstractType
                      'filtrer',
                      SubmitType::class,
                      [
-                        'label' => 'Filtrer',
+                         'label' => 'Filtrer',
                      ]
                  )
         ;

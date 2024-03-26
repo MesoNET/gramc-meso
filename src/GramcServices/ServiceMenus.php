@@ -654,8 +654,8 @@ class ServiceMenus
                 if (null != $version->getProjet()) {
                     $rapportActivite = $this->em->getRepository(RapportActivite::class)->findOneBy(
                         [
-                        'projet' => $version->getProjet(),
-                        'annee' => $version->getAnneeSession(),
+                            'projet' => $version->getProjet(),
+                            'annee' => $version->getAnneeSession(),
                         ]
                     );
                 } else {
