@@ -3,6 +3,6 @@
 [ -r ../.env ] && source ../.env
 [ -r ../.env.local ] && source ../.env.local
 export DATABASE_URL
-
+rm -r migrations/*.php
 php reprise/reload-db.php $*
 

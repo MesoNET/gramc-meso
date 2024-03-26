@@ -210,7 +210,7 @@ export DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8&c
 1. Copier le dump de la base de données  sous le nom reprise/gramc_reprise.sql
 1. puis lancez le script
 ~~~~
-composer db
+composer db:crate
 ~~~~
 
 **Installation d'une base de données vide sur une instance de développement:**
@@ -219,7 +219,7 @@ composer db:schema
 ~~~~
 
 
-La commande reload-db va effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
+La commande composer db va est utilisée pour effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
 
 Ensuite, un mail sera envoyé à l'adresse toto@exemple.com: cela permet de vérifier que le mail est bien envoyé à l'adresse $MAILER_RECIPIENT et de s'assurer que les utilisateurs ne recevront pas de mails lors des essais...
 
