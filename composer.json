@@ -114,11 +114,16 @@
             "php bin/console doctrine:database:drop --force",
             "@db:create"
         ],
+        "db:update": [
+            "rm -r -f migrations/*.php",
+            "php bin/console doctrine:migrations:diff --no-interaction --allow-empty-diff",
+            "php bin/console doctrine:migrations:migrate --allow-no-migration --no-interaction"
+        ],
         "db:create": [
             "@db:schema",
             "sh reprise/reload-db ./reprise/gramc_reprise.sql",
-            "php bin/console doctrine:migrations:diff --no-interaction",
-            "php bin/console doctrine:migrations:migrate --allow-no-migration",
+            "php bin/console doctrine:migrations:diff --no-interaction --allow-empty-diff",
+            "php bin/console doctrine:migrations:migrate --allow-no-migration --no-interaction",
             "php bin/console doctrine:fixtures:load --no-interaction --append"
         ],
         "db:schema": [
