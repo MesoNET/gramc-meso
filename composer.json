@@ -111,6 +111,10 @@
             "@auto-scripts"
         ],
         "db": [
+            "php bin/console doctrine:database:drop --force",
+            "@db:create"
+        ],
+        "db:create": [
             "@db:schema",
             "sh reprise/reload-db ./reprise/gramc_reprise.sql",
             "php bin/console doctrine:migrations:diff --no-interaction",
