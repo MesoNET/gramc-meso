@@ -219,7 +219,8 @@ composer db:schema
 ~~~~
 
 
-La commande composer db va est utilisée pour effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
+La commande composer db est utilisée pour effacer la base existante, recharger la base à partir du fichier sql, la mettre à niveau si besoin puis appliquer les "fixtures", ci-besoin.
+La commande composer db:update met simplement le schéma à jour grâce aux migrations.
 
 Ensuite, un mail sera envoyé à l'adresse toto@exemple.com: cela permet de vérifier que le mail est bien envoyé à l'adresse $MAILER_RECIPIENT et de s'assurer que les utilisateurs ne recevront pas de mails lors des essais...
 
