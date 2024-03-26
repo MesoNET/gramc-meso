@@ -448,7 +448,9 @@ tfoot input {
 }
 
 
-
+th input{
+    border-radius: 0.5em;
+}
 tfoot {
     display: table-row-group;
 }
