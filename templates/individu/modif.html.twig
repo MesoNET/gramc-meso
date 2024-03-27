@@ -167,16 +167,17 @@
     title="Envoyer une invitation à {{individu.prenom}} {{individu.nom}}">Inviter {{individu.prenom}} {{individu.nom}}</a>
     {% endif %}
 
-    {% if ajout==false %}
 
     <ul class="bottom-menu">
         <li class="bottom-menu-item">
             <a href="{{ path('individu_gerer') }}">Back to the list</a>
         </li>
-        <li class="bottom-menu-item">
+        {% if ajout==false %}
+            <li class="bottom-menu-item">
             <a href="{{ path('individu_show', { 'id': individu.id }) }}">utilisateur</a>
         </li>
-    </ul>
     {% endif %}
+
+    </ul>
 
 {% endblock %}
