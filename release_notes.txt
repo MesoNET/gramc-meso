@@ -4,41 +4,48 @@ V 3.0.0
     - passage des annotations aux attributs PHP
     - passage à PHP 8.2
     - passage à jQuery 1.13.2
-    - Ajout d'API platform pour la gestion des API
-    - Implémentation de php cs fixer
-    - Implémentation de test de fummée
-    - Ajout de Notifier et Mailler
-    - Mise à jour du script de migration/Creation/mise à jour de la BD avec la commande '''composer DB'''
+    - Ajout d'API platform pour la gestion de la nouvelle API
+    - Ajout de de php cs fixer
+    - Écriture de test de fumée
+    - Ajout des packages Notifier et Mailler
+    - Mise à jour du script de migration/Création/mise à jour de la BD avec la commande '''composer db'''
     - changement du type adresse d'addreseIp de text à string
-    - passage de la definition du cron CronCmd de definitions php aux attributs PHP
+    - passage de la définition du cron CronCmd de définitions php aux attributs PHP
     - suppression de repository inutile SER et test
     - passage des annotations aux attributs PHP dans les controllers
-    - changement du fichier annotation.yaml to attribute.yaml
+    - changement du fichier annotation.yaml vers attribute.yaml
     - déclaration de l’utilisation des attributs dans routes.yaml
     - Fix de l'envoie des projets pour expertise
     - Fix du retrait du role validateur par l’admin
     - Fix de la suppression des utilisateurs par l’admin
-    - Correction d’une mauvaise interaction entre version et le controller d’etablisement
-    - Correction du filtre Truncate twig discontinué
-    - Correction d'une erreur d'orthographe dans les propriétes de laboratoire
-    - suppression des template projet gerer ,projet resumé et version new et leurs action liée (inutilisé)
-    - Implémentation d'une redirection en cas de non droit d'accès
-    - Création de l'attribut numeroNationalStructure et l'état de laboratoire
+    - Correction d’une mauvaise interaction entre version et le controller d’établissement
+    - Correction d'une erreur d'orthographe dans les propriétés de laboratoire
+    - suppression des template projet gerer ,projet résumé et version new et leurs action liées (inutilisées)
+    - Implémentation d'une redirection en cas d'accès à des routes non autorisées
+    - Création de la propriété numeroNationalStructure et l'état de laboratoire
     - Ajout de l'import des laboratoires depuis l'API https://data.enseignmentsup-recherche.gouv.fr/explore/dataset/fr-esr-repertoire-national-structures-recherche/information/
-    - Création de la documentation API dans doc/apiV2
-    - Ajout de la gestion des roles et des mots de passe pour que les serveur puisse se connecter à l'API v2
-    - Implémentation des ancienne fonctionnalité de l'API sur la nouvelle plateforme
-    - Ajout d'un systeme de notification avec mise en BD des notifications
-    - Ajout de fixtures
-    - Mise à jour de la documentation README.md et dans les fichier php
-    - Implémentation d'un nouveau style à partir d'une template bootstrap 5 ( https://adminmart.com/product/modernize-bootstrap-5-admin-template/#product-demo-section )
+    - Création de la documentation technique de l'API dans doc/apiV2
+    - Ajout de la gestion des roles et des mots de passe pour que les serveurs puissent se connecter à l'API v2
+    - Implémentation des anciennes fonctionnalités de l'API sur la nouvelle
+    - Ajout d'un système de notification avec mise en BD des notifications
+    - Ajout d'opérations sur l'API spécifiques pour les services externes
+    - Ajout de fixtures (données factices) pour les serveurs et services externes
+    - Mise à jour de la documentation README.md et dans les fichiers php
+    - Implémentation d'un nouveau style à partir d'une template Bootstrap 5 ( https://adminmart.com/product/modernize-bootstrap-5-admin-template/#product-demo-section )
     - Changement de la position des menus et des boutons
-    - Amélioration graphique de la page de listes des projet
+    - Amélioration graphique de la page de listes des projets
     - Changement des logos du projet
     - Changement des icones du projet
     - Ajout de nouveaux boutons pour accéder aux actions
     - Ajout d'un conteneur docker pour sendmail et mailcatcher
     - Mise à jour du footer
+    - Ajout de filtres, search et pagination (via Datatable) sur les tables
+    - Ajout d'une page d'eerreur spécifique en cas d'erreur bd
+    - Les trusted proxies sont définis dans le .env au lieu du index.php
+    - Ajout de la template dashboard user et admin
+    - Ajout d'un bouton de déconnexions dans le dropdown user
+    - Modification du delete généré pour les établissements
+    - Ajout au profil de l'url linkedin, du @ twite, de l'avatar et du mail seconaire
 
 v 2.6.3
 ------

@@ -216,6 +216,12 @@ passwd
 
     <section id="section_demandeur" style="stroke:black">
 
+        {% if creation == 1 %}
+            <div class="information attention">
+                <h2>Création de projet</h2>
+                <p>Vous ne pouvez pas créer de projet, vous devez être un membre permanent d'un laboratoire</p>
+            </div>
+        {% endif %}
         <h1>Vos projets</h1>
 
         {{ gramcmacros.menu(menu) }}
