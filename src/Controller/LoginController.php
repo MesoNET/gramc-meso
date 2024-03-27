@@ -69,7 +69,7 @@ class LoginController extends AbstractController
             $ts->setToken(null);
             $session->invalidate();
 
-            return $this->render('default/deconnexion.html.twig');
+            return new RedirectResponse($this->generateUrl('accueil'));
         }
 
         // On a cliqué sur Déconnecter alors qu'on n'est pas connecté
