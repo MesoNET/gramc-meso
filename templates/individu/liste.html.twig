@@ -12,18 +12,11 @@
 
     <h1>Utilisateurs de gramc</h1>
 
-    <div class="information attention">
-        <h2>AVERTISSEMENT</h2>
-        Si la case <strong>Filtrer sur tous les utilisateurs</strong>
-        est décochée, seuls les utilisateurs qui peuvent se connecter, qui sont admins ou experts, seront considérés.
-        <br>
-        <strong>On peut restreindre l'affichage</strong> en entrant un filtre sur les adresses mail/nom/prénom
-    </div>
 
     <nav>
         <ul>
             <li>
-                <a id="ajout" class="lien_actif-left" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">
+                <a class="lien_actif-left" href="{{ path('individu_ajouter') }}?" title="Créer un utilisateur">
                     {{ icones.nouveauUser()}}Nouvel utilisateur
                 </a>
             </li>
