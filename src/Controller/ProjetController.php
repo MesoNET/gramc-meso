@@ -431,7 +431,8 @@ class ProjetController extends AbstractController
         $m = $sm->nouveauProjet("$type");
         if (null == $m || false == $m['ok']) {
             $raison = null === $m ? "ERREUR AVEC LE TYPE $type - voir le paramètre prj_type" : $m['raison'];
-            $sj->throwException(__METHOD__.':'.__LINE__." impossible de créer un nouveau projet parce que $raison");
+
+            return $this->redirectToRoute('projet_accueil');
         }
 
         // Projet dynamique = SEUL type de projets supporté actuellement
@@ -467,6 +468,10 @@ class ProjetController extends AbstractController
         $em = $this->em;
         $individu = $token->getUser();
         $id_individu = $individu->getId();
+        $creation = true;
+        if ($individu->peutCreerProjets()) {
+            $creation = false;
+        }
 
         $projetRepository = $em->getRepository(Projet::class);
         $cv_repo = $em->getRepository(CollaborateurVersion::class);
@@ -554,6 +559,7 @@ class ProjetController extends AbstractController
         return $this->render(
             'projet/demandeur.html.twig',
             [
+                'creation' => $creation, // 'creation' => 'true' ou 'false
                 'projets_resp' => $projetsTot,
                 'projets_term' => $projets_term,
                 'menu' => $menu,
