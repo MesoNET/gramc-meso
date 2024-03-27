@@ -24,7 +24,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
@@ -39,21 +38,22 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'loginname', columns: ['id_serveur', 'loginname'])]
 #[ORM\UniqueConstraint(name: 'i_p_s', columns: ['id_individu', 'id_projet', 'id_serveur'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
-#[ApiResource(operations: [
-    new GetCollection(security: "is_granted('ROLE_API')"),
-    new Patch(
-        uriTemplate: '/users/{individu}/{projet}',
-        provider: UserProvider::class,
-        security: "is_granted('ROLE_API')"
-    ),
-    new Patch(security: "is_granted('ROLE_API')"),
-    new Post(
-        uriTemplate: 'externe/users',
-        security: "is_granted('ROLE_API_SERVICE')"
-    ),
-],
+#[ApiResource(description: 'Les users système à déployer',
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_API')"),
+        new Patch(
+            uriTemplate: '/users/{individu}/{projet}',
+            security: "is_granted('ROLE_API')",
+            provider: UserProvider::class
+        ),
+        new Patch(security: "is_granted('ROLE_API')"),
+        new Post(
+            uriTemplate: 'externe/users',
+            security: "is_granted('ROLE_API_SERVICE')"
+        ),
+    ],
     normalizationContext: ['groups' => ['user_lecture']],
-    denormalizationContext: ['groups' => ['user_ecriture']],
+    denormalizationContext: ['groups' => ['user_ecriture']]
 )]
 class User
 {
