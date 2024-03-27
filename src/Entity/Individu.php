@@ -31,12 +31,10 @@ use ApiPlatform\Metadata\Patch;
 use App\Repository\IndividuRepository;
 use App\State\IndividuCollectionProvider;
 use App\State\IndividuProvider;
-use App\Utils\Functions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -50,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ORM\Table(name: 'individu')]
 #[ORM\Index(columns: ['id_labo'], name: 'id_labo')]
-#[ORM\Index(name: 'id_statut', columns: ['id_statut'])]
+#[ORM\Index(columns: ['id_statut'], name: 'id_statut')]
 #[ORM\Index(name: 'id_etab', columns: ['id_etab'])]
 #[ORM\UniqueConstraint(name: 'mail', columns: ['mail'])]
 #[ORM\Entity(repositoryClass: IndividuRepository::class)]
@@ -67,7 +65,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     security: "is_granted('ROLE_API')",
     normalizationContext: ['groups' => ['individu_lecture']],
     denormalizationContext: ['groups' => ['individu_ecriture']],
-    provider: IndividuProvider::class
+    provider: IndividuProvider::class,
+    description: 'Un individu (à ne pas confondre avec les users)'
 )]
 class Individu implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {

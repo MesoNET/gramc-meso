@@ -43,6 +43,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'pubuniq', columns: ['emp'])]
 #[ORM\Entity]
 #[ApiResource(
+    description: 'Les clés ssh',
     operations: [
         new Get(uriTemplate: 'clessh/{id}',
             provider: ClesshProvider::class,
@@ -70,7 +71,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
     ],
     normalizationContext: ['groups' => ['ssh_lecture']],
-    denormalizationContext: ['groups' => ['ssh_ecriture']]
+    denormalizationContext: ['groups' => ['ssh_ecriture']],
 )]
 class Clessh
 {
