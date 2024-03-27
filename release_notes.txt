@@ -39,6 +39,13 @@ V 3.0.0
     - Ajout de nouveaux boutons pour accéder aux actions
     - Ajout d'un conteneur docker pour sendmail et mailcatcher
     - Mise à jour du footer
+    - Ajout de filtres, search et pagination (via Datatable) sur les tables
+    - Ajout d'une page d'eerreur spécifique en cas d'erreur bd
+    - Les trusted proxies sont définis dans le .env au lieu du index.php
+    - Ajout de la template dashboard user et admin
+    - Ajout d'un bouton de déconnexions dans le dropdown user
+    - Modification du delete généré pour les établissements
+    - Ajout au profil de l'url linkedin, du @ twite, de l'avatar et du mail seconaire
 
 v 2.6.3
 ------
