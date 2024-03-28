@@ -119,7 +119,7 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[Groups(['projet_lecture'])]
-    #[ApiProperty(identifier: false)]
+    #[ApiProperty(identifier: false, example: 'M23017')]
     private $idProjet;
 
     /**

@@ -43,27 +43,30 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\UniqueConstraint(name: 'pubuniq', columns: ['emp'])]
 #[ORM\Entity]
 #[ApiResource(
+    description: 'Les clés ssh',
     operations: [
-        new Get(provider: ClesshProvider::class,
+        new Get(uriTemplate: 'clessh/{id}',
+            provider: ClesshProvider::class,
             security: "is_granted('ROLE_API')"
         ),
-        new Patch(provider: ClesshProvider::class,
+        new Patch(uriTemplate: 'clessh/{id}',
+            provider: ClesshProvider::class,
             security: "is_granted('ROLE_API')"
         ),
-        new GetCollection(
+        new GetCollection(uriTemplate: 'clessh',
             provider: ClesshCollectionProvider::class,
             security: "is_granted('ROLE_API')"
         ),
         new Get(
-            uriTemplate: 'externe/clesshes/{id}',
+            uriTemplate: 'externe/clessh/{id}',
             security: "is_granted('ROLE_API_SERVICE')"
         ),
         new GetCollection(
-            uriTemplate: 'externe/clesshes',
+            uriTemplate: 'externe/clessh',
             security: "is_granted('ROLE_API_SERVICE')"
         ),
         new Patch(
-            uriTemplate: 'externe/clesshes/{id}',
+            uriTemplate: 'externe/clessh/{id}',
             security: "is_granted('ROLE_API_SERVICE')"
         ),
     ],
