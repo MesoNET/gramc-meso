@@ -12,9 +12,9 @@
         }
     ],
     "paths": {
-        "/api/clesshes": {
+        "/api/clessh": {
             "get": {
-                "operationId": "api_clesshes_get_collection",
+                "operationId": "api_clessh_get_collection",
                 "tags": [
                     "Clessh"
                 ],
@@ -125,9 +125,9 @@
             },
             "parameters": []
         },
-        "/api/clesshes/{id}": {
+        "/api/clessh/{id}": {
             "get": {
-                "operationId": "api_clesshes_id_get",
+                "operationId": "api_clessh_id_get",
                 "tags": [
                     "Clessh"
                 ],
@@ -167,7 +167,7 @@
                 "deprecated": false
             },
             "patch": {
-                "operationId": "api_clesshes_id_patch",
+                "operationId": "api_clessh_id_patch",
                 "tags": [
                     "Clessh"
                 ],
@@ -217,6 +217,419 @@
                         "application/ld+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/Clessh.jsonld-ssh_ecriture"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "deprecated": false
+            },
+            "parameters": []
+        },
+        "/api/externe/clessh": {
+            "get": {
+                "operationId": "api_externeclessh_get_collection",
+                "tags": [
+                    "Clessh"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Clessh collection",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "hydra:member": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Clessh.jsonld-ssh_lecture"
+                                            }
+                                        },
+                                        "hydra:totalItems": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "hydra:view": {
+                                            "type": "object",
+                                            "properties": {
+                                                "@id": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "@type": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:first": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:last": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:previous": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:next": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                }
+                                            },
+                                            "example": {
+                                                "@id": "string",
+                                                "type": "string",
+                                                "hydra:first": "string",
+                                                "hydra:last": "string",
+                                                "hydra:previous": "string",
+                                                "hydra:next": "string"
+                                            }
+                                        },
+                                        "hydra:search": {
+                                            "type": "object",
+                                            "properties": {
+                                                "@type": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:template": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:variableRepresentation": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:mapping": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "@type": {
+                                                                "type": "string"
+                                                            },
+                                                            "variable": {
+                                                                "type": "string"
+                                                            },
+                                                            "property": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "required": {
+                                                                "type": "boolean"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "hydra:member"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Retrieves the collection of Clessh resources.",
+                "description": "Retrieves the collection of Clessh resources.",
+                "parameters": [],
+                "deprecated": false
+            },
+            "parameters": []
+        },
+        "/api/externe/clessh/{id}": {
+            "get": {
+                "operationId": "api_externeclessh_id_get",
+                "tags": [
+                    "Clessh"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Clessh resource",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Clessh.jsonld-ssh_lecture"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                },
+                "summary": "Retrieves a Clessh resource.",
+                "description": "Retrieves a Clessh resource.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Clessh identifier",
+                        "required": true,
+                        "deprecated": false,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple",
+                        "explode": false,
+                        "allowReserved": false
+                    }
+                ],
+                "deprecated": false
+            },
+            "patch": {
+                "operationId": "api_externeclessh_id_patch",
+                "tags": [
+                    "Clessh"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Clessh resource updated",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Clessh.jsonld-ssh_lecture"
+                                }
+                            }
+                        },
+                        "links": {}
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                },
+                "summary": "Updates the Clessh resource.",
+                "description": "Updates the Clessh resource.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Clessh identifier",
+                        "required": true,
+                        "deprecated": false,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple",
+                        "explode": false,
+                        "allowReserved": false
+                    }
+                ],
+                "requestBody": {
+                    "description": "The updated Clessh resource",
+                    "content": {
+                        "application/ld+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Clessh.jsonld-ssh_ecriture"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "deprecated": false
+            },
+            "parameters": []
+        },
+        "/api/externe/projets": {
+            "get": {
+                "operationId": "api_externeprojets_get_collection",
+                "tags": [
+                    "Projet"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Projet collection",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "hydra:member": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Projet.jsonld-projet_lecture"
+                                            }
+                                        },
+                                        "hydra:totalItems": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "hydra:view": {
+                                            "type": "object",
+                                            "properties": {
+                                                "@id": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "@type": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:first": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:last": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:previous": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                },
+                                                "hydra:next": {
+                                                    "type": "string",
+                                                    "format": "iri-reference"
+                                                }
+                                            },
+                                            "example": {
+                                                "@id": "string",
+                                                "type": "string",
+                                                "hydra:first": "string",
+                                                "hydra:last": "string",
+                                                "hydra:previous": "string",
+                                                "hydra:next": "string"
+                                            }
+                                        },
+                                        "hydra:search": {
+                                            "type": "object",
+                                            "properties": {
+                                                "@type": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:template": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:variableRepresentation": {
+                                                    "type": "string"
+                                                },
+                                                "hydra:mapping": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "@type": {
+                                                                "type": "string"
+                                                            },
+                                                            "variable": {
+                                                                "type": "string"
+                                                            },
+                                                            "property": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "required": {
+                                                                "type": "boolean"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "hydra:member"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Retrieves the collection of Projet resources.",
+                "description": "Retrieves the collection of Projet resources.",
+                "parameters": [],
+                "deprecated": false
+            },
+            "parameters": []
+        },
+        "/api/externe/projets/{id}": {
+            "get": {
+                "operationId": "api_externeprojets_id_get",
+                "tags": [
+                    "Projet"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Projet resource",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Projet.jsonld-projet_lecture"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                },
+                "summary": "Retrieves a Projet resource.",
+                "description": "Retrieves a Projet resource.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Projet identifier",
+                        "required": true,
+                        "deprecated": false,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple",
+                        "explode": false,
+                        "allowReserved": false
+                    }
+                ],
+                "deprecated": false
+            },
+            "parameters": []
+        },
+        "/api/externe/users": {
+            "post": {
+                "operationId": "api_externeusers_post",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User resource created",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User.jsonld-user_lecture"
+                                }
+                            }
+                        },
+                        "links": {}
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    }
+                },
+                "summary": "Creates a User resource.",
+                "description": "Creates a User resource.",
+                "parameters": [],
+                "requestBody": {
+                    "description": "The new User resource",
+                    "content": {
+                        "application/ld+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User.jsonld-user_ecriture"
                             }
                         }
                     },
@@ -1457,7 +1870,7 @@
             },
             "Clessh.jsonld-ssh_ecriture": {
                 "type": "object",
-                "description": "Sso.",
+                "description": "Les cl\u00e9s ssh",
                 "deprecated": false,
                 "properties": {
                     "rvk": {
@@ -1467,17 +1880,9 @@
             },
             "Clessh.jsonld-ssh_lecture": {
                 "type": "object",
-                "description": "Sso.",
+                "description": "Les cl\u00e9s ssh",
                 "deprecated": false,
                 "properties": {
-                    "@id": {
-                        "readOnly": true,
-                        "type": "string"
-                    },
-                    "@type": {
-                        "readOnly": true,
-                        "type": "string"
-                    },
                     "@context": {
                         "readOnly": true,
                         "oneOf": [
@@ -1504,6 +1909,14 @@
                                 "additionalProperties": true
                             }
                         ]
+                    },
+                    "@id": {
+                        "readOnly": true,
+                        "type": "string"
+                    },
+                    "@type": {
+                        "readOnly": true,
+                        "type": "string"
                     },
                     "id": {
                         "readOnly": true,
@@ -1597,7 +2010,7 @@
             },
             "Individu.jsonld-individu_ecriture": {
                 "type": "object",
-                "description": "Individu.",
+                "description": "Un individu (\u00e0 ne pas confondre avec les users)",
                 "deprecated": false,
                 "properties": {
                     "user": {
@@ -1610,7 +2023,7 @@
             },
             "Individu.jsonld-individu_lecture": {
                 "type": "object",
-                "description": "Individu.",
+                "description": "Un individu (\u00e0 ne pas confondre avec les users)",
                 "deprecated": false,
                 "properties": {
                     "@context": {
@@ -1807,12 +2220,15 @@
                         ]
                     },
                     "etatProjet": {
+                        "default": 2,
+                        "example": 2,
                         "type": "integer"
                     },
                     "typeProjet": {
                         "type": "integer"
                     },
                     "idProjet": {
+                        "example": "M23017",
                         "type": "string"
                     },
                     "versionActive": {
@@ -1846,9 +2262,7 @@
                     "user": {
                         "type": "array",
                         "items": {
-                            "type": "string",
-                            "format": "iri-reference",
-                            "example": "https://example.com/"
+                            "$ref": "#/components/schemas/User.jsonld-projet_lecture"
                         }
                     },
                     "tetatProjet": {
@@ -2045,7 +2459,10 @@
                         ]
                     },
                     "formatSSH": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "type": "string"
                         }
@@ -2059,7 +2476,7 @@
             },
             "User.jsonld-individu_ecriture": {
                 "type": "object",
-                "description": "User.",
+                "description": "Les users syst\u00e8me \u00e0 d\u00e9ployer",
                 "deprecated": false,
                 "properties": {
                     "loginname": {
@@ -2173,9 +2590,89 @@
                     }
                 }
             },
+            "User.jsonld-projet_lecture": {
+                "type": "object",
+                "description": "",
+                "deprecated": false,
+                "properties": {
+                    "@context": {
+                        "readOnly": true,
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "@vocab": {
+                                        "type": "string"
+                                    },
+                                    "hydra": {
+                                        "type": "string",
+                                        "enum": [
+                                            "http://www.w3.org/ns/hydra/core#"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "@vocab",
+                                    "hydra"
+                                ],
+                                "additionalProperties": true
+                            }
+                        ]
+                    },
+                    "@id": {
+                        "readOnly": true,
+                        "type": "string"
+                    },
+                    "@type": {
+                        "readOnly": true,
+                        "type": "string"
+                    },
+                    "id": {
+                        "readOnly": true,
+                        "type": "integer"
+                    },
+                    "loginname": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "individu": {
+                        "description": "Get individu.",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "iri-reference",
+                        "example": "https://example.com/"
+                    },
+                    "login": {
+                        "type": "boolean"
+                    },
+                    "expire": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "passexpir": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "deply": {
+                        "type": "boolean"
+                    }
+                }
+            },
             "User.jsonld-user_ecriture": {
                 "type": "object",
-                "description": "User.",
+                "description": "Les users syst\u00e8me \u00e0 d\u00e9ployer",
                 "deprecated": false,
                 "properties": {
                     "loginname": {
@@ -2218,7 +2715,7 @@
             },
             "User.jsonld-user_lecture": {
                 "type": "object",
-                "description": "User.",
+                "description": "Les users syst\u00e8me \u00e0 d\u00e9ployer",
                 "deprecated": false,
                 "properties": {
                     "@context": {
