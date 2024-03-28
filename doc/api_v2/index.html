@@ -195,9 +195,12 @@
   <div class="method-summary"></div>
   <h4><a href="#Clessh">Clessh</a></h4>
   <ul>
-  <li><a href="#apiClesshesGetCollection"><code><span class="http-method">get</span> /api/clesshes</code></a></li>
-  <li><a href="#apiClesshesIdGet"><code><span class="http-method">get</span> /api/clesshes/{id}</code></a></li>
-  <li><a href="#apiClesshesIdPatch"><code><span class="http-method">patch</span> /api/clesshes/{id}</code></a></li>
+  <li><a href="#apiClesshGetCollection"><code><span class="http-method">get</span> /api/clessh</code></a></li>
+  <li><a href="#apiClesshIdGet"><code><span class="http-method">get</span> /api/clessh/{id}</code></a></li>
+  <li><a href="#apiClesshIdPatch"><code><span class="http-method">patch</span> /api/clessh/{id}</code></a></li>
+  <li><a href="#apiExterneclesshGetCollection"><code><span class="http-method">get</span> /api/externe/clessh</code></a></li>
+  <li><a href="#apiExterneclesshIdGet"><code><span class="http-method">get</span> /api/externe/clessh/{id}</code></a></li>
+  <li><a href="#apiExterneclesshIdPatch"><code><span class="http-method">patch</span> /api/externe/clessh/{id}</code></a></li>
   </ul>
   <h4><a href="#Individu">Individu</a></h4>
   <ul>
@@ -212,6 +215,8 @@
   </ul>
   <h4><a href="#Projet">Projet</a></h4>
   <ul>
+  <li><a href="#apiExterneprojetsGetCollection"><code><span class="http-method">get</span> /api/externe/projets</code></a></li>
+  <li><a href="#apiExterneprojetsIdGet"><code><span class="http-method">get</span> /api/externe/projets/{id}</code></a></li>
   <li><a href="#apiProjetsGetCollection"><code><span class="http-method">get</span> /api/projets</code></a></li>
   <li><a href="#apiProjetsIdGet"><code><span class="http-method">get</span> /api/projets/{id}</code></a></li>
   </ul>
@@ -226,17 +231,18 @@
   </ul>
   <h4><a href="#User">User</a></h4>
   <ul>
+  <li><a href="#apiExterneusersPost"><code><span class="http-method">post</span> /api/externe/users</code></a></li>
   <li><a href="#apiUsersGetCollection"><code><span class="http-method">get</span> /api/users</code></a></li>
   <li><a href="#apiUsersIdPatch"><code><span class="http-method">patch</span> /api/users/{id}</code></a></li>
   <li><a href="#apiUsersIndividuProjetPatch"><code><span class="http-method">patch</span> /api/users/{individu}/{projet}</code></a></li>
   </ul>
 
   <h1><a name="Clessh">Clessh</a></h1>
-  <div class="method"><a name="apiClesshesGetCollection"></a>
+  <div class="method"><a name="apiClesshGetCollection"></a>
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
-    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/clesshes</code></pre></div>
-    <div class="method-summary">Retrieves the collection of Clessh resources. (<span class="nickname">apiClesshesGetCollection</span>)</div>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/clessh</code></pre></div>
+    <div class="method-summary">Retrieves the collection of Clessh resources. (<span class="nickname">apiClesshGetCollection</span>)</div>
     <div class="method-notes">Retrieves the collection of Clessh resources.</div>
 
 
@@ -280,11 +286,11 @@
         <a href="#inline_response_200">inline_response_200</a>
   </div> <!-- method -->
   <hr/>
-  <div class="method"><a name="apiClesshesIdGet"></a>
+  <div class="method"><a name="apiClesshIdGet"></a>
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
-    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/clesshes/{id}</code></pre></div>
-    <div class="method-summary">Retrieves a Clessh resource. (<span class="nickname">apiClesshesIdGet</span>)</div>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/clessh/{id}</code></pre></div>
+    <div class="method-summary">Retrieves a Clessh resource. (<span class="nickname">apiClesshIdGet</span>)</div>
     <div class="method-notes">Retrieves a Clessh resource.</div>
 
     <h3 class="field-label">Path parameters</h3>
@@ -335,11 +341,186 @@
         <a href="#"></a>
   </div> <!-- method -->
   <hr/>
-  <div class="method"><a name="apiClesshesIdPatch"></a>
+  <div class="method"><a name="apiClesshIdPatch"></a>
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
-    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /api/clesshes/{id}</code></pre></div>
-    <div class="method-summary">Updates the Clessh resource. (<span class="nickname">apiClesshesIdPatch</span>)</div>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /api/clessh/{id}</code></pre></div>
+    <div class="method-summary">Updates the Clessh resource. (<span class="nickname">apiClesshIdPatch</span>)</div>
+    <div class="method-notes">Updates the Clessh resource.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Clessh identifier </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#Clessh.jsonld-ssh_ecriture">Clessh.jsonld-ssh_ecriture</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The updated Clessh resource </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Clessh.jsonld-ssh_lecture">Clessh.jsonld-ssh_lecture</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "individu" : "https://example.com/",
+  "@type" : "",
+  "rvk" : "",
+  "@id" : "",
+  "id" : "",
+  "@context" : "",
+  "user" : "",
+  "nom" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Clessh resource updated
+        <a href="#Clessh.jsonld-ssh_lecture">Clessh.jsonld-ssh_lecture</a>
+    <h4 class="field-label">400</h4>
+    Invalid input
+        <a href="#"></a>
+    <h4 class="field-label">404</h4>
+    Resource not found
+        <a href="#"></a>
+    <h4 class="field-label">422</h4>
+    Unprocessable entity
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="apiExterneclesshGetCollection"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/externe/clessh</code></pre></div>
+    <div class="method-summary">Retrieves the collection of Clessh resources. (<span class="nickname">apiExterneclesshGetCollection</span>)</div>
+    <div class="method-notes">Retrieves the collection of Clessh resources.</div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#inline_response_200">inline_response_200</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "hydra:search" : {
+    "hydra:template" : "",
+    "hydra:variableRepresentation" : "",
+    "@type" : "",
+    "hydra:mapping" : ""
+  },
+  "hydra:totalItems" : "",
+  "hydra:view" : "{\"@id\":\"string\",\"type\":\"string\",\"hydra:first\":\"string\",\"hydra:last\":\"string\",\"hydra:previous\":\"string\",\"hydra:next\":\"string\"}",
+  "hydra:member" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Clessh collection
+        <a href="#inline_response_200">inline_response_200</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="apiExterneclesshIdGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/externe/clessh/{id}</code></pre></div>
+    <div class="method-summary">Retrieves a Clessh resource. (<span class="nickname">apiExterneclesshIdGet</span>)</div>
+    <div class="method-notes">Retrieves a Clessh resource.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Clessh identifier </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Clessh.jsonld-ssh_lecture">Clessh.jsonld-ssh_lecture</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "individu" : "https://example.com/",
+  "@type" : "",
+  "rvk" : "",
+  "@id" : "",
+  "id" : "",
+  "@context" : "",
+  "user" : "",
+  "nom" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Clessh resource
+        <a href="#Clessh.jsonld-ssh_lecture">Clessh.jsonld-ssh_lecture</a>
+    <h4 class="field-label">404</h4>
+    Resource not found
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="apiExterneclesshIdPatch"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /api/externe/clessh/{id}</code></pre></div>
+    <div class="method-summary">Updates the Clessh resource. (<span class="nickname">apiExterneclesshIdPatch</span>)</div>
     <div class="method-notes">Updates the Clessh resource.</div>
 
     <h3 class="field-label">Path parameters</h3>
@@ -423,7 +604,7 @@
 
     <h3 class="field-label">Return type</h3>
     <div class="return-type">
-      <a href="#inline_response_200_1">inline_response_200_1</a>
+      <a href="#inline_response_200_2">inline_response_200_2</a>
       
     </div>
 
@@ -453,7 +634,7 @@
     <h3 class="field-label">Responses</h3>
     <h4 class="field-label">200</h4>
     Individu collection
-        <a href="#inline_response_200_1">inline_response_200_1</a>
+        <a href="#inline_response_200_2">inline_response_200_2</a>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="apiIndividusIdGet"></a>
@@ -603,7 +784,7 @@
 
     <h3 class="field-label">Return type</h3>
     <div class="return-type">
-      <a href="#inline_response_200_2">inline_response_200_2</a>
+      <a href="#inline_response_200_3">inline_response_200_3</a>
       
     </div>
 
@@ -633,7 +814,7 @@
     <h3 class="field-label">Responses</h3>
     <h4 class="field-label">200</h4>
     Laboratoire collection
-        <a href="#inline_response_200_2">inline_response_200_2</a>
+        <a href="#inline_response_200_3">inline_response_200_3</a>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="apiLaboratoiresIdGet"></a>
@@ -694,11 +875,11 @@
   </div> <!-- method -->
   <hr/>
   <h1><a name="Projet">Projet</a></h1>
-  <div class="method"><a name="apiProjetsGetCollection"></a>
+  <div class="method"><a name="apiExterneprojetsGetCollection"></a>
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
-    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/projets</code></pre></div>
-    <div class="method-summary">Retrieves the collection of Projet resources. (<span class="nickname">apiProjetsGetCollection</span>)</div>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/externe/projets</code></pre></div>
+    <div class="method-summary">Retrieves the collection of Projet resources. (<span class="nickname">apiExterneprojetsGetCollection</span>)</div>
     <div class="method-notes">Retrieves the collection of Projet resources.</div>
 
 
@@ -709,7 +890,7 @@
 
     <h3 class="field-label">Return type</h3>
     <div class="return-type">
-      <a href="#inline_response_200_3">inline_response_200_3</a>
+      <a href="#inline_response_200_1">inline_response_200_1</a>
       
     </div>
 
@@ -739,7 +920,113 @@
     <h3 class="field-label">Responses</h3>
     <h4 class="field-label">200</h4>
     Projet collection
-        <a href="#inline_response_200_3">inline_response_200_3</a>
+        <a href="#inline_response_200_1">inline_response_200_1</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="apiExterneprojetsIdGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/externe/projets/{id}</code></pre></div>
+    <div class="method-summary">Retrieves a Projet resource. (<span class="nickname">apiExterneprojetsIdGet</span>)</div>
+    <div class="method-notes">Retrieves a Projet resource.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Projet identifier </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Projet.jsonld-projet_lecture">Projet.jsonld-projet_lecture</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "typeProjet" : "",
+  "etatProjet" : 2,
+  "tetatProjet" : "",
+  "@type" : "",
+  "versionDerniere" : "",
+  "versionActive" : "",
+  "limitDate" : "",
+  "@id" : "",
+  "@context" : "",
+  "user" : "",
+  "idProjet" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Projet resource
+        <a href="#Projet.jsonld-projet_lecture">Projet.jsonld-projet_lecture</a>
+    <h4 class="field-label">404</h4>
+    Resource not found
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="apiProjetsGetCollection"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /api/projets</code></pre></div>
+    <div class="method-summary">Retrieves the collection of Projet resources. (<span class="nickname">apiProjetsGetCollection</span>)</div>
+    <div class="method-notes">Retrieves the collection of Projet resources.</div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#inline_response_200_1">inline_response_200_1</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "hydra:search" : {
+    "hydra:template" : "",
+    "hydra:variableRepresentation" : "",
+    "@type" : "",
+    "hydra:mapping" : ""
+  },
+  "hydra:totalItems" : "",
+  "hydra:view" : "{\"@id\":\"string\",\"type\":\"string\",\"hydra:first\":\"string\",\"hydra:last\":\"string\",\"hydra:previous\":\"string\",\"hydra:next\":\"string\"}",
+  "hydra:member" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Projet collection
+        <a href="#inline_response_200_1">inline_response_200_1</a>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="apiProjetsIdGet"></a>
@@ -772,7 +1059,7 @@
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>{
   "typeProjet" : "",
-  "etatProjet" : "",
+  "etatProjet" : 2,
   "tetatProjet" : "",
   "@type" : "",
   "versionDerniere" : "",
@@ -1165,6 +1452,73 @@
   </div> <!-- method -->
   <hr/>
   <h1><a name="User">User</a></h1>
+  <div class="method"><a name="apiExterneusersPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /api/externe/users</code></pre></div>
+    <div class="method-summary">Creates a User resource. (<span class="nickname">apiExterneusersPost</span>)</div>
+    <div class="method-notes">Creates a User resource.</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#User.jsonld-user_ecriture">User.jsonld-user_ecriture</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The new User resource </div>
+                </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#User.jsonld-user_lecture">User.jsonld-user_lecture</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "passexpir" : "",
+  "individu" : "https://example.com/",
+  "loginname" : "",
+  "projet" : "https://example.com/",
+  "@type" : "",
+  "expire" : "",
+  "@id" : "",
+  "id" : "",
+  "login" : "",
+  "deply" : "",
+  "@context" : ""
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/ld+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    User resource created
+        <a href="#User.jsonld-user_lecture">User.jsonld-user_lecture</a>
+    <h4 class="field-label">400</h4>
+    Invalid input
+        <a href="#"></a>
+    <h4 class="field-label">422</h4>
+    Unprocessable entity
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
   <div class="method"><a name="apiUsersGetCollection"></a>
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
@@ -1384,6 +1738,7 @@
     <li><a href="#Serveur.jsonld"><code>Serveur.jsonld</code></a></li>
     <li><a href="#User.jsonld-individu_ecriture"><code>User.jsonld-individu_ecriture</code></a></li>
     <li><a href="#User.jsonld-individu_lecture"><code>User.jsonld-individu_lecture</code></a></li>
+    <li><a href="#User.jsonld-projet_lecture"><code>User.jsonld-projet_lecture</code></a></li>
     <li><a href="#User.jsonld-user_ecriture"><code>User.jsonld-user_ecriture</code></a></li>
     <li><a href="#User.jsonld-user_lecture"><code>User.jsonld-user_lecture</code></a></li>
     <li><a href="#Version.jsonld-projet_lecture"><code>Version.jsonld-projet_lecture</code></a></li>
@@ -1423,18 +1778,18 @@
   </div>
   <div class="model">
     <h3><a name="Clessh.jsonld-ssh_ecriture"><code>Clessh.jsonld-ssh_ecriture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>Sso.</div>
+    <div class='model-description'>Les clés ssh</div>
     <div class="field-items">
       <div class="param">rvk (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
     </div>  <!-- field-items -->
   </div>
   <div class="model">
     <h3><a name="Clessh.jsonld-ssh_lecture"><code>Clessh.jsonld-ssh_lecture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>Sso.</div>
+    <div class='model-description'>Les clés ssh</div>
     <div class="field-items">
-      <div class="param">@id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+      <div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">@id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">@type (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
-<div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">individu (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span> ORM\Column(name&#x3D;&amp;quot;id_individu&amp;quot;, type&#x3D;&amp;quot;integer&amp;quot;) format: iri-reference</div>
           <div class="param-desc"><span class="param-type">example: https://example.com/</span></div>
@@ -1458,14 +1813,14 @@
   </div>
   <div class="model">
     <h3><a name="Individu.jsonld-individu_ecriture"><code>Individu.jsonld-individu_ecriture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>Individu.</div>
+    <div class='model-description'>Un individu (à ne pas confondre avec les users)</div>
     <div class="field-items">
       <div class="param">user (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
     </div>  <!-- field-items -->
   </div>
   <div class="model">
     <h3><a name="Individu.jsonld-individu_lecture"><code>Individu.jsonld-individu_lecture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>Individu.</div>
+    <div class='model-description'>Un individu (à ne pas confondre avec les users)</div>
     <div class="field-items">
       <div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">@id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
@@ -1505,6 +1860,7 @@
 <div class="param">@type (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">etatProjet (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 2</span></div>
 <div class="param">typeProjet (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">idProjet (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">versionActive (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
@@ -1551,7 +1907,7 @@
   </div>
   <div class="model">
     <h3><a name="User.jsonld-individu_ecriture"><code>User.jsonld-individu_ecriture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>User.</div>
+    <div class='model-description'>Les users système à déployer</div>
     <div class="field-items">
       <div class="param">loginname (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">login (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
@@ -1578,8 +1934,25 @@
     </div>  <!-- field-items -->
   </div>
   <div class="model">
+    <h3><a name="User.jsonld-projet_lecture"><code>User.jsonld-projet_lecture</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">@id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">@type (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">loginname (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">individu (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span> Get individu. format: iri-reference</div>
+          <div class="param-desc"><span class="param-type">example: https://example.com/</span></div>
+<div class="param">login (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">expire (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+<div class="param">passexpir (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  format: date-time</div>
+<div class="param">deply (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
     <h3><a name="User.jsonld-user_ecriture"><code>User.jsonld-user_ecriture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>User.</div>
+    <div class='model-description'>Les users système à déployer</div>
     <div class="field-items">
       <div class="param">loginname (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">individu (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span> Get individu. format: iri-reference</div>
@@ -1593,7 +1966,7 @@
   </div>
   <div class="model">
     <h3><a name="User.jsonld-user_lecture"><code>User.jsonld-user_lecture</code></a> <a class="up" href="#__Models">Up</a></h3>
-    <div class='model-description'>User.</div>
+    <div class='model-description'>Les users système à déployer</div>
     <div class="field-items">
       <div class="param">@context (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
 <div class="param">@id (optional)</div><div class="param-desc"><span class="param-type"><a href="#"></a></span>  </div>
