@@ -53,7 +53,7 @@ if ('dev' == $_SERVER['APP_ENV']) {
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $request = Request::createFromGlobals();
 
-// Cette ligne est importnte si vous êtes derrière un reverse proxy
+// Cette ligne est importante si vous êtes derrière un reverse proxy
 // Sinon, commentez-là !
 // cf. https://symfony.com/doc/5.4/deployment/proxies.html)
 Request::setTrustedProxies(explode(',', $_ENV['TRUSTED_PROXIES']), Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PREFIX);
