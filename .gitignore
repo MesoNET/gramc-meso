@@ -72,3 +72,10 @@ phpstan.neon
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+.htaccess
+cache/*
+config/adresses.txt
+config/parameters.yaml
+migrations/*
+src/ApiResource/
+src/DataFixtures/AppFixtures.php
