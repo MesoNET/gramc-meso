@@ -2488,12 +2488,6 @@
                     "login": {
                         "type": "boolean"
                     },
-                    "expire": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
-                    },
                     "deply": {
                         "type": "boolean"
                     }
@@ -2560,12 +2554,6 @@
                     },
                     "login": {
                         "type": "boolean"
-                    },
-                    "expire": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
                     },
                     "passexpir": {
                         "type": [
@@ -2652,12 +2640,6 @@
                     "login": {
                         "type": "boolean"
                     },
-                    "expire": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
-                    },
                     "passexpir": {
                         "type": [
                             "string",
@@ -2701,12 +2683,6 @@
                     },
                     "login": {
                         "type": "boolean"
-                    },
-                    "expire": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
                     },
                     "deply": {
                         "type": "boolean"
@@ -2783,12 +2759,6 @@
                     },
                     "login": {
                         "type": "boolean"
-                    },
-                    "expire": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
                     },
                     "passexpir": {
                         "type": [
