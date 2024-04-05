@@ -110,7 +110,6 @@ class User
      * @var bool
      */
     #[ORM\Column(name: 'expire', type: 'boolean', nullable: true)]
-    #[Groups(['individu_lecture', 'individu_ecriture', 'user_lecture', 'user_ecriture', 'projet_lecture'])]
     private $expire;
 
     /**
