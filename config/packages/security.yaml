@@ -6,7 +6,7 @@ security:
         App\Entity\Serveur:
             algorithm: auto
         Symfony\Component\Security\Core\User\InMemoryUser: 
-            algorithm: plaintext
+            algorithm: auto
   # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:
     #
