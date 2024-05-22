@@ -303,7 +303,10 @@ class Individu implements UserInterface, EquatableInterface, PasswordAuthenticat
             return true;
         }
     }
-
+    public function getIdIndividu(): int
+    {
+        return $this->getId();
+    }
     // implementation UserInterface
     public function getUserIdentifier(): string
     {
