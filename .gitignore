@@ -8,6 +8,7 @@
 *.tar
 *.tgz
 *.lock
+.git.SUPPR/
 var.*
 data/*
 *#
@@ -19,7 +20,12 @@ web/tmp/*
 /app/config/parameters.*.yml
 parameters.yaml
 /mesocentres/**/colors.css
-
+templates.AJETER/
+templates/default/mentions.html.twig
+reprise
+MESONET
+VERSION
+mesocentres/
 /build/
 /phpunit.xml
 /var/CACHEDIR.TAG
@@ -50,7 +56,16 @@ vendor/**
 tools/phpstan/**
 tools/php-cs-fixer/**
 
+doc/documentation-dev.odt
+doc/uml/gramc-meso0.uml
+doc/uml/gramc3-notes.md
+doc/uml/sequence_nouv_collab.uml
+
 doc/**/*.png
+
+### jpgraph
+jpgraph
+jpgraph-4.3.4/
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -66,3 +81,15 @@ doc/**/*.png
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+### selenium ###
+selenium/bin/DoRest.py
+selenium/bin/restDateSet.py
+selenium/bin/restProjetsGet.py
+selenium/bin/restSimulConso.py
+selenium/bin/testSimulConso.py
+selenium/doc/
+selenium/gramc-connect.py
+selenium/lib/RestRequest.py
+selenium/selenium_env.bash
+### selenium ###
