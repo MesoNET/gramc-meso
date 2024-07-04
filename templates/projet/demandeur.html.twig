@@ -199,7 +199,7 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% for s in serviceServeurs.getserveurs %}<th>Id {{s.nom}}</th>{% endfor %}
+            {% for s in serviceServeurs.getserveurs|sort %}<th>Id {{s.nom}}</th>{% endfor %}
             <th  style="width: 25em">Titre</th>
             <th>Fin</th>
             {% if false %}<th colspan="2">Consommation</th>{% endif %}
@@ -238,10 +238,11 @@ passwd
             <th>État</th>
             <th>Accès</th>
             <th>Numéro</th>
-            {% for s in serviceServeurs %}<th>Id {{s}}</th>{% endfor %}
+            {% for s in serviceServeurs.getserveurs|sort %}<th>Id {{s}}</th>{% endfor %}
             <th style="width: 25em">Titre</th>
             <th>Fin</th>
-            <th colspan="2">Consommation</th>
+            {% if false %}<th colspan="2">Consommation</th>{% endif %}
+            {% for nr in serviceRessources.getnoms %}<th title="Consommation {{nr}}">{{nr}}</th>{% endfor %}
         </tr>
     </thead>
 
