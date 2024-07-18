@@ -8,5 +8,9 @@ Cette demande a été transférée pour information aux adresses suivantes: {{ l
 Numéro de projet    : {{ object.projet |raw }}
 Retrouver le projet : {{ absolute_url(path('consulter_projet', { 'id' : object.projet.idProjet })) |raw }}
 
+{% for dac in object.dac %}
+Ressources demandées  sur {{ serviceRessources.nomComplet(dac.ressource) }}: {{ dac.demande }} {{ dac.ressource.unite }}
+{% endfor %}
+
 Cordialement,
 L'équipe {{mesoc}}.
