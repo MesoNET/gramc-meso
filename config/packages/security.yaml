@@ -22,6 +22,9 @@ security:
                     apizen:
                        password: '%env(PASSWORD_APIZEN)%'
                        roles: 'ROLE_ADMIN'
+                    apiphileas:
+                       password: '%env(PASSWORD_APIPHILEAS)%'
+                       roles: 'ROLE_ADMIN'
         gramc_provider:
             entity:
                 class: App\Entity\Individu
