@@ -20,6 +20,7 @@ security:
                     apicriann: { password: '%env(PASSWORD_APICRIANN)%', roles: 'ROLE_ADMIN' }
                     apijuliet: {password: '%env(PASSWORD_APIJULIET)%', roles: 'ROLE_ADMIN'}
                     apizen: {password: '%env(PASSWORD_APIZEN)%', roles: 'ROLE_ADMIN'}
+                    apiphileas : {password: '%env(PASSWORD_APIPHILEAS)%', roles: 'ROLE_ADMIN'}
         api:
           chain:
             provider: ['api_serveur','api_service_externe']']
