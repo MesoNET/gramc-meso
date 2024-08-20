@@ -6,7 +6,8 @@ security:
         App\Entity\Serveur:
             algorithm: auto
         Symfony\Component\Security\Core\User\InMemoryUser: 
-            algorithm: auto
+            algorithm: bcrypt
+            cost: 13
   # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     # Pour générer le mot de passe hashé en bcrypt:
     #
@@ -15,18 +16,11 @@ security:
         in_memory:
             memory:
                 users:
-                    apiuft:
-                       password: '%env(PASSWORD_APIUFT)%'
-                       roles: 'ROLE_ADMIN'
-                    apicriann:
-                       password: '%env(PASSWORD_APICRIANN)%'
-                       roles: 'ROLE_ADMIN'
-                    apijuliet:
-                       password: '%env(PASSWORD_APIJULIET)%'
-                       roles: 'ROLE_ADMIN'
-                    apizen:
-                       password: '%env(PASSWORD_APIZEN)%'
-                       roles: 'ROLE_ADMIN'
+                    apiuft: {password : '%env(PASSWORD_APIUFT)%', roles: 'ROLE_ADMIN'}
+                    apicriann: { password: '%env(PASSWORD_APICRIANN)%', roles: 'ROLE_ADMIN' }
+                    apijuliet: {password: '%env(PASSWORD_APIJULIET)%', roles: 'ROLE_ADMIN'}
+                    apizen: {password: '%env(PASSWORD_APIZEN)%', roles: 'ROLE_ADMIN'}
+                    apiphileas : {password: '%env(PASSWORD_APIPHILEAS)%', roles: 'ROLE_ADMIN'}
         api:
           chain:
             provider: ['api_serveur','api_service_externe']']
