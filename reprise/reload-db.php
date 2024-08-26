@@ -61,7 +61,6 @@ echo "That's REALLY all Folks\n";
 function init(): void
 {
     $db_url = parse_url(getenv('DATABASE_URL'));
-
     if (!isset($db_url['scheme']) || 'mysql' != $db_url['scheme']) {
         echo 'ERREUR - scheme doit être mysql - DATABASE_URL='.getenv('DATABASE_URL')."\n";
         exit;
