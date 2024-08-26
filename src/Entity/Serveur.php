@@ -71,7 +71,7 @@ class Serveur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', nullable: true)]
     private string $password;
 
-    #[ORM\OneToMany(mappedBy: 'serveur_lecture', targetEntity: '\App\Entity\Ressource', cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'serveur', targetEntity: '\App\Entity\Ressource', cascade: ['persist'])]
     #[Groups('serveur_lecture')]
     private Collection $ressource;
 
