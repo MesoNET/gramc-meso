@@ -93,3 +93,9 @@ selenium/gramc-connect.py
 selenium/lib/RestRequest.py
 selenium/selenium_env.bash
 ### selenium ###
+/.idea/.gitignore
+/.idea/gramc-meso-clone.iml
+/.idea/material_theme_project_new.xml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/vcs.xml
