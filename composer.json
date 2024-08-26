@@ -123,7 +123,7 @@
         ],
         "db:create": [
             "@db:schema",
-            "sh reprise/reload-db ./reprise/gramc_reprise.sql",
+            "sh reprise/reload-db reprise/schema.sql",
             "php bin/console doctrine:migrations:diff --no-interaction --allow-empty-diff",
             "php bin/console doctrine:migrations:migrate --allow-no-migration --no-interaction",
             "php bin/console doctrine:fixtures:load --no-interaction --append"
