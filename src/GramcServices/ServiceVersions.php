@@ -661,6 +661,7 @@ class ServiceVersions
         $sj = $this->sj;
 
         $cv = $this->TrouverCollaborateur($version, $individu);
+        var_dump($cv);
         $sj->debugMessage("ServiceVersion:supprimerCollaborateur $cv -> $individu supprimé");
         $em->remove($cv);
         $em->flush();
@@ -1267,6 +1268,7 @@ class ServiceVersions
                         $em->persist($individu);
                     }
 
+
                     // Il devient collaborateur: création d'un collaborateurVersion et peut-être de plusieurs User
                     if (!$version->isCollaborateur($individu)) {
                         $sj->infoMessage(__METHOD__.':'.__LINE__.' individu '.
@@ -1303,7 +1305,13 @@ class ServiceVersions
                         // Synchronisation des flags de login
                         $this->modifierLogins($projet, $individu, $individu_form->getLogins());
                     }
+                    if ($individu_form->getDeleted()) {
+                        $cv = $this->TrouverCollaborateur($version, $individu);
+                        $em->remove($cv);
+                        $em->flush();
+                    }
                     $em->flush(); // sans doute inutile
+
                 }
 
                 // Le formulaire correspond à un nouvel utilisateur (adresse mail pas trouvée dans la base)

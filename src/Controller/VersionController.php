@@ -514,7 +514,6 @@ class VersionController extends AbstractController
         if ($this->getParameter('resp_peut_modif_collabs')) {
             $text_fields = false;
         }
-
         $collaborateur_form = $this->ff
                                    ->createNamedBuilder('form_projet', FormType::class, [
                                        'individus' => $sv->prepareCollaborateurs($version, $sj, $sval),
@@ -543,7 +542,6 @@ class VersionController extends AbstractController
                                    ->getForm();
 
         $collaborateur_form->handleRequest($request);
-
         $projet = $version->getProjet();
         if (null != $projet) {
             $idProjet = $projet->getIdProjet();
