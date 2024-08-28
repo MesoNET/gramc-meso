@@ -270,6 +270,7 @@ class IndividuFormType extends AbstractType implements DataMapperInterface
         $viewData->setLaboratoire($forms['laboratoire']->getData());
         $viewData->setEtablissement($forms['etablissement']->getData());
         $viewData->setId($forms['id']->getData());
+        $viewData->setDeleted($forms['deleted']->getData());
 
         // dd($forms['mail']->getData(),$forms, $viewData, $vd_logins_src, $vd_logins_dst);
     }
