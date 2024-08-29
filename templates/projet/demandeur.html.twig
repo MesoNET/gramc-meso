@@ -84,10 +84,11 @@
         {% set cpTot = 0 %}
         {% set consoTot = 0 %}
         {% set consomationTot = 0 %}
-        {% set bug = 0 %}
             {% for nr in dacs|keys|sort %}
                 {% if serviceDacs.getTodofConsolide(dacs[nr]) %}
-                    {% set bug = 1 %}
+                    <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
+                    {{ icones.attention(20,20) }}
+                    </span>
                 {% endif %}
                 {% set consoTot = consoTot + serviceDacs.getAttributionConsolidee(dacs[nr]) %}
                 {% set consomationTot = consomationTot + dacs[nr].consommation %}
@@ -105,16 +106,10 @@
             {% if cpTot > conso_seuil_2 %}
                 {% set ccp = 'class=conso_seuil_2' %}
             {% endif %}
-            {% if bug>0 %}
                 <div class="progress">
                     <div class="progress-bar" style="width: {{ 100*consomationTot/consoTot }}%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">{{ 100*consomationTot/consoTot }}%</div>
                 </div>
                 <span class="small-legend"> {{ consomationTot }}h / {{ consoTot }}h</span>
-            {% else %}
-                <span title="Cette attribution n'a pas encore été prise en compte par le centre hébergeur">
-            {{ icones.attention(20,20) }}
-        </span>
-            {% endif %}
     {% else %}
         -
     {% endif %}
