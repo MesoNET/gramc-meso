@@ -62,6 +62,7 @@
 </head>
 
 <body>
+{% set categorie = path(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')) | split('/')[1] %}
 {% block header %}
     {% if not app.request.xmlhttprequest %}
 <div id="main-wrapper" class="page-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
@@ -139,7 +140,7 @@
                                     <span class="hide-menu">Utilisateur</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'individu_gerer' or app.request.get('_route') == 'invitations' %}
+                            {% if categorie == 'individu' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link " href="{{ path('invitations') }}" aria-expanded="false"
                                        title="Invitation">
@@ -155,7 +156,7 @@
                                     <span class="hide-menu">Projets</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'projet_dynamique' or app.request.get('_route') == 'rallonge_dynamique' or app.request.get('_route') == 'televersement_generique' %}
+                            {% if app.request.get('_route') == 'projet_dynamique' or categorie == 'rallonge' or app.request.get('_route') == 'televersement_generique' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link " href="{{ path('rallonge_dynamique') }}"
                                        aria-expanded="false"
@@ -180,7 +181,7 @@
                                     <span class="hide-menu">Tables de l'application</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'gerer_formations' or app.request.get('_route') == 'gerer_laboratoires' or app.request.get('_route') == 'gerer_thematiques' or app.request.get('_route') == 'gerer_serveurs' or app.request.get('_route') == 'gerer_ressources' or app.request.get('_route') == 'gerer_etablissements' or app.request.get('_route') == 'gerer_service_externes' %}
+                            {% if categorie == 'formation' or categorie == 'laboratoire' or categorie == 'thematique' or categorie == 'serveur' or categorie == 'ressource' or categorie == 'etablissement' or categorie == 'service_externe' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link " href="{{ path('gerer_laboratoires') }}"
                                        aria-expanded="false"
@@ -233,7 +234,7 @@
                                     <span class="hide-menu">Bilans & stats</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'statistiques_dyn' or app.request.get('_route') == 'statistiques_formation'or app.request.get('_route') == 'publication_annee' %}
+                            {% if categorie == 'statistiques' or categorie == 'publication' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link " href="{{ path('statistiques_formation') }}"
                                        aria-expanded="false"
@@ -258,7 +259,7 @@
                                     <span class="hide-menu">Maintenance</span>
                                 </a>
                             </li>
-                            {% if app.request.get('_route') == 'journal_list' or app.request.get('_route') == 'connexions' or app.request.get('_route') == 'param_avancer' or app.request.get('_route') == 'mail_tester' or app.request.get('_route') == 'phpinfo' or app.request.get('_route') == 'rgpd' %}
+                            {% if categorie == 'journal' or app.request.get('_route') == 'connexions' or categorie == 'param' or categorie== 'mail' or categorie == 'phpinfo' or app.request.get('_route') == 'rgpd' %}
                                 <li class="sidebar-item sous-menu">
                                     <a class="sidebar-link" href="{{ path('connexions') }}" aria-expanded="false"
                                        title="Personnes connectées">
