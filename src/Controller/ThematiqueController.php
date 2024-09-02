@@ -62,6 +62,7 @@ class ThematiqueController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/gerer', name: 'gerer_thematiques', methods: ['GET'])]
     public function gererAction(): Response
     {
@@ -176,6 +177,37 @@ class ThematiqueController extends AbstractController
                 ]],
                 'thematique' => $thematique,
                 'edit_form' => $editForm->createView(),
+            ]
+        );
+    }
+
+    /**
+     * Displays a form to add a new expert to a thematique entity.
+     */
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route(path: '/{id}/add_expert', name: 'ajoute_expert', methods: ['GET', 'POST'])]
+    public function addExpertAction(Request $request, Thematique $thematique): Response
+    {
+        $addExpertForm = $this->createForm(
+            'App\Form\ExpertThematiqueType',
+            $thematique,
+            [
+                'modifier' => true,
+
+            ]
+        );
+        $addExpertForm->handleRequest($request);
+
+        if ($addExpertForm->isSubmitted() && $addExpertForm->isValid()) {
+            $this->em->flush();
+
+            return $this->redirectToRoute('gerer_thematiques');
+        }
+
+        return $this->render(
+            'thematique/ajouter_expert.html.twig',
+            [
+                'addExpertForm' => $addExpertForm->createView(),
             ]
         );
     }

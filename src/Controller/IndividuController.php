@@ -535,7 +535,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -554,7 +554,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -574,7 +574,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -593,7 +593,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -612,7 +612,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -631,7 +631,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -650,7 +650,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -669,7 +669,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -688,7 +688,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -709,7 +709,11 @@ class IndividuController extends AbstractController
         $se->noThematique($individu);
         $em->flush();
 
-        return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
+        } else {
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
+        }
     }
 
     /**
@@ -727,7 +731,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 
@@ -747,7 +751,7 @@ class IndividuController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return $this->render('individu/ligne.html.twig', ['individu' => $individu]);
         } else {
-            return $this->redirectToRoute('individu_gerer');
+            return $this->redirectToRoute('individu_modify', ['id' => $individu->getId()]);
         }
     }
 

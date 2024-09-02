@@ -124,6 +124,24 @@
                 <span>Devenir sysadmin</span>
             </div>
         {% endif %}
+
+            {# ################################################################################################# #}
+
+            {% if( individu.expert) == true %}
+                <div class="role-choose role">
+                    <a class="sysadmin " href="{{ path('plus_expert',  { 'id': individu.id }) }}?" title="Retirer les droits expert">
+                        {{icones.expert(20,20)}}
+                    </a>
+                    <span>Retirer les droits expert</span>
+                </div>
+            {% else %}
+                <div class=" role">
+                    <a class="sysadmin" href="{{ path('devenir_expert',  { 'id': individu.id }) }}?" title="Devenir expert">
+                        {{icones.expert(20,20)}}
+                    </a>
+                    <span>Devenir expert</span>
+                </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}

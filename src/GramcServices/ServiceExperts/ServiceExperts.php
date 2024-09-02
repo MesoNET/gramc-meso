@@ -111,6 +111,8 @@ class ServiceExperts
             $thematique->removeExpert($individu);
             $this->em->persist($thematique);
         }
+        $this->em->flush();
+
     }
 
     /*********************************************
