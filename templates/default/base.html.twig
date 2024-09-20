@@ -62,7 +62,6 @@
 </head>
 
 <body>
-{% set categorie = path(app.request.attributes.get('_route'),app.request.attributes.get('_route_params')) | split('/')[1] %}
 {% block header %}
     {% if not app.request.xmlhttprequest %}
 <div id="main-wrapper" class="page-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
@@ -132,170 +131,286 @@
                             <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                                 <span class="hide-menu">ADMIN</span>
-                            </li>
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('individu_gerer') }}" aria-expanded="false"
-                                   title="Utilisateur">
-                                    <i class="ti ti-users"></i>
+                                <li class="sidebar-item">
+                                    <a
+                                            class="sidebar-link has-arrow"
+                                            href="javascript:void(0)"
+                                            aria-expanded="false"
+                                    >
+                                    <span class="d-flex">
+                                      <i class="ti ti-users"></i>
+                                    </span>
                                     <span class="hide-menu">Utilisateur</span>
-                                </a>
-                            </li>
-                            {% if categorie == 'individu' %}
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('invitations') }}" aria-expanded="false"
-                                       title="Invitation">
-                                        <i class="ti ti-mail"></i>
-                                        <span class="hide-menu sous-menu-span">Invitation</span>
                                     </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item margin-left">
+                                            <a  href="{{ path('individu_gerer') }}" class="sidebar-link" title="Utilisateur">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-users"></i>
+                                                </div>
+                                                <span class="hide-menu">Utilisateurs</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('invitations') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-mail"></i>
+                                                </div>
+                                                <span class="hide-menu">Invitations</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                            {% endif %}
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('projet_dynamique') }}" aria-expanded="false"
-                                   title="Projets">
-                                    <i class="ti ti-calendar"></i>
-                                    <span class="hide-menu">Projets</span>
-                                </a>
-                            </li>
-                            {% if app.request.get('_route') == 'projet_dynamique' or categorie == 'rallonge' or app.request.get('_route') == 'televersement_generique' %}
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('rallonge_dynamique') }}"
-                                       aria-expanded="false"
-                                       title="Demandes d'extension">
-                                        <i class="ti ti-calendar"></i>
-                                        <span class="hide-menu sous-menu-span"> Extension</span>
+                                <li class="sidebar-item">
+                                    <a
+                                            class="sidebar-link has-arrow"
+                                            href="javascript:void(0)"
+                                            aria-expanded="false"
+                                    >
+                                        <span class="d-flex">
+                                          <i class="ti ti-calendar"></i>
+                                        </span>
+                                        <span class="hide-menu">Projet</span>
                                     </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item margin-left">
+                                            <a  href="{{ path('projet_dynamique') }}" class="sidebar-link" title="Utilisateur">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-calendar"></i>
+                                                </div>
+                                                <span class="hide-menu">Projets</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('rallonge_dynamique') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-calendar"></i>
+                                                </div>
+                                                <span class="hide-menu">Extensions</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('televersement_generique') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-file-upload"></i>
+                                                </div>
+                                                <span class="hide-menu">Téléversements</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('televersement_generique') }}"
-                                       aria-expanded="false"
-                                       title="Téléversements">
-                                        <i class="ti ti-file-upload"></i>
-                                        <span class="hide-menu sous-menu-span">Téléversements</span>
+                                <li class="sidebar-item">
+                                    <a
+                                            class="sidebar-link has-arrow"
+                                            href="javascript:void(0)"
+                                            aria-expanded="false"
+                                    >
+                                        <span class="d-flex">
+                                          <i class="ti ti-cloud-data-connection"></i>
+                                        </span>
+                                        <span class="hide-menu">Tables du site</span>
                                     </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item margin-left">
+                                            <a  href="{{ path('gerer_formations') }}" class="sidebar-link" title="Utilisateur">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-school"></i>
+                                                </div>
+                                                <span class="hide-menu">Formations</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_laboratoires') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-microscope"></i>
+                                                </div>
+                                                <span class="hide-menu">Laboratoires</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_thematiques') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-atom"></i>
+                                                </div>
+                                                <span class="hide-menu">Thématiques</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_serveurs') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-server"></i>
+                                                </div>
+                                                <span class="hide-menu">Serveurs</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_service_externes') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-server"></i>
+                                                </div>
+                                                <span class="hide-menu">Services externes</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_ressources') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-server-2"></i>
+                                                </div>
+                                                <span class="hide-menu">Ressources </span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('gerer_etablissements') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-building"></i>
+                                                </div>
+                                                <span class="hide-menu">Établissements</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                            {% endif %}
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('gerer_formations') }}" aria-expanded="false"
-                                   title="Tables de l'application">
-                                    <i class="ti ti-school"></i>
-                                    <span class="hide-menu">Tables de l'application</span>
-                                </a>
-                            </li>
-                            {% if categorie == 'formation' or categorie == 'laboratoire' or categorie == 'thematique' or categorie == 'serveur' or categorie == 'ressource' or categorie == 'etablissement' or categorie == 'service_externe' %}
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_laboratoires') }}"
-                                       aria-expanded="false"
-                                       title="Laboratoires">
-                                        <i class="ti ti-microscope"></i>
-                                        <span class="hide-menu sous-menu-span">Laboratoires</span>
+                                <li class="sidebar-item">
+                                    <a
+                                            class="sidebar-link has-arrow"
+                                            href="javascript:void(0)"
+                                            aria-expanded="false"
+                                    >
+                                        <span class="d-flex">
+                                          <i class="ti ti-graph"></i>
+                                        </span>
+                                        <span class="hide-menu">Bilan et stats</span>
                                     </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item margin-left">
+                                            <a  href="{{ path('statistiques_dyn') }}" class="sidebar-link" title="Utilisateur">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-graph"></i>
+                                                </div>
+                                                <span class="hide-menu">Statistiques</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('statistiques_formation') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-school"></i>
+                                                </div>
+                                                <span class="hide-menu">Formations</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('publication_annee') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-books"></i>
+                                                </div>
+                                                <span class="hide-menu">Publications</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_thematiques') }}"
-                                       aria-expanded="false"
-                                       title="Thématiques">
-                                        <i class="ti ti-atom"></i>
-                                        <span class="hide-menu sous-menu-span">Thématiques</span>
+                                <li class="sidebar-item">
+                                    <a
+                                            class="sidebar-link has-arrow"
+                                            href="javascript:void(0)"
+                                            aria-expanded="false"
+                                    >
+                                        <span class="d-flex">
+                                          <i class="ti ti-swipe"></i>
+                                        </span>
+                                        <span class="hide-menu">Maintenances</span>
                                     </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item margin-left">
+                                            <a  href="{{ path('journal_list') }}" class="sidebar-link" title="Utilisateur">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-book"></i>
+                                                </div>
+                                                <span class="hide-menu">Logs</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('connexions') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-user-exclamation"></i>
+                                                </div>
+                                                <span class="hide-menu">users connectées</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('param_avancer') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-clock"></i>
+                                                </div>
+                                                <span class="hide-menu">Changer le temps</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('mail_tester') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-mail"></i>
+                                                </div>
+                                                <span class="hide-menu">tester le mail</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('phpinfo') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-tool"></i>
+                                                </div>
+                                                <span class="hide-menu">infos techniques</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item margin-left ">
+                                            <a href="{{ path('rgpd') }}" class="sidebar-link" title="Invitation">
+                                                <div
+                                                        class="round-16 d-flex align-items-center justify-content-center"
+                                                >
+                                                    <i class="small-icon ti ti-vacuum-cleaner"></i>
+                                                </div>
+                                                <span class="hide-menu">nettoyage RGPD</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_serveurs') }}" aria-expanded="false"
-                                       title="Serveurs">
-                                        <i class="ti ti-server"></i>
-                                        <span class="hide-menu sous-menu-span">Serveurs</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_service_externes') }}" aria-expanded="false"
-                                       title="Services externes">
-                                        <i class="ti ti-server"></i>
-                                        <span class="hide-menu sous-menu-span">Services externes</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_ressources') }}" aria-expanded="false"
-                                       title="Ressources">
-                                        <i class="ti ti-server-2"></i>
-                                        <span class="hide-menu sous-menu-span">Ressources</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('gerer_etablissements') }}" aria-expanded="false"
-                                       title="Ressources">
-                                        <i class="ti ti-building"></i>
-                                        <span class="hide-menu sous-menu-span">Etablissements</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('statistiques_dyn') }}" aria-expanded="false"
-                                   title="Bilans et statistiques">
-                                    <i class="ti ti-graph"></i>
-                                    <span class="hide-menu">Bilans & stats</span>
-                                </a>
-                            </li>
-                            {% if categorie == 'statistiques' or categorie == 'publication' %}
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('statistiques_formation') }}"
-                                       aria-expanded="false"
-                                       title="Demande de formation">
-                                        <i class="ti ti-school"></i>
-                                        <span class="hide-menu sous-menu-span">Formation</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('publication_annee') }}"
-                                       aria-expanded="false"
-                                       title="Publication">
-                                        <i class="ti ti-books"></i>
-                                        <span class="hide-menu sous-menu-span">Publication</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-                            <li class="sidebar-item">
-                                <a class="sidebar-link" href="{{ path('journal_list') }}" aria-expanded="false"
-                                   title="Maintenance">
-                                    <i class="ti ti-book"></i>
-                                    <span class="hide-menu">Maintenance</span>
-                                </a>
-                            </li>
-                            {% if categorie == 'journal' or app.request.get('_route') == 'connexions' or categorie == 'param' or categorie== 'mail' or categorie == 'phpinfo' or app.request.get('_route') == 'rgpd' %}
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link" href="{{ path('connexions') }}" aria-expanded="false"
-                                       title="Personnes connectées">
-                                        <i class="ti ti-user-exclamation"></i>
-                                        <span class="hide-menu sous-menu-span">Personnes connectées</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link" href="{{ path('param_avancer') }}" aria-expanded="false"
-                                       title="Avancer dans le temps">
-                                        <i class="ti ti-clock "></i>
-                                        <span class="hide-menu sous-menu-span">Avancer dans le temps</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('mail_tester') }}" aria-expanded="false"
-                                       title="Tester le système de mail">
-                                        <i class="ti ti-mail"></i>
-                                        <span class="hide-menu sous-menu-span">Tester le mail</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link " href="{{ path('phpinfo') }}" aria-expanded="false"
-                                       title="infos techniques">
-                                        <i class="ti ti-tool"></i>
-                                        <span class="hide-menu sous-menu-span">Infos techniques</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item sous-menu">
-                                    <a class="sidebar-link" href="{{ path('rgpd') }}" aria-expanded="false"
-                                       title="Nettoyage pour conformité au RGPD">
-                                        <i class="ti ti-vacuum-cleaner"></i>
-                                        <span class="hide-menu sous-menu-span">Nettoyage RGPD</span>
-                                    </a>
-                                </li>
-                            {% endif %}
                         {% endif %}
                     {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
