@@ -519,13 +519,17 @@ table tr td a {
     font-size: 21px
 }
 .big-icon{
-    font-size:3em;
+    font-size:3em !important;
 }
 .medium-icon{
-    font-size:2em;
+    font-size:2em !important;
 }
 .small-icon{
-    font-size:1.5em;
+    font-size:1.5em !important;
+}
+
+.margin-left{
+    margin-left: 2em;
 }
 .big-img{
     width: 5em;
