@@ -46,8 +46,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'num_rallonge', columns: ['id_rallonge'])]
 #[ORM\Index(name: 'etat_rallonge', columns: ['etat_rallonge'])]
 #[ORM\Entity(repositoryClass: 'App\Repository\RallongeRepository')]
-#[Assert\Expression('this.getNbHeuresAtt() > 0  or  this.getValidation() != 1', message: 'Si vous ne voulez pas attribuer des heures pour cette demande, choisissez ')]
-#[Assert\Expression('this.getNbHeuresAtt() == 0  or  this.getValidation() !=  0', message: 'Si vous voulez attribuer des heures pour cette demande, choisissez ')]
 #[ORM\HasLifecycleCallbacks]
 class Rallonge implements Demande
 {
