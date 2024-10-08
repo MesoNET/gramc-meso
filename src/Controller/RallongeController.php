@@ -230,14 +230,17 @@ class RallongeController extends AbstractController
         $editForm->handleRequest($request);
         if ($editForm->isSubmitted()) {
             if ($editForm->get('annuler')->isClicked()) {
+
                 return $this->redirectToRoute('consulter_rallonge', ['id' => $rallonge->getIdRallonge()]);
             }
 
             $erreurs = Functions::dataError($sval, $rallonge);
+
             $em->flush();
             $request->getSession()->getFlashbag()->add('flash info', 'Rallonge enregistrée');
 
             if ($editForm->get('fermer')->isClicked()) {
+
                 return $this->redirectToRoute('consulter_rallonge', ['id' => $rallonge->getIdRallonge()]);
             }
         }
