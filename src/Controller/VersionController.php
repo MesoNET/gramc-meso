@@ -554,12 +554,12 @@ class VersionController extends AbstractController
             // Annuler ou Sauvegarder ?
             if ($collaborateur_form->get('submit')->isClicked()) {
                 // Un formulaire par individu
+                var_dump($collaborateur_form->getData());
                 $individu_forms = $collaborateur_form->getData()['individus'];
                 $validated = $sv->validateIndividuForms($individu_forms);
                 if (!$validated) {
                     $message = 'Pour chaque personne vous <strong>devez renseigner</strong>: email, prénom, nom';
                     $request->getSession()->getFlashbag()->add('flash erreur', $message);
-
                     return $this->redirectToRoute('modifier_collaborateurs', ['id' => $version]);
                 }
 
