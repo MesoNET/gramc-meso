@@ -295,12 +295,13 @@ class ServiceVersions
      *          ou un message d'erreur
      *
      ********************************/
-    public function televerserFichier(Request $request,
+    public function televerserFichier(
+        Request $request,
         Version $version,
         string $dirname,
         string $filename,
-        string $type): Form|string
-    {
+        string $type
+    ): Form|string {
         $sj = $this->sj;
         $ff = $this->ff;
         $sf = $this->sf;
@@ -680,13 +681,14 @@ class ServiceVersions
             $k = $s->getnom();
             if (isset($logins[$k])) {
                 $u->setLogin($logins[$k]);
-            // dd("coucou1", $k, $logins[$k], $s);
+                // dd("coucou1", $k, $logins[$k], $s);
             } else {
                 $u->setLogin(false);
                 // dd("coucou2", $k, $logins[$k], $s);
             }
             $this->em->persist($u);
             $this->em->flush();
+
         }
     }
 
@@ -908,7 +910,7 @@ class ServiceVersions
 
             if (array_key_exists($f->getId(), $formationVersions)) {
                 $fv = $formationVersions[$f->getId()];
-            // $formationForm->setNombre($fv->getNombre());
+                // $formationForm->setNombre($fv->getNombre());
             } else {
                 $fv = new FormationVersion($f, $version);
             }
@@ -1219,7 +1221,9 @@ class ServiceVersions
 
         foreach ($versions as $version) {
             // dd($version,$individu_forms);
+
             foreach ($individu_forms as $individu_form) {
+
                 $id = $individu_form->getId();
                 $srv_logins = $individu_form->getLogins();
                 // dd($id, $individu_form);
@@ -1305,10 +1309,9 @@ class ServiceVersions
                         // Synchronisation des flags de login
                         $this->modifierLogins($projet, $individu, $individu_form->getLogins());
                     }
+                    var_dump($individu_form);
                     if ($individu_form->getDeleted()) {
-                        $cv = $this->TrouverCollaborateur($version, $individu);
-                        $em->remove($cv);
-                        $em->flush();
+                        //do nothing for now
                     }
                     $em->flush(); // sans doute inutile
 

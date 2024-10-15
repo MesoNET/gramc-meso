@@ -63,6 +63,7 @@ class IndividuForm
             $this->laboratoire = $individu->getLabo();
             $this->etablissement = $individu->getEtab();
             $this->id = $individu->getId();
+            $this->deleted = false;
         }
     }
 
