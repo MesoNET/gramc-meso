@@ -554,7 +554,6 @@ class VersionController extends AbstractController
             // Annuler ou Sauvegarder ?
             if ($collaborateur_form->get('submit')->isClicked()) {
                 // Un formulaire par individu
-                var_dump($collaborateur_form->getData());
                 $individu_forms = $collaborateur_form->getData()['individus'];
                 $validated = $sv->validateIndividuForms($individu_forms);
                 if (!$validated) {
