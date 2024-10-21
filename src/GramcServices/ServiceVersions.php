@@ -662,7 +662,6 @@ class ServiceVersions
         $sj = $this->sj;
 
         $cv = $this->TrouverCollaborateur($version, $individu);
-        var_dump($cv);
         $sj->debugMessage("ServiceVersion:supprimerCollaborateur $cv -> $individu supprimé");
         $em->remove($cv);
         $em->flush();
@@ -1309,7 +1308,6 @@ class ServiceVersions
                         // Synchronisation des flags de login
                         $this->modifierLogins($projet, $individu, $individu_form->getLogins());
                     }
-                    var_dump($individu_form);
                     if ($individu_form->getDeleted()) {
                         //do nothing for now
                     }
