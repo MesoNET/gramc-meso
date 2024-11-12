@@ -38,7 +38,7 @@ if ('dev' == $_SERVER['APP_ENV']) {
     //    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])    // A COMMENTER DERRIER UN PROXY !
         || !(in_array(@$_SERVER['HTTP_X_REAL_IP'], $adresses_ip) || 'cli-server' === php_sapi_name())) {
         header('HTTP/1.0 403 Forbidden');
-        exit('1 : You are not allowed to access this file. Check '.basename(__FILE__).' for more information. Your address is '.@$_SERVER['HTTP_X_REAL_IP']);
+        exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information. Your address is '.@$_SERVER['HTTP_X_REAL_IP']);
     }
 } else {
     // A AJUSTER SUIVANT QUE VOUS ETES DERRIERE UN PROXY OU NON
@@ -46,7 +46,7 @@ if ('dev' == $_SERVER['APP_ENV']) {
     //    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])    // A COMMENTER DERRIER UN PROXY !
         || 'cli-server' === php_sapi_name()) {
         header('HTTP/1.0 403 Forbidden');
-        exit('2 : You are not allowed to access this file. Check '.basename(__FILE__).' for more information. Your address is '.@$_SERVER['HTTP_X_REAL_IP']);
+        exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information. Your address is '.@$_SERVER['HTTP_X_REAL_IP']);
     }
 }
 
