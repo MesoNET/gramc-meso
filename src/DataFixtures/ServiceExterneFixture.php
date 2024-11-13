@@ -11,7 +11,7 @@ class ServiceExterneFixture extends Fixture
     public function load(ObjectManager $manager): void
     {
         ServiceExterneFactory::createOne([
-            'username' => 'testexterne',
+            'username' => 'testexterne_dev',
             'password' => 'test',
         ]);
     }
