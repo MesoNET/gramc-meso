@@ -12,7 +12,7 @@ class ServeurFixtures extends Fixture
     {
         ServeurFactory::createOne([
             'nom' => 'test',
-            'admname' => 'test',
+            'admname' => 'test_dev',
             'password' => 'test',
         ]);
     }
