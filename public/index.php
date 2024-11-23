@@ -26,6 +26,11 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
 // Le fichier adresses.txt contient la liste des adresses autorisées
 // cf. adresses.txt.dist pour un modèle de fichier
 
+if('true' == $_SERVER['FILTER_IP']){
+    die("Filtrage ip actif");
+}
+die("Filtrage IP ".$_SERVER['FILTER_IP']);
+
 if ('dev' == $_SERVER['APP_ENV']) {
     $adresses_ip = file(__DIR__.'/../config/adresses.txt');
     $adresses_ip = array_map('trim', $adresses_ip);
