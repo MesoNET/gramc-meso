@@ -47,10 +47,10 @@ restore_database($file_name);
 //           Pour savoir dans quelle configuration on se trouve, ce script essaie d'envoyer un mail à toto@exemple.fr
 //           Si on ne le reçoit pas, MEFIANCE !
 
-echo "Appelle bin/console de Symfony\n";
+echo "Appelle /app/gramc-meso/bin/console de Symfony\n";
 console_update();
 
-echo "Appelle /bin/console app:send-a-mail toto@exemple.fr, vérifiez que vous l'avez bien reçu !";
+echo "Appelle /app/gramc-meso/bin/console app:send-a-mail toto@exemple.fr, vérifiez que vous l'avez bien reçu !";
 envoie_mail_de_controle();
 
 echo "That's REALLY all Folks\n";
@@ -79,32 +79,32 @@ function init(): void
 }
 
 /**********
- * Appelle bin/console pour recréer le schéma de B.D. avec Symfony *
+ * Appelle /app/gramc-meso/bin/console pour recréer le schéma de B.D. avec Symfony *
  **************/
 function console(): void
 {
-    $cmd = 'cd ..; bin/console doctrine:schema:create';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console doctrine:schema:create';
     passthru($cmd);
 }
 
 /**********
- * Appelle bin/console pour modifier le schéma de B.D. si nécessaire *
+ * Appelle /app/gramc-meso/bin/console pour modifier le schéma de B.D. si nécessaire *
  **************/
 function console_update()
 {
-    $cmd = 'cd ..; bin/console doctrine:schema:update --dump-sql';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console doctrine:schema:update --dump-sql';
     passthru($cmd);
-    $cmd = 'cd ..; bin/console doctrine:schema:update --force';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console doctrine:schema:update --force';
     passthru($cmd);
 }
 
 /**********
- * Appeller bin/console fixtures avec Symfony
+ * Appeller /app/gramc-meso/bin/console fixtures avec Symfony
  *
  **************/
 function fixtures(): void
 {
-    $cmd = 'cd ..;bin/console doctrine:fixtures:load  --append';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console doctrine:fixtures:load  --append';
     passthru($cmd);
 }
 
@@ -114,7 +114,7 @@ function fixtures(): void
  **************/
 function envoie_mail_de_controle()
 {
-    $cmd = 'cd ..;bin/console app:send-a-mail toto@exemple.fr';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console app:send-a-mail toto@exemple.fr';
     passthru($cmd);
 }
 
@@ -339,7 +339,7 @@ function appelle_mysql($sql = '')
  */
 function efface_bd()
 {
-    $cmd = 'cd ..; bin/console doctrine:schema:drop --force';
+    $cmd = 'cd ..;/app/gramc-meso/bin/console doctrine:schema:drop --force';
     passthru($cmd);
     /*
     $cmd = "echo 'SHOW TABLES;' | ";
