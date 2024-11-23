@@ -27,9 +27,20 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
 // cf. adresses.txt.dist pour un modèle de fichier
 
 if('true' == $_SERVER['FILTER_IP']){
-    die("Filtrage ip actif");
+    $adresses_ip = file(__DIR__.'/../config/adresses.txt');
+    $adresses_ip = array_map('trim', $adresses_ip);
+    if (false === $adresses_ip) {
+        $adresses_ip = [];
+    }
+    if (isset($_SERVER['HTTP_CLIENT_IP'])
+    //    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])    // A COMMENTER DERRIER UN PROXY !
+        || !(in_array(@$_SERVER['HTTP_X_REAL_IP'], $adresses_ip) || 'cli-server' === php_sapi_name())) {
+        header('HTTP/1.0 403 Forbidden');
+        exit('You are not allowed to access this file due to IP filtering. Please check mesonet.fr website for details.');
+        die();
+        //Check '.basename(__FILE__).' for more information. Your address is '.@$_SERVER['HTTP_X_REAL_IP']);
+    }
 }
-die("Filtrage IP ".$_SERVER['FILTER_IP']);
 
 if ('dev' == $_SERVER['APP_ENV']) {
     $adresses_ip = file(__DIR__.'/../config/adresses.txt');
