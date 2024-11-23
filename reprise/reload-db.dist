@@ -2,7 +2,7 @@
 
 [ -r ../.env ] && source ../.env
 [ -r ../.env.local ] && source ../.env.local
-export DATABASE_URL=`cat ../.env | grep -E "^DATABASE_URL=" | cut -d"\"" -f2`
+export DATABASE_URL=`cat /app/gramc-meso/.env | grep -E "^DATABASE_URL=" | cut -d"\"" -f2`
 echo $DATABASE_URL
 rm -r migrations/*.php
 php reprise/reload-db.php $*
