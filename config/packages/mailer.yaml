@@ -1,6 +1,4 @@
 framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
-        envelope:
-            sender: '%env(MAILER_FROM_EMAIL)%'
-            recipients: ['%env(MAILER_RECIPIENT)%']
+
