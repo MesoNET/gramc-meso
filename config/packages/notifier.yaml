@@ -8,5 +8,4 @@ framework:
             high: ['email','browser']
             medium: ['browser']
             low: ['browser']
-        admin_recipients:
-            - { email: admin@example.com }
+
