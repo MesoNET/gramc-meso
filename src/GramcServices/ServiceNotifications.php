@@ -110,9 +110,12 @@ class ServiceNotifications
                 ->htmlTemplate($twig_contenu)
                 ->subject($twig_sujet)
                 ->context($params)
+                ->from($this->mailfrom)
                 ->to($user->getMail());
-            $this->em->persist((new \App\Entity\Notification())->setSujet(
-                $broserSubject)
+            $this->em->persist(
+                (new \App\Entity\Notification())->setSujet(
+                    $broserSubject
+                )
                 ->setDateCreation(new \DateTime())
                 ->setIndividu($user)
                 ->setRoute($route)
@@ -217,7 +220,6 @@ class ServiceNotifications
             }
 
             $mails = array_unique(array_merge($mails, $this->usersToMail($real_users, $warning)));
-
             // Ajouter un destinataire
             foreach ($mails as $mail) {
                 // $message->addTo( $mail);
@@ -240,8 +242,7 @@ class ServiceNotifications
             // Envoi du message
             try {
                 $this->mailer->send($message);
-            } catch (\Exception $e) {
-            }
+            } catch (\Exception $e) { }
         } else {
             $this->sj->warningMessage(__METHOD__.':'.__LINE__.'email "'.$message->getSubject().'" envoyé à une liste vide de destinataires');
         }
