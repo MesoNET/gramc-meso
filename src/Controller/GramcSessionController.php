@@ -470,16 +470,15 @@ class GramcSessionController extends AbstractController
             // Envoyer un mail de bienvenue à ce nouvel utilisateur
             $dest = [$mail];
             $etab = preg_replace('/.*@/', '', $eppn);
-            $sn->sendNotificationTemplate('Bienvenue sur GRAMC - Attribution des ressources {{mesoc}}',
+            $sn->sendMessage('notification/compte_ouvert-sujet.html.twig',
                 'notification/compte_ouvert-contenu.html.twig', ['individu' => $individu, 'etab' => $etab, 'eppn' => $eppn],
-                $dest,
-                'nouveau_profil_notification'
+                $dest
             );
             // si c'est un compte cru, envoyer un mail aux admins
             if (false !== strpos($eppn, 'sac.cru.fr')) {
                 // $sj->debugMessage(__FILE__ .':' . __LINE__ . ' Demande de COMPTE CRU - '.$eppn);
                 $dest = $sn->mailUsers(['A']);
-                $sn->sendNotificationTemplate('notification/compte_ouvert_pour_admin-sujet.html.twig',
+                $sn->sendMessage('notification/compte_ouvert_pour_admin-sujet.html.twig',
                     'notification/compte_ouvert_pour_admin-contenu.html.twig', ['individu' => $individu, 'eppn' => $eppn, 'mail' => $mail],
                     $dest
                 );

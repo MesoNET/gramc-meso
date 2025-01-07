@@ -77,7 +77,7 @@ class ImporterLaboCommand extends Command
                     if ($labosCorrespondants) {
                         foreach ($labosCorrespondants as $lab) {
                             $lab->setActif(false)->setNumeroDeStructureSuccesseur($ligne['numero_de_structure_successeur']);
-                            $this->notifications->sendNotificationTemplate(self::SUJET, 'mail/labo_inactif.html.twig', [], $lab->getIndividu()->toArray(), 'profil');
+                            $this->notifications->sendMessage(self::SUJET, 'mail/labo_inactif.html.twig', [], $lab->getIndividu()->toArray(), 'profil');
                             $output->writeln($lab->getNomLabo().' est devenu inactif');
                         }
                     }

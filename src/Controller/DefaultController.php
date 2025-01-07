@@ -94,7 +94,7 @@ class DefaultController extends AbstractController
         $versions = $em->getRepository(Version::class)->findAll();
         $users = $sn->mailUsers(['E', 'R'], $versions[20]);
         // $sn->sendMessage('projet/dialog_back.html.twig', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
-        $sn->sendNotificationTemplate('MESSONET choix édition', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users, 'accueil');
+        $sn->sendMessage('MESSONET choix édition', 'projet/dialog_back.html.twig', ['projet' => ['idProjet' => 'ID']], $users);
 
         // return new Response ( $users[0] );
         return new Response();
