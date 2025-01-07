@@ -111,7 +111,7 @@ class ServiceInvitations
 
         $invitation = $this->newInvitation($inviting, $invited);
         $date_limite = $invitation->getCreationStamp()->add(new \DateInterval($invit_duree));
-        $sn->sendNotificationTemplate('notification/invitation-sujet.html.twig',
+        $sn->sendMessage('notification/invitation-sujet.html.twig',
             'notification/invitation-contenu.html.twig',
             ['invitation' => $invitation, 'date_limite' => $date_limite],
             [$invited->getMail()]);
