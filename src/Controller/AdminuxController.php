@@ -74,7 +74,7 @@ class AdminuxController extends AbstractController
         private ServiceDacs $sdac,
         private Cron $cr,
         private TokenStorageInterface $tok,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
     }
 
@@ -562,7 +562,18 @@ class AdminuxController extends AbstractController
             $r['titre'] = $v->getPrjTitre();
             $r['expose'] = $v->getPrjExpose();
             $r['labo'] = $v->getPrjLLabo();
-            $r['idLabo'] = $resp->getLabo()->getId();
+            if (null === $resp) {
+                $r['idLabo'] = null;
+            } else {
+                $labo = $resp->getLabo();
+                if (null === $labo) {
+                    $r['idLabo'] = null;
+                } else {
+                    $r['idLabo'] = $labo->getId();
+                }
+            }
+            #$r['idLabo'] = $resp->getLabo()->getId();
+
             if (null != $v->getPrjThematique()) {
                 $r['thematique'] = $v->getPrjThematique()->getLibelleThematique();
                 $r['idthematique'] = $v->getPrjThematique()->getIdThematique();
@@ -634,7 +645,7 @@ class AdminuxController extends AbstractController
             $id_projet = (isset($content['projet'])) ? $content['projet'] : null;
             $long = (isset($content['long'])) ? $content['long'] : false;
         }
-
+        $long = true;
         $p_tmp = [];
         $projets = [];
         if (null === $id_projet) {
