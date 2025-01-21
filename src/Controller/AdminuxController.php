@@ -645,7 +645,6 @@ class AdminuxController extends AbstractController
             $id_projet = (isset($content['projet'])) ? $content['projet'] : null;
             $long = (isset($content['long'])) ? $content['long'] : false;
         }
-        $long = true;
         $p_tmp = [];
         $projets = [];
         if (null === $id_projet) {
