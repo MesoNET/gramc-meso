@@ -1,5 +1,5 @@
 
-**Warning** - Ce projet a été migré sur un GIT privé hébergé à l'IN2P3.
+**Warning** - Ce projet a été migré sur un GIT privé hébergé à l'IN2P3 et n'est plus maintenu
 
 # INSTALLATION sur une Debian ou dérivés
 
