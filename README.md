@@ -1,5 +1,5 @@
 
-**Warning** - Ce projet a été migré sur un GIT privé hébergé à l'IN2P3 et n'est plus maintenu
+**Warning** - Ce projet n'est plus maintenu, il a été migré sur un GIT privé hébergé à l'IN2P3 : https://gitlab.in2p3.fr/mesonet/gramc-meso
 
 # INSTALLATION sur une Debian ou dérivés
 
