@@ -1,4 +1,6 @@
 
+**Warning** - Ce projet a été migré sur un GIT privé hébergé à l'IN2P3.
+
 # INSTALLATION sur une Debian ou dérivés
 
 **Note** - Cette documentation est validée sur Debian 10 Buster et Debian 11 Bullseye
